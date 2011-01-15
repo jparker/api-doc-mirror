@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>ActiveResource::HttpMock</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            ActiveResource::HttpMock 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../files/activeresource/lib/active_resource/http_mock_rb.html">activeresource/lib/active_resource/http_mock.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+One thing that has always been a pain with remote web services is testing.
+The <a href="HttpMock.html">HttpMock</a> class makes it easy to test your
+Active Resource models by creating a set of mock responses to specific
+requests.
+</p>
+<p>
+To test your Active Resource model, you simply call the <a
+href="HttpMock.html#M001362">ActiveResource::HttpMock.respond_to</a> method
+with an attached block. The block declares a set of URIs with expected
+input, and the output each request should return. The passed in block has
+any number of entries in the following generalized format:
+</p>
+<pre>
+  mock.http_method(path, request_headers = {}, body = nil, status = 200, response_headers = {})
+</pre>
+<ul>
+<li><tt>http_method</tt> - The HTTP method to listen for. This can be
+<tt>get</tt>, <tt>post</tt>, <tt>put</tt>, <tt>delete</tt> or
+<tt>head</tt>.
+
+</li>
+<li><tt>path</tt> - A string, starting with a &#8220;/&#8221;, defining the URI
+that is expected to be called.
+
+</li>
+<li><tt>request_headers</tt> - Headers that are expected along with the
+request. This argument uses a hash format, such as <tt>{
+&quot;Content-Type&quot; =&gt; &quot;application/xml&quot; }</tt>. This
+mock will only trigger if your tests sends a request with identical
+headers.
+
+</li>
+<li><tt>body</tt> - The data to be returned. This should be a string of Active
+Resource parseable content, such as XML.
+
+</li>
+<li><tt>status</tt> - The HTTP response code, as an integer, to return with the
+response.
+
+</li>
+<li><tt>response_headers</tt> - Headers to be returned with the response. Uses
+the same hash format as <tt>request_headers</tt> listed above.
+
+</li>
+</ul>
+<p>
+In order for a mock to deliver its content, the incoming request must match
+by the <tt>http_method</tt>, <tt>path</tt> and <tt>request_headers</tt>. If
+no match is found an <a
+href="InvalidRequestError.html">InvalidRequestError</a> exception will be
+raised letting you know you need to create a new mock for that request.
+</p>
+<h4>Example</h4>
+<pre>
+  def setup
+    @matz  = { :id =&gt; 1, :name =&gt; &quot;Matz&quot; }.to_xml(:root =&gt; &quot;person&quot;)
+    ActiveResource::HttpMock.respond_to do |mock|
+      mock.post   &quot;/people.xml&quot;,   {}, @matz, 201, &quot;Location&quot; =&gt; &quot;/people/1.xml&quot;
+      mock.get    &quot;/people/1.xml&quot;, {}, @matz
+      mock.put    &quot;/people/1.xml&quot;, {}, nil, 204
+      mock.delete &quot;/people/1.xml&quot;, {}, nil, 200
+    end
+  end
+
+  def test_get_matz
+    person = Person.find(1)
+    assert_equal &quot;Matz&quot;, person.name
+  end
+</pre>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>R</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001360">requests</a>,</li>
+                
+                <li><a href="#M001363">reset!</a>,</li>
+                
+                <li><a href="#M001362">respond_to</a>,</li>
+                
+                <li><a href="#M001361">responses</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Classes and Modules</div>
+    <ul>
+        
+        <li><span class="type">CLASS</span> <a href="HttpMock/Responder.html">ActiveResource::HttpMock::Responder</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M001360">
+                    
+                    <a name="M001360"></a><b>requests</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns an array of all request objects that have been sent to the mock.
+You can use this to check if your model actually sent an HTTP request.
+</p>
+<h4>Example</h4>
+<pre>
+  def setup
+    @matz  = { :id =&gt; 1, :name =&gt; &quot;Matz&quot; }.to_xml(:root =&gt; &quot;person&quot;)
+    ActiveResource::HttpMock.respond_to do |mock|
+      mock.get &quot;/people/1.xml&quot;, {}, @matz
+    end
+  end
+
+  def test_should_request_remote_service
+    person = Person.find(1)  # Call the remote service
+
+    # This request object has the same HTTP method and path as declared by the mock
+    expected_request = ActiveResource::Request.new(:get, &quot;/people/1.xml&quot;)
+
+    # Assert that the mock received, and responded to, the expected request from the model
+    assert ActiveResource::HttpMock.requests.include?(expected_request)
+  end
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001360_source')" id="l_M001360_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/16b9a554db7e1bf3f5f224cdc5b4d27480e053ff/activeresource/lib/active_resource/http_mock.rb#L88" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M001360_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File activeresource/lib/active_resource/http_mock.rb, line 88</span>
+88:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">requests</span>
+89:         <span class="ruby-ivar">@@requests</span> <span class="ruby-operator">||=</span> []
+90:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001363">
+                    
+                    <a name="M001363"></a><b>reset!</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Deletes all logged requests and responses.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001363_source')" id="l_M001363_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/16b9a554db7e1bf3f5f224cdc5b4d27480e053ff/activeresource/lib/active_resource/http_mock.rb#L115" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M001363_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File activeresource/lib/active_resource/http_mock.rb, line 115</span>
+115:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">reset!</span>
+116:         <span class="ruby-identifier">requests</span>.<span class="ruby-identifier">clear</span>
+117:         <span class="ruby-identifier">responses</span>.<span class="ruby-identifier">clear</span>
+118:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001362">
+                    
+                    <a name="M001362"></a><b>respond_to</b>(pairs = {})
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Accepts a block which declares a set of requests and responses for the <a
+href="HttpMock.html">HttpMock</a> to respond to. See the main <a
+href="HttpMock.html">ActiveResource::HttpMock</a> description for a more
+detailed explanation.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001362_source')" id="l_M001362_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/16b9a554db7e1bf3f5f224cdc5b4d27480e053ff/activeresource/lib/active_resource/http_mock.rb#L101" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M001362_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File activeresource/lib/active_resource/http_mock.rb, line 101</span>
+101:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">respond_to</span>(<span class="ruby-identifier">pairs</span> = {}) <span class="ruby-comment cmt">#:yields: mock</span>
+102:         <span class="ruby-identifier">reset!</span>
+103:         <span class="ruby-identifier">pairs</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">response</span>)<span class="ruby-operator">|</span>
+104:           <span class="ruby-identifier">responses</span>[<span class="ruby-identifier">path</span>] = <span class="ruby-identifier">response</span>
+105:         <span class="ruby-keyword kw">end</span>
+106: 
+107:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">block_given?</span>
+108:           <span class="ruby-keyword kw">yield</span> <span class="ruby-constant">Responder</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">responses</span>)
+109:         <span class="ruby-keyword kw">else</span>
+110:           <span class="ruby-constant">Responder</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">responses</span>)
+111:         <span class="ruby-keyword kw">end</span>
+112:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001361">
+                    
+                    <a name="M001361"></a><b>responses</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns a hash of <tt>request =&gt; response</tt> pairs for all all
+responses this mock has delivered, where <tt>request</tt> is an instance of
+<a href="Request.html">ActiveResource::Request</a> and the response is,
+naturally, an instance of <a
+href="Response.html">ActiveResource::Response</a>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001361_source')" id="l_M001361_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/16b9a554db7e1bf3f5f224cdc5b4d27480e053ff/activeresource/lib/active_resource/http_mock.rb#L95" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M001361_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File activeresource/lib/active_resource/http_mock.rb, line 95</span>
+95:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">responses</span>
+96:         <span class="ruby-ivar">@@responses</span> <span class="ruby-operator">||=</span> {}
+97:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

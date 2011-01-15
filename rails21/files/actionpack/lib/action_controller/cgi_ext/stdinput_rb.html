@@ -1,0 +1,43 @@
+  <div id="fileHeader">
+    <h1>stdinput.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionpack/lib/action_controller/cgi_ext/stdinput.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:04 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>require 'cgi'
+
+module ActionController
+  module CgiExt
+    # Publicize the CGI's internal input stream so we can lazy-read
+    # request.body. Make it writable so we don't have to play $stdin games.
+    module Stdinput
+      def self.included(base)
+        base.class_eval do
+          remove_method :stdinput
+          attr_accessor :stdinput
+        end
+
+        base.alias_method_chain :initialize, :stdinput
+      end
+
+      def initialize_with_stdinput(type = nil, stdinput = $stdin)
+        @stdinput = stdinput
+        @stdinput.set_encoding(Encoding::BINARY) if @stdinput.respond_to?(:set_encoding)
+        initialize_without_stdinput(type || 'query')
+      end
+    end
+  end
+end
+</pre>
+    </div>

@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Net::IMAP::DigestMD5Authenticator</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            Net::IMAP::DigestMD5Authenticator 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../../Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../../files/lib/net/imap_rb.html">lib/net/imap.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+Authenticator for the &#8220;DIGEST-MD5&#8221; authentication type. See
+authenticate().
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004520">nc</a>,</li>
+                
+                <li><a href="#M004519">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>P</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004518">process</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>Q</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004521">qdval</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">STAGE_ONE</td>
+            <td>=</td>
+            <td class="attr-value">:stage_one</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">STAGE_TWO</td>
+            <td>=</td>
+            <td class="attr-value">:stage_two</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M004519">
+                    
+                    <a name="M004519"></a><b>new</b>(user, password, authname = nil)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004519_source')" id="l_M004519_source">show</a>
+                        
+                    </p>
+                    <div id="M004519_source" class="dyn-source">
+                        <pre>      <span class="ruby-comment cmt"># File lib/net/imap.rb, line 3383</span>
+3383:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">user</span>, <span class="ruby-identifier">password</span>, <span class="ruby-identifier">authname</span> = <span class="ruby-keyword kw">nil</span>)
+3384:         <span class="ruby-ivar">@user</span>, <span class="ruby-ivar">@password</span>, <span class="ruby-ivar">@authname</span> = <span class="ruby-identifier">user</span>, <span class="ruby-identifier">password</span>, <span class="ruby-identifier">authname</span>
+3385:         <span class="ruby-ivar">@nc</span>, <span class="ruby-ivar">@stage</span> = {}, <span class="ruby-constant">STAGE_ONE</span>
+3386:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M004518">
+                    
+                    <a name="M004518"></a><b>process</b>(challenge)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004518_source')" id="l_M004518_source">show</a>
+                        
+                    </p>
+                    <div id="M004518_source" class="dyn-source">
+                        <pre>      <span class="ruby-comment cmt"># File lib/net/imap.rb, line 3318</span>
+3318:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">process</span>(<span class="ruby-identifier">challenge</span>)
+3319:         <span class="ruby-keyword kw">case</span> <span class="ruby-ivar">@stage</span>
+3320:         <span class="ruby-keyword kw">when</span> <span class="ruby-constant">STAGE_ONE</span>
+3321:           <span class="ruby-ivar">@stage</span> = <span class="ruby-constant">STAGE_TWO</span>
+3322:           <span class="ruby-identifier">sparams</span> = {}
+3323:           <span class="ruby-identifier">c</span> = <span class="ruby-constant">StringScanner</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">challenge</span>)
+3324:           <span class="ruby-keyword kw">while</span> <span class="ruby-identifier">c</span>.<span class="ruby-identifier">scan</span>(<span class="ruby-regexp re">/(?:\s*,)?\s*(\w+)=(&quot;(?:[^\\&quot;]+|\\.)*&quot;|[^,]+)\s*/</span>)
+3325:             <span class="ruby-identifier">k</span>, <span class="ruby-identifier">v</span> = <span class="ruby-identifier">c</span>[<span class="ruby-value">1</span>], <span class="ruby-identifier">c</span>[<span class="ruby-value">2</span>]
+3326:             <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">v</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/^&quot;(.*)&quot;$/</span>
+3327:               <span class="ruby-identifier">v</span> = <span class="ruby-identifier">$1</span>
+3328:               <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">v</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/,/</span>
+3329:                 <span class="ruby-identifier">v</span> = <span class="ruby-identifier">v</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">','</span>)
+3330:               <span class="ruby-keyword kw">end</span>
+3331:             <span class="ruby-keyword kw">end</span>
+3332:             <span class="ruby-identifier">sparams</span>[<span class="ruby-identifier">k</span>] = <span class="ruby-identifier">v</span>
+3333:           <span class="ruby-keyword kw">end</span>
+3334: 
+3335:           <span class="ruby-identifier">raise</span> <span class="ruby-constant">DataFormatError</span>, <span class="ruby-node">&quot;Bad Challenge: '#{challenge}'&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">c</span>.<span class="ruby-identifier">rest</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-value">0</span>
+3336:           <span class="ruby-identifier">raise</span> <span class="ruby-constant">Error</span>, <span class="ruby-node">&quot;Server does not support auth (qop = #{sparams['qop'].join(',')})&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">sparams</span>[<span class="ruby-value str">'qop'</span>].<span class="ruby-identifier">include?</span>(<span class="ruby-value str">&quot;auth&quot;</span>)
+3337: 
+3338:           <span class="ruby-identifier">response</span> = {
+3339:             <span class="ruby-identifier">:nonce</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">sparams</span>[<span class="ruby-value str">'nonce'</span>],
+3340:             <span class="ruby-identifier">:username</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-ivar">@user</span>,
+3341:             <span class="ruby-identifier">:realm</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">sparams</span>[<span class="ruby-value str">'realm'</span>],
+3342:             <span class="ruby-identifier">:cnonce</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">Digest</span><span class="ruby-operator">::</span><span class="ruby-constant">MD5</span>.<span class="ruby-identifier">hexdigest</span>(<span class="ruby-value str">&quot;%.15f:%.15f:%d&quot;</span> <span class="ruby-operator">%</span> [<span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span>.<span class="ruby-identifier">to_f</span>, <span class="ruby-identifier">rand</span>, <span class="ruby-constant">Process</span>.<span class="ruby-identifier">pid</span>.<span class="ruby-identifier">to_s</span>]),
+3343:             <span class="ruby-identifier">:'digest-uri'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'imap/'</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">sparams</span>[<span class="ruby-value str">'realm'</span>],
+3344:             <span class="ruby-identifier">:qop</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'auth'</span>,
+3345:             <span class="ruby-identifier">:maxbuf</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">65535</span>,
+3346:             <span class="ruby-identifier">:nc</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">&quot;%08d&quot;</span> <span class="ruby-operator">%</span> <span class="ruby-identifier">nc</span>(<span class="ruby-identifier">sparams</span>[<span class="ruby-value str">'nonce'</span>]),
+3347:             <span class="ruby-identifier">:charset</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">sparams</span>[<span class="ruby-value str">'charset'</span>],
+3348:           }
+3349: 
+3350:           <span class="ruby-identifier">response</span>[<span class="ruby-identifier">:authzid</span>] = <span class="ruby-ivar">@authname</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@authname</span>.<span class="ruby-identifier">nil?</span>
+3351: 
+3352:           <span class="ruby-comment cmt"># now, the real thing</span>
+3353:           <span class="ruby-identifier">a0</span> = <span class="ruby-constant">Digest</span><span class="ruby-operator">::</span><span class="ruby-constant">MD5</span>.<span class="ruby-identifier">digest</span>( [ <span class="ruby-identifier">response</span>.<span class="ruby-identifier">values_at</span>(<span class="ruby-identifier">:username</span>, <span class="ruby-identifier">:realm</span>), <span class="ruby-ivar">@password</span> ].<span class="ruby-identifier">join</span>(<span class="ruby-value str">':'</span>) )
+3354: 
+3355:           <span class="ruby-identifier">a1</span> = [ <span class="ruby-identifier">a0</span>, <span class="ruby-identifier">response</span>.<span class="ruby-identifier">values_at</span>(<span class="ruby-identifier">:nonce</span>,<span class="ruby-identifier">:cnonce</span>) ].<span class="ruby-identifier">join</span>(<span class="ruby-value str">':'</span>)
+3356:           <span class="ruby-identifier">a1</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">':'</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">response</span>[<span class="ruby-identifier">:authzid</span>] <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">response</span>[<span class="ruby-identifier">:authzid</span>].<span class="ruby-identifier">nil?</span>
+3357: 
+3358:           <span class="ruby-identifier">a2</span> = <span class="ruby-value str">&quot;AUTHENTICATE:&quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">response</span>[<span class="ruby-identifier">:'digest-uri'</span>]
+3359:           <span class="ruby-identifier">a2</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;:00000000000000000000000000000000&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">response</span>[<span class="ruby-identifier">:qop</span>] <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">response</span>[<span class="ruby-identifier">:qop</span>] <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/^auth-(?:conf|int)$/</span>
+3360: 
+3361:           <span class="ruby-identifier">response</span>[<span class="ruby-identifier">:response</span>] = <span class="ruby-constant">Digest</span><span class="ruby-operator">::</span><span class="ruby-constant">MD5</span>.<span class="ruby-identifier">hexdigest</span>(
+3362:             [
+3363:              <span class="ruby-constant">Digest</span><span class="ruby-operator">::</span><span class="ruby-constant">MD5</span>.<span class="ruby-identifier">hexdigest</span>(<span class="ruby-identifier">a1</span>),
+3364:              <span class="ruby-identifier">response</span>.<span class="ruby-identifier">values_at</span>(<span class="ruby-identifier">:nonce</span>, <span class="ruby-identifier">:nc</span>, <span class="ruby-identifier">:cnonce</span>, <span class="ruby-identifier">:qop</span>),
+3365:              <span class="ruby-constant">Digest</span><span class="ruby-operator">::</span><span class="ruby-constant">MD5</span>.<span class="ruby-identifier">hexdigest</span>(<span class="ruby-identifier">a2</span>)
+3366:             ].<span class="ruby-identifier">join</span>(<span class="ruby-value str">':'</span>)
+3367:           )
+3368: 
+3369:           <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">response</span>.<span class="ruby-identifier">keys</span>.<span class="ruby-identifier">map</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">key</span><span class="ruby-operator">|</span> <span class="ruby-identifier">qdval</span>(<span class="ruby-identifier">key</span>.<span class="ruby-identifier">to_s</span>, <span class="ruby-identifier">response</span>[<span class="ruby-identifier">key</span>]) }.<span class="ruby-identifier">join</span>(<span class="ruby-value str">','</span>)
+3370:         <span class="ruby-keyword kw">when</span> <span class="ruby-constant">STAGE_TWO</span>
+3371:           <span class="ruby-ivar">@stage</span> = <span class="ruby-keyword kw">nil</span>
+3372:           <span class="ruby-comment cmt"># if at the second stage, return an empty string</span>
+3373:           <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">challenge</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/rspauth=/</span>
+3374:             <span class="ruby-keyword kw">return</span> <span class="ruby-value str">''</span>
+3375:           <span class="ruby-keyword kw">else</span>
+3376:             <span class="ruby-identifier">raise</span> <span class="ruby-constant">ResponseParseError</span>, <span class="ruby-identifier">challenge</span>
+3377:           <span class="ruby-keyword kw">end</span>
+3378:         <span class="ruby-keyword kw">else</span>
+3379:           <span class="ruby-identifier">raise</span> <span class="ruby-constant">ResponseParseError</span>, <span class="ruby-identifier">challenge</span>
+3380:         <span class="ruby-keyword kw">end</span>
+3381:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Private methods</div>
+            
+            <div class="method">
+                <div class="title" id="M004520">
+                    
+                    <a name="M004520"></a><b>nc</b>(nonce)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004520_source')" id="l_M004520_source">show</a>
+                        
+                    </p>
+                    <div id="M004520_source" class="dyn-source">
+                        <pre>      <span class="ruby-comment cmt"># File lib/net/imap.rb, line 3393</span>
+3393:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">nc</span>(<span class="ruby-identifier">nonce</span>)
+3394:         <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@nc</span>.<span class="ruby-identifier">has_key?</span> <span class="ruby-identifier">nonce</span>
+3395:           <span class="ruby-ivar">@nc</span>[<span class="ruby-identifier">nonce</span>] = <span class="ruby-ivar">@nc</span>[<span class="ruby-identifier">nonce</span>] <span class="ruby-operator">+</span> <span class="ruby-value">1</span>
+3396:         <span class="ruby-keyword kw">else</span>
+3397:           <span class="ruby-ivar">@nc</span>[<span class="ruby-identifier">nonce</span>] = <span class="ruby-value">1</span>
+3398:         <span class="ruby-keyword kw">end</span>
+3399:         <span class="ruby-keyword kw">return</span> <span class="ruby-ivar">@nc</span>[<span class="ruby-identifier">nonce</span>]
+3400:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004521">
+                    
+                    <a name="M004521"></a><b>qdval</b>(k, v)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+some responses need quoting
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004521_source')" id="l_M004521_source">show</a>
+                        
+                    </p>
+                    <div id="M004521_source" class="dyn-source">
+                        <pre>      <span class="ruby-comment cmt"># File lib/net/imap.rb, line 3403</span>
+3403:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">qdval</span>(<span class="ruby-identifier">k</span>, <span class="ruby-identifier">v</span>)
+3404:         <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">k</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">v</span>.<span class="ruby-identifier">nil?</span>
+3405:         <span class="ruby-keyword kw">if</span> <span class="ruby-node">%w&quot;username authzid realm nonce cnonce digest-uri qop&quot;</span>.<span class="ruby-identifier">include?</span> <span class="ruby-identifier">k</span>
+3406:           <span class="ruby-identifier">v</span>.<span class="ruby-identifier">gsub!</span>(<span class="ruby-regexp re">/([\\&quot;])/</span>, <span class="ruby-value str">&quot;\\\1&quot;</span>)
+3407:           <span class="ruby-keyword kw">return</span> <span class="ruby-value str">'%s=&quot;%s&quot;'</span> <span class="ruby-operator">%</span> [<span class="ruby-identifier">k</span>, <span class="ruby-identifier">v</span>]
+3408:         <span class="ruby-keyword kw">else</span>
+3409:           <span class="ruby-keyword kw">return</span> <span class="ruby-value str">'%s=%s'</span> <span class="ruby-operator">%</span> [<span class="ruby-identifier">k</span>, <span class="ruby-identifier">v</span>]
+3410:         <span class="ruby-keyword kw">end</span>
+3411:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

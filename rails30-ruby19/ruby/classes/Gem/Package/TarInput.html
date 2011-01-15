@@ -1,0 +1,530 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Gem::Package::TarInput</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            Gem::Package::TarInput 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../../Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../../files/lib/rubygems/package/tar_input_rb.html">lib/rubygems/package/tar_input.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+++
+</p>
+<pre>
+ Copyright (C) 2004 Mauricio Julio Fernández Pradier
+ See LICENSE.txt for additional licensing information.
+</pre>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005733">close</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005734">each</a>,</li>
+                
+                <li><a href="#M005749">extract_entry</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>L</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005750">load_gemspec</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005732">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>O</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005731">open</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>Z</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005751">zipped_stream</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+    <div class="sectiontitle">Included Modules</div>
+    <ul>
+        
+        <li>
+            
+            <a href="../../Kernel.html">Kernel</a>
+            
+            START:includes
+        </li>
+        
+        <li>
+            
+            <a href="../../Kernel.html">Kernel</a>
+            
+            START:includes
+        </li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Attributes</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>metadata</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+    </table>
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005732">
+                    
+                    <a name="M005732"></a><b>new</b>(io, security_policy = nil)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005732_source')" id="l_M005732_source">show</a>
+                        
+                    </p>
+                    <div id="M005732_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/package/tar_input.rb, line 24</span>
+ 24:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">io</span>, <span class="ruby-identifier">security_policy</span> = <span class="ruby-keyword kw">nil</span>)
+ 25:     <span class="ruby-ivar">@io</span> = <span class="ruby-identifier">io</span>
+ 26:     <span class="ruby-ivar">@tarreader</span> = <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">Package</span><span class="ruby-operator">::</span><span class="ruby-constant">TarReader</span>.<span class="ruby-identifier">new</span> <span class="ruby-ivar">@io</span>
+ 27:     <span class="ruby-identifier">has_meta</span> = <span class="ruby-keyword kw">false</span>
+ 28: 
+ 29:     <span class="ruby-identifier">data_sig</span>, <span class="ruby-identifier">meta_sig</span>, <span class="ruby-identifier">data_dgst</span>, <span class="ruby-identifier">meta_dgst</span> = <span class="ruby-keyword kw">nil</span>, <span class="ruby-keyword kw">nil</span>, <span class="ruby-keyword kw">nil</span>, <span class="ruby-keyword kw">nil</span>
+ 30:     <span class="ruby-identifier">dgst_algo</span> = <span class="ruby-identifier">security_policy</span> <span class="ruby-value">? </span><span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">Security</span><span class="ruby-operator">::</span><span class="ruby-constant">OPT</span>[<span class="ruby-identifier">:dgst_algo</span>] <span class="ruby-operator">:</span> <span class="ruby-keyword kw">nil</span>
+ 31: 
+ 32:     <span class="ruby-ivar">@tarreader</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">entry</span><span class="ruby-operator">|</span>
+ 33:       <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">entry</span>.<span class="ruby-identifier">full_name</span>
+ 34:       <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;metadata&quot;</span>
+ 35:         <span class="ruby-ivar">@metadata</span> = <span class="ruby-identifier">load_gemspec</span> <span class="ruby-identifier">entry</span>.<span class="ruby-identifier">read</span>
+ 36:         <span class="ruby-identifier">has_meta</span> = <span class="ruby-keyword kw">true</span>
+ 37:       <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;metadata.gz&quot;</span>
+ 38:         <span class="ruby-keyword kw">begin</span>
+ 39:           <span class="ruby-comment cmt"># if we have a security_policy, then pre-read the metadata file</span>
+ 40:           <span class="ruby-comment cmt"># and calculate it's digest</span>
+ 41:           <span class="ruby-identifier">sio</span> = <span class="ruby-keyword kw">nil</span>
+ 42:           <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">security_policy</span>
+ 43:             <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">ensure_ssl_available</span>
+ 44:             <span class="ruby-identifier">sio</span> = <span class="ruby-constant">StringIO</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">entry</span>.<span class="ruby-identifier">read</span>)
+ 45:             <span class="ruby-identifier">meta_dgst</span> = <span class="ruby-identifier">dgst_algo</span>.<span class="ruby-identifier">digest</span>(<span class="ruby-identifier">sio</span>.<span class="ruby-identifier">string</span>)
+ 46:             <span class="ruby-identifier">sio</span>.<span class="ruby-identifier">rewind</span>
+ 47:           <span class="ruby-keyword kw">end</span>
+ 48: 
+ 49:           <span class="ruby-identifier">gzis</span> = <span class="ruby-constant">Zlib</span><span class="ruby-operator">::</span><span class="ruby-constant">GzipReader</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">sio</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">entry</span>)
+ 50:           <span class="ruby-comment cmt"># YAML wants an instance of IO</span>
+ 51:           <span class="ruby-ivar">@metadata</span> = <span class="ruby-identifier">load_gemspec</span>(<span class="ruby-identifier">gzis</span>)
+ 52:           <span class="ruby-identifier">has_meta</span> = <span class="ruby-keyword kw">true</span>
+ 53:         <span class="ruby-keyword kw">ensure</span>
+ 54:           <span class="ruby-identifier">gzis</span>.<span class="ruby-identifier">close</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">gzis</span>.<span class="ruby-identifier">nil?</span>
+ 55:         <span class="ruby-keyword kw">end</span>
+ 56:       <span class="ruby-keyword kw">when</span> <span class="ruby-value str">'metadata.gz.sig'</span>
+ 57:         <span class="ruby-identifier">meta_sig</span> = <span class="ruby-identifier">entry</span>.<span class="ruby-identifier">read</span>
+ 58:       <span class="ruby-keyword kw">when</span> <span class="ruby-value str">'data.tar.gz.sig'</span>
+ 59:         <span class="ruby-identifier">data_sig</span> = <span class="ruby-identifier">entry</span>.<span class="ruby-identifier">read</span>
+ 60:       <span class="ruby-keyword kw">when</span> <span class="ruby-value str">'data.tar.gz'</span>
+ 61:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">security_policy</span>
+ 62:           <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">ensure_ssl_available</span>
+ 63:           <span class="ruby-identifier">data_dgst</span> = <span class="ruby-identifier">dgst_algo</span>.<span class="ruby-identifier">digest</span>(<span class="ruby-identifier">entry</span>.<span class="ruby-identifier">read</span>)
+ 64:         <span class="ruby-keyword kw">end</span>
+ 65:       <span class="ruby-keyword kw">end</span>
+ 66:     <span class="ruby-keyword kw">end</span>
+ 67: 
+ 68:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">security_policy</span> <span class="ruby-keyword kw">then</span>
+ 69:       <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">ensure_ssl_available</span>
+ 70: 
+ 71:       <span class="ruby-comment cmt"># map trust policy from string to actual class (or a serialized YAML</span>
+ 72:       <span class="ruby-comment cmt"># file, if that exists)</span>
+ 73:       <span class="ruby-keyword kw">if</span> <span class="ruby-constant">String</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">security_policy</span> <span class="ruby-keyword kw">then</span>
+ 74:         <span class="ruby-keyword kw">if</span> <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">Security</span><span class="ruby-operator">::</span><span class="ruby-constant">Policies</span>.<span class="ruby-identifier">key?</span> <span class="ruby-identifier">security_policy</span> <span class="ruby-keyword kw">then</span>
+ 75:           <span class="ruby-comment cmt"># load one of the pre-defined security policies</span>
+ 76:           <span class="ruby-identifier">security_policy</span> = <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">Security</span><span class="ruby-operator">::</span><span class="ruby-constant">Policies</span>[<span class="ruby-identifier">security_policy</span>]
+ 77:         <span class="ruby-keyword kw">elsif</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span> <span class="ruby-identifier">security_policy</span> <span class="ruby-keyword kw">then</span>
+ 78:           <span class="ruby-comment cmt"># FIXME: this doesn't work yet</span>
+ 79:           <span class="ruby-identifier">security_policy</span> = <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">load</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">read</span>(<span class="ruby-identifier">security_policy</span>)
+ 80:         <span class="ruby-keyword kw">else</span>
+ 81:           <span class="ruby-identifier">raise</span> <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">Exception</span>, <span class="ruby-node">&quot;Unknown trust policy '#{security_policy}'&quot;</span>
+ 82:         <span class="ruby-keyword kw">end</span>
+ 83:       <span class="ruby-keyword kw">end</span>
+ 84: 
+ 85:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">data_sig</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">data_dgst</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">meta_sig</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">meta_dgst</span> <span class="ruby-keyword kw">then</span>
+ 86:         <span class="ruby-comment cmt"># the user has a trust policy, and we have a signed gem</span>
+ 87:         <span class="ruby-comment cmt"># file, so use the trust policy to verify the gem signature</span>
+ 88: 
+ 89:         <span class="ruby-keyword kw">begin</span>
+ 90:           <span class="ruby-identifier">security_policy</span>.<span class="ruby-identifier">verify_gem</span>(<span class="ruby-identifier">data_sig</span>, <span class="ruby-identifier">data_dgst</span>, <span class="ruby-ivar">@metadata</span>.<span class="ruby-identifier">cert_chain</span>)
+ 91:         <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Exception</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+ 92:           <span class="ruby-identifier">raise</span> <span class="ruby-node">&quot;Couldn't verify data signature: #{e}&quot;</span>
+ 93:         <span class="ruby-keyword kw">end</span>
+ 94: 
+ 95:         <span class="ruby-keyword kw">begin</span>
+ 96:           <span class="ruby-identifier">security_policy</span>.<span class="ruby-identifier">verify_gem</span>(<span class="ruby-identifier">meta_sig</span>, <span class="ruby-identifier">meta_dgst</span>, <span class="ruby-ivar">@metadata</span>.<span class="ruby-identifier">cert_chain</span>)
+ 97:         <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Exception</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+ 98:           <span class="ruby-identifier">raise</span> <span class="ruby-node">&quot;Couldn't verify metadata signature: #{e}&quot;</span>
+ 99:         <span class="ruby-keyword kw">end</span>
+100:       <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">security_policy</span>.<span class="ruby-identifier">only_signed</span>
+101:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">Exception</span>, <span class="ruby-value str">&quot;Unsigned gem&quot;</span>
+102:       <span class="ruby-keyword kw">else</span>
+103:         <span class="ruby-comment cmt"># FIXME: should display warning here (trust policy, but</span>
+104:         <span class="ruby-comment cmt"># either unsigned or badly signed gem file)</span>
+105:       <span class="ruby-keyword kw">end</span>
+106:     <span class="ruby-keyword kw">end</span>
+107: 
+108:     <span class="ruby-ivar">@tarreader</span>.<span class="ruby-identifier">rewind</span>
+109:     <span class="ruby-ivar">@fileops</span> = <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">FileOperations</span>.<span class="ruby-identifier">new</span>
+110: 
+111:     <span class="ruby-identifier">raise</span> <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">Package</span><span class="ruby-operator">::</span><span class="ruby-constant">FormatError</span>, <span class="ruby-value str">&quot;No metadata found!&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">has_meta</span>
+112:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005731">
+                    
+                    <a name="M005731"></a><b>open</b>(io, security_policy = nil, &amp;block)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005731_source')" id="l_M005731_source">show</a>
+                        
+                    </p>
+                    <div id="M005731_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/rubygems/package/tar_input.rb, line 16</span>
+16:   <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">open</span>(<span class="ruby-identifier">io</span>, <span class="ruby-identifier">security_policy</span> = <span class="ruby-keyword kw">nil</span>,  <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+17:     <span class="ruby-identifier">is</span> = <span class="ruby-identifier">new</span> <span class="ruby-identifier">io</span>, <span class="ruby-identifier">security_policy</span>
+18: 
+19:     <span class="ruby-keyword kw">yield</span> <span class="ruby-identifier">is</span>
+20:   <span class="ruby-keyword kw">ensure</span>
+21:     <span class="ruby-identifier">is</span>.<span class="ruby-identifier">close</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">is</span>
+22:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005733">
+                    
+                    <a name="M005733"></a><b>close</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005733_source')" id="l_M005733_source">show</a>
+                        
+                    </p>
+                    <div id="M005733_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/package/tar_input.rb, line 114</span>
+114:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">close</span>
+115:     <span class="ruby-ivar">@io</span>.<span class="ruby-identifier">close</span>
+116:     <span class="ruby-ivar">@tarreader</span>.<span class="ruby-identifier">close</span>
+117:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005734">
+                    
+                    <a name="M005734"></a><b>each</b>(&amp;block)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005734_source')" id="l_M005734_source">show</a>
+                        
+                    </p>
+                    <div id="M005734_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/package/tar_input.rb, line 119</span>
+119:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">each</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+120:     <span class="ruby-ivar">@tarreader</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">entry</span><span class="ruby-operator">|</span>
+121:       <span class="ruby-keyword kw">next</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">entry</span>.<span class="ruby-identifier">full_name</span> <span class="ruby-operator">==</span> <span class="ruby-value str">&quot;data.tar.gz&quot;</span>
+122:       <span class="ruby-identifier">is</span> = <span class="ruby-identifier">zipped_stream</span> <span class="ruby-identifier">entry</span>
+123: 
+124:       <span class="ruby-keyword kw">begin</span>
+125:         <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">Package</span><span class="ruby-operator">::</span><span class="ruby-constant">TarReader</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">is</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">inner</span><span class="ruby-operator">|</span>
+126:           <span class="ruby-identifier">inner</span>.<span class="ruby-identifier">each</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+127:         <span class="ruby-keyword kw">end</span>
+128:       <span class="ruby-keyword kw">ensure</span>
+129:         <span class="ruby-identifier">is</span>.<span class="ruby-identifier">close</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">is</span>
+130:       <span class="ruby-keyword kw">end</span>
+131:     <span class="ruby-keyword kw">end</span>
+132: 
+133:     <span class="ruby-ivar">@tarreader</span>.<span class="ruby-identifier">rewind</span>
+134:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005749">
+                    
+                    <a name="M005749"></a><b>extract_entry</b>(destdir, entry, expected_md5sum = nil)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005749_source')" id="l_M005749_source">show</a>
+                        
+                    </p>
+                    <div id="M005749_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/package/tar_input.rb, line 136</span>
+136:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">extract_entry</span>(<span class="ruby-identifier">destdir</span>, <span class="ruby-identifier">entry</span>, <span class="ruby-identifier">expected_md5sum</span> = <span class="ruby-keyword kw">nil</span>)
+137:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">entry</span>.<span class="ruby-identifier">directory?</span> <span class="ruby-keyword kw">then</span>
+138:       <span class="ruby-identifier">dest</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span> <span class="ruby-identifier">destdir</span>, <span class="ruby-identifier">entry</span>.<span class="ruby-identifier">full_name</span>
+139: 
+140:       <span class="ruby-keyword kw">if</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">directory?</span> <span class="ruby-identifier">dest</span> <span class="ruby-keyword kw">then</span>
+141:         <span class="ruby-ivar">@fileops</span>.<span class="ruby-identifier">chmod</span> <span class="ruby-identifier">entry</span>.<span class="ruby-identifier">header</span>.<span class="ruby-identifier">mode</span>, <span class="ruby-identifier">dest</span>, <span class="ruby-identifier">:verbose</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>
+142:       <span class="ruby-keyword kw">else</span>
+143:         <span class="ruby-ivar">@fileops</span>.<span class="ruby-identifier">mkdir_p</span> <span class="ruby-identifier">dest</span>, <span class="ruby-identifier">:mode</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">entry</span>.<span class="ruby-identifier">header</span>.<span class="ruby-identifier">mode</span>, <span class="ruby-identifier">:verbose</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>
+144:       <span class="ruby-keyword kw">end</span>
+145: 
+146:       <span class="ruby-identifier">fsync_dir</span> <span class="ruby-identifier">dest</span>
+147:       <span class="ruby-identifier">fsync_dir</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-identifier">dest</span>, <span class="ruby-value str">&quot;..&quot;</span>)
+148: 
+149:       <span class="ruby-keyword kw">return</span>
+150:     <span class="ruby-keyword kw">end</span>
+151: 
+152:     <span class="ruby-comment cmt"># it's a file</span>
+153:     <span class="ruby-identifier">md5</span> = <span class="ruby-constant">Digest</span><span class="ruby-operator">::</span><span class="ruby-constant">MD5</span>.<span class="ruby-identifier">new</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">expected_md5sum</span>
+154:     <span class="ruby-identifier">destdir</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span> <span class="ruby-identifier">destdir</span>, <span class="ruby-constant">File</span>.<span class="ruby-identifier">dirname</span>(<span class="ruby-identifier">entry</span>.<span class="ruby-identifier">full_name</span>)
+155:     <span class="ruby-ivar">@fileops</span>.<span class="ruby-identifier">mkdir_p</span> <span class="ruby-identifier">destdir</span>, <span class="ruby-identifier">:mode</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">0755</span>, <span class="ruby-identifier">:verbose</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>
+156:     <span class="ruby-identifier">destfile</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span> <span class="ruby-identifier">destdir</span>, <span class="ruby-constant">File</span>.<span class="ruby-identifier">basename</span>(<span class="ruby-identifier">entry</span>.<span class="ruby-identifier">full_name</span>)
+157:     <span class="ruby-ivar">@fileops</span>.<span class="ruby-identifier">chmod</span> <span class="ruby-value">0600</span>, <span class="ruby-identifier">destfile</span>, <span class="ruby-identifier">:verbose</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span> <span class="ruby-keyword kw">rescue</span> <span class="ruby-keyword kw">nil</span> <span class="ruby-comment cmt"># Errno::ENOENT</span>
+158: 
+159:     <span class="ruby-identifier">open</span> <span class="ruby-identifier">destfile</span>, <span class="ruby-value str">&quot;wb&quot;</span>, <span class="ruby-identifier">entry</span>.<span class="ruby-identifier">header</span>.<span class="ruby-identifier">mode</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">os</span><span class="ruby-operator">|</span>
+160:       <span class="ruby-identifier">loop</span> <span class="ruby-keyword kw">do</span>
+161:         <span class="ruby-identifier">data</span> = <span class="ruby-identifier">entry</span>.<span class="ruby-identifier">read</span> <span class="ruby-value">4096</span>
+162:         <span class="ruby-keyword kw">break</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">data</span>
+163:         <span class="ruby-comment cmt"># HACK shouldn't we check the MD5 before writing to disk?</span>
+164:         <span class="ruby-identifier">md5</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">data</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">expected_md5sum</span>
+165:         <span class="ruby-identifier">os</span>.<span class="ruby-identifier">write</span>(<span class="ruby-identifier">data</span>)
+166:       <span class="ruby-keyword kw">end</span>
+167: 
+168:       <span class="ruby-identifier">os</span>.<span class="ruby-identifier">fsync</span>
+169:     <span class="ruby-keyword kw">end</span>
+170: 
+171:     <span class="ruby-ivar">@fileops</span>.<span class="ruby-identifier">chmod</span> <span class="ruby-identifier">entry</span>.<span class="ruby-identifier">header</span>.<span class="ruby-identifier">mode</span>, <span class="ruby-identifier">destfile</span>, <span class="ruby-identifier">:verbose</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>
+172:     <span class="ruby-identifier">fsync_dir</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">dirname</span>(<span class="ruby-identifier">destfile</span>)
+173:     <span class="ruby-identifier">fsync_dir</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">dirname</span>(<span class="ruby-identifier">destfile</span>), <span class="ruby-value str">&quot;..&quot;</span>)
+174: 
+175:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">expected_md5sum</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">expected_md5sum</span> <span class="ruby-operator">!=</span> <span class="ruby-identifier">md5</span>.<span class="ruby-identifier">hexdigest</span> <span class="ruby-keyword kw">then</span>
+176:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">Package</span><span class="ruby-operator">::</span><span class="ruby-constant">BadCheckSum</span>
+177:     <span class="ruby-keyword kw">end</span>
+178:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005750">
+                    
+                    <a name="M005750"></a><b>load_gemspec</b>(io)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Attempt to YAML-load a gemspec from the given <em>io</em> parameter. Return
+nil if it fails.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005750_source')" id="l_M005750_source">show</a>
+                        
+                    </p>
+                    <div id="M005750_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/package/tar_input.rb, line 182</span>
+182:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">load_gemspec</span>(<span class="ruby-identifier">io</span>)
+183:     <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">Specification</span>.<span class="ruby-identifier">from_yaml</span> <span class="ruby-identifier">io</span>
+184:   <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">Exception</span>
+185:     <span class="ruby-keyword kw">nil</span>
+186:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005751">
+                    
+                    <a name="M005751"></a><b>zipped_stream</b>(entry)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Return an <a href="../../IO.html">IO</a> stream for the zipped entry.
+</p>
+<p>
+NOTE: Originally this method used two approaches, Return a GZipReader
+directly, or read the GZipReader into a string and return a <a
+href="../../StringIO.html">StringIO</a> on the string. The string <a
+href="../../IO.html">IO</a> approach was used for versions of ZLib before
+1.2.1 to avoid buffer errors on windows machines. Then we found that errors
+happened with 1.2.1 as well, so we changed the condition. Then we
+discovered errors occurred with versions as late as 1.2.3. At this point
+(after some benchmarking to show we weren&#8217;t seriously crippling the
+unpacking speed) we threw our hands in the air and declared that this
+method would use the <a href="../../String.html">String</a> <a
+href="../../IO.html">IO</a> approach on all platforms at all times. And
+that&#8217;s the way it is.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005751_source')" id="l_M005751_source">show</a>
+                        
+                    </p>
+                    <div id="M005751_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/package/tar_input.rb, line 202</span>
+202:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">zipped_stream</span>(<span class="ruby-identifier">entry</span>)
+203:     <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">defined?</span> <span class="ruby-constant">Rubinius</span> <span class="ruby-keyword kw">or</span> <span class="ruby-keyword kw">defined?</span> <span class="ruby-constant">Maglev</span> <span class="ruby-keyword kw">then</span>
+204:       <span class="ruby-comment cmt"># these implementations have working Zlib</span>
+205:       <span class="ruby-identifier">zis</span> = <span class="ruby-constant">Zlib</span><span class="ruby-operator">::</span><span class="ruby-constant">GzipReader</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">entry</span>
+206:       <span class="ruby-identifier">dis</span> = <span class="ruby-identifier">zis</span>.<span class="ruby-identifier">read</span>
+207:       <span class="ruby-identifier">is</span> = <span class="ruby-constant">StringIO</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">dis</span>)
+208:     <span class="ruby-keyword kw">else</span>
+209:       <span class="ruby-comment cmt"># This is Jamis Buck's Zlib workaround for some unknown issue</span>
+210:       <span class="ruby-identifier">entry</span>.<span class="ruby-identifier">read</span>(<span class="ruby-value">10</span>) <span class="ruby-comment cmt"># skip the gzip header</span>
+211:       <span class="ruby-identifier">zis</span> = <span class="ruby-constant">Zlib</span><span class="ruby-operator">::</span><span class="ruby-constant">Inflate</span>.<span class="ruby-identifier">new</span>(<span class="ruby-operator">-</span><span class="ruby-constant">Zlib</span><span class="ruby-operator">::</span><span class="ruby-constant">MAX_WBITS</span>)
+212:       <span class="ruby-identifier">is</span> = <span class="ruby-constant">StringIO</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">zis</span>.<span class="ruby-identifier">inflate</span>(<span class="ruby-identifier">entry</span>.<span class="ruby-identifier">read</span>))
+213:     <span class="ruby-keyword kw">end</span>
+214:   <span class="ruby-keyword kw">ensure</span>
+215:     <span class="ruby-identifier">zis</span>.<span class="ruby-identifier">finish</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">zis</span>
+216:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

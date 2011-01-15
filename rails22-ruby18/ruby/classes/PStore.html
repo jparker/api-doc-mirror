@@ -1,0 +1,935 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>PStore</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            PStore 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/lib/pstore_rb.html">lib/pstore.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+<a href="PStore.html">PStore</a> implements a file based persistence
+mechanism based on a <a href="Hash.html">Hash</a>. User code can store
+hierarchies of Ruby objects (values) into the data store file by name
+(keys). An object hierarchy may be just a single object. User code may
+later read values back from the data store or even update data, as needed.
+</p>
+<p>
+The transactional behavior ensures that any changes succeed or fail
+together. This can be used to ensure that the data store is not left in a
+transitory state, where some values were updated but others were not.
+</p>
+<p>
+Behind the scenes, Ruby objects are stored to the data store file with <a
+href="Marshal.html">Marshal</a>. That carries the usual limitations. <a
+href="Proc.html">Proc</a> objects cannot be marshalled, for example.
+</p>
+<h2>Usage example:</h2>
+<pre>
+ require &quot;pstore&quot;
+
+ # a mock wiki object...
+ class WikiPage
+   def initialize( page_name, author, contents )
+     @page_name = page_name
+     @revisions = Array.new
+
+     add_revision(author, contents)
+   end
+
+   attr_reader :page_name
+
+   def add_revision( author, contents )
+     @revisions &lt;&lt; { :created  =&gt; Time.now,
+                     :author   =&gt; author,
+                     :contents =&gt; contents }
+   end
+
+   def wiki_page_references
+     [@page_name] + @revisions.last[:contents].scan(/\b(?:[A-Z]+[a-z]+){2,}/)
+   end
+
+   # ...
+ end
+
+ # create a new page...
+ home_page = WikiPage.new( &quot;HomePage&quot;, &quot;James Edward Gray II&quot;,
+                           &quot;A page about the JoysOfDocumentation...&quot; )
+
+ # then we want to update page data and the index together, or not at all...
+ wiki = PStore.new(&quot;wiki_pages.pstore&quot;)
+ wiki.transaction do  # begin transaction; do all of this or none of it
+   # store page...
+   wiki[home_page.page_name] = home_page
+   # ensure that an index has been created...
+   wiki[:wiki_index] ||= Array.new
+   # update wiki index...
+   wiki[:wiki_index].push(*home_page.wiki_page_references)
+ end                   # commit changes to wiki data store file
+
+ ### Some time later... ###
+
+ # read wiki data...
+ wiki.transaction(true) do  # begin read-only transaction, no changes allowed
+   wiki.roots.each do |data_root_name|
+     p data_root_name
+     p wiki[data_root_name]
+   end
+ end
+</pre>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>#</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002559">[]</a>,</li>
+                
+                <li><a href="#M002561">[]=</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>A</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002567">abort</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002566">commit</a>,</li>
+                
+                <li><a href="#M002572">commit_new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>D</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002562">delete</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>F</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002560">fetch</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>I</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002557">in_transaction</a>,</li>
+                
+                <li><a href="#M002558">in_transaction_wr</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002556">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>P</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002565">path</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>R</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002564">root?</a>,</li>
+                
+                <li><a href="#M002563">roots</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>T</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002568">transaction</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Classes and Modules</div>
+    <ul>
+        
+        <li><span class="type">CLASS</span> <a href="PStore/Error.html">PStore::Error</a></li>
+        
+    </ul>
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">RDWR_ACCESS</td>
+            <td>=</td>
+            <td class="attr-value">File::RDWR | File::CREAT | binmode</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">RD_ACCESS</td>
+            <td>=</td>
+            <td class="attr-value">File::RDONLY | binmode</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">WR_ACCESS</td>
+            <td>=</td>
+            <td class="attr-value">File::WRONLY | File::CREAT | File::TRUNC | binmode</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M002556">
+                    
+                    <a name="M002556"></a><b>new</b>(file)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+To construct a <a href="PStore.html">PStore</a> object, pass in the
+<em>file</em> path where you would like the data to be stored.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002556_source')" id="l_M002556_source">show</a>
+                        
+                    </p>
+                    <div id="M002556_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/pstore.rb, line 94</span>
+ 94:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">file</span>)
+ 95:     <span class="ruby-identifier">dir</span> = <span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-identifier">dirname</span>(<span class="ruby-identifier">file</span>)
+ 96:     <span class="ruby-keyword kw">unless</span> <span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-identifier">directory?</span> <span class="ruby-identifier">dir</span>
+ 97:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">PStore</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-identifier">format</span>(<span class="ruby-value str">&quot;directory %s does not exist&quot;</span>, <span class="ruby-identifier">dir</span>)
+ 98:     <span class="ruby-keyword kw">end</span>
+ 99:     <span class="ruby-keyword kw">if</span> <span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-identifier">exist?</span> <span class="ruby-identifier">file</span> <span class="ruby-keyword kw">and</span> <span class="ruby-keyword kw">not</span> <span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-identifier">readable?</span> <span class="ruby-identifier">file</span>
+100:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">PStore</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-identifier">format</span>(<span class="ruby-value str">&quot;file %s not readable&quot;</span>, <span class="ruby-identifier">file</span>)
+101:     <span class="ruby-keyword kw">end</span>
+102:     <span class="ruby-ivar">@transaction</span> = <span class="ruby-keyword kw">false</span>
+103:     <span class="ruby-ivar">@filename</span> = <span class="ruby-identifier">file</span>
+104:     <span class="ruby-ivar">@abort</span> = <span class="ruby-keyword kw">false</span>
+105:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M002559">
+                    
+                    <a name="M002559"></a><b>[]</b>(name)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Retrieves a value from the <a href="PStore.html">PStore</a> file data, by
+<em>name</em>. The hierarchy of Ruby objects stored under that root
+<em>name</em> will be returned.
+</p>
+<p>
+<b>WARNING</b>: This method is only valid in a <a
+href="PStore.html#M002568">PStore#transaction</a>. It will raise <a
+href="PStore/Error.html">PStore::Error</a> if called at any other time.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002559_source')" id="l_M002559_source">show</a>
+                        
+                    </p>
+                    <div id="M002559_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/pstore.rb, line 128</span>
+128:   <span class="ruby-keyword kw">def</span> <span class="ruby-operator">[]</span>(<span class="ruby-identifier">name</span>)
+129:     <span class="ruby-identifier">in_transaction</span>
+130:     <span class="ruby-ivar">@table</span>[<span class="ruby-identifier">name</span>]
+131:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002561">
+                    
+                    <a name="M002561"></a><b>[]=</b>(name, value)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Stores an individual Ruby object or a hierarchy of Ruby objects in the data
+store file under the root <em>name</em>. Assigning to a <em>name</em>
+already in the data store clobbers the old data.
+</p>
+<h2>Example:</h2>
+<pre>
+ require &quot;pstore&quot;
+
+ store = PStore.new(&quot;data_file.pstore&quot;)
+ store.transaction do  # begin transaction
+   # load some data into the store...
+   store[:single_object] = &quot;My data...&quot;
+   store[:obj_heirarchy] = { &quot;Kev Jackson&quot; =&gt; [&quot;rational.rb&quot;, &quot;pstore.rb&quot;],
+                             &quot;James Gray&quot;  =&gt; [&quot;erb.rb&quot;, &quot;pstore.rb&quot;] }
+ end                   # commit changes to data store file
+</pre>
+<p>
+<b>WARNING</b>: This method is only valid in a <a
+href="PStore.html#M002568">PStore#transaction</a> and it cannot be
+read-only. It will raise <a href="PStore/Error.html">PStore::Error</a> if
+called at any other time.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002561_source')" id="l_M002561_source">show</a>
+                        
+                    </p>
+                    <div id="M002561_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/pstore.rb, line 173</span>
+173:   <span class="ruby-keyword kw">def</span> <span class="ruby-operator">[]=</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">value</span>)
+174:     <span class="ruby-identifier">in_transaction_wr</span>()
+175:     <span class="ruby-ivar">@table</span>[<span class="ruby-identifier">name</span>] = <span class="ruby-identifier">value</span>
+176:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002567">
+                    
+                    <a name="M002567"></a><b>abort</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Ends the current <a href="PStore.html#M002568">PStore#transaction</a>,
+discarding any changes to the data store.
+</p>
+<h2>Example:</h2>
+<pre>
+ require &quot;pstore&quot;
+
+ store = PStore.new(&quot;data_file.pstore&quot;)
+ store.transaction do  # begin transaction
+   store[:one] = 1     # this change is not applied, see below...
+   store[:two] = 2     # this change is not applied, see below...
+
+   store.abort         # end transaction here, discard all changes
+
+   store[:three] = 3   # this change is never reached
+ end
+</pre>
+<p>
+<b>WARNING</b>: This method is only valid in a <a
+href="PStore.html#M002568">PStore#transaction</a>. It will raise <a
+href="PStore/Error.html">PStore::Error</a> if called at any other time.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002567_source')" id="l_M002567_source">show</a>
+                        
+                    </p>
+                    <div id="M002567_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/pstore.rb, line 261</span>
+261:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">abort</span>
+262:     <span class="ruby-identifier">in_transaction</span>
+263:     <span class="ruby-ivar">@abort</span> = <span class="ruby-keyword kw">true</span>
+264:     <span class="ruby-identifier">throw</span> <span class="ruby-identifier">:pstore_abort_transaction</span>
+265:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002566">
+                    
+                    <a name="M002566"></a><b>commit</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Ends the current <a href="PStore.html#M002568">PStore#transaction</a>,
+committing any changes to the data store immediately.
+</p>
+<h2>Example:</h2>
+<pre>
+ require &quot;pstore&quot;
+
+ store = PStore.new(&quot;data_file.pstore&quot;)
+ store.transaction do  # begin transaction
+   # load some data into the store...
+   store[:one] = 1
+   store[:two] = 2
+
+   store.commit        # end transaction here, committing changes
+
+   store[:three] = 3   # this change is never reached
+ end
+</pre>
+<p>
+<b>WARNING</b>: This method is only valid in a <a
+href="PStore.html#M002568">PStore#transaction</a>. It will raise <a
+href="PStore/Error.html">PStore::Error</a> if called at any other time.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002566_source')" id="l_M002566_source">show</a>
+                        
+                    </p>
+                    <div id="M002566_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/pstore.rb, line 235</span>
+235:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">commit</span>
+236:     <span class="ruby-identifier">in_transaction</span>
+237:     <span class="ruby-ivar">@abort</span> = <span class="ruby-keyword kw">false</span>
+238:     <span class="ruby-identifier">throw</span> <span class="ruby-identifier">:pstore_abort_transaction</span>
+239:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002562">
+                    
+                    <a name="M002562"></a><b>delete</b>(name)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Removes an object hierarchy from the data store, by <em>name</em>.
+</p>
+<p>
+<b>WARNING</b>: This method is only valid in a <a
+href="PStore.html#M002568">PStore#transaction</a> and it cannot be
+read-only. It will raise <a href="PStore/Error.html">PStore::Error</a> if
+called at any other time.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002562_source')" id="l_M002562_source">show</a>
+                        
+                    </p>
+                    <div id="M002562_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/pstore.rb, line 183</span>
+183:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">delete</span>(<span class="ruby-identifier">name</span>)
+184:     <span class="ruby-identifier">in_transaction_wr</span>()
+185:     <span class="ruby-ivar">@table</span>.<span class="ruby-identifier">delete</span> <span class="ruby-identifier">name</span>
+186:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002560">
+                    
+                    <a name="M002560"></a><b>fetch</b>(name, default=PStore::Error)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+This method is just like PStore#[], save that you may also provide a
+<em>default</em> value for the object. In the event the specified
+<em>name</em> is not found in the data store, your <em>default</em> will be
+returned instead. If you do not specify a default, <a
+href="PStore/Error.html">PStore::Error</a> will be raised if the object is
+not found.
+</p>
+<p>
+<b>WARNING</b>: This method is only valid in a <a
+href="PStore.html#M002568">PStore#transaction</a>. It will raise <a
+href="PStore/Error.html">PStore::Error</a> if called at any other time.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002560_source')" id="l_M002560_source">show</a>
+                        
+                    </p>
+                    <div id="M002560_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/pstore.rb, line 142</span>
+142:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">fetch</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">default</span>=<span class="ruby-constant">PStore</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>)
+143:     <span class="ruby-identifier">in_transaction</span>
+144:     <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@table</span>.<span class="ruby-identifier">key?</span> <span class="ruby-identifier">name</span>
+145:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">default</span><span class="ruby-operator">==</span><span class="ruby-constant">PStore</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>
+146:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">PStore</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-identifier">format</span>(<span class="ruby-value str">&quot;undefined root name `%s'&quot;</span>, <span class="ruby-identifier">name</span>)
+147:       <span class="ruby-keyword kw">else</span>
+148:         <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">default</span>
+149:       <span class="ruby-keyword kw">end</span>
+150:     <span class="ruby-keyword kw">end</span>
+151:     <span class="ruby-ivar">@table</span>[<span class="ruby-identifier">name</span>]
+152:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002565">
+                    
+                    <a name="M002565"></a><b>path</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the path to the data store file.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002565_source')" id="l_M002565_source">show</a>
+                        
+                    </p>
+                    <div id="M002565_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/pstore.rb, line 209</span>
+209:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">path</span>
+210:     <span class="ruby-ivar">@filename</span>
+211:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002564">
+                    
+                    <a name="M002564"></a><b>root?</b>(name)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns true if the supplied <em>name</em> is currently in the data store.
+</p>
+<p>
+<b>WARNING</b>: This method is only valid in a <a
+href="PStore.html#M002568">PStore#transaction</a>. It will raise <a
+href="PStore/Error.html">PStore::Error</a> if called at any other time.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002564_source')" id="l_M002564_source">show</a>
+                        
+                    </p>
+                    <div id="M002564_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/pstore.rb, line 204</span>
+204:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">root?</span>(<span class="ruby-identifier">name</span>)
+205:     <span class="ruby-identifier">in_transaction</span>
+206:     <span class="ruby-ivar">@table</span>.<span class="ruby-identifier">key?</span> <span class="ruby-identifier">name</span>
+207:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002563">
+                    
+                    <a name="M002563"></a><b>roots</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the names of all object hierarchies currently in the store.
+</p>
+<p>
+<b>WARNING</b>: This method is only valid in a <a
+href="PStore.html#M002568">PStore#transaction</a>. It will raise <a
+href="PStore/Error.html">PStore::Error</a> if called at any other time.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002563_source')" id="l_M002563_source">show</a>
+                        
+                    </p>
+                    <div id="M002563_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/pstore.rb, line 194</span>
+194:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">roots</span>
+195:     <span class="ruby-identifier">in_transaction</span>
+196:     <span class="ruby-ivar">@table</span>.<span class="ruby-identifier">keys</span>
+197:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002568">
+                    
+                    <a name="M002568"></a><b>transaction</b>(read_only=false)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Opens a new transaction for the data store. Code executed inside a block
+passed to this method may read and write data to and from the data store
+file.
+</p>
+<p>
+At the end of the block, changes are committed to the data store
+automatically. You may exit the transaction early with a call to either <a
+href="PStore.html#M002566">PStore#commit</a> or <a
+href="PStore.html#M002567">PStore#abort</a>. See those methods for details
+about how changes are handled. Raising an uncaught <a
+href="Exception.html">Exception</a> in the block is equivalent to calling
+<a href="PStore.html#M002567">PStore#abort</a>.
+</p>
+<p>
+If <em>read_only</em> is set to <tt>true</tt>, you will only be allowed to
+read from the data store during the transaction and any attempts to change
+the data will raise a <a href="PStore/Error.html">PStore::Error</a>.
+</p>
+<p>
+Note that <a href="PStore.html">PStore</a> does not support nested
+transactions.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002568_source')" id="l_M002568_source">show</a>
+                        
+                    </p>
+                    <div id="M002568_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/pstore.rb, line 284</span>
+284:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">transaction</span>(<span class="ruby-identifier">read_only</span>=<span class="ruby-keyword kw">false</span>)  <span class="ruby-comment cmt"># :yields:  pstore</span>
+285:     <span class="ruby-identifier">raise</span> <span class="ruby-constant">PStore</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-value str">&quot;nested transaction&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@transaction</span>
+286:     <span class="ruby-keyword kw">begin</span>
+287:       <span class="ruby-ivar">@rdonly</span> = <span class="ruby-identifier">read_only</span>
+288:       <span class="ruby-ivar">@abort</span> = <span class="ruby-keyword kw">false</span>
+289:       <span class="ruby-ivar">@transaction</span> = <span class="ruby-keyword kw">true</span>
+290:       <span class="ruby-identifier">value</span> = <span class="ruby-keyword kw">nil</span>
+291:       <span class="ruby-identifier">new_file</span> = <span class="ruby-ivar">@filename</span> <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;.new&quot;</span>
+292: 
+293:       <span class="ruby-identifier">content</span> = <span class="ruby-keyword kw">nil</span>
+294:       <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">read_only</span>
+295:         <span class="ruby-identifier">file</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-ivar">@filename</span>, <span class="ruby-constant">RDWR_ACCESS</span>)
+296:         <span class="ruby-identifier">file</span>.<span class="ruby-identifier">flock</span>(<span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-constant">LOCK_EX</span>)
+297:         <span class="ruby-identifier">commit_new</span>(<span class="ruby-identifier">file</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-constant">FileTest</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">new_file</span>)
+298:         <span class="ruby-identifier">content</span> = <span class="ruby-identifier">file</span>.<span class="ruby-identifier">read</span>()
+299:       <span class="ruby-keyword kw">else</span>
+300:         <span class="ruby-keyword kw">begin</span>
+301:           <span class="ruby-identifier">file</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-ivar">@filename</span>, <span class="ruby-constant">RD_ACCESS</span>)
+302:           <span class="ruby-identifier">file</span>.<span class="ruby-identifier">flock</span>(<span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-constant">LOCK_SH</span>)
+303:           <span class="ruby-identifier">content</span> = (<span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-identifier">new_file</span>, <span class="ruby-constant">RD_ACCESS</span>) {<span class="ruby-operator">|</span><span class="ruby-identifier">n</span><span class="ruby-operator">|</span> <span class="ruby-identifier">n</span>.<span class="ruby-identifier">read</span>} <span class="ruby-keyword kw">rescue</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">read</span>())
+304:         <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Errno</span><span class="ruby-operator">::</span><span class="ruby-constant">ENOENT</span>
+305:           <span class="ruby-identifier">content</span> = <span class="ruby-value str">&quot;&quot;</span>
+306:         <span class="ruby-keyword kw">end</span>
+307:       <span class="ruby-keyword kw">end</span>
+308: 
+309:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">content</span> <span class="ruby-operator">!=</span> <span class="ruby-value str">&quot;&quot;</span>
+310:         <span class="ruby-ivar">@table</span> = <span class="ruby-identifier">load</span>(<span class="ruby-identifier">content</span>)
+311:         <span class="ruby-keyword kw">if</span> <span class="ruby-operator">!</span><span class="ruby-identifier">read_only</span>
+312:           <span class="ruby-identifier">size</span> = <span class="ruby-identifier">content</span>.<span class="ruby-identifier">size</span>
+313:           <span class="ruby-identifier">md5</span> = <span class="ruby-constant">Digest</span><span class="ruby-operator">::</span><span class="ruby-constant">MD5</span>.<span class="ruby-identifier">digest</span>(<span class="ruby-identifier">content</span>)
+314:         <span class="ruby-keyword kw">end</span>
+315:       <span class="ruby-keyword kw">else</span>
+316:         <span class="ruby-ivar">@table</span> = {}
+317:       <span class="ruby-keyword kw">end</span>
+318:       <span class="ruby-identifier">content</span> = <span class="ruby-keyword kw">nil</span>             <span class="ruby-comment cmt"># unreference huge data</span>
+319: 
+320:       <span class="ruby-keyword kw">begin</span>
+321:         <span class="ruby-identifier">catch</span>(<span class="ruby-identifier">:pstore_abort_transaction</span>) <span class="ruby-keyword kw">do</span>
+322:           <span class="ruby-identifier">value</span> = <span class="ruby-keyword kw">yield</span>(<span class="ruby-keyword kw">self</span>)
+323:         <span class="ruby-keyword kw">end</span>
+324:       <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Exception</span>
+325:         <span class="ruby-ivar">@abort</span> = <span class="ruby-keyword kw">true</span>
+326:         <span class="ruby-identifier">raise</span>
+327:       <span class="ruby-keyword kw">ensure</span>
+328:         <span class="ruby-keyword kw">if</span> <span class="ruby-operator">!</span><span class="ruby-identifier">read_only</span> <span class="ruby-keyword kw">and</span> <span class="ruby-operator">!</span><span class="ruby-ivar">@abort</span>
+329:           <span class="ruby-identifier">tmp_file</span> = <span class="ruby-ivar">@filename</span> <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;.tmp&quot;</span>
+330:           <span class="ruby-identifier">content</span> = <span class="ruby-identifier">dump</span>(<span class="ruby-ivar">@table</span>)
+331:           <span class="ruby-keyword kw">if</span> <span class="ruby-operator">!</span><span class="ruby-identifier">md5</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">size</span> <span class="ruby-operator">!=</span> <span class="ruby-identifier">content</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">md5</span> <span class="ruby-operator">!=</span> <span class="ruby-constant">Digest</span><span class="ruby-operator">::</span><span class="ruby-constant">MD5</span>.<span class="ruby-identifier">digest</span>(<span class="ruby-identifier">content</span>)
+332:             <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-identifier">tmp_file</span>, <span class="ruby-constant">WR_ACCESS</span>) {<span class="ruby-operator">|</span><span class="ruby-identifier">t</span><span class="ruby-operator">|</span> <span class="ruby-identifier">t</span>.<span class="ruby-identifier">write</span>(<span class="ruby-identifier">content</span>)}
+333:             <span class="ruby-constant">File</span>.<span class="ruby-identifier">rename</span>(<span class="ruby-identifier">tmp_file</span>, <span class="ruby-identifier">new_file</span>)
+334:             <span class="ruby-identifier">commit_new</span>(<span class="ruby-identifier">file</span>)
+335:           <span class="ruby-keyword kw">end</span>
+336:           <span class="ruby-identifier">content</span> = <span class="ruby-keyword kw">nil</span>         <span class="ruby-comment cmt"># unreference huge data</span>
+337:         <span class="ruby-keyword kw">end</span>
+338:       <span class="ruby-keyword kw">end</span>
+339:     <span class="ruby-keyword kw">ensure</span>
+340:       <span class="ruby-ivar">@table</span> = <span class="ruby-keyword kw">nil</span>
+341:       <span class="ruby-ivar">@transaction</span> = <span class="ruby-keyword kw">false</span>
+342:       <span class="ruby-identifier">file</span>.<span class="ruby-identifier">close</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">file</span>
+343:     <span class="ruby-keyword kw">end</span>
+344:     <span class="ruby-identifier">value</span>
+345:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Private methods</div>
+            
+            <div class="method">
+                <div class="title" id="M002572">
+                    
+                    <a name="M002572"></a><b>commit_new</b>(f)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Commits changes to the data store file.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002572_source')" id="l_M002572_source">show</a>
+                        
+                    </p>
+                    <div id="M002572_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/pstore.rb, line 364</span>
+364:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">commit_new</span>(<span class="ruby-identifier">f</span>)
+365:     <span class="ruby-identifier">f</span>.<span class="ruby-identifier">truncate</span>(<span class="ruby-value">0</span>)
+366:     <span class="ruby-identifier">f</span>.<span class="ruby-identifier">rewind</span>
+367:     <span class="ruby-identifier">new_file</span> = <span class="ruby-ivar">@filename</span> <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;.new&quot;</span>
+368:     <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-identifier">new_file</span>, <span class="ruby-constant">RD_ACCESS</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">nf</span><span class="ruby-operator">|</span>
+369:       <span class="ruby-constant">FileUtils</span>.<span class="ruby-identifier">copy_stream</span>(<span class="ruby-identifier">nf</span>, <span class="ruby-identifier">f</span>)
+370:     <span class="ruby-keyword kw">end</span>
+371:     <span class="ruby-constant">File</span>.<span class="ruby-identifier">unlink</span>(<span class="ruby-identifier">new_file</span>)
+372:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002557">
+                    
+                    <a name="M002557"></a><b>in_transaction</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Raises <a href="PStore/Error.html">PStore::Error</a> if the calling code is
+not in a <a href="PStore.html#M002568">PStore#transaction</a>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002557_source')" id="l_M002557_source">show</a>
+                        
+                    </p>
+                    <div id="M002557_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/pstore.rb, line 108</span>
+108:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">in_transaction</span>
+109:     <span class="ruby-identifier">raise</span> <span class="ruby-constant">PStore</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-value str">&quot;not in transaction&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@transaction</span>
+110:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002558">
+                    
+                    <a name="M002558"></a><b>in_transaction_wr</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Raises <a href="PStore/Error.html">PStore::Error</a> if the calling code is
+not in a <a href="PStore.html#M002568">PStore#transaction</a> or if the
+code is in a read-only <a
+href="PStore.html#M002568">PStore#transaction</a>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002558_source')" id="l_M002558_source">show</a>
+                        
+                    </p>
+                    <div id="M002558_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/pstore.rb, line 115</span>
+115:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">in_transaction_wr</span>()
+116:     <span class="ruby-identifier">in_transaction</span>()
+117:     <span class="ruby-identifier">raise</span> <span class="ruby-constant">PStore</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-value str">&quot;in read-only transaction&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@rdonly</span>
+118:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

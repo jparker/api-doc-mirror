@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Gem::GemRunner</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            Gem::GemRunner 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../files/lib/rubygems/gem_runner_rb.html">lib/rubygems/gem_runner.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+Run an instance of the gem program.
+</p>
+<p>
+<a href="GemRunner.html">Gem::GemRunner</a> is only intended for internal
+use by RubyGems itself. It does not form any public API and may change at
+any time for any reason.
+</p>
+<p>
+If you would like to duplicate functionality of `gem` commands, use the
+classes they call directly.
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>D</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005874">do_configuration</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005872">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>R</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005873">run</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005872">
+                    
+                    <a name="M005872"></a><b>new</b>(options={})
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005872_source')" id="l_M005872_source">show</a>
+                        
+                    </p>
+                    <div id="M005872_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/rubygems/gem_runner.rb, line 22</span>
+22:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">options</span>={})
+23:     <span class="ruby-ivar">@command_manager_class</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:command_manager</span>] <span class="ruby-operator">||</span> <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">CommandManager</span>
+24:     <span class="ruby-ivar">@config_file_class</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:config_file</span>] <span class="ruby-operator">||</span> <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">ConfigFile</span>
+25:     <span class="ruby-ivar">@doc_manager_class</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:doc_manager</span>] <span class="ruby-operator">||</span> <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">DocManager</span>
+26:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005873">
+                    
+                    <a name="M005873"></a><b>run</b>(args)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Run the gem command with the following arguments.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005873_source')" id="l_M005873_source">show</a>
+                        
+                    </p>
+                    <div id="M005873_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/rubygems/gem_runner.rb, line 31</span>
+31:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">run</span>(<span class="ruby-identifier">args</span>)
+32:     <span class="ruby-identifier">start_time</span> = <span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span>
+33: 
+34:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">args</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-value str">'--'</span>)
+35:       <span class="ruby-comment cmt"># We need to preserve the original ARGV to use for passing gem options</span>
+36:       <span class="ruby-comment cmt"># to source gems.  If there is a -- in the line, strip all options after</span>
+37:       <span class="ruby-comment cmt"># it...its for the source building process.</span>
+38:       <span class="ruby-identifier">build_args</span> = <span class="ruby-identifier">args</span>[<span class="ruby-identifier">args</span>.<span class="ruby-identifier">index</span>(<span class="ruby-value str">&quot;--&quot;</span>) <span class="ruby-operator">+</span> <span class="ruby-value">1</span><span class="ruby-operator">...</span><span class="ruby-identifier">args</span>.<span class="ruby-identifier">length</span>]
+39:       <span class="ruby-identifier">args</span> = <span class="ruby-identifier">args</span>[<span class="ruby-value">0</span><span class="ruby-operator">...</span><span class="ruby-identifier">args</span>.<span class="ruby-identifier">index</span>(<span class="ruby-value str">&quot;--&quot;</span>)]
+40:     <span class="ruby-keyword kw">end</span>
+41: 
+42:     <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">Command</span>.<span class="ruby-identifier">build_args</span> = <span class="ruby-identifier">build_args</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">build_args</span>
+43: 
+44:     <span class="ruby-identifier">do_configuration</span> <span class="ruby-identifier">args</span>
+45:     <span class="ruby-identifier">cmd</span> = <span class="ruby-ivar">@command_manager_class</span>.<span class="ruby-identifier">instance</span>
+46: 
+47:     <span class="ruby-identifier">cmd</span>.<span class="ruby-identifier">command_names</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">command_name</span><span class="ruby-operator">|</span>
+48:       <span class="ruby-identifier">config_args</span> = <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">configuration</span>[<span class="ruby-identifier">command_name</span>]
+49:       <span class="ruby-identifier">config_args</span> = <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">config_args</span>
+50:                     <span class="ruby-keyword kw">when</span> <span class="ruby-constant">String</span>
+51:                       <span class="ruby-identifier">config_args</span>.<span class="ruby-identifier">split</span> <span class="ruby-value str">' '</span>
+52:                     <span class="ruby-keyword kw">else</span>
+53:                       <span class="ruby-constant">Array</span>(<span class="ruby-identifier">config_args</span>)
+54:                     <span class="ruby-keyword kw">end</span>
+55:       <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">Command</span>.<span class="ruby-identifier">add_specific_extra_args</span> <span class="ruby-identifier">command_name</span>, <span class="ruby-identifier">config_args</span>
+56:     <span class="ruby-keyword kw">end</span>
+57: 
+58:     <span class="ruby-identifier">cmd</span>.<span class="ruby-identifier">run</span> <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">configuration</span>.<span class="ruby-identifier">args</span>
+59:     <span class="ruby-identifier">end_time</span> = <span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span>
+60: 
+61:     <span class="ruby-keyword kw">if</span> <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">configuration</span>.<span class="ruby-identifier">benchmark</span> <span class="ruby-keyword kw">then</span>
+62:       <span class="ruby-identifier">printf</span> <span class="ruby-value str">&quot;\nExecution time: %0.2f seconds.\n&quot;</span>, <span class="ruby-identifier">end_time</span> <span class="ruby-operator">-</span> <span class="ruby-identifier">start_time</span>
+63:       <span class="ruby-identifier">puts</span> <span class="ruby-value str">&quot;Press Enter to finish&quot;</span>
+64:       <span class="ruby-constant">STDIN</span>.<span class="ruby-identifier">gets</span>
+65:     <span class="ruby-keyword kw">end</span>
+66:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Private methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005874">
+                    
+                    <a name="M005874"></a><b>do_configuration</b>(args)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005874_source')" id="l_M005874_source">show</a>
+                        
+                    </p>
+                    <div id="M005874_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/rubygems/gem_runner.rb, line 70</span>
+70:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">do_configuration</span>(<span class="ruby-identifier">args</span>)
+71:     <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">configuration</span> = <span class="ruby-ivar">@config_file_class</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">args</span>)
+72:     <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">use_paths</span>(<span class="ruby-constant">Gem</span>.<span class="ruby-identifier">configuration</span>[<span class="ruby-identifier">:gemhome</span>], <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">configuration</span>[<span class="ruby-identifier">:gempath</span>])
+73:     <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">Command</span>.<span class="ruby-identifier">extra_args</span> = <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">configuration</span>[<span class="ruby-identifier">:gem</span>]
+74:     <span class="ruby-ivar">@doc_manager_class</span>.<span class="ruby-identifier">configured_args</span> = <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">configuration</span>[<span class="ruby-identifier">:rdoc</span>]
+75:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

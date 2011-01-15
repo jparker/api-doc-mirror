@@ -1,0 +1,474 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Mutex_m</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Module</span> 
+            Mutex_m 
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/lib/mutex_m_rb.html">lib/mutex_m.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <h2>Usage</h2>
+<p>
+Extend an object and use it like a <a href="Mutex.html">Mutex</a> object:
+</p>
+<pre>
+  require &quot;mutex_m.rb&quot;
+  obj = Object.new
+  obj.extend Mutex_m
+  # ...
+</pre>
+<p>
+Or, include <a href="Mutex_m.html">Mutex_m</a> in a class to have its
+instances behave like a <a href="Mutex.html">Mutex</a> object:
+</p>
+<pre>
+  class Foo
+    include Mutex_m
+    # ...
+  end
+
+  obj = Foo.new
+</pre>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>A</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005737">append_features</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>D</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005736">define_aliases</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005738">extend_object</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>M</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005739">mu_extended</a>,</li>
+                
+                <li><a href="#M005745">mu_initialize</a>,</li>
+                
+                <li><a href="#M005743">mu_lock</a>,</li>
+                
+                <li><a href="#M005741">mu_locked?</a>,</li>
+                
+                <li><a href="#M005740">mu_synchronize</a>,</li>
+                
+                <li><a href="#M005742">mu_try_lock</a>,</li>
+                
+                <li><a href="#M005744">mu_unlock</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005746">new</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005737">
+                    
+                    <a name="M005737"></a><b>append_features</b>(cl)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005737_source')" id="l_M005737_source">show</a>
+                        
+                    </p>
+                    <div id="M005737_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/mutex_m.rb, line 42</span>
+42:   <span class="ruby-keyword kw">def</span> <span class="ruby-constant">Mutex_m</span>.<span class="ruby-identifier">append_features</span>(<span class="ruby-identifier">cl</span>)
+43:     <span class="ruby-keyword kw">super</span>
+44:     <span class="ruby-identifier">define_aliases</span>(<span class="ruby-identifier">cl</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">cl</span>.<span class="ruby-identifier">instance_of?</span>(<span class="ruby-constant">Module</span>)
+45:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005736">
+                    
+                    <a name="M005736"></a><b>define_aliases</b>(cl)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005736_source')" id="l_M005736_source">show</a>
+                        
+                    </p>
+                    <div id="M005736_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/mutex_m.rb, line 32</span>
+32:   <span class="ruby-keyword kw">def</span> <span class="ruby-constant">Mutex_m</span>.<span class="ruby-identifier">define_aliases</span>(<span class="ruby-identifier">cl</span>)
+33:     <span class="ruby-identifier">cl</span>.<span class="ruby-identifier">module_eval</span> <span class="ruby-value str">%q{
+34:       alias locked? mu_locked?
+35:       alias lock mu_lock
+36:       alias unlock mu_unlock
+37:       alias try_lock mu_try_lock
+38:       alias synchronize mu_synchronize
+39:     }</span>
+40:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005738">
+                    
+                    <a name="M005738"></a><b>extend_object</b>(obj)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005738_source')" id="l_M005738_source">show</a>
+                        
+                    </p>
+                    <div id="M005738_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/mutex_m.rb, line 47</span>
+47:   <span class="ruby-keyword kw">def</span> <span class="ruby-constant">Mutex_m</span>.<span class="ruby-identifier">extend_object</span>(<span class="ruby-identifier">obj</span>)
+48:     <span class="ruby-keyword kw">super</span>
+49:     <span class="ruby-identifier">obj</span>.<span class="ruby-identifier">mu_extended</span>
+50:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005746">
+                    
+                    <a name="M005746"></a><b>new</b>(*args)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005746_source')" id="l_M005746_source">show</a>
+                        
+                    </p>
+                    <div id="M005746_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/mutex_m.rb, line 118</span>
+118:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+119:     <span class="ruby-identifier">mu_initialize</span>
+120:     <span class="ruby-keyword kw">super</span>
+121:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005739">
+                    
+                    <a name="M005739"></a><b>mu_extended</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005739_source')" id="l_M005739_source">show</a>
+                        
+                    </p>
+                    <div id="M005739_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/mutex_m.rb, line 52</span>
+52:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">mu_extended</span>
+53:     <span class="ruby-keyword kw">unless</span> (<span class="ruby-keyword kw">defined?</span> <span class="ruby-identifier">locked?</span> <span class="ruby-keyword kw">and</span>
+54:             <span class="ruby-keyword kw">defined?</span> <span class="ruby-identifier">lock</span> <span class="ruby-keyword kw">and</span>
+55:             <span class="ruby-keyword kw">defined?</span> <span class="ruby-identifier">unlock</span> <span class="ruby-keyword kw">and</span>
+56:             <span class="ruby-keyword kw">defined?</span> <span class="ruby-identifier">try_lock</span> <span class="ruby-keyword kw">and</span>
+57:             <span class="ruby-keyword kw">defined?</span> <span class="ruby-identifier">synchronize</span>)
+58:       <span class="ruby-constant">Mutex_m</span>.<span class="ruby-identifier">define_aliases</span>(<span class="ruby-keyword kw">class</span><span class="ruby-operator">&lt;&lt;</span><span class="ruby-keyword kw">self</span>;<span class="ruby-keyword kw">self</span>;<span class="ruby-keyword kw">end</span>)
+59:     <span class="ruby-keyword kw">end</span>
+60:     <span class="ruby-identifier">mu_initialize</span>
+61:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005743">
+                    
+                    <a name="M005743"></a><b>mu_lock</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005743_source')" id="l_M005743_source">show</a>
+                        
+                    </p>
+                    <div id="M005743_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/mutex_m.rb, line 88</span>
+88:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">mu_lock</span>
+89:     <span class="ruby-keyword kw">while</span> (<span class="ruby-constant">Thread</span>.<span class="ruby-identifier">critical</span> = <span class="ruby-keyword kw">true</span>; <span class="ruby-ivar">@mu_locked</span>)
+90:       <span class="ruby-ivar">@mu_waiting</span>.<span class="ruby-identifier">push</span> <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>
+91:       <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">stop</span>
+92:     <span class="ruby-keyword kw">end</span>
+93:     <span class="ruby-ivar">@mu_locked</span> = <span class="ruby-keyword kw">true</span>
+94:     <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">critical</span> = <span class="ruby-keyword kw">false</span>
+95:     <span class="ruby-keyword kw">self</span>
+96:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005741">
+                    
+                    <a name="M005741"></a><b>mu_locked?</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005741_source')" id="l_M005741_source">show</a>
+                        
+                    </p>
+                    <div id="M005741_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/mutex_m.rb, line 73</span>
+73:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">mu_locked?</span>
+74:     <span class="ruby-ivar">@mu_locked</span>
+75:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005740">
+                    
+                    <a name="M005740"></a><b>mu_synchronize</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+locking
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005740_source')" id="l_M005740_source">show</a>
+                        
+                    </p>
+                    <div id="M005740_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/mutex_m.rb, line 64</span>
+64:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">mu_synchronize</span>
+65:     <span class="ruby-keyword kw">begin</span>
+66:       <span class="ruby-identifier">mu_lock</span>
+67:       <span class="ruby-keyword kw">yield</span>
+68:     <span class="ruby-keyword kw">ensure</span>
+69:       <span class="ruby-identifier">mu_unlock</span>
+70:     <span class="ruby-keyword kw">end</span>
+71:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005742">
+                    
+                    <a name="M005742"></a><b>mu_try_lock</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005742_source')" id="l_M005742_source">show</a>
+                        
+                    </p>
+                    <div id="M005742_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/mutex_m.rb, line 77</span>
+77:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">mu_try_lock</span>
+78:     <span class="ruby-identifier">result</span> = <span class="ruby-keyword kw">false</span>
+79:     <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">critical</span> = <span class="ruby-keyword kw">true</span>
+80:     <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@mu_locked</span>
+81:       <span class="ruby-ivar">@mu_locked</span> = <span class="ruby-keyword kw">true</span>
+82:       <span class="ruby-identifier">result</span> = <span class="ruby-keyword kw">true</span>
+83:     <span class="ruby-keyword kw">end</span>
+84:     <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">critical</span> = <span class="ruby-keyword kw">false</span>
+85:     <span class="ruby-identifier">result</span>
+86:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005744">
+                    
+                    <a name="M005744"></a><b>mu_unlock</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005744_source')" id="l_M005744_source">show</a>
+                        
+                    </p>
+                    <div id="M005744_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/mutex_m.rb, line 98</span>
+ 98:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">mu_unlock</span>
+ 99:     <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@mu_locked</span>
+100:     <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">critical</span> = <span class="ruby-keyword kw">true</span>
+101:     <span class="ruby-identifier">wait</span> = <span class="ruby-ivar">@mu_waiting</span>
+102:     <span class="ruby-ivar">@mu_waiting</span> = []
+103:     <span class="ruby-ivar">@mu_locked</span> = <span class="ruby-keyword kw">false</span>
+104:     <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">critical</span> = <span class="ruby-keyword kw">false</span>
+105:     <span class="ruby-keyword kw">for</span> <span class="ruby-identifier">w</span> <span class="ruby-keyword kw">in</span> <span class="ruby-identifier">wait</span>
+106:       <span class="ruby-identifier">w</span>.<span class="ruby-identifier">run</span>
+107:     <span class="ruby-keyword kw">end</span>
+108:     <span class="ruby-keyword kw">self</span>
+109:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Private methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005745">
+                    
+                    <a name="M005745"></a><b>mu_initialize</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005745_source')" id="l_M005745_source">show</a>
+                        
+                    </p>
+                    <div id="M005745_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/mutex_m.rb, line 113</span>
+113:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">mu_initialize</span>
+114:     <span class="ruby-ivar">@mu_waiting</span> = []
+115:     <span class="ruby-ivar">@mu_locked</span> = <span class="ruby-keyword kw">false</span>;
+116:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

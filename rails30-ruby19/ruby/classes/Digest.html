@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Digest</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Module</span> 
+            Digest 
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/ext/digest/digest_c.html">ext/digest/digest.c</a></li>
+            
+            <li><a href="../files/ext/digest/lib/digest_rb.html">ext/digest/lib/digest.rb</a></li>
+            
+            <li><a href="../files/ext/digest/lib/digest/hmac_rb.html">ext/digest/lib/digest/hmac.rb</a></li>
+            
+            <li><a href="../files/ext/digest/sha2/lib/sha2_rb.html">ext/digest/sha2/lib/sha2.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+This module provides a framework for message digest libraries.
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007303">const_missing</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>H</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006649">hexencode</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Classes and Modules</div>
+    <ul>
+        
+        <li><span class="type">MODULE</span> <a href="Digest/Instance.html">Digest::Instance</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="Digest/Base.html">Digest::Base</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="Digest/Class.html">Digest::Class</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="Digest/HMAC.html">Digest::HMAC</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="Digest/SHA2.html">Digest::SHA2</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M007303">
+                    
+                    <a name="M007303"></a><b>const_missing</b>(name)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007303_source')" id="l_M007303_source">show</a>
+                        
+                    </p>
+                    <div id="M007303_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File ext/digest/lib/digest.rb, line 4</span>
+ 4:   <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">const_missing</span>(<span class="ruby-identifier">name</span>)
+ 5:     <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">name</span>
+ 6:     <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:SHA256</span>, <span class="ruby-identifier">:SHA384</span>, <span class="ruby-identifier">:SHA512</span>
+ 7:       <span class="ruby-identifier">lib</span> = <span class="ruby-value str">'digest/sha2.so'</span>
+ 8:     <span class="ruby-keyword kw">else</span>
+ 9:       <span class="ruby-identifier">lib</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">'digest'</span>, <span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">downcase</span>)
+10:     <span class="ruby-keyword kw">end</span>
+11: 
+12:     <span class="ruby-keyword kw">begin</span>
+13:       <span class="ruby-identifier">require</span> <span class="ruby-identifier">lib</span>
+14:     <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">LoadError</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+15:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">LoadError</span>, <span class="ruby-node">&quot;library not found for class Digest::#{name} -- #{lib}&quot;</span>, <span class="ruby-identifier">caller</span>(<span class="ruby-value">1</span>)
+16:     <span class="ruby-keyword kw">end</span>
+17:     <span class="ruby-keyword kw">unless</span> <span class="ruby-constant">Digest</span>.<span class="ruby-identifier">const_defined?</span>(<span class="ruby-identifier">name</span>)
+18:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">NameError</span>, <span class="ruby-node">&quot;uninitialized constant Digest::#{name}&quot;</span>, <span class="ruby-identifier">caller</span>(<span class="ruby-value">1</span>)
+19:     <span class="ruby-keyword kw">end</span>
+20:     <span class="ruby-constant">Digest</span>.<span class="ruby-identifier">const_get</span>(<span class="ruby-identifier">name</span>)
+21:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006649">
+                    
+                    <a name="M006649"></a><b>Digest.hexencode(string) &rarr; hexencoded_string
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Generates a hex-encoded version of a given <em>string</em>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006649_source')" id="l_M006649_source">show</a>
+                        
+                    </p>
+                    <div id="M006649_source" class="dyn-source">
+                        <pre>static VALUE
+rb_digest_s_hexencode(VALUE klass, VALUE str)
+{
+    return hexencode_str_new(str);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

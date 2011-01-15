@@ -1,0 +1,210 @@
+  <div id="fileHeader">
+    <h1>polymorphic_routes.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionpack/lib/action_controller/polymorphic_routes.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:04 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>module ActionController
+  # Polymorphic URL helpers are methods for smart resolution to a named route call when
+  # given an Active Record model instance. They are to be used in combination with
+  # ActionController::Resources.
+  #
+  # These methods are useful when you want to generate correct URL or path to a RESTful
+  # resource without having to know the exact type of the record in question.
+  #
+  # Nested resources and/or namespaces are also supported, as illustrated in the example:
+  #
+  #   polymorphic_url([:admin, @article, @comment])
+  #
+  # results in:
+  #   
+  #   admin_article_comment_url(@article, @comment)
+  #
+  # == Usage within the framework
+  #
+  # Polymorphic URL helpers are used in a number of places throughout the Rails framework:
+  #
+  # * &lt;tt&gt;url_for&lt;/tt&gt;, so you can use it with a record as the argument, e.g.
+  #   &lt;tt&gt;url_for(@article)&lt;/tt&gt;;
+  # * ActionView::Helpers::FormHelper uses &lt;tt&gt;polymorphic_path&lt;/tt&gt;, so you can write
+  #   &lt;tt&gt;form_for(@article)&lt;/tt&gt; without having to specify &lt;tt&gt;:url&lt;/tt&gt; parameter for the form
+  #   action;
+  # * &lt;tt&gt;redirect_to&lt;/tt&gt; (which, in fact, uses &lt;tt&gt;url_for&lt;/tt&gt;) so you can write
+  #   &lt;tt&gt;redirect_to(post)&lt;/tt&gt; in your controllers;
+  # * ActionView::Helpers::AtomFeedHelper, so you don't have to explicitly specify URLs
+  #   for feed entries.
+  #
+  # == Prefixed polymorphic helpers
+  #
+  # In addition to &lt;tt&gt;polymorphic_url&lt;/tt&gt; and &lt;tt&gt;polymorphic_path&lt;/tt&gt; methods, a
+  # number of prefixed helpers are available as a shorthand to &lt;tt&gt;:action =&gt; &quot;...&quot;&lt;/tt&gt;
+  # in options. Those are:
+  #
+  # * &lt;tt&gt;edit_polymorphic_url&lt;/tt&gt;, &lt;tt&gt;edit_polymorphic_path&lt;/tt&gt;
+  # * &lt;tt&gt;new_polymorphic_url&lt;/tt&gt;, &lt;tt&gt;new_polymorphic_path&lt;/tt&gt;
+  # * &lt;tt&gt;formatted_polymorphic_url&lt;/tt&gt;, &lt;tt&gt;formatted_polymorphic_path&lt;/tt&gt;
+  #
+  # Example usage:
+  #
+  #   edit_polymorphic_path(@post)              # =&gt; &quot;/posts/1/edit&quot;
+  #   formatted_polymorphic_path([@post, :pdf]) # =&gt; &quot;/posts/1.pdf&quot;
+  module PolymorphicRoutes
+    # Constructs a call to a named RESTful route for the given record and returns the
+    # resulting URL string. For example:
+    #
+    #   # calls post_url(post)
+    #   polymorphic_url(post) # =&gt; &quot;http://example.com/posts/1&quot;
+    #   polymorphic_url([blog, post]) # =&gt; &quot;http://example.com/blogs/1/posts/1&quot;
+    #   polymorphic_url([:admin, blog, post]) # =&gt; &quot;http://example.com/admin/blogs/1/posts/1&quot;
+    #   polymorphic_url([user, :blog, post]) # =&gt; &quot;http://example.com/users/1/blog/posts/1&quot;
+    #
+    # ==== Options
+    #
+    # * &lt;tt&gt;:action&lt;/tt&gt; - Specifies the action prefix for the named route:
+    #   &lt;tt&gt;:new&lt;/tt&gt;, &lt;tt&gt;:edit&lt;/tt&gt;, or &lt;tt&gt;:formatted&lt;/tt&gt;. Default is no prefix.
+    # * &lt;tt&gt;:routing_type&lt;/tt&gt; - Allowed values are &lt;tt&gt;:path&lt;/tt&gt; or &lt;tt&gt;:url&lt;/tt&gt;.
+    #   Default is &lt;tt&gt;:url&lt;/tt&gt;.
+    #
+    # ==== Examples
+    #
+    #   # an Article record
+    #   polymorphic_url(record)  # same as article_url(record)
+    #
+    #   # a Comment record
+    #   polymorphic_url(record)  # same as comment_url(record)
+    #
+    #   # it recognizes new records and maps to the collection
+    #   record = Comment.new
+    #   polymorphic_url(record)  # same as comments_url()
+    #
+    def polymorphic_url(record_or_hash_or_array, options = {})
+      if record_or_hash_or_array.kind_of?(Array)
+        record_or_hash_or_array = record_or_hash_or_array.dup
+      end
+
+      record    = extract_record(record_or_hash_or_array)
+      format    = extract_format(record_or_hash_or_array, options)
+      namespace = extract_namespace(record_or_hash_or_array)
+      
+      args = case record_or_hash_or_array
+        when Hash;  [ record_or_hash_or_array ]
+        when Array; record_or_hash_or_array.dup
+        else        [ record_or_hash_or_array ]
+      end
+
+      inflection =
+        case
+        when options[:action].to_s == &quot;new&quot;
+          args.pop
+          :singular
+        when record.respond_to?(:new_record?) &amp;&amp; record.new_record?
+          args.pop
+          :plural
+        else
+          :singular
+        end
+
+      args.delete_if {|arg| arg.is_a?(Symbol) || arg.is_a?(String)}
+      args &lt;&lt; format if format
+      
+      named_route = build_named_route_call(record_or_hash_or_array, namespace, inflection, options)
+      send!(named_route, *args)
+    end
+
+    # Returns the path component of a URL for the given record. It uses
+    # &lt;tt&gt;polymorphic_url&lt;/tt&gt; with &lt;tt&gt;:routing_type =&gt; :path&lt;/tt&gt;.
+    def polymorphic_path(record_or_hash_or_array, options = {})
+      options[:routing_type] = :path
+      polymorphic_url(record_or_hash_or_array, options)
+    end
+
+    %w(edit new formatted).each do |action|
+      module_eval &lt;&lt;-EOT, __FILE__, __LINE__
+        def #{action}_polymorphic_url(record_or_hash)
+          polymorphic_url(record_or_hash, :action =&gt; &quot;#{action}&quot;)
+        end
+
+        def #{action}_polymorphic_path(record_or_hash)
+          polymorphic_url(record_or_hash, :action =&gt; &quot;#{action}&quot;, :routing_type =&gt; :path)
+        end
+      EOT
+    end
+
+    private
+      def action_prefix(options)
+        options[:action] ? &quot;#{options[:action]}_&quot; : &quot;&quot;
+      end
+
+      def routing_type(options)
+        options[:routing_type] || :url
+      end
+
+      def build_named_route_call(records, namespace, inflection, options = {})
+        unless records.is_a?(Array)
+          record = extract_record(records)
+          route  = ''
+        else
+          record = records.pop
+          route = records.inject(&quot;&quot;) do |string, parent|
+            if parent.is_a?(Symbol) || parent.is_a?(String)
+              string &lt;&lt; &quot;#{parent}_&quot;
+            else
+              string &lt;&lt; &quot;#{RecordIdentifier.send!(&quot;singular_class_name&quot;, parent)}_&quot;
+            end
+          end
+        end
+
+        if record.is_a?(Symbol) || record.is_a?(String)
+          route &lt;&lt; &quot;#{record}_&quot;
+        else
+          route &lt;&lt; &quot;#{RecordIdentifier.send!(&quot;#{inflection}_class_name&quot;, record)}_&quot;
+        end
+
+        action_prefix(options) + namespace + route + routing_type(options).to_s
+      end
+
+      def extract_record(record_or_hash_or_array)
+        case record_or_hash_or_array
+          when Array; record_or_hash_or_array.last
+          when Hash;  record_or_hash_or_array[:id]
+          else        record_or_hash_or_array
+        end
+      end
+      
+      def extract_format(record_or_hash_or_array, options)
+        if options[:action].to_s == &quot;formatted&quot; &amp;&amp; record_or_hash_or_array.is_a?(Array)
+          record_or_hash_or_array.pop
+        elsif options[:format]
+          options[:format]
+        else
+          nil
+        end
+      end
+      
+      # Remove the first symbols from the array and return the url prefix
+      # implied by those symbols.
+      def extract_namespace(record_or_hash_or_array)
+        return &quot;&quot; unless record_or_hash_or_array.is_a?(Array)
+
+        namespace_keys = []
+        while (key = record_or_hash_or_array.first) &amp;&amp; key.is_a?(String) || key.is_a?(Symbol)
+          namespace_keys &lt;&lt; record_or_hash_or_array.shift
+        end
+
+        namespace_keys.map {|k| &quot;#{k}_&quot;}.join
+      end
+  end
+end
+</pre>
+    </div>

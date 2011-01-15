@@ -1,0 +1,70 @@
+  <div id="fileHeader">
+    <h1>part_container.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionmailer/lib/action_mailer/part_container.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>module ActionMailer
+  # Accessors and helpers that ActionMailer::Base and ActionMailer::Part have
+  # in common. Using these helpers you can easily add subparts or attachments
+  # to your message:
+  #
+  #   def my_mail_message(...)
+  #     ...
+  #     part &quot;text/plain&quot; do |p|
+  #       p.body &quot;hello, world&quot;
+  #       p.transfer_encoding &quot;base64&quot;
+  #     end
+  #
+  #     attachment &quot;image/jpg&quot; do |a|
+  #       a.body = File.read(&quot;hello.jpg&quot;)
+  #       a.filename = &quot;hello.jpg&quot;
+  #     end
+  #   end
+  module PartContainer
+    # The list of subparts of this container
+    attr_reader :parts
+
+    # Add a part to a multipart message, with the given content-type. The
+    # part itself is yielded to the block so that other properties (charset,
+    # body, headers, etc.) can be set on it.
+    def part(params)
+      params = {:content_type =&gt; params} if String === params
+      part = Part.new(params)
+      yield part if block_given?
+      @parts &lt;&lt; part
+    end
+
+    # Add an attachment to a multipart message. This is simply a part with the
+    # content-disposition set to &quot;attachment&quot;.
+    def attachment(params, &amp;block)
+      params = { :content_type =&gt; params } if String === params
+      params = { :disposition =&gt; &quot;attachment&quot;,
+                 :transfer_encoding =&gt; &quot;base64&quot; }.merge(params)
+      part(params, &amp;block)
+    end
+
+    private
+    
+      def parse_content_type(defaults=nil)
+        return [defaults &amp;&amp; defaults.content_type, {}] if content_type.blank?
+        ctype, *attrs = content_type.split(/;\s*/)
+        attrs = attrs.inject({}) { |h,s| k,v = s.split(/=/, 2); h[k] = v; h }
+        [ctype, {&quot;charset&quot; =&gt; charset || defaults &amp;&amp; defaults.charset}.merge(attrs)]
+      end
+
+  end
+end
+</pre>
+    </div>

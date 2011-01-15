@@ -1,0 +1,244 @@
+  <div id="fileHeader">
+    <h1>scriptaculous_helper.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionpack/lib/action_view/helpers/scriptaculous_helper.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:04 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>require 'action_view/helpers/javascript_helper'
+
+module ActionView
+  module Helpers
+    # Provides a set of helpers for calling Scriptaculous JavaScript 
+    # functions, including those which create Ajax controls and visual effects.
+    #
+    # To be able to use these helpers, you must include the Prototype 
+    # JavaScript framework and the Scriptaculous JavaScript library in your 
+    # pages. See the documentation for ActionView::Helpers::JavaScriptHelper
+    # for more information on including the necessary JavaScript.
+    #
+    # The Scriptaculous helpers' behavior can be tweaked with various options.
+    # See the documentation at http://script.aculo.us for more information on
+    # using these helpers in your application.
+    module ScriptaculousHelper
+      unless const_defined? :TOGGLE_EFFECTS
+        TOGGLE_EFFECTS = [:toggle_appear, :toggle_slide, :toggle_blind]
+      end
+      
+      # Returns a JavaScript snippet to be used on the Ajax callbacks for
+      # starting visual effects.
+      #
+      # Example:
+      #   &lt;%= link_to_remote &quot;Reload&quot;, :update =&gt; &quot;posts&quot;, 
+      #         :url =&gt; { :action =&gt; &quot;reload&quot; }, 
+      #         :complete =&gt; visual_effect(:highlight, &quot;posts&quot;, :duration =&gt; 0.5)
+      #
+      # If no +element_id+ is given, it assumes &quot;element&quot; which should be a local
+      # variable in the generated JavaScript execution context. This can be 
+      # used for example with +drop_receiving_element+:
+      #
+      #   &lt;%= drop_receiving_element (...), :loading =&gt; visual_effect(:fade) %&gt;
+      #
+      # This would fade the element that was dropped on the drop receiving 
+      # element.
+      #
+      # For toggling visual effects, you can use &lt;tt&gt;:toggle_appear&lt;/tt&gt;, &lt;tt&gt;:toggle_slide&lt;/tt&gt;, and
+      # &lt;tt&gt;:toggle_blind&lt;/tt&gt; which will alternate between appear/fade, slidedown/slideup, and
+      # blinddown/blindup respectively.
+      #
+      # You can change the behaviour with various options, see
+      # http://script.aculo.us for more documentation.
+      def visual_effect(name, element_id = false, js_options = {})
+        element = element_id ? element_id.to_json : &quot;element&quot;
+        
+        js_options[:queue] = if js_options[:queue].is_a?(Hash)
+          '{' + js_options[:queue].map {|k, v| k == :limit ? &quot;#{k}:#{v}&quot; : &quot;#{k}:'#{v}'&quot; }.join(',') + '}'
+        elsif js_options[:queue]
+          &quot;'#{js_options[:queue]}'&quot;
+        end if js_options[:queue]
+        
+        [:endcolor, :direction, :startcolor, :scaleMode, :restorecolor].each do |option|
+          js_options[option] = &quot;'#{js_options[option]}'&quot; if js_options[option]
+        end
+
+        if TOGGLE_EFFECTS.include? name.to_sym
+          &quot;Effect.toggle(#{element},'#{name.to_s.gsub(/^toggle_/,'')}',#{options_for_javascript(js_options)});&quot;
+        else
+          &quot;new Effect.#{name.to_s.camelize}(#{element},#{options_for_javascript(js_options)});&quot;
+        end
+      end
+      
+      # Makes the element with the DOM ID specified by +element_id+ sortable
+      # by drag-and-drop and make an Ajax call whenever the sort order has
+      # changed. By default, the action called gets the serialized sortable
+      # element as parameters.
+      #
+      # Example:
+      #
+      #   &lt;%= sortable_element(&quot;my_list&quot;, :url =&gt; { :action =&gt; &quot;order&quot; }) %&gt;
+      #
+      # In the example, the action gets a &quot;my_list&quot; array parameter 
+      # containing the values of the ids of elements the sortable consists 
+      # of, in the current order.
+      #
+      # Important: For this to work, the sortable elements must have id
+      # attributes in the form &quot;string_identifier&quot;. For example, &quot;item_1&quot;. Only
+      # the identifier part of the id attribute will be serialized.
+      # 
+      # Additional +options+ are:
+      #
+      # * &lt;tt&gt;:format&lt;/tt&gt; - A regular expression to determine what to send as the
+      #   serialized id to the server (the default is &lt;tt&gt;/^[^_]*_(.*)$/&lt;/tt&gt;).
+      #                           
+      # * &lt;tt&gt;:constraint&lt;/tt&gt; - Whether to constrain the dragging to either
+      #   &lt;tt&gt;:horizontal&lt;/tt&gt; or &lt;tt&gt;:vertical&lt;/tt&gt; (or false to make it unconstrained).
+      #                            
+      # * &lt;tt&gt;:overlap&lt;/tt&gt; - Calculate the item overlap in the &lt;tt&gt;:horizontal&lt;/tt&gt;
+      #   or &lt;tt&gt;:vertical&lt;/tt&gt; direction.
+      #                            
+      # * &lt;tt&gt;:tag&lt;/tt&gt; - Which children of the container element to treat as
+      #   sortable (default is &lt;tt&gt;li&lt;/tt&gt;).
+      #                          
+      # * &lt;tt&gt;:containment&lt;/tt&gt; - Takes an element or array of elements to treat as
+      #   potential drop targets (defaults to the original target element).
+      #                          
+      # * &lt;tt&gt;:only&lt;/tt&gt; - A CSS class name or arry of class names used to filter
+      #   out child elements as candidates.
+      #                          
+      # * &lt;tt&gt;:scroll&lt;/tt&gt; - Determines whether to scroll the list during drag
+      #   operations if the list runs past the visual border.
+      #                          
+      # * &lt;tt&gt;:tree&lt;/tt&gt; - Determines whether to treat nested lists as part of the
+      #   main sortable list. This means that you can create multi-layer lists,
+      #   and not only sort items at the same level, but drag and sort items
+      #   between levels.
+      #                          
+      # * &lt;tt&gt;:hoverclass&lt;/tt&gt; - If set, the Droppable will have this additional CSS class
+      #   when an accepted Draggable is hovered over it.                         
+      #                          
+      # * &lt;tt&gt;:handle&lt;/tt&gt; - Sets whether the element should only be draggable by an
+      #   embedded handle. The value may be a string referencing a CSS class value
+      #   (as of script.aculo.us V1.5). The first child/grandchild/etc. element
+      #   found within the element that has this CSS class value will be used as
+      #   the handle.
+      #                          
+      # * &lt;tt&gt;:ghosting&lt;/tt&gt; - Clones the element and drags the clone, leaving
+      #   the original in place until the clone is dropped (default is &lt;tt&gt;false&lt;/tt&gt;).
+      #                          
+      # * &lt;tt&gt;:dropOnEmpty&lt;/tt&gt; - If true the Sortable container will be made into
+      #   a Droppable, that can receive a Draggable (as according to the containment
+      #   rules) as a child element when there are no more elements inside (default
+      #   is &lt;tt&gt;false&lt;/tt&gt;).
+      #                          
+      # * &lt;tt&gt;:onChange&lt;/tt&gt; - Called whenever the sort order changes while dragging. When
+      #   dragging from one Sortable to another, the callback is called once on each
+      #   Sortable. Gets the affected element as its parameter.
+      #                          
+      # * &lt;tt&gt;:onUpdate&lt;/tt&gt; - Called when the drag ends and the Sortable's order is
+      #   changed in any way. When dragging from one Sortable to another, the callback
+      #   is called once on each Sortable. Gets the container as its parameter.
+      #                                                                                         
+      # See http://script.aculo.us for more documentation.
+      def sortable_element(element_id, options = {})
+        javascript_tag(sortable_element_js(element_id, options).chop!)
+      end
+      
+      def sortable_element_js(element_id, options = {}) #:nodoc:
+        options[:with]     ||= &quot;Sortable.serialize(#{element_id.to_json})&quot;
+        options[:onUpdate] ||= &quot;function(){&quot; + remote_function(options) + &quot;}&quot;
+        options.delete_if { |key, value| PrototypeHelper::AJAX_OPTIONS.include?(key) }
+  
+        [:tag, :overlap, :constraint, :handle].each do |option|
+          options[option] = &quot;'#{options[option]}'&quot; if options[option]
+        end
+  
+        options[:containment] = array_or_string_for_javascript(options[:containment]) if options[:containment]
+        options[:only] = array_or_string_for_javascript(options[:only]) if options[:only]
+  
+        %(Sortable.create(#{element_id.to_json}, #{options_for_javascript(options)});)
+      end
+
+      # Makes the element with the DOM ID specified by +element_id+ draggable.
+      #
+      # Example:
+      #   &lt;%= draggable_element(&quot;my_image&quot;, :revert =&gt; true)
+      # 
+      # You can change the behaviour with various options, see
+      # http://script.aculo.us for more documentation.
+      def draggable_element(element_id, options = {})
+        javascript_tag(draggable_element_js(element_id, options).chop!)
+      end
+      
+      def draggable_element_js(element_id, options = {}) #:nodoc:
+        %(new Draggable(#{element_id.to_json}, #{options_for_javascript(options)});)
+      end
+
+      # Makes the element with the DOM ID specified by +element_id+ receive
+      # dropped draggable elements (created by +draggable_element+).
+      # and make an AJAX call. By default, the action called gets the DOM ID 
+      # of the element as parameter.
+      #
+      # Example:
+      #   &lt;%= drop_receiving_element(&quot;my_cart&quot;, :url =&gt; 
+      #     { :controller =&gt; &quot;cart&quot;, :action =&gt; &quot;add&quot; }) %&gt;
+      #
+      # You can change the behaviour with various options, see
+      # http://script.aculo.us for more documentation.
+      #
+      # Some of these +options+ include:
+      # * &lt;tt&gt;:accept&lt;/tt&gt; - Set this to a string or an array of strings describing the
+      #   allowable CSS classes that the +draggable_element+ must have in order 
+      #   to be accepted by this +drop_receiving_element+.
+      #                          
+      # * &lt;tt&gt;:confirm&lt;/tt&gt; - Adds a confirmation dialog. Example:
+      #                     
+      #     :confirm =&gt; &quot;Are you sure you want to do this?&quot;
+      #                          
+      # * &lt;tt&gt;:hoverclass&lt;/tt&gt; - If set, the +drop_receiving_element+ will have
+      #   this additional CSS class when an accepted +draggable_element+ is
+      #   hovered over it.                         
+      #                          
+      # * &lt;tt&gt;:onDrop&lt;/tt&gt; - Called when a +draggable_element+ is dropped onto
+      #   this element. Override this callback with a JavaScript expression to 
+      #   change the default drop behavour. Example:
+      #                          
+      #     :onDrop =&gt; &quot;function(draggable_element, droppable_element, event) { alert('I like bananas') }&quot;
+      #                          
+      #   This callback gets three parameters: The Draggable element, the Droppable
+      #   element and the Event object. You can extract additional information about
+      #   the drop - like if the Ctrl or Shift keys were pressed - from the Event object.
+      #                          
+      # * &lt;tt&gt;:with&lt;/tt&gt; - A JavaScript expression specifying the parameters for
+      #   the XMLHttpRequest. Any expressions should return a valid URL query string.
+      def drop_receiving_element(element_id, options = {})
+        javascript_tag(drop_receiving_element_js(element_id, options).chop!)
+      end
+      
+      def drop_receiving_element_js(element_id, options = {}) #:nodoc:
+        options[:with]     ||= &quot;'id=' + encodeURIComponent(element.id)&quot;
+        options[:onDrop]   ||= &quot;function(element){&quot; + remote_function(options) + &quot;}&quot;
+        options.delete_if { |key, value| PrototypeHelper::AJAX_OPTIONS.include?(key) }
+
+        options[:accept] = array_or_string_for_javascript(options[:accept]) if options[:accept]    
+        options[:hoverclass] = &quot;'#{options[:hoverclass]}'&quot; if options[:hoverclass]
+        
+        # Confirmation happens during the onDrop callback, so it can be removed from the options
+        options.delete(:confirm) if options[:confirm]
+
+        %(Droppables.add(#{element_id.to_json}, #{options_for_javascript(options)});)
+      end
+    end
+  end
+end
+</pre>
+    </div>

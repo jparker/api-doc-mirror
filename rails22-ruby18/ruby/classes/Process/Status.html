@@ -1,0 +1,876 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Process::Status</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            Process::Status 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../files/process_c.html">process.c</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+<tt>Process::Status</tt> encapsulates the information on the status of a
+running or terminated system process. The built-in variable <tt>$?</tt> is
+either <tt>nil</tt> or a <tt>Process::Status</tt> object.
+</p>
+<pre>
+   fork { exit 99 }   #=&gt; 26557
+   Process.wait       #=&gt; 26557
+   $?.class           #=&gt; Process::Status
+   $?.to_i            #=&gt; 25344
+   $? &gt;&gt; 8            #=&gt; 99
+   $?.stopped?        #=&gt; false
+   $?.exited?         #=&gt; true
+   $?.exitstatus      #=&gt; 99
+</pre>
+<p>
+Posix systems record information on processes using a 16-bit integer. The
+lower bits record the process status (stopped, exited, signaled) and the
+upper bits possibly contain additional information (for example the
+program&#8217;s return code in the case of exited processes). Pre Ruby 1.8,
+these bits were exposed directly to the Ruby program. Ruby now encapsulates
+these in a <tt>Process::Status</tt> object. To maximize compatibility,
+however, these objects retain a bit-oriented interface. In the descriptions
+that follow, when we talk about the integer value of <em>stat</em>,
+we&#8217;re referring to this 16 bit value.
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>#</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000160">&</a>,</li>
+                
+                <li><a href="#M000159">==</a>,</li>
+                
+                <li><a href="#M000161">>></a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000174">coredump?</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000171">exited?</a>,</li>
+                
+                <li><a href="#M000172">exitstatus</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>I</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000165">inspect</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>P</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000166">pid</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000169">signaled?</a>,</li>
+                
+                <li><a href="#M000167">stopped?</a>,</li>
+                
+                <li><a href="#M000168">stopsig</a>,</li>
+                
+                <li><a href="#M000173">success?</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>T</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000170">termsig</a>,</li>
+                
+                <li><a href="#M000162">to_i</a>,</li>
+                
+                <li><a href="#M000163">to_int</a>,</li>
+                
+                <li><a href="#M000164">to_s</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M000160">
+                    
+                    <a name="M000160"></a><b>stat & num   => fixnum
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Logical AND of the bits in <em>stat</em> with <em>num</em>.
+</p>
+<pre>
+   fork { exit 0x37 }
+   Process.wait
+   sprintf('%04x', $?.to_i)       #=&gt; &quot;3700&quot;
+   sprintf('%04x', $? &amp; 0x1e00)   #=&gt; &quot;1600&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000160_source')" id="l_M000160_source">show</a>
+                        
+                    </p>
+                    <div id="M000160_source" class="dyn-source">
+                        <pre>static VALUE
+pst_bitand(st1, st2)
+    VALUE st1, st2;
+{
+    int status = NUM2INT(st1) &amp; NUM2INT(st2);
+
+    return INT2NUM(status);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000159">
+                    
+                    <a name="M000159"></a><b>stat == other   => true or false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns <tt>true</tt> if the integer value of <em>stat</em> equals
+<em>other</em>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000159_source')" id="l_M000159_source">show</a>
+                        
+                    </p>
+                    <div id="M000159_source" class="dyn-source">
+                        <pre>static VALUE
+pst_equal(st1, st2)
+    VALUE st1, st2;
+{
+    if (st1 == st2) return Qtrue;
+    return rb_equal(pst_to_i(st1), st2);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000161">
+                    
+                    <a name="M000161"></a><b>stat >> num   => fixnum
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Shift the bits in <em>stat</em> right <em>num</em> places.
+</p>
+<pre>
+   fork { exit 99 }   #=&gt; 26563
+   Process.wait       #=&gt; 26563
+   $?.to_i            #=&gt; 25344
+   $? &gt;&gt; 8            #=&gt; 99
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000161_source')" id="l_M000161_source">show</a>
+                        
+                    </p>
+                    <div id="M000161_source" class="dyn-source">
+                        <pre>static VALUE
+pst_rshift(st1, st2)
+    VALUE st1, st2;
+{
+    int status = NUM2INT(st1) &gt;&gt; NUM2INT(st2);
+
+    return INT2NUM(status);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000174">
+                    
+                    <a name="M000174"></a><b>stat.coredump?   => true or false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns <tt>true</tt> if <em>stat</em> generated a coredump when it
+terminated. Not available on all platforms.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000174_source')" id="l_M000174_source">show</a>
+                        
+                    </p>
+                    <div id="M000174_source" class="dyn-source">
+                        <pre>static VALUE
+pst_wcoredump(st)
+    VALUE st;
+{
+#ifdef WCOREDUMP
+    int status = NUM2INT(st);
+
+    if (WCOREDUMP(status))
+        return Qtrue;
+    else
+        return Qfalse;
+#else
+    return Qfalse;
+#endif
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000171">
+                    
+                    <a name="M000171"></a><b>stat.exited?   => true or false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns <tt>true</tt> if <em>stat</em> exited normally (for example using
+an <tt>exit()</tt> call or finishing the program).
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000171_source')" id="l_M000171_source">show</a>
+                        
+                    </p>
+                    <div id="M000171_source" class="dyn-source">
+                        <pre>static VALUE
+pst_wifexited(st)
+    VALUE st;
+{
+    int status = NUM2INT(st);
+
+    if (WIFEXITED(status))
+        return Qtrue;
+    else
+        return Qfalse;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000172">
+                    
+                    <a name="M000172"></a><b>stat.exitstatus   => fixnum or nil
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the least significant eight bits of the return code of
+<em>stat</em>. Only available if <tt>exited?</tt> is <tt>true</tt>.
+</p>
+<pre>
+   fork { }           #=&gt; 26572
+   Process.wait       #=&gt; 26572
+   $?.exited?         #=&gt; true
+   $?.exitstatus      #=&gt; 0
+
+   fork { exit 99 }   #=&gt; 26573
+   Process.wait       #=&gt; 26573
+   $?.exited?         #=&gt; true
+   $?.exitstatus      #=&gt; 99
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000172_source')" id="l_M000172_source">show</a>
+                        
+                    </p>
+                    <div id="M000172_source" class="dyn-source">
+                        <pre>static VALUE
+pst_wexitstatus(st)
+    VALUE st;
+{
+    int status = NUM2INT(st);
+
+    if (WIFEXITED(status))
+        return INT2NUM(WEXITSTATUS(status));
+    return Qnil;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000165">
+                    
+                    <a name="M000165"></a><b>stat.inspect   => string
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Override the inspection method.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000165_source')" id="l_M000165_source">show</a>
+                        
+                    </p>
+                    <div id="M000165_source" class="dyn-source">
+                        <pre>static VALUE
+pst_inspect(st)
+    VALUE st;
+{
+    VALUE pid;
+    int status;
+    VALUE str;
+    char buf[256];
+
+    pid = pst_pid(st);
+    status = NUM2INT(st);
+
+    snprintf(buf, sizeof(buf), &quot;#&lt;%s: pid=%ld&quot;, rb_class2name(CLASS_OF(st)), NUM2LONG(pid));
+    str = rb_str_new2(buf);
+    if (WIFSTOPPED(status)) {
+        int stopsig = WSTOPSIG(status);
+        const char *signame = ruby_signal_name(stopsig);
+        if (signame) {
+            snprintf(buf, sizeof(buf), &quot;,stopped(SIG%s=%d)&quot;, signame, stopsig);
+        }
+        else {
+            snprintf(buf, sizeof(buf), &quot;,stopped(%d)&quot;, stopsig);
+        }
+        rb_str_cat2(str, buf);
+    }
+    if (WIFSIGNALED(status)) {
+        int termsig = WTERMSIG(status);
+        const char *signame = ruby_signal_name(termsig);
+        if (signame) {
+            snprintf(buf, sizeof(buf), &quot;,signaled(SIG%s=%d)&quot;, signame, termsig);
+        }
+        else {
+            snprintf(buf, sizeof(buf), &quot;,signaled(%d)&quot;, termsig);
+        }
+        rb_str_cat2(str, buf);
+    }
+    if (WIFEXITED(status)) {
+        snprintf(buf, sizeof(buf), &quot;,exited(%d)&quot;, WEXITSTATUS(status));
+        rb_str_cat2(str, buf);
+    }
+#ifdef WCOREDUMP
+    if (WCOREDUMP(status)) {
+        rb_str_cat2(str, &quot;,coredumped&quot;);
+    }
+#endif
+    rb_str_cat2(str, &quot;&gt;&quot;);
+    return str;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000166">
+                    
+                    <a name="M000166"></a><b>stat.pid   => fixnum
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the process ID that this status object represents.
+</p>
+<pre>
+   fork { exit }   #=&gt; 26569
+   Process.wait    #=&gt; 26569
+   $?.pid          #=&gt; 26569
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000166_source')" id="l_M000166_source">show</a>
+                        
+                    </p>
+                    <div id="M000166_source" class="dyn-source">
+                        <pre>static VALUE
+pst_pid(st)
+    VALUE st;
+{
+    return rb_iv_get(st, &quot;pid&quot;);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000169">
+                    
+                    <a name="M000169"></a><b>stat.signaled?   => true or false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns <tt>true</tt> if <em>stat</em> terminated because of an uncaught
+signal.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000169_source')" id="l_M000169_source">show</a>
+                        
+                    </p>
+                    <div id="M000169_source" class="dyn-source">
+                        <pre>static VALUE
+pst_wifsignaled(st)
+    VALUE st;
+{
+    int status = NUM2INT(st);
+
+    if (WIFSIGNALED(status))
+        return Qtrue;
+    else
+        return Qfalse;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000167">
+                    
+                    <a name="M000167"></a><b>stat.stopped?   => true or false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns <tt>true</tt> if this process is stopped. This is only returned if
+the corresponding <tt>wait</tt> call had the <tt>WUNTRACED</tt> flag set.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000167_source')" id="l_M000167_source">show</a>
+                        
+                    </p>
+                    <div id="M000167_source" class="dyn-source">
+                        <pre>static VALUE
+pst_wifstopped(st)
+    VALUE st;
+{
+    int status = NUM2INT(st);
+
+    if (WIFSTOPPED(status))
+        return Qtrue;
+    else
+        return Qfalse;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000168">
+                    
+                    <a name="M000168"></a><b>stat.stopsig   => fixnum or nil
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the number of the signal that caused <em>stat</em> to stop (or
+<tt>nil</tt> if self is not stopped).
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000168_source')" id="l_M000168_source">show</a>
+                        
+                    </p>
+                    <div id="M000168_source" class="dyn-source">
+                        <pre>static VALUE
+pst_wstopsig(st)
+    VALUE st;
+{
+    int status = NUM2INT(st);
+
+    if (WIFSTOPPED(status))
+        return INT2NUM(WSTOPSIG(status));
+    return Qnil;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000173">
+                    
+                    <a name="M000173"></a><b>stat.success?   => true, false or nil
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns <tt>true</tt> if <em>stat</em> is successful, <tt>false</tt> if
+not. Returns <tt>nil</tt> if <tt>exited?</tt> is not <tt>true</tt>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000173_source')" id="l_M000173_source">show</a>
+                        
+                    </p>
+                    <div id="M000173_source" class="dyn-source">
+                        <pre>static VALUE
+pst_success_p(st)
+    VALUE st;
+{
+    int status = NUM2INT(st);
+
+    if (!WIFEXITED(status))
+        return Qnil;
+    return WEXITSTATUS(status) == EXIT_SUCCESS ? Qtrue : Qfalse;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000170">
+                    
+                    <a name="M000170"></a><b>stat.termsig   => fixnum or nil
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the number of the signal that caused <em>stat</em> to terminate (or
+<tt>nil</tt> if self was not terminated by an uncaught signal).
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000170_source')" id="l_M000170_source">show</a>
+                        
+                    </p>
+                    <div id="M000170_source" class="dyn-source">
+                        <pre>static VALUE
+pst_wtermsig(st)
+    VALUE st;
+{
+    int status = NUM2INT(st);
+
+    if (WIFSIGNALED(status))
+        return INT2NUM(WTERMSIG(status));
+    return Qnil;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000162">
+                    
+                    <a name="M000162"></a><b>stat.to_i     => fixnum
+stat.to_int   => fixnum
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the bits in <em>stat</em> as a <tt>Fixnum</tt>. Poking around in
+these bits is platform dependent.
+</p>
+<pre>
+   fork { exit 0xab }         #=&gt; 26566
+   Process.wait               #=&gt; 26566
+   sprintf('%04x', $?.to_i)   #=&gt; &quot;ab00&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000162_source')" id="l_M000162_source">show</a>
+                        
+                    </p>
+                    <div id="M000162_source" class="dyn-source">
+                        <pre>static VALUE
+pst_to_i(st)
+    VALUE st;
+{
+    return rb_iv_get(st, &quot;status&quot;);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000163">
+                    
+                    <a name="M000163"></a><b>stat.to_i     => fixnum
+stat.to_int   => fixnum
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the bits in <em>stat</em> as a <tt>Fixnum</tt>. Poking around in
+these bits is platform dependent.
+</p>
+<pre>
+   fork { exit 0xab }         #=&gt; 26566
+   Process.wait               #=&gt; 26566
+   sprintf('%04x', $?.to_i)   #=&gt; &quot;ab00&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000163_source')" id="l_M000163_source">show</a>
+                        
+                    </p>
+                    <div id="M000163_source" class="dyn-source">
+                        <pre>static VALUE
+pst_to_i(st)
+    VALUE st;
+{
+    return rb_iv_get(st, &quot;status&quot;);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000164">
+                    
+                    <a name="M000164"></a><b>stat.to_s   => string
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Equivalent to <em>stat</em><tt>.to_i.to_s</tt>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000164_source')" id="l_M000164_source">show</a>
+                        
+                    </p>
+                    <div id="M000164_source" class="dyn-source">
+                        <pre>static VALUE
+pst_to_s(st)
+    VALUE st;
+{
+    return rb_fix2str(pst_to_i(st), 10);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

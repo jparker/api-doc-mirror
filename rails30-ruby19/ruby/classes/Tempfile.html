@@ -1,0 +1,807 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Tempfile</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            Tempfile 
+            
+                <span class="parent">&lt; 
+                    
+                    DelegateClass(File)
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/lib/tempfile_rb.html">lib/tempfile.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+<a href="A.html">A</a> utility class for managing temporary files. When you
+create a <a href="Tempfile.html">Tempfile</a> object, it will create a
+temporary file with a unique filename. <a href="A.html">A</a> <a
+href="Tempfile.html">Tempfile</a> objects behaves just like a <a
+href="File.html">File</a> object, and you can perform all the usual file
+operations on it: reading data, writing data, changing its permissions,
+etc. So although this class does not explicitly document all instance
+methods supported by <a href="File.html">File</a>, you can in fact call any
+<a href="File.html">File</a> instance method on a <a
+href="Tempfile.html">Tempfile</a> object.
+</p>
+<h2>Synopsis</h2>
+<pre>
+  require 'tempfile'
+
+  file = Tempfile.new('foo')
+  file.path      # =&gt; A unique filename in the OS's temp directory,
+                 #    e.g.: &quot;/tmp/foo.24722.0&quot;
+                 #    This filename contains 'foo' in its basename.
+  file.write(&quot;hello world&quot;)
+  file.rewind
+  file.read      # =&gt; &quot;hello world&quot;
+  file.close
+  file.unlink    # deletes the temp file
+</pre>
+<h2>Good practices</h2>
+<h3>Explicit close</h3>
+<p>
+When a <a href="Tempfile.html">Tempfile</a> object is garbage collected, or
+when the Ruby interpreter exits, its associated temporary file is
+automatically deleted. This means that&#8217;s it&#8217;s unnecessary to
+explicitly delete a <a href="Tempfile.html">Tempfile</a> after use, though
+it&#8217;s good practice to do so: not explicitly deleting unused Tempfiles
+can potentially leave behind large amounts of tempfiles on the filesystem
+until they&#8217;re garbage collected. The existance of these temp files
+can make it harder to determine a new <a href="Tempfile.html">Tempfile</a>
+filename.
+</p>
+<p>
+Therefore, one should always call <a
+href="Tempfile.html#M004660">unlink</a> or close in an ensure block, like
+this:
+</p>
+<pre>
+  file = Tempfile.new('foo')
+  begin
+     ...do something with file...
+  ensure
+     file.close
+     file.unlink   # deletes the temp file
+  end
+</pre>
+<h3>Unlink after creation</h3>
+<p>
+On POSIX systems, it&#8217;s possible to unlink a file right after creating
+it, and before closing it. This removes the filesystem entry without
+closing the file handle, so it ensures that only the processes that already
+had the file handle open can access the file&#8217;s contents. It&#8217;s
+strongly recommended that you do this if you do not want any other
+processes to be able to read from or write to the <a
+href="Tempfile.html">Tempfile</a>, and you do not need to know the
+Tempfile&#8217;s filename either.
+</p>
+<p>
+For example, a practical use case for unlink-after-creation would be this:
+you need a large byte buffer that&#8217;s too large to comfortably fit in
+RAM, e.g. when you&#8217;re writing a web server and you want to buffer the
+client&#8217;s file upload data.
+</p>
+<p>
+Please refer to <a href="Tempfile.html#M004660">unlink</a> for more
+information and a code example.
+</p>
+<h2>Minor notes</h2>
+<p>
+Tempfile&#8217;s filename picking method is both thread-safe and
+inter-process-safe: it guarantees that no other threads or processes will
+pick the same filename.
+</p>
+<p>
+<a href="Tempfile.html">Tempfile</a> itself however may not be entirely
+thread-safe. If you access the same <a href="Tempfile.html">Tempfile</a>
+object from multiple threads then you should protect it with a mutex.
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004658">close</a>,</li>
+                
+                <li><a href="#M004659">close!</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>D</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004661">delete</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>L</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004664">length</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>M</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004666">mkdir</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004655">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>O</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004656">open</a>,</li>
+                
+                <li><a href="#M004665">open</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>P</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004662">path</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>R</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004667">rmdir</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004663">size</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>U</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004660">unlink</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+    <div class="sectiontitle">Included Modules</div>
+    <ul>
+        
+        <li>
+            
+            <a href="Kernel.html">Kernel</a>
+            
+            START:includes
+        </li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M004666">
+                    
+                    <a name="M004666"></a><b>mkdir</b>(*args)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004666_source')" id="l_M004666_source">show</a>
+                        
+                    </p>
+                    <div id="M004666_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/tempfile.rb, line 329</span>
+329:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">mkdir</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+330:       <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">mkdir</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+331:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004655">
+                    
+                    <a name="M004655"></a><b>new(basename, [tmpdir = Dir.tmpdir], [options])
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Creates a temporary file with permissions 0600 (= only readable and
+writable by the owner) and opens it with mode &#8220;w+&#8221;.
+</p>
+<p>
+The <tt>basename</tt> parameter is used to determine the name of the
+temporary file. You can either pass a <a href="String.html">String</a> or
+an <a href="Array.html">Array</a> with 2 <a href="String.html">String</a>
+elements. In the former form, the temporary file&#8217;s base name will
+begin with the given string. In the latter form, the temporary file&#8217;s
+base name will begin with the array&#8217;s first element, and end with the
+second element. For example:
+</p>
+<pre>
+  file = Tempfile.new('hello')
+  file.path  # =&gt; something like: &quot;/tmp/foo2843-8392-92849382--0&quot;
+
+  # Use the Array form to enforce an extension in the filename:
+  file = Tempfile.new(['hello', '.jpg'])
+  file.path  # =&gt; something like: &quot;/tmp/foo2843-8392-92849382--0.jpg&quot;
+</pre>
+<p>
+The temporary file will be placed in the directory as specified by the
+<tt>tmpdir</tt> parameter. By default, this is <tt><a
+href="Dir.html#M002191">Dir.tmpdir</a></tt>. When $SAFE > 0 and the given
+<tt>tmpdir</tt> is tainted, it uses &#8217;/tmp&#8217; as the temporary
+directory. Please note that ENV values are tainted by default, and <tt><a
+href="Dir.html#M002191">Dir.tmpdir</a></tt>&#8217;s return value might come
+from environment variables (e.g. <tt>$TMPDIR</tt>).
+</p>
+<pre>
+  file = Tempfile.new('hello', '/home/aisaka')
+  file.path  # =&gt; something like: &quot;/home/aisaka/foo2843-8392-92849382--0&quot;
+</pre>
+<p>
+You can also pass an options hash. Under the hood, <a
+href="Tempfile.html">Tempfile</a> creates the temporary file using <tt><a
+href="File.html#M000667">File.open</a></tt>. These options will be passed
+to <tt><a href="File.html#M000667">File.open</a></tt>. This is mostly
+useful for specifying encoding options, e.g.:
+</p>
+<pre>
+  Tempfile.new('hello', '/home/aisaka', :encoding =&gt; 'ascii-8bit')
+
+  # You can also omit the 'tmpdir' parameter:
+  Tempfile.new('hello', :encoding =&gt; 'ascii-8bit')
+</pre>
+<h3>Exceptions</h3>
+<p>
+If <a href="Tempfile.html#M004655">Tempfile.new</a> cannot find a unique
+filename within a limited number of tries, then it will raise an exception.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004655_source')" id="l_M004655_source">show</a>
+                        
+                    </p>
+                    <div id="M004655_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/tempfile.rb, line 129</span>
+129:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">basename</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">rest</span>)
+130:     <span class="ruby-ivar">@data</span> = []
+131:     <span class="ruby-ivar">@clean_proc</span> = <span class="ruby-constant">Remover</span>.<span class="ruby-identifier">new</span>(<span class="ruby-ivar">@data</span>)
+132:     <span class="ruby-constant">ObjectSpace</span>.<span class="ruby-identifier">define_finalizer</span>(<span class="ruby-keyword kw">self</span>, <span class="ruby-ivar">@clean_proc</span>)
+133: 
+134:     <span class="ruby-identifier">create</span>(<span class="ruby-identifier">basename</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">rest</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">tmpname</span>, <span class="ruby-identifier">n</span>, <span class="ruby-identifier">opts</span><span class="ruby-operator">|</span>
+135:       <span class="ruby-identifier">lock</span> = <span class="ruby-identifier">tmpname</span> <span class="ruby-operator">+</span> <span class="ruby-value str">'.lock'</span>
+136:       <span class="ruby-identifier">mode</span> = <span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-constant">RDWR</span><span class="ruby-operator">|</span><span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-constant">CREAT</span><span class="ruby-operator">|</span><span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-constant">EXCL</span>
+137:       <span class="ruby-identifier">perm</span> = <span class="ruby-value">0600</span>
+138:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">opts</span>
+139:         <span class="ruby-identifier">mode</span> <span class="ruby-operator">|=</span> <span class="ruby-identifier">opts</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:mode</span>) <span class="ruby-operator">||</span> <span class="ruby-value">0</span>
+140:         <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:perm</span>] = <span class="ruby-identifier">perm</span>
+141:         <span class="ruby-identifier">perm</span> = <span class="ruby-keyword kw">nil</span>
+142:       <span class="ruby-keyword kw">else</span>
+143:         <span class="ruby-identifier">opts</span> = <span class="ruby-identifier">perm</span>
+144:       <span class="ruby-keyword kw">end</span>
+145:       <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">mkdir</span>(<span class="ruby-identifier">lock</span>)
+146:       <span class="ruby-keyword kw">begin</span>
+147:         <span class="ruby-ivar">@data</span>[<span class="ruby-value">1</span>] = <span class="ruby-ivar">@tmpfile</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-identifier">tmpname</span>, <span class="ruby-identifier">mode</span>, <span class="ruby-identifier">opts</span>)
+148:         <span class="ruby-ivar">@data</span>[<span class="ruby-value">0</span>] = <span class="ruby-ivar">@tmpname</span> = <span class="ruby-identifier">tmpname</span>
+149:       <span class="ruby-keyword kw">ensure</span>
+150:         <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">rmdir</span>(<span class="ruby-identifier">lock</span>)
+151:       <span class="ruby-keyword kw">end</span>
+152:       <span class="ruby-ivar">@mode</span> = <span class="ruby-identifier">mode</span> <span class="ruby-operator">&amp;</span> <span class="ruby-operator">~</span>(<span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-constant">CREAT</span><span class="ruby-operator">|</span><span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-constant">EXCL</span>)
+153:       <span class="ruby-identifier">perm</span> <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">opts</span>.<span class="ruby-identifier">freeze</span>
+154:       <span class="ruby-ivar">@opts</span> = <span class="ruby-identifier">opts</span>
+155:     <span class="ruby-keyword kw">end</span>
+156: 
+157:     <span class="ruby-keyword kw">super</span>(<span class="ruby-ivar">@tmpfile</span>)
+158:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004665">
+                    
+                    <a name="M004665"></a><b>open</b>(*args)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Creates a new <a href="Tempfile.html">Tempfile</a>.
+</p>
+<p>
+If no block is given, this is a synonym for <a
+href="Tempfile.html#M004655">Tempfile.new</a>.
+</p>
+<p>
+If a block is given, then a <a href="Tempfile.html">Tempfile</a> object
+will be constructed, and the block is run with said object as argument. The
+<a href="Tempfile.html">Tempfile</a> oject will be automatically closed
+after the block terminates. The call returns the value of the block.
+</p>
+<p>
+In any case, all arguments (+*args+) will be passed to <a
+href="Tempfile.html#M004655">Tempfile.new</a>.
+</p>
+<pre>
+  Tempfile.open('foo', '/home/temp') do |f|
+     ... do something with f ...
+  end
+
+  # Equivalent:
+  f = Tempfile.open('foo', '/home/temp')
+  begin
+     ... do something with f ...
+  ensure
+     f.close
+  end
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004665_source')" id="l_M004665_source">show</a>
+                        
+                    </p>
+                    <div id="M004665_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/tempfile.rb, line 315</span>
+315:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">open</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+316:       <span class="ruby-identifier">tempfile</span> = <span class="ruby-identifier">new</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+317: 
+318:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">block_given?</span>
+319:         <span class="ruby-keyword kw">begin</span>
+320:           <span class="ruby-keyword kw">yield</span>(<span class="ruby-identifier">tempfile</span>)
+321:         <span class="ruby-keyword kw">ensure</span>
+322:           <span class="ruby-identifier">tempfile</span>.<span class="ruby-identifier">close</span>
+323:         <span class="ruby-keyword kw">end</span>
+324:       <span class="ruby-keyword kw">else</span>
+325:         <span class="ruby-identifier">tempfile</span>
+326:       <span class="ruby-keyword kw">end</span>
+327:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004667">
+                    
+                    <a name="M004667"></a><b>rmdir</b>(*args)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004667_source')" id="l_M004667_source">show</a>
+                        
+                    </p>
+                    <div id="M004667_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/tempfile.rb, line 332</span>
+332:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">rmdir</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+333:       <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">rmdir</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+334:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M004658">
+                    
+                    <a name="M004658"></a><b>close</b>(unlink_now=false)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Closes the file. If <tt>unlink_now</tt> is true, then the file will be
+unlinked (deleted) after closing. Of course, you can choose to later call
+<a href="Tempfile.html#M004660">unlink</a> if you do not unlink it now.
+</p>
+<p>
+If you don&#8217;t explicitly unlink the temporary file, the removal will
+be delayed until the object is finalized.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004658_source')" id="l_M004658_source">show</a>
+                        
+                    </p>
+                    <div id="M004658_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/tempfile.rb, line 181</span>
+181:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">close</span>(<span class="ruby-identifier">unlink_now</span>=<span class="ruby-keyword kw">false</span>)
+182:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">unlink_now</span>
+183:       <span class="ruby-identifier">close!</span>
+184:     <span class="ruby-keyword kw">else</span>
+185:       <span class="ruby-identifier">_close</span>
+186:     <span class="ruby-keyword kw">end</span>
+187:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004659">
+                    
+                    <a name="M004659"></a><b>close!</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Closes and unlinks (deletes) the file. Has the same effect as called
+<tt>close(true)</tt>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004659_source')" id="l_M004659_source">show</a>
+                        
+                    </p>
+                    <div id="M004659_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/tempfile.rb, line 191</span>
+191:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">close!</span>
+192:     <span class="ruby-identifier">_close</span>
+193:     <span class="ruby-identifier">unlink</span>
+194:     <span class="ruby-constant">ObjectSpace</span>.<span class="ruby-identifier">undefine_finalizer</span>(<span class="ruby-keyword kw">self</span>)
+195:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004661">
+                    
+                    <a name="M004661"></a><b>delete</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a href="Tempfile.html#M004660">unlink</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004664">
+                    
+                    <a name="M004664"></a><b>length</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a href="Tempfile.html#M004663">size</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004656">
+                    
+                    <a name="M004656"></a><b>open</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Opens or reopens the file with mode &#8220;r+&#8221;.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004656_source')" id="l_M004656_source">show</a>
+                        
+                    </p>
+                    <div id="M004656_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/tempfile.rb, line 161</span>
+161:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">open</span>
+162:     <span class="ruby-ivar">@tmpfile</span>.<span class="ruby-identifier">close</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@tmpfile</span>
+163:     <span class="ruby-ivar">@tmpfile</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-ivar">@tmpname</span>, <span class="ruby-ivar">@mode</span>, <span class="ruby-ivar">@opts</span>)
+164:     <span class="ruby-ivar">@data</span>[<span class="ruby-value">1</span>] = <span class="ruby-ivar">@tmpfile</span>
+165:     <span class="ruby-identifier">__setobj__</span>(<span class="ruby-ivar">@tmpfile</span>)
+166:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004662">
+                    
+                    <a name="M004662"></a><b>path</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the full path name of the temporary file. This will be nil if <a
+href="Tempfile.html#M004660">unlink</a> has been called.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004662_source')" id="l_M004662_source">show</a>
+                        
+                    </p>
+                    <div id="M004662_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/tempfile.rb, line 248</span>
+248:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">path</span>
+249:     <span class="ruby-ivar">@tmpname</span>
+250:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004663">
+                    
+                    <a name="M004663"></a><b>size</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the size of the temporary file. As a side effect, the <a
+href="IO.html">IO</a> buffer is flushed before determining the size.
+</p>
+
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="Tempfile.html#M004664">length</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004663_source')" id="l_M004663_source">show</a>
+                        
+                    </p>
+                    <div id="M004663_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/tempfile.rb, line 254</span>
+254:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">size</span>
+255:     <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@tmpfile</span>
+256:       <span class="ruby-ivar">@tmpfile</span>.<span class="ruby-identifier">flush</span>
+257:       <span class="ruby-ivar">@tmpfile</span>.<span class="ruby-identifier">stat</span>.<span class="ruby-identifier">size</span>
+258:     <span class="ruby-keyword kw">elsif</span> <span class="ruby-ivar">@tmpname</span>
+259:       <span class="ruby-constant">File</span>.<span class="ruby-identifier">size</span>(<span class="ruby-ivar">@tmpname</span>)
+260:     <span class="ruby-keyword kw">else</span>
+261:       <span class="ruby-value">0</span>
+262:     <span class="ruby-keyword kw">end</span>
+263:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004660">
+                    
+                    <a name="M004660"></a><b>unlink</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Unlinks (deletes) the file from the filesystem. One should always unlink
+the file after using it, as is explained in the &#8220;Explicit
+close&#8221; good practice section in the <a
+href="Tempfile.html">Tempfile</a> overview:
+</p>
+<pre>
+  file = Tempfile.new('foo')
+  begin
+     ...do something with file...
+  ensure
+     file.close
+     file.unlink   # deletes the temp file
+  end
+</pre>
+<h3>Unlink-before-close</h3>
+<p>
+On POSIX systems it&#8217;s possible to unlink a file before closing it.
+This practice is explained in detail in the <a
+href="Tempfile.html">Tempfile</a> overview (section &#8220;Unlink after
+creation&#8221;); please refer there for more information.
+</p>
+<p>
+However, unlink-before-close may not be supported on non-POSIX operating
+systems. Microsoft Windows is the most notable case: unlinking a non-closed
+file will result in an error, which this method will silently ignore. If
+you want to practice unlink-before-close whenever possible, then you should
+write code like this:
+</p>
+<pre>
+  file = Tempfile.new('foo')
+  file.unlink   # On Windows this silently fails.
+  begin
+     ... do something with file ...
+  ensure
+     file.close!   # Closes the file handle. If the file wasn't unlinked
+                   # because #unlink failed, then this method will attempt
+                   # to do so again.
+  end
+</pre>
+
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="Tempfile.html#M004661">delete</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004660_source')" id="l_M004660_source">show</a>
+                        
+                    </p>
+                    <div id="M004660_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/tempfile.rb, line 230</span>
+230:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">unlink</span>
+231:     <span class="ruby-comment cmt"># keep this order for thread safeness</span>
+232:     <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@tmpname</span>
+233:     <span class="ruby-keyword kw">begin</span>
+234:       <span class="ruby-keyword kw">if</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-ivar">@tmpname</span>)
+235:         <span class="ruby-constant">File</span>.<span class="ruby-identifier">unlink</span>(<span class="ruby-ivar">@tmpname</span>)
+236:       <span class="ruby-keyword kw">end</span>
+237:       <span class="ruby-comment cmt"># remove tmpname from remover</span>
+238:       <span class="ruby-ivar">@data</span>[<span class="ruby-value">0</span>] = <span class="ruby-ivar">@data</span>[<span class="ruby-value">2</span>] = <span class="ruby-keyword kw">nil</span>
+239:       <span class="ruby-ivar">@tmpname</span> = <span class="ruby-keyword kw">nil</span>
+240:     <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Errno</span><span class="ruby-operator">::</span><span class="ruby-constant">EACCES</span>
+241:       <span class="ruby-comment cmt"># may not be able to unlink on Windows; just ignore</span>
+242:     <span class="ruby-keyword kw">end</span>
+243:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

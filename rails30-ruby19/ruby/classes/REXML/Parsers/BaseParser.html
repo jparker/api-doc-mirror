@@ -1,0 +1,1329 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>REXML::Parsers::BaseParser</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            REXML::Parsers::BaseParser 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../../Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../../files/lib/rexml/parsers/baseparser_rb.html">lib/rexml/parsers/baseparser.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <h1>Using the Pull Parser</h1>
+<p>
+<em>This API is experimental, and subject to change.</em>
+</p>
+<pre>
+ parser = PullParser.new( &quot;&lt;a&gt;text&lt;b att='val'/&gt;txet&lt;/a&gt;&quot; )
+ while parser.has_next?
+   res = parser.next
+   puts res[1]['att'] if res.start_tag? and res[0] == 'b'
+ end
+</pre>
+<p>
+See the <a href="PullEvent.html">PullEvent</a> class for information on the
+content of the results. The data is identical to the arguments passed for
+the various events to the <a
+href="../StreamListener.html">StreamListener</a> API.
+</p>
+<p>
+Notice that:
+</p>
+<pre>
+ parser = PullParser.new( &quot;&lt;a&gt;BAD DOCUMENT&quot; )
+ while parser.has_next?
+   res = parser.next
+   raise res[1] if res.error?
+ end
+</pre>
+<p>
+Nat Price gave me some good ideas for the API.
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>A</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002623">add_listener</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002626">empty?</a>,</li>
+                
+                <li><a href="#M002634">entity</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>H</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002627">has_next?</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002622">new</a>,</li>
+                
+                <li><a href="#M002635">normalize</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>P</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002629">peek</a>,</li>
+                
+                <li><a href="#M002625">position</a>,</li>
+                
+                <li><a href="#M002633">pull</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002624">stream=</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>U</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002636">unnormalize</a>,</li>
+                
+                <li><a href="#M002628">unshift</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">LETTER</td>
+            <td>=</td>
+            <td class="attr-value">'[:alpha:]'</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">DIGIT</td>
+            <td>=</td>
+            <td class="attr-value">'[:digit:]'</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">COMBININGCHAR</td>
+            <td>=</td>
+            <td class="attr-value">''</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">EXTENDER</td>
+            <td>=</td>
+            <td class="attr-value">''</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">NCNAME_STR</td>
+            <td>=</td>
+            <td class="attr-value">&quot;[#{LETTER}_:][-[:alnum:]._:#{COMBININGCHAR}#{EXTENDER}]*&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">NAME_STR</td>
+            <td>=</td>
+            <td class="attr-value">&quot;(?:(#{NCNAME_STR}):)?(#{NCNAME_STR})&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">UNAME_STR</td>
+            <td>=</td>
+            <td class="attr-value">&quot;(?:#{NCNAME_STR}:)?#{NCNAME_STR}&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">NAMECHAR</td>
+            <td>=</td>
+            <td class="attr-value">'[\-\w\.:]'</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">NAME</td>
+            <td>=</td>
+            <td class="attr-value">&quot;([\\w:]#{NAMECHAR}*)&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">NMTOKEN</td>
+            <td>=</td>
+            <td class="attr-value">&quot;(?:#{NAMECHAR})+&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">NMTOKENS</td>
+            <td>=</td>
+            <td class="attr-value">&quot;#{NMTOKEN}(\\s+#{NMTOKEN})*&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">REFERENCE</td>
+            <td>=</td>
+            <td class="attr-value">&quot;&amp;(?:#{NAME};|#\\d+;|#x[0-9a-fA-F]+;)&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">REFERENCE_RE</td>
+            <td>=</td>
+            <td class="attr-value">/#{REFERENCE}/</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">DOCTYPE_START</td>
+            <td>=</td>
+            <td class="attr-value">/\A\s*&lt;!DOCTYPE\s/um</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">DOCTYPE_PATTERN</td>
+            <td>=</td>
+            <td class="attr-value">/\s*&lt;!DOCTYPE\s+(.*?)(\[|&gt;)/um</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ATTRIBUTE_PATTERN</td>
+            <td>=</td>
+            <td class="attr-value">/\s*(#{NAME_STR})\s*=\s*([&quot;'])(.*?)\4/um</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">COMMENT_START</td>
+            <td>=</td>
+            <td class="attr-value">/\A&lt;!--/u</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">COMMENT_PATTERN</td>
+            <td>=</td>
+            <td class="attr-value">/&lt;!--(.*?)--&gt;/um</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">CDATA_START</td>
+            <td>=</td>
+            <td class="attr-value">/\A&lt;!\[CDATA\[/u</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">CDATA_END</td>
+            <td>=</td>
+            <td class="attr-value">/^\s*\]\s*&gt;/um</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">CDATA_PATTERN</td>
+            <td>=</td>
+            <td class="attr-value">/&lt;!\[CDATA\[(.*?)\]\]&gt;/um</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">XMLDECL_START</td>
+            <td>=</td>
+            <td class="attr-value">/\A&lt;\?xml\s/u;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">XMLDECL_PATTERN</td>
+            <td>=</td>
+            <td class="attr-value">/&lt;\?xml\s+(.*?)\?&gt;/um</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">INSTRUCTION_START</td>
+            <td>=</td>
+            <td class="attr-value">/\A&lt;\?/u</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">INSTRUCTION_PATTERN</td>
+            <td>=</td>
+            <td class="attr-value">/&lt;\?(.*?)(\s+.*?)?\?&gt;/um</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">TAG_MATCH</td>
+            <td>=</td>
+            <td class="attr-value">/^&lt;((?&gt;#{NAME_STR}))\s*((?&gt;\s+#{UNAME_STR}\s*=\s*([&quot;']).*?\5)*)\s*(\/)?&gt;/um</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">CLOSE_MATCH</td>
+            <td>=</td>
+            <td class="attr-value">/^\s*&lt;\/(#{NAME_STR})\s*&gt;/um</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">VERSION</td>
+            <td>=</td>
+            <td class="attr-value">/\bversion\s*=\s*[&quot;'](.*?)['&quot;]/um</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ENCODING</td>
+            <td>=</td>
+            <td class="attr-value">/\bencoding\s*=\s*[&quot;'](.*?)['&quot;]/um</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">STANDALONE</td>
+            <td>=</td>
+            <td class="attr-value">/\bstandalone\s*=\s*[&quot;'](.*?)['&quot;]/um</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ENTITY_START</td>
+            <td>=</td>
+            <td class="attr-value">/^\s*&lt;!ENTITY/</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">IDENTITY</td>
+            <td>=</td>
+            <td class="attr-value">/^([!\*\w\-]+)(\s+#{NCNAME_STR})?(\s+[&quot;'](.*?)['&quot;])?(\s+['&quot;](.*?)[&quot;'])?/u</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ELEMENTDECL_START</td>
+            <td>=</td>
+            <td class="attr-value">/^\s*&lt;!ELEMENT/um</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ELEMENTDECL_PATTERN</td>
+            <td>=</td>
+            <td class="attr-value">/^\s*(&lt;!ELEMENT.*?)&gt;/um</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">SYSTEMENTITY</td>
+            <td>=</td>
+            <td class="attr-value">/^\s*(%.*?;)\s*$/um</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ENUMERATION</td>
+            <td>=</td>
+            <td class="attr-value">&quot;\\(\\s*#{NMTOKEN}(?:\\s*\\|\\s*#{NMTOKEN})*\\s*\\)&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">NOTATIONTYPE</td>
+            <td>=</td>
+            <td class="attr-value">&quot;NOTATION\\s+\\(\\s*#{NAME}(?:\\s*\\|\\s*#{NAME})*\\s*\\)&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ENUMERATEDTYPE</td>
+            <td>=</td>
+            <td class="attr-value">&quot;(?:(?:#{NOTATIONTYPE})|(?:#{ENUMERATION}))&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ATTTYPE</td>
+            <td>=</td>
+            <td class="attr-value">&quot;(CDATA|ID|IDREF|IDREFS|ENTITY|ENTITIES|NMTOKEN|NMTOKENS|#{ENUMERATEDTYPE})&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ATTVALUE</td>
+            <td>=</td>
+            <td class="attr-value">&quot;(?:\&quot;((?:[^&lt;&amp;\&quot;]|#{REFERENCE})*)\&quot;)|(?:'((?:[^&lt;&amp;']|#{REFERENCE})*)')&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">DEFAULTDECL</td>
+            <td>=</td>
+            <td class="attr-value">&quot;(#REQUIRED|#IMPLIED|(?:(#FIXED\\s+)?#{ATTVALUE}))&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ATTDEF</td>
+            <td>=</td>
+            <td class="attr-value">&quot;\\s+#{NAME}\\s+#{ATTTYPE}\\s+#{DEFAULTDECL}&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ATTDEF_RE</td>
+            <td>=</td>
+            <td class="attr-value">/#{ATTDEF}/</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ATTLISTDECL_START</td>
+            <td>=</td>
+            <td class="attr-value">/^\s*&lt;!ATTLIST/um</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ATTLISTDECL_PATTERN</td>
+            <td>=</td>
+            <td class="attr-value">/^\s*&lt;!ATTLIST\s+#{NAME}(?:#{ATTDEF})*\s*&gt;/um</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">NOTATIONDECL_START</td>
+            <td>=</td>
+            <td class="attr-value">/^\s*&lt;!NOTATION/um</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">PUBLIC</td>
+            <td>=</td>
+            <td class="attr-value">/^\s*&lt;!NOTATION\s+(\w[\-\w]*)\s+(PUBLIC)\s+([&quot;'])(.*?)\3(?:\s+([&quot;'])(.*?)\5)?\s*&gt;/um</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">SYSTEM</td>
+            <td>=</td>
+            <td class="attr-value">/^\s*&lt;!NOTATION\s+(\w[\-\w]*)\s+(SYSTEM)\s+([&quot;'])(.*?)\3\s*&gt;/um</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">TEXT_PATTERN</td>
+            <td>=</td>
+            <td class="attr-value">/\A([^&lt;]*)/um</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">PUBIDCHAR</td>
+            <td>=</td>
+            <td class="attr-value">&quot;\x20\x0D\x0Aa-zA-Z0-9\\-()+,./:=?;!*@$_%#&quot;</td>
+        </tr>
+        
+        <tr valign='top'>
+            <td>&nbsp;</td>
+            <td colspan="2" class="attr-desc"><p>
+<a href="../Entity.html">Entity</a> constants
+</p>
+</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">SYSTEMLITERAL</td>
+            <td>=</td>
+            <td class="attr-value">%Q{((?:&quot;[^&quot;]*&quot;)|(?:'[^']*'))}</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">PUBIDLITERAL</td>
+            <td>=</td>
+            <td class="attr-value">%Q{(&quot;[#{PUBIDCHAR}']*&quot;|'[#{PUBIDCHAR}]*')}</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">EXTERNALID</td>
+            <td>=</td>
+            <td class="attr-value">&quot;(?:(?:(SYSTEM)\\s+#{SYSTEMLITERAL})|(?:(PUBLIC)\\s+#{PUBIDLITERAL}\\s+#{SYSTEMLITERAL}))&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">NDATADECL</td>
+            <td>=</td>
+            <td class="attr-value">&quot;\\s+NDATA\\s+#{NAME}&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">PEREFERENCE</td>
+            <td>=</td>
+            <td class="attr-value">&quot;%#{NAME};&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ENTITYVALUE</td>
+            <td>=</td>
+            <td class="attr-value">%Q{((?:&quot;(?:[^%&amp;&quot;]|#{PEREFERENCE}|#{REFERENCE})*&quot;)|(?:'([^%&amp;']|#{PEREFERENCE}|#{REFERENCE})*'))}</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">PEDEF</td>
+            <td>=</td>
+            <td class="attr-value">&quot;(?:#{ENTITYVALUE}|#{EXTERNALID})&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ENTITYDEF</td>
+            <td>=</td>
+            <td class="attr-value">&quot;(?:#{ENTITYVALUE}|(?:#{EXTERNALID}(#{NDATADECL})?))&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">PEDECL</td>
+            <td>=</td>
+            <td class="attr-value">&quot;&lt;!ENTITY\\s+(%)\\s+#{NAME}\\s+#{PEDEF}\\s*&gt;&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">GEDECL</td>
+            <td>=</td>
+            <td class="attr-value">&quot;&lt;!ENTITY\\s+#{NAME}\\s+#{ENTITYDEF}\\s*&gt;&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ENTITYDECL</td>
+            <td>=</td>
+            <td class="attr-value">/\s*(?:#{GEDECL})|(?:#{PEDECL})/um</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">EREFERENCE</td>
+            <td>=</td>
+            <td class="attr-value">/&amp;(?!#{NAME};)/</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">DEFAULT_ENTITIES</td>
+            <td>=</td>
+            <td class="attr-value">{         'gt' =&gt; [/&amp;gt;/, '&amp;gt;', '&gt;', /&gt;/],         'lt' =&gt; [/&amp;lt;/, '&amp;lt;', '&lt;', /&lt;/],         'quot' =&gt; [/&amp;quot;/, '&amp;quot;', '&quot;', /&quot;/],         &quot;apos&quot; =&gt; [/&amp;apos;/, &quot;&amp;apos;&quot;, &quot;'&quot;, /'/]       }</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">MISSING_ATTRIBUTE_QUOTES</td>
+            <td>=</td>
+            <td class="attr-value">/^&lt;#{NAME_STR}\s+#{NAME_STR}\s*=\s*[^&quot;']/um</td>
+        </tr>
+        
+        <tr valign='top'>
+            <td>&nbsp;</td>
+            <td colspan="2" class="attr-desc"><p>
+These are patterns to identify common markup errors, to make the error
+messages more informative.
+</p>
+</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+    <div class="sectiontitle">Attributes</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>source</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+    </table>
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M002622">
+                    
+                    <a name="M002622"></a><b>new</b>( source )
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002622_source')" id="l_M002622_source">show</a>
+                        
+                    </p>
+                    <div id="M002622_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rexml/parsers/baseparser.rb, line 115</span>
+115:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>( <span class="ruby-identifier">source</span> )
+116:         <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">stream</span> = <span class="ruby-identifier">source</span>
+117:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M002623">
+                    
+                    <a name="M002623"></a><b>add_listener</b>( listener )
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002623_source')" id="l_M002623_source">show</a>
+                        
+                    </p>
+                    <div id="M002623_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rexml/parsers/baseparser.rb, line 119</span>
+119:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">add_listener</span>( <span class="ruby-identifier">listener</span> )
+120:         <span class="ruby-keyword kw">if</span> <span class="ruby-operator">!</span><span class="ruby-keyword kw">defined?</span>(<span class="ruby-ivar">@listeners</span>) <span class="ruby-keyword kw">or</span> <span class="ruby-operator">!</span><span class="ruby-ivar">@listeners</span>
+121:           <span class="ruby-ivar">@listeners</span> = []
+122:           <span class="ruby-identifier">instance_eval</span> <span class="ruby-value str">&quot;alias :_old_pull :pull\ndef pull\nevent = _old_pull\n@listeners.each do |listener|\nlistener.receive event\nend\nevent\nend\n&quot;</span>
+123:         <span class="ruby-keyword kw">end</span>
+124:         <span class="ruby-ivar">@listeners</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">listener</span>
+125:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002626">
+                    
+                    <a name="M002626"></a><b>empty?</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns true if there are no more events
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002626_source')" id="l_M002626_source">show</a>
+                        
+                    </p>
+                    <div id="M002626_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rexml/parsers/baseparser.rb, line 159</span>
+159:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">empty?</span>
+160:         <span class="ruby-keyword kw">return</span> (<span class="ruby-ivar">@source</span>.<span class="ruby-identifier">empty?</span> <span class="ruby-keyword kw">and</span> <span class="ruby-ivar">@stack</span>.<span class="ruby-identifier">empty?</span>)
+161:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002634">
+                    
+                    <a name="M002634"></a><b>entity</b>( reference, entities )
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002634_source')" id="l_M002634_source">show</a>
+                        
+                    </p>
+                    <div id="M002634_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rexml/parsers/baseparser.rb, line 447</span>
+447:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">entity</span>( <span class="ruby-identifier">reference</span>, <span class="ruby-identifier">entities</span> )
+448:         <span class="ruby-identifier">value</span> = <span class="ruby-keyword kw">nil</span>
+449:         <span class="ruby-identifier">value</span> = <span class="ruby-identifier">entities</span>[ <span class="ruby-identifier">reference</span> ] <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">entities</span>
+450:         <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">not</span> <span class="ruby-identifier">value</span>
+451:           <span class="ruby-identifier">value</span> = <span class="ruby-constant">DEFAULT_ENTITIES</span>[ <span class="ruby-identifier">reference</span> ]
+452:           <span class="ruby-identifier">value</span> = <span class="ruby-identifier">value</span>[<span class="ruby-value">2</span>] <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">value</span>
+453:         <span class="ruby-keyword kw">end</span>
+454:         <span class="ruby-identifier">unnormalize</span>( <span class="ruby-identifier">value</span>, <span class="ruby-identifier">entities</span> ) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">value</span>
+455:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002627">
+                    
+                    <a name="M002627"></a><b>has_next?</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns true if there are more events. Synonymous with !empty?
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002627_source')" id="l_M002627_source">show</a>
+                        
+                    </p>
+                    <div id="M002627_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rexml/parsers/baseparser.rb, line 164</span>
+164:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">has_next?</span>
+165:         <span class="ruby-keyword kw">return</span> <span class="ruby-operator">!</span>(<span class="ruby-ivar">@source</span>.<span class="ruby-identifier">empty?</span> <span class="ruby-keyword kw">and</span> <span class="ruby-ivar">@stack</span>.<span class="ruby-identifier">empty?</span>)
+166:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002635">
+                    
+                    <a name="M002635"></a><b>normalize</b>( input, entities=nil, entity_filter=nil )
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Escapes all possible entities
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002635_source')" id="l_M002635_source">show</a>
+                        
+                    </p>
+                    <div id="M002635_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rexml/parsers/baseparser.rb, line 458</span>
+458:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">normalize</span>( <span class="ruby-identifier">input</span>, <span class="ruby-identifier">entities</span>=<span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">entity_filter</span>=<span class="ruby-keyword kw">nil</span> )
+459:         <span class="ruby-identifier">copy</span> = <span class="ruby-identifier">input</span>.<span class="ruby-identifier">clone</span>
+460:         <span class="ruby-comment cmt"># Doing it like this rather than in a loop improves the speed</span>
+461:         <span class="ruby-identifier">copy</span>.<span class="ruby-identifier">gsub!</span>( <span class="ruby-constant">EREFERENCE</span>, <span class="ruby-value str">'&amp;amp;'</span> )
+462:         <span class="ruby-identifier">entities</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">key</span>, <span class="ruby-identifier">value</span><span class="ruby-operator">|</span>
+463:           <span class="ruby-identifier">copy</span>.<span class="ruby-identifier">gsub!</span>( <span class="ruby-identifier">value</span>, <span class="ruby-node">&quot;&amp;#{key};&quot;</span> ) <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">entity_filter</span> <span class="ruby-keyword kw">and</span>
+464:                                       <span class="ruby-identifier">entity_filter</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">entity</span>)
+465:         <span class="ruby-keyword kw">end</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">entities</span>
+466:         <span class="ruby-identifier">copy</span>.<span class="ruby-identifier">gsub!</span>( <span class="ruby-constant">EREFERENCE</span>, <span class="ruby-value str">'&amp;amp;'</span> )
+467:         <span class="ruby-constant">DEFAULT_ENTITIES</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">key</span>, <span class="ruby-identifier">value</span><span class="ruby-operator">|</span>
+468:           <span class="ruby-identifier">copy</span>.<span class="ruby-identifier">gsub!</span>( <span class="ruby-identifier">value</span>[<span class="ruby-value">3</span>], <span class="ruby-identifier">value</span>[<span class="ruby-value">1</span>] )
+469:         <span class="ruby-keyword kw">end</span>
+470:         <span class="ruby-identifier">copy</span>
+471:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002629">
+                    
+                    <a name="M002629"></a><b>peek</b>(depth=0)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Peek at the <tt>depth</tt> event in the stack. The first element on the
+stack is at depth 0. If <tt>depth</tt> is -1, will parse to the end of the
+input stream and return the last event, which is always :end_document. Be
+aware that this causes the stream to be parsed up to the <tt>depth</tt>
+event, so you can effectively pre-parse the entire document (pull the
+entire thing into memory) using this method.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002629_source')" id="l_M002629_source">show</a>
+                        
+                    </p>
+                    <div id="M002629_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rexml/parsers/baseparser.rb, line 180</span>
+180:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">peek</span> <span class="ruby-identifier">depth</span>=<span class="ruby-value">0</span>
+181:         <span class="ruby-identifier">raise</span> <span class="ruby-node">%Q[Illegal argument &quot;#{depth}&quot;]</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">depth</span> <span class="ruby-operator">&lt;</span> <span class="ruby-value">-1</span>
+182:         <span class="ruby-identifier">temp</span> = []
+183:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">depth</span> <span class="ruby-operator">==</span> <span class="ruby-value">-1</span>
+184:           <span class="ruby-identifier">temp</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">pull</span>()) <span class="ruby-keyword kw">until</span> <span class="ruby-identifier">empty?</span>
+185:         <span class="ruby-keyword kw">else</span>
+186:           <span class="ruby-keyword kw">while</span> <span class="ruby-ivar">@stack</span>.<span class="ruby-identifier">size</span><span class="ruby-operator">+</span><span class="ruby-identifier">temp</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">&lt;</span> <span class="ruby-identifier">depth</span><span class="ruby-operator">+</span><span class="ruby-value">1</span>
+187:             <span class="ruby-identifier">temp</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">pull</span>())
+188:           <span class="ruby-keyword kw">end</span>
+189:         <span class="ruby-keyword kw">end</span>
+190:         <span class="ruby-ivar">@stack</span> <span class="ruby-operator">+=</span> <span class="ruby-identifier">temp</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">temp</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>
+191:         <span class="ruby-ivar">@stack</span>[<span class="ruby-identifier">depth</span>]
+192:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002625">
+                    
+                    <a name="M002625"></a><b>position</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002625_source')" id="l_M002625_source">show</a>
+                        
+                    </p>
+                    <div id="M002625_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rexml/parsers/baseparser.rb, line 149</span>
+149:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">position</span>
+150:         <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">respond_to?</span> <span class="ruby-identifier">:position</span>
+151:           <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">position</span>
+152:         <span class="ruby-keyword kw">else</span>
+153:           <span class="ruby-comment cmt"># FIXME</span>
+154:           <span class="ruby-value">0</span>
+155:         <span class="ruby-keyword kw">end</span>
+156:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002633">
+                    
+                    <a name="M002633"></a><b>pull</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the next event. This is a <tt>PullEvent</tt> object.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002633_source')" id="l_M002633_source">show</a>
+                        
+                    </p>
+                    <div id="M002633_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rexml/parsers/baseparser.rb, line 195</span>
+195:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">pull</span>
+196:         <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@closed</span>
+197:           <span class="ruby-identifier">x</span>, <span class="ruby-ivar">@closed</span> = <span class="ruby-ivar">@closed</span>, <span class="ruby-keyword kw">nil</span>
+198:           <span class="ruby-keyword kw">return</span> [ <span class="ruby-identifier">:end_element</span>, <span class="ruby-identifier">x</span> ]
+199:         <span class="ruby-keyword kw">end</span>
+200:         <span class="ruby-keyword kw">return</span> [ <span class="ruby-identifier">:end_document</span> ] <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">empty?</span>
+201:         <span class="ruby-keyword kw">return</span> <span class="ruby-ivar">@stack</span>.<span class="ruby-identifier">shift</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@stack</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>
+202:         <span class="ruby-comment cmt">#STDERR.puts @source.encoding</span>
+203:         <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">read</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">buffer</span>.<span class="ruby-identifier">size</span><span class="ruby-operator">&lt;</span><span class="ruby-value">2</span>
+204:         <span class="ruby-comment cmt">#STDERR.puts &quot;BUFFER = #{@source.buffer.inspect}&quot;</span>
+205:         <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@document_status</span> <span class="ruby-operator">==</span> <span class="ruby-keyword kw">nil</span>
+206:           <span class="ruby-comment cmt">#@source.consume( /^\s*/um )</span>
+207:           <span class="ruby-identifier">word</span> = <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">match</span>( <span class="ruby-regexp re">/^((?:\s+)|(?:&lt;[^&gt;]*&gt;))/</span><span class="ruby-identifier">um</span> )
+208:           <span class="ruby-identifier">word</span> = <span class="ruby-identifier">word</span>[<span class="ruby-value">1</span>] <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">word</span>.<span class="ruby-identifier">nil?</span>
+209:           <span class="ruby-comment cmt">#STDERR.puts &quot;WORD = #{word.inspect}&quot;</span>
+210:           <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">word</span>
+211:           <span class="ruby-keyword kw">when</span> <span class="ruby-constant">COMMENT_START</span>
+212:             <span class="ruby-keyword kw">return</span> [ <span class="ruby-identifier">:comment</span>, <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">match</span>( <span class="ruby-constant">COMMENT_PATTERN</span>, <span class="ruby-keyword kw">true</span> )[<span class="ruby-value">1</span>] ]
+213:           <span class="ruby-keyword kw">when</span> <span class="ruby-constant">XMLDECL_START</span>
+214:             <span class="ruby-comment cmt">#STDERR.puts &quot;XMLDECL&quot;</span>
+215:             <span class="ruby-identifier">results</span> = <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">match</span>( <span class="ruby-constant">XMLDECL_PATTERN</span>, <span class="ruby-keyword kw">true</span> )[<span class="ruby-value">1</span>]
+216:             <span class="ruby-identifier">version</span> = <span class="ruby-constant">VERSION</span>.<span class="ruby-identifier">match</span>( <span class="ruby-identifier">results</span> )
+217:             <span class="ruby-identifier">version</span> = <span class="ruby-identifier">version</span>[<span class="ruby-value">1</span>] <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">version</span>.<span class="ruby-identifier">nil?</span>
+218:             <span class="ruby-identifier">encoding</span> = <span class="ruby-constant">ENCODING</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">results</span>)
+219:             <span class="ruby-identifier">encoding</span> = <span class="ruby-identifier">encoding</span>[<span class="ruby-value">1</span>] <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">encoding</span>.<span class="ruby-identifier">nil?</span>
+220:             <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">encoding</span> = <span class="ruby-identifier">encoding</span>
+221:             <span class="ruby-identifier">standalone</span> = <span class="ruby-constant">STANDALONE</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">results</span>)
+222:             <span class="ruby-identifier">standalone</span> = <span class="ruby-identifier">standalone</span>[<span class="ruby-value">1</span>] <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">standalone</span>.<span class="ruby-identifier">nil?</span>
+223:             <span class="ruby-keyword kw">return</span> [ <span class="ruby-identifier">:xmldecl</span>, <span class="ruby-identifier">version</span>, <span class="ruby-identifier">encoding</span>, <span class="ruby-identifier">standalone</span> ]
+224:           <span class="ruby-keyword kw">when</span> <span class="ruby-constant">INSTRUCTION_START</span>
+225:             <span class="ruby-keyword kw">return</span> [ <span class="ruby-identifier">:processing_instruction</span>, <span class="ruby-operator">*</span><span class="ruby-ivar">@source</span>.<span class="ruby-identifier">match</span>(<span class="ruby-constant">INSTRUCTION_PATTERN</span>, <span class="ruby-keyword kw">true</span>)[<span class="ruby-value">1</span>,<span class="ruby-value">2</span>] ]
+226:           <span class="ruby-keyword kw">when</span> <span class="ruby-constant">DOCTYPE_START</span>
+227:             <span class="ruby-identifier">md</span> = <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">match</span>( <span class="ruby-constant">DOCTYPE_PATTERN</span>, <span class="ruby-keyword kw">true</span> )
+228:             <span class="ruby-ivar">@nsstack</span>.<span class="ruby-identifier">unshift</span>(<span class="ruby-identifier">curr_ns</span>=<span class="ruby-constant">Set</span>.<span class="ruby-identifier">new</span>)
+229:             <span class="ruby-identifier">identity</span> = <span class="ruby-identifier">md</span>[<span class="ruby-value">1</span>]
+230:             <span class="ruby-identifier">close</span> = <span class="ruby-identifier">md</span>[<span class="ruby-value">2</span>]
+231:             <span class="ruby-identifier">identity</span> <span class="ruby-operator">=~</span> <span class="ruby-constant">IDENTITY</span>
+232:             <span class="ruby-identifier">name</span> = <span class="ruby-identifier">$1</span>
+233:             <span class="ruby-identifier">raise</span> <span class="ruby-constant">REXML</span><span class="ruby-operator">::</span><span class="ruby-constant">ParseException</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value str">&quot;DOCTYPE is missing a name&quot;</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">name</span>.<span class="ruby-identifier">nil?</span>
+234:             <span class="ruby-identifier">pub_sys</span> = <span class="ruby-identifier">$2</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-value">? </span><span class="ruby-keyword kw">nil</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">$2</span>.<span class="ruby-identifier">strip</span>
+235:             <span class="ruby-identifier">long_name</span> = <span class="ruby-identifier">$4</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-value">? </span><span class="ruby-keyword kw">nil</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">$4</span>.<span class="ruby-identifier">strip</span>
+236:             <span class="ruby-identifier">uri</span> = <span class="ruby-identifier">$6</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-value">? </span><span class="ruby-keyword kw">nil</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">$6</span>.<span class="ruby-identifier">strip</span>
+237:             <span class="ruby-identifier">args</span> = [ <span class="ruby-identifier">:start_doctype</span>, <span class="ruby-identifier">name</span>, <span class="ruby-identifier">pub_sys</span>, <span class="ruby-identifier">long_name</span>, <span class="ruby-identifier">uri</span> ]
+238:             <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">close</span> <span class="ruby-operator">==</span> <span class="ruby-value str">&quot;&gt;&quot;</span>
+239:               <span class="ruby-ivar">@document_status</span> = <span class="ruby-identifier">:after_doctype</span>
+240:               <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">read</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">buffer</span>.<span class="ruby-identifier">size</span><span class="ruby-operator">&lt;</span><span class="ruby-value">2</span>
+241:               <span class="ruby-identifier">md</span> = <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">match</span>(<span class="ruby-regexp re">/^\s*/</span><span class="ruby-identifier">um</span>, <span class="ruby-keyword kw">true</span>)
+242:               <span class="ruby-ivar">@stack</span> <span class="ruby-operator">&lt;&lt;</span> [ <span class="ruby-identifier">:end_doctype</span> ]
+243:             <span class="ruby-keyword kw">else</span>
+244:               <span class="ruby-ivar">@document_status</span> = <span class="ruby-identifier">:in_doctype</span>
+245:             <span class="ruby-keyword kw">end</span>
+246:             <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">args</span>
+247:           <span class="ruby-keyword kw">when</span> <span class="ruby-regexp re">/^\s+/</span>
+248:           <span class="ruby-keyword kw">else</span>
+249:             <span class="ruby-ivar">@document_status</span> = <span class="ruby-identifier">:after_doctype</span>
+250:             <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">read</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">buffer</span>.<span class="ruby-identifier">size</span><span class="ruby-operator">&lt;</span><span class="ruby-value">2</span>
+251:             <span class="ruby-identifier">md</span> = <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">match</span>(<span class="ruby-regexp re">/\s*/</span><span class="ruby-identifier">um</span>, <span class="ruby-keyword kw">true</span>)
+252:             <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">encoding</span> <span class="ruby-operator">==</span> <span class="ruby-value str">&quot;UTF-8&quot;</span>
+253:               <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">buffer</span>.<span class="ruby-identifier">respond_to?</span> <span class="ruby-identifier">:force_encoding</span>
+254:                 <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">buffer</span>.<span class="ruby-identifier">force_encoding</span>(<span class="ruby-constant">Encoding</span><span class="ruby-operator">::</span><span class="ruby-constant">UTF_8</span>)
+255:               <span class="ruby-keyword kw">end</span>
+256:             <span class="ruby-keyword kw">end</span>
+257:           <span class="ruby-keyword kw">end</span>
+258:         <span class="ruby-keyword kw">end</span>
+259:         <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@document_status</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">:in_doctype</span>
+260:           <span class="ruby-identifier">md</span> = <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">match</span>(<span class="ruby-regexp re">/\s*(.*?&gt;)/</span><span class="ruby-identifier">um</span>)
+261:           <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">md</span>[<span class="ruby-value">1</span>]
+262:           <span class="ruby-keyword kw">when</span> <span class="ruby-constant">SYSTEMENTITY</span>
+263:             <span class="ruby-identifier">match</span> = <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">match</span>( <span class="ruby-constant">SYSTEMENTITY</span>, <span class="ruby-keyword kw">true</span> )[<span class="ruby-value">1</span>]
+264:             <span class="ruby-keyword kw">return</span> [ <span class="ruby-identifier">:externalentity</span>, <span class="ruby-identifier">match</span> ]
+265: 
+266:           <span class="ruby-keyword kw">when</span> <span class="ruby-constant">ELEMENTDECL_START</span>
+267:             <span class="ruby-keyword kw">return</span> [ <span class="ruby-identifier">:elementdecl</span>, <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">match</span>( <span class="ruby-constant">ELEMENTDECL_PATTERN</span>, <span class="ruby-keyword kw">true</span> )[<span class="ruby-value">1</span>] ]
+268: 
+269:           <span class="ruby-keyword kw">when</span> <span class="ruby-constant">ENTITY_START</span>
+270:             <span class="ruby-identifier">match</span> = <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">match</span>( <span class="ruby-constant">ENTITYDECL</span>, <span class="ruby-keyword kw">true</span> ).<span class="ruby-identifier">to_a</span>.<span class="ruby-identifier">compact</span>
+271:             <span class="ruby-identifier">match</span>[<span class="ruby-value">0</span>] = <span class="ruby-identifier">:entitydecl</span>
+272:             <span class="ruby-identifier">ref</span> = <span class="ruby-keyword kw">false</span>
+273:             <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">match</span>[<span class="ruby-value">1</span>] <span class="ruby-operator">==</span> <span class="ruby-value str">'%'</span>
+274:               <span class="ruby-identifier">ref</span> = <span class="ruby-keyword kw">true</span>
+275:               <span class="ruby-identifier">match</span>.<span class="ruby-identifier">delete_at</span> <span class="ruby-value">1</span>
+276:             <span class="ruby-keyword kw">end</span>
+277:             <span class="ruby-comment cmt"># Now we have to sort out what kind of entity reference this is</span>
+278:             <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">match</span>[<span class="ruby-value">2</span>] <span class="ruby-operator">==</span> <span class="ruby-value str">'SYSTEM'</span>
+279:               <span class="ruby-comment cmt"># External reference</span>
+280:               <span class="ruby-identifier">match</span>[<span class="ruby-value">3</span>] = <span class="ruby-identifier">match</span>[<span class="ruby-value">3</span>][<span class="ruby-value">1</span><span class="ruby-operator">..</span><span class="ruby-value">-2</span>] <span class="ruby-comment cmt"># PUBID</span>
+281:               <span class="ruby-identifier">match</span>.<span class="ruby-identifier">delete_at</span>(<span class="ruby-value">4</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">match</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">4</span> <span class="ruby-comment cmt"># Chop out NDATA decl</span>
+282:               <span class="ruby-comment cmt"># match is [ :entity, name, SYSTEM, pubid(, ndata)? ]</span>
+283:             <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">match</span>[<span class="ruby-value">2</span>] <span class="ruby-operator">==</span> <span class="ruby-value str">'PUBLIC'</span>
+284:               <span class="ruby-comment cmt"># External reference</span>
+285:               <span class="ruby-identifier">match</span>[<span class="ruby-value">3</span>] = <span class="ruby-identifier">match</span>[<span class="ruby-value">3</span>][<span class="ruby-value">1</span><span class="ruby-operator">..</span><span class="ruby-value">-2</span>] <span class="ruby-comment cmt"># PUBID</span>
+286:               <span class="ruby-identifier">match</span>[<span class="ruby-value">4</span>] = <span class="ruby-identifier">match</span>[<span class="ruby-value">4</span>][<span class="ruby-value">1</span><span class="ruby-operator">..</span><span class="ruby-value">-2</span>] <span class="ruby-comment cmt"># HREF</span>
+287:               <span class="ruby-comment cmt"># match is [ :entity, name, PUBLIC, pubid, href ]</span>
+288:             <span class="ruby-keyword kw">else</span>
+289:               <span class="ruby-identifier">match</span>[<span class="ruby-value">2</span>] = <span class="ruby-identifier">match</span>[<span class="ruby-value">2</span>][<span class="ruby-value">1</span><span class="ruby-operator">..</span><span class="ruby-value">-2</span>]
+290:               <span class="ruby-identifier">match</span>.<span class="ruby-identifier">pop</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">match</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-value">4</span>
+291:               <span class="ruby-comment cmt"># match is [ :entity, name, value ]</span>
+292:             <span class="ruby-keyword kw">end</span>
+293:             <span class="ruby-identifier">match</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">'%'</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">ref</span>
+294:             <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">match</span>
+295:           <span class="ruby-keyword kw">when</span> <span class="ruby-constant">ATTLISTDECL_START</span>
+296:             <span class="ruby-identifier">md</span> = <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">match</span>( <span class="ruby-constant">ATTLISTDECL_PATTERN</span>, <span class="ruby-keyword kw">true</span> )
+297:             <span class="ruby-identifier">raise</span> <span class="ruby-constant">REXML</span><span class="ruby-operator">::</span><span class="ruby-constant">ParseException</span>.<span class="ruby-identifier">new</span>( <span class="ruby-value str">&quot;Bad ATTLIST declaration!&quot;</span>, <span class="ruby-ivar">@source</span> ) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">md</span>.<span class="ruby-identifier">nil?</span>
+298:             <span class="ruby-identifier">element</span> = <span class="ruby-identifier">md</span>[<span class="ruby-value">1</span>]
+299:             <span class="ruby-identifier">contents</span> = <span class="ruby-identifier">md</span>[<span class="ruby-value">0</span>]
+300: 
+301:             <span class="ruby-identifier">pairs</span> = {}
+302:             <span class="ruby-identifier">values</span> = <span class="ruby-identifier">md</span>[<span class="ruby-value">0</span>].<span class="ruby-identifier">scan</span>( <span class="ruby-constant">ATTDEF_RE</span> )
+303:             <span class="ruby-identifier">values</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">attdef</span><span class="ruby-operator">|</span>
+304:               <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">attdef</span>[<span class="ruby-value">3</span>] <span class="ruby-operator">==</span> <span class="ruby-value str">&quot;#IMPLIED&quot;</span>
+305:                 <span class="ruby-identifier">attdef</span>.<span class="ruby-identifier">compact!</span>
+306:                 <span class="ruby-identifier">val</span> = <span class="ruby-identifier">attdef</span>[<span class="ruby-value">3</span>]
+307:                 <span class="ruby-identifier">val</span> = <span class="ruby-identifier">attdef</span>[<span class="ruby-value">4</span>] <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">val</span> <span class="ruby-operator">==</span> <span class="ruby-value str">&quot;#FIXED &quot;</span>
+308:                 <span class="ruby-identifier">pairs</span>[<span class="ruby-identifier">attdef</span>[<span class="ruby-value">0</span>]] = <span class="ruby-identifier">val</span>
+309:                 <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">attdef</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/^xmlns:(.*)/</span>
+310:                   <span class="ruby-ivar">@nsstack</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">$1</span>
+311:                 <span class="ruby-keyword kw">end</span>
+312:               <span class="ruby-keyword kw">end</span>
+313:             <span class="ruby-keyword kw">end</span>
+314:             <span class="ruby-keyword kw">return</span> [ <span class="ruby-identifier">:attlistdecl</span>, <span class="ruby-identifier">element</span>, <span class="ruby-identifier">pairs</span>, <span class="ruby-identifier">contents</span> ]
+315:           <span class="ruby-keyword kw">when</span> <span class="ruby-constant">NOTATIONDECL_START</span>
+316:             <span class="ruby-identifier">md</span> = <span class="ruby-keyword kw">nil</span>
+317:             <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">match</span>( <span class="ruby-constant">PUBLIC</span> )
+318:               <span class="ruby-identifier">md</span> = <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">match</span>( <span class="ruby-constant">PUBLIC</span>, <span class="ruby-keyword kw">true</span> )
+319:               <span class="ruby-identifier">vals</span> = [<span class="ruby-identifier">md</span>[<span class="ruby-value">1</span>],<span class="ruby-identifier">md</span>[<span class="ruby-value">2</span>],<span class="ruby-identifier">md</span>[<span class="ruby-value">4</span>],<span class="ruby-identifier">md</span>[<span class="ruby-value">6</span>]]
+320:             <span class="ruby-keyword kw">elsif</span> <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">match</span>( <span class="ruby-constant">SYSTEM</span> )
+321:               <span class="ruby-identifier">md</span> = <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">match</span>( <span class="ruby-constant">SYSTEM</span>, <span class="ruby-keyword kw">true</span> )
+322:               <span class="ruby-identifier">vals</span> = [<span class="ruby-identifier">md</span>[<span class="ruby-value">1</span>],<span class="ruby-identifier">md</span>[<span class="ruby-value">2</span>],<span class="ruby-keyword kw">nil</span>,<span class="ruby-identifier">md</span>[<span class="ruby-value">4</span>]]
+323:             <span class="ruby-keyword kw">else</span>
+324:               <span class="ruby-identifier">raise</span> <span class="ruby-constant">REXML</span><span class="ruby-operator">::</span><span class="ruby-constant">ParseException</span>.<span class="ruby-identifier">new</span>( <span class="ruby-value str">&quot;error parsing notation: no matching pattern&quot;</span>, <span class="ruby-ivar">@source</span> )
+325:             <span class="ruby-keyword kw">end</span>
+326:             <span class="ruby-keyword kw">return</span> [ <span class="ruby-identifier">:notationdecl</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">vals</span> ]
+327:           <span class="ruby-keyword kw">when</span> <span class="ruby-constant">CDATA_END</span>
+328:             <span class="ruby-ivar">@document_status</span> = <span class="ruby-identifier">:after_doctype</span>
+329:             <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">match</span>( <span class="ruby-constant">CDATA_END</span>, <span class="ruby-keyword kw">true</span> )
+330:             <span class="ruby-keyword kw">return</span> [ <span class="ruby-identifier">:end_doctype</span> ]
+331:           <span class="ruby-keyword kw">end</span>
+332:         <span class="ruby-keyword kw">end</span>
+333:         <span class="ruby-keyword kw">begin</span>
+334:           <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">buffer</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">==</span> <span class="ruby-value">?&lt;</span>
+335:             <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">buffer</span>[<span class="ruby-value">1</span>] <span class="ruby-operator">==</span> <span class="ruby-value">?/</span>
+336:               <span class="ruby-ivar">@nsstack</span>.<span class="ruby-identifier">shift</span>
+337:               <span class="ruby-identifier">last_tag</span> = <span class="ruby-ivar">@tags</span>.<span class="ruby-identifier">pop</span>
+338:               <span class="ruby-comment cmt">#md = @source.match_to_consume( '&gt;', CLOSE_MATCH)</span>
+339:               <span class="ruby-identifier">md</span> = <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">match</span>( <span class="ruby-constant">CLOSE_MATCH</span>, <span class="ruby-keyword kw">true</span> )
+340:               <span class="ruby-identifier">raise</span> <span class="ruby-constant">REXML</span><span class="ruby-operator">::</span><span class="ruby-constant">ParseException</span>.<span class="ruby-identifier">new</span>( <span class="ruby-value str">&quot;Missing end tag for &quot;</span><span class="ruby-operator">+</span>
+341:                 <span class="ruby-node">&quot;'#{last_tag}' (got \&quot;#{md[1]}\&quot;)&quot;</span>,
+342:                 <span class="ruby-ivar">@source</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">last_tag</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">md</span>[<span class="ruby-value">1</span>]
+343:               <span class="ruby-keyword kw">return</span> [ <span class="ruby-identifier">:end_element</span>, <span class="ruby-identifier">last_tag</span> ]
+344:             <span class="ruby-keyword kw">elsif</span> <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">buffer</span>[<span class="ruby-value">1</span>] <span class="ruby-operator">==</span> <span class="ruby-value">?!</span>
+345:               <span class="ruby-identifier">md</span> = <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">match</span>(<span class="ruby-regexp re">/\A(\s*[^&gt;]*&gt;)/</span><span class="ruby-identifier">um</span>)
+346:               <span class="ruby-comment cmt">#STDERR.puts &quot;SOURCE BUFFER = #{source.buffer}, #{source.buffer.size}&quot;</span>
+347:               <span class="ruby-identifier">raise</span> <span class="ruby-constant">REXML</span><span class="ruby-operator">::</span><span class="ruby-constant">ParseException</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value str">&quot;Malformed node&quot;</span>, <span class="ruby-ivar">@source</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">md</span>
+348:               <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">md</span>[<span class="ruby-value">0</span>][<span class="ruby-value">2</span>] <span class="ruby-operator">==</span> <span class="ruby-value">?-</span>
+349:                 <span class="ruby-identifier">md</span> = <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">match</span>( <span class="ruby-constant">COMMENT_PATTERN</span>, <span class="ruby-keyword kw">true</span> )
+350: 
+351:                 <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">md</span>[<span class="ruby-value">1</span>]
+352:                 <span class="ruby-keyword kw">when</span> <span class="ruby-regexp re">/--/</span>, <span class="ruby-regexp re">/-$/</span>
+353:                   <span class="ruby-identifier">raise</span> <span class="ruby-constant">REXML</span><span class="ruby-operator">::</span><span class="ruby-constant">ParseException</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value str">&quot;Malformed comment&quot;</span>, <span class="ruby-ivar">@source</span>)
+354:                 <span class="ruby-keyword kw">end</span>
+355: 
+356:                 <span class="ruby-keyword kw">return</span> [ <span class="ruby-identifier">:comment</span>, <span class="ruby-identifier">md</span>[<span class="ruby-value">1</span>] ] <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">md</span>
+357:               <span class="ruby-keyword kw">else</span>
+358:                 <span class="ruby-identifier">md</span> = <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">match</span>( <span class="ruby-constant">CDATA_PATTERN</span>, <span class="ruby-keyword kw">true</span> )
+359:                 <span class="ruby-keyword kw">return</span> [ <span class="ruby-identifier">:cdata</span>, <span class="ruby-identifier">md</span>[<span class="ruby-value">1</span>] ] <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">md</span>
+360:               <span class="ruby-keyword kw">end</span>
+361:               <span class="ruby-identifier">raise</span> <span class="ruby-constant">REXML</span><span class="ruby-operator">::</span><span class="ruby-constant">ParseException</span>.<span class="ruby-identifier">new</span>( <span class="ruby-value str">&quot;Declarations can only occur &quot;</span><span class="ruby-operator">+</span>
+362:                 <span class="ruby-value str">&quot;in the doctype declaration.&quot;</span>, <span class="ruby-ivar">@source</span>)
+363:             <span class="ruby-keyword kw">elsif</span> <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">buffer</span>[<span class="ruby-value">1</span>] <span class="ruby-operator">==</span> <span class="ruby-value">??</span>
+364:               <span class="ruby-identifier">md</span> = <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">match</span>( <span class="ruby-constant">INSTRUCTION_PATTERN</span>, <span class="ruby-keyword kw">true</span> )
+365:               <span class="ruby-keyword kw">return</span> [ <span class="ruby-identifier">:processing_instruction</span>, <span class="ruby-identifier">md</span>[<span class="ruby-value">1</span>], <span class="ruby-identifier">md</span>[<span class="ruby-value">2</span>] ] <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">md</span>
+366:               <span class="ruby-identifier">raise</span> <span class="ruby-constant">REXML</span><span class="ruby-operator">::</span><span class="ruby-constant">ParseException</span>.<span class="ruby-identifier">new</span>( <span class="ruby-value str">&quot;Bad instruction declaration&quot;</span>,
+367:                 <span class="ruby-ivar">@source</span>)
+368:             <span class="ruby-keyword kw">else</span>
+369:               <span class="ruby-comment cmt"># Get the next tag</span>
+370:               <span class="ruby-identifier">md</span> = <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">match</span>(<span class="ruby-constant">TAG_MATCH</span>, <span class="ruby-keyword kw">true</span>)
+371:               <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">md</span>
+372:                 <span class="ruby-comment cmt"># Check for missing attribute quotes</span>
+373:                 <span class="ruby-identifier">raise</span> <span class="ruby-constant">REXML</span><span class="ruby-operator">::</span><span class="ruby-constant">ParseException</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value str">&quot;missing attribute quote&quot;</span>, <span class="ruby-ivar">@source</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">match</span>(<span class="ruby-constant">MISSING_ATTRIBUTE_QUOTES</span> )
+374:                 <span class="ruby-identifier">raise</span> <span class="ruby-constant">REXML</span><span class="ruby-operator">::</span><span class="ruby-constant">ParseException</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value str">&quot;malformed XML: missing tag start&quot;</span>, <span class="ruby-ivar">@source</span>)
+375:               <span class="ruby-keyword kw">end</span>
+376:               <span class="ruby-identifier">attributes</span> = {}
+377:               <span class="ruby-identifier">prefixes</span> = <span class="ruby-constant">Set</span>.<span class="ruby-identifier">new</span>
+378:               <span class="ruby-identifier">prefixes</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">md</span>[<span class="ruby-value">2</span>] <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">md</span>[<span class="ruby-value">2</span>]
+379:               <span class="ruby-ivar">@nsstack</span>.<span class="ruby-identifier">unshift</span>(<span class="ruby-identifier">curr_ns</span>=<span class="ruby-constant">Set</span>.<span class="ruby-identifier">new</span>)
+380:               <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">md</span>[<span class="ruby-value">4</span>].<span class="ruby-identifier">size</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>
+381:                 <span class="ruby-identifier">attrs</span> = <span class="ruby-identifier">md</span>[<span class="ruby-value">4</span>].<span class="ruby-identifier">scan</span>( <span class="ruby-constant">ATTRIBUTE_PATTERN</span> )
+382:                 <span class="ruby-identifier">raise</span> <span class="ruby-constant">REXML</span><span class="ruby-operator">::</span><span class="ruby-constant">ParseException</span>.<span class="ruby-identifier">new</span>( <span class="ruby-node">&quot;error parsing attributes: [#{attrs.join ', '}], excess = \&quot;#$'\&quot;&quot;</span>, <span class="ruby-ivar">@source</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">$'</span> <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">$'</span>.<span class="ruby-identifier">strip</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>
+383:                 <span class="ruby-identifier">attrs</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">a</span>,<span class="ruby-identifier">b</span>,<span class="ruby-identifier">c</span>,<span class="ruby-identifier">d</span>,<span class="ruby-identifier">e</span><span class="ruby-operator">|</span>
+384:                   <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">b</span> <span class="ruby-operator">==</span> <span class="ruby-value str">&quot;xmlns&quot;</span>
+385:                     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">c</span> <span class="ruby-operator">==</span> <span class="ruby-value str">&quot;xml&quot;</span>
+386:                       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">d</span> <span class="ruby-operator">!=</span> <span class="ruby-value str">&quot;http://www.w3.org/XML/1998/namespace&quot;</span>
+387:                         <span class="ruby-identifier">msg</span> = <span class="ruby-value str">&quot;The 'xml' prefix must not be bound to any other namespace &quot;</span><span class="ruby-operator">+</span>
+388:                         <span class="ruby-value str">&quot;(http://www.w3.org/TR/REC-xml-names/#ns-decl)&quot;</span>
+389:                         <span class="ruby-identifier">raise</span> <span class="ruby-constant">REXML</span><span class="ruby-operator">::</span><span class="ruby-constant">ParseException</span>.<span class="ruby-identifier">new</span>( <span class="ruby-identifier">msg</span>, <span class="ruby-ivar">@source</span>, <span class="ruby-keyword kw">self</span> )
+390:                       <span class="ruby-keyword kw">end</span>
+391:                     <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">c</span> <span class="ruby-operator">==</span> <span class="ruby-value str">&quot;xmlns&quot;</span>
+392:                       <span class="ruby-identifier">msg</span> = <span class="ruby-value str">&quot;The 'xmlns' prefix must not be declared &quot;</span><span class="ruby-operator">+</span>
+393:                       <span class="ruby-value str">&quot;(http://www.w3.org/TR/REC-xml-names/#ns-decl)&quot;</span>
+394:                       <span class="ruby-identifier">raise</span> <span class="ruby-constant">REXML</span><span class="ruby-operator">::</span><span class="ruby-constant">ParseException</span>.<span class="ruby-identifier">new</span>( <span class="ruby-identifier">msg</span>, <span class="ruby-ivar">@source</span>, <span class="ruby-keyword kw">self</span>)
+395:                     <span class="ruby-keyword kw">end</span>
+396:                     <span class="ruby-identifier">curr_ns</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">c</span>
+397:                   <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">b</span>
+398:                     <span class="ruby-identifier">prefixes</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">b</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">b</span> <span class="ruby-operator">==</span> <span class="ruby-value str">&quot;xml&quot;</span>
+399:                   <span class="ruby-keyword kw">end</span>
+400: 
+401:                   <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">attributes</span>.<span class="ruby-identifier">has_key?</span> <span class="ruby-identifier">a</span>
+402:                     <span class="ruby-identifier">msg</span> = <span class="ruby-node">&quot;Duplicate attribute #{a.inspect}&quot;</span>
+403:                     <span class="ruby-identifier">raise</span> <span class="ruby-constant">REXML</span><span class="ruby-operator">::</span><span class="ruby-constant">ParseException</span>.<span class="ruby-identifier">new</span>( <span class="ruby-identifier">msg</span>, <span class="ruby-ivar">@source</span>, <span class="ruby-keyword kw">self</span>)
+404:                   <span class="ruby-keyword kw">end</span>
+405: 
+406:                   <span class="ruby-identifier">attributes</span>[<span class="ruby-identifier">a</span>] = <span class="ruby-identifier">e</span>
+407:                 }
+408:               <span class="ruby-keyword kw">end</span>
+409: 
+410:               <span class="ruby-comment cmt"># Verify that all of the prefixes have been defined</span>
+411:               <span class="ruby-keyword kw">for</span> <span class="ruby-identifier">prefix</span> <span class="ruby-keyword kw">in</span> <span class="ruby-identifier">prefixes</span>
+412:                 <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@nsstack</span>.<span class="ruby-identifier">find</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">k</span><span class="ruby-operator">|</span> <span class="ruby-identifier">k</span>.<span class="ruby-identifier">member?</span>(<span class="ruby-identifier">prefix</span>)}
+413:                   <span class="ruby-identifier">raise</span> <span class="ruby-constant">UndefinedNamespaceException</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">prefix</span>,<span class="ruby-ivar">@source</span>,<span class="ruby-keyword kw">self</span>)
+414:                 <span class="ruby-keyword kw">end</span>
+415:               <span class="ruby-keyword kw">end</span>
+416: 
+417:               <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">md</span>[<span class="ruby-value">6</span>]
+418:                 <span class="ruby-ivar">@closed</span> = <span class="ruby-identifier">md</span>[<span class="ruby-value">1</span>]
+419:                 <span class="ruby-ivar">@nsstack</span>.<span class="ruby-identifier">shift</span>
+420:               <span class="ruby-keyword kw">else</span>
+421:                 <span class="ruby-ivar">@tags</span>.<span class="ruby-identifier">push</span>( <span class="ruby-identifier">md</span>[<span class="ruby-value">1</span>] )
+422:               <span class="ruby-keyword kw">end</span>
+423:               <span class="ruby-keyword kw">return</span> [ <span class="ruby-identifier">:start_element</span>, <span class="ruby-identifier">md</span>[<span class="ruby-value">1</span>], <span class="ruby-identifier">attributes</span> ]
+424:             <span class="ruby-keyword kw">end</span>
+425:           <span class="ruby-keyword kw">else</span>
+426:             <span class="ruby-identifier">md</span> = <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">match</span>( <span class="ruby-constant">TEXT_PATTERN</span>, <span class="ruby-keyword kw">true</span> )
+427:             <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">md</span>[<span class="ruby-value">0</span>].<span class="ruby-identifier">length</span> <span class="ruby-operator">==</span> <span class="ruby-value">0</span>
+428:               <span class="ruby-ivar">@source</span>.<span class="ruby-identifier">match</span>( <span class="ruby-regexp re">/(\s+)/</span>, <span class="ruby-keyword kw">true</span> )
+429:             <span class="ruby-keyword kw">end</span>
+430:             <span class="ruby-comment cmt">#STDERR.puts &quot;GOT #{md[1].inspect}&quot; unless md[0].length == 0</span>
+431:             <span class="ruby-comment cmt">#return [ :text, &quot;&quot; ] if md[0].length == 0</span>
+432:             <span class="ruby-comment cmt"># unnormalized = Text::unnormalize( md[1], self )</span>
+433:             <span class="ruby-comment cmt"># return PullEvent.new( :text, md[1], unnormalized )</span>
+434:             <span class="ruby-keyword kw">return</span> [ <span class="ruby-identifier">:text</span>, <span class="ruby-identifier">md</span>[<span class="ruby-value">1</span>] ]
+435:           <span class="ruby-keyword kw">end</span>
+436:         <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">REXML</span><span class="ruby-operator">::</span><span class="ruby-constant">UndefinedNamespaceException</span>
+437:           <span class="ruby-identifier">raise</span>
+438:         <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">REXML</span><span class="ruby-operator">::</span><span class="ruby-constant">ParseException</span>
+439:           <span class="ruby-identifier">raise</span>
+440:         <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Exception</span>, <span class="ruby-constant">NameError</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">error</span>
+441:           <span class="ruby-identifier">raise</span> <span class="ruby-constant">REXML</span><span class="ruby-operator">::</span><span class="ruby-constant">ParseException</span>.<span class="ruby-identifier">new</span>( <span class="ruby-value str">&quot;Exception parsing&quot;</span>,
+442:             <span class="ruby-ivar">@source</span>, <span class="ruby-keyword kw">self</span>, (<span class="ruby-identifier">error</span> <span class="ruby-value">? </span><span class="ruby-identifier">error</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">$!</span>) )
+443:         <span class="ruby-keyword kw">end</span>
+444:         <span class="ruby-keyword kw">return</span> [ <span class="ruby-identifier">:dummy</span> ]
+445:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002624">
+                    
+                    <a name="M002624"></a><b>stream=</b>( source )
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002624_source')" id="l_M002624_source">show</a>
+                        
+                    </p>
+                    <div id="M002624_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rexml/parsers/baseparser.rb, line 139</span>
+139:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">stream=</span>( <span class="ruby-identifier">source</span> )
+140:         <span class="ruby-ivar">@source</span> = <span class="ruby-constant">SourceFactory</span>.<span class="ruby-identifier">create_from</span>( <span class="ruby-identifier">source</span> )
+141:         <span class="ruby-ivar">@closed</span> = <span class="ruby-keyword kw">nil</span>
+142:         <span class="ruby-ivar">@document_status</span> = <span class="ruby-keyword kw">nil</span>
+143:         <span class="ruby-ivar">@tags</span> = []
+144:         <span class="ruby-ivar">@stack</span> = []
+145:         <span class="ruby-ivar">@entities</span> = []
+146:         <span class="ruby-ivar">@nsstack</span> = []
+147:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002636">
+                    
+                    <a name="M002636"></a><b>unnormalize</b>( string, entities=nil, filter=nil )
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Unescapes all possible entities
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002636_source')" id="l_M002636_source">show</a>
+                        
+                    </p>
+                    <div id="M002636_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rexml/parsers/baseparser.rb, line 474</span>
+474:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">unnormalize</span>( <span class="ruby-identifier">string</span>, <span class="ruby-identifier">entities</span>=<span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">filter</span>=<span class="ruby-keyword kw">nil</span> )
+475:         <span class="ruby-identifier">rv</span> = <span class="ruby-identifier">string</span>.<span class="ruby-identifier">clone</span>
+476:         <span class="ruby-identifier">rv</span>.<span class="ruby-identifier">gsub!</span>( <span class="ruby-regexp re">/\r\n?/</span>, <span class="ruby-value str">&quot;\n&quot;</span> )
+477:         <span class="ruby-identifier">matches</span> = <span class="ruby-identifier">rv</span>.<span class="ruby-identifier">scan</span>( <span class="ruby-constant">REFERENCE_RE</span> )
+478:         <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">rv</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">matches</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-value">0</span>
+479:         <span class="ruby-identifier">rv</span>.<span class="ruby-identifier">gsub!</span>( <span class="ruby-regexp re">/&amp;#0*((?:\d+)|(?:x[a-fA-F0-9]+));/</span> ) {
+480:           <span class="ruby-identifier">m</span>=<span class="ruby-identifier">$1</span>
+481:           <span class="ruby-identifier">m</span> = <span class="ruby-node">&quot;0#{m}&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">m</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">==</span> <span class="ruby-value">?x</span>
+482:           [<span class="ruby-constant">Integer</span>(<span class="ruby-identifier">m</span>)].<span class="ruby-identifier">pack</span>(<span class="ruby-value str">'U*'</span>)
+483:         }
+484:         <span class="ruby-identifier">matches</span>.<span class="ruby-identifier">collect!</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">x</span><span class="ruby-operator">|</span><span class="ruby-identifier">x</span>[<span class="ruby-value">0</span>]}.<span class="ruby-identifier">compact!</span>
+485:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">matches</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>
+486:           <span class="ruby-identifier">matches</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">entity_reference</span><span class="ruby-operator">|</span>
+487:             <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">filter</span> <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">filter</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">entity_reference</span>)
+488:               <span class="ruby-identifier">entity_value</span> = <span class="ruby-identifier">entity</span>( <span class="ruby-identifier">entity_reference</span>, <span class="ruby-identifier">entities</span> )
+489:               <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">entity_value</span>
+490:                 <span class="ruby-identifier">re</span> = <span class="ruby-node">/&amp;#{entity_reference};/</span>
+491:                 <span class="ruby-identifier">rv</span>.<span class="ruby-identifier">gsub!</span>( <span class="ruby-identifier">re</span>, <span class="ruby-identifier">entity_value</span> )
+492:               <span class="ruby-keyword kw">else</span>
+493:                 <span class="ruby-identifier">er</span> = <span class="ruby-constant">DEFAULT_ENTITIES</span>[<span class="ruby-identifier">entity_reference</span>]
+494:                 <span class="ruby-identifier">rv</span>.<span class="ruby-identifier">gsub!</span>( <span class="ruby-identifier">er</span>[<span class="ruby-value">0</span>], <span class="ruby-identifier">er</span>[<span class="ruby-value">2</span>] ) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">er</span>
+495:               <span class="ruby-keyword kw">end</span>
+496:             <span class="ruby-keyword kw">end</span>
+497:           <span class="ruby-keyword kw">end</span>
+498:           <span class="ruby-identifier">rv</span>.<span class="ruby-identifier">gsub!</span>( <span class="ruby-regexp re">/&amp;amp;/</span>, <span class="ruby-value str">'&amp;'</span> )
+499:         <span class="ruby-keyword kw">end</span>
+500:         <span class="ruby-identifier">rv</span>
+501:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002628">
+                    
+                    <a name="M002628"></a><b>unshift</b>(token)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Push an event back on the head of the stream. This method has
+(theoretically) infinite depth.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002628_source')" id="l_M002628_source">show</a>
+                        
+                    </p>
+                    <div id="M002628_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rexml/parsers/baseparser.rb, line 170</span>
+170:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">unshift</span> <span class="ruby-identifier">token</span>
+171:         <span class="ruby-ivar">@stack</span>.<span class="ruby-identifier">unshift</span>(<span class="ruby-identifier">token</span>)
+172:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

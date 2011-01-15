@@ -1,0 +1,76 @@
+  <div id="fileHeader">
+    <h1>require_arch.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionmailer/lib/action_mailer/vendor/tmail-1.2.3/tmail/require_arch.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>#:stopdoc:
+require 'rbconfig'
+
+# Attempts to require anative extension.
+# Falls back to pure-ruby version, if it fails.
+#
+# This uses Config::CONFIG['arch'] from rbconfig.
+
+def require_arch(fname)
+  arch = Config::CONFIG['arch']
+  begin
+    path = File.join(&quot;tmail&quot;, arch, fname)
+    require path
+  rescue LoadError =&gt; e
+    # try pre-built Windows binaries
+    if arch =~ /mswin/
+      require File.join(&quot;tmail&quot;, 'mswin32', fname)
+    else
+      raise e
+    end
+  end
+end
+
+
+# def require_arch(fname)
+#   dext = Config::CONFIG['DLEXT']
+#   begin
+#     if File.extname(fname) == dext
+#       path = fname
+#     else
+#       path = File.join(&quot;tmail&quot;,&quot;#{fname}.#{dext}&quot;)
+#     end
+#     require path
+#   rescue LoadError =&gt; e
+#     begin
+#       arch = Config::CONFIG['arch']
+#       path = File.join(&quot;tmail&quot;, arch, &quot;#{fname}.#{dext}&quot;)
+#       require path
+#     rescue LoadError
+#       case path
+#       when /i686/
+#         path.sub!('i686', 'i586')
+#       when /i586/
+#         path.sub!('i586', 'i486')
+#       when /i486/
+#         path.sub!('i486', 'i386')
+#       else
+#         begin
+#           require fname + '.rb'
+#         rescue LoadError
+#           raise e
+#         end
+#       end
+#       retry
+#     end
+#   end
+# end
+#:startdoc:</pre>
+    </div>

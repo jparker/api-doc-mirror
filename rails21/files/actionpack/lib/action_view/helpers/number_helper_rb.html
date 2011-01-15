@@ -1,0 +1,205 @@
+  <div id="fileHeader">
+    <h1>number_helper.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionpack/lib/action_view/helpers/number_helper.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:04 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>module ActionView
+  module Helpers #:nodoc:
+    # Provides methods for converting numbers into formatted strings.
+    # Methods are provided for phone numbers, currency, percentage,
+    # precision, positional notation, and file size.
+    module NumberHelper
+      # Formats a +number+ into a US phone number (e.g., (555) 123-9876). You can customize the format
+      # in the +options+ hash.
+      #
+      # ==== Options
+      # * &lt;tt&gt;:area_code&lt;/tt&gt;  - Adds parentheses around the area code.
+      # * &lt;tt&gt;:delimiter&lt;/tt&gt;  - Specifies the delimiter to use (defaults to &quot;-&quot;).
+      # * &lt;tt&gt;:extension&lt;/tt&gt;  - Specifies an extension to add to the end of the
+      #   generated number.
+      # * &lt;tt&gt;:country_code&lt;/tt&gt;  - Sets the country code for the phone number.
+      #
+      # ==== Examples
+      #  number_to_phone(1235551234)                                        # =&gt; 123-555-1234
+      #  number_to_phone(1235551234, :area_code =&gt; true)                    # =&gt; (123) 555-1234
+      #  number_to_phone(1235551234, :delimiter =&gt; &quot; &quot;)                     # =&gt; 123 555 1234
+      #  number_to_phone(1235551234, :area_code =&gt; true, :extension =&gt; 555) # =&gt; (123) 555-1234 x 555
+      #  number_to_phone(1235551234, :country_code =&gt; 1)                    # =&gt; +1-123-555-1234
+      #
+      #  number_to_phone(1235551234, :country_code =&gt; 1, :extension =&gt; 1343, :delimiter =&gt; &quot;.&quot;)
+      #  =&gt; +1.123.555.1234 x 1343      
+      def number_to_phone(number, options = {})
+        number       = number.to_s.strip unless number.nil?
+        options      = options.stringify_keys
+        area_code    = options[&quot;area_code&quot;] || nil
+        delimiter    = options[&quot;delimiter&quot;] || &quot;-&quot;
+        extension    = options[&quot;extension&quot;].to_s.strip || nil
+        country_code = options[&quot;country_code&quot;] || nil
+
+        begin
+          str = &quot;&quot;
+          str &lt;&lt; &quot;+#{country_code}#{delimiter}&quot; unless country_code.blank?
+          str &lt;&lt; if area_code
+            number.gsub!(/([0-9]{1,3})([0-9]{3})([0-9]{4}$)/,&quot;(\\1) \\2#{delimiter}\\3&quot;)
+          else
+            number.gsub!(/([0-9]{1,3})([0-9]{3})([0-9]{4})$/,&quot;\\1#{delimiter}\\2#{delimiter}\\3&quot;)
+          end
+          str &lt;&lt; &quot; x #{extension}&quot; unless extension.blank?
+          str
+        rescue
+          number
+        end
+      end
+
+      # Formats a +number+ into a currency string (e.g., $13.65). You can customize the format
+      # in the +options+ hash.
+      #
+      # ==== Options
+      # * &lt;tt&gt;:precision&lt;/tt&gt;  -  Sets the level of precision (defaults to 2).
+      # * &lt;tt&gt;:unit&lt;/tt&gt;  - Sets the denomination of the currency (defaults to &quot;$&quot;).
+      # * &lt;tt&gt;:separator&lt;/tt&gt;  - Sets the separator between the units (defaults to &quot;.&quot;).
+      # * &lt;tt&gt;:delimiter&lt;/tt&gt;  - Sets the thousands delimiter (defaults to &quot;,&quot;).
+      # * &lt;tt&gt;:format&lt;/tt&gt;  - Sets the format of the output string (defaults to &quot;%u%n&quot;). The field types are:
+      #
+      #     %u  The currency unit
+      #     %n  The number
+      #
+      # ==== Examples
+      #  number_to_currency(1234567890.50)                    # =&gt; $1,234,567,890.50
+      #  number_to_currency(1234567890.506)                   # =&gt; $1,234,567,890.51
+      #  number_to_currency(1234567890.506, :precision =&gt; 3)  # =&gt; $1,234,567,890.506
+      #
+      #  number_to_currency(1234567890.50, :unit =&gt; &quot;&amp;pound;&quot;, :separator =&gt; &quot;,&quot;, :delimiter =&gt; &quot;&quot;)
+      #  # =&gt; &amp;pound;1234567890,50
+      #  number_to_currency(1234567890.50, :unit =&gt; &quot;&amp;pound;&quot;, :separator =&gt; &quot;,&quot;, :delimiter =&gt; &quot;&quot;, :format =&gt; &quot;%n %u&quot;)
+      #  # =&gt; 1234567890,50 &amp;pound;
+      def number_to_currency(number, options = {})
+        options   = options.stringify_keys
+        precision = options[&quot;precision&quot;] || 2
+        unit      = options[&quot;unit&quot;] || &quot;$&quot;
+        separator = precision &gt; 0 ? options[&quot;separator&quot;] || &quot;.&quot; : &quot;&quot;
+        delimiter = options[&quot;delimiter&quot;] || &quot;,&quot;
+        format    = options[&quot;format&quot;] || &quot;%u%n&quot;
+
+        begin
+          parts = number_with_precision(number, precision).split('.')
+          format.gsub(/%n/, number_with_delimiter(parts[0], delimiter) + separator + parts[1].to_s).gsub(/%u/, unit)
+        rescue
+          number
+        end
+      end
+
+      # Formats a +number+ as a percentage string (e.g., 65%). You can customize the
+      # format in the +options+ hash.
+      #
+      # ==== Options
+      # * &lt;tt&gt;:precision&lt;/tt&gt;  - Sets the level of precision (defaults to 3).
+      # * &lt;tt&gt;:separator&lt;/tt&gt;  - Sets the separator between the units (defaults to &quot;.&quot;).
+      #
+      # ==== Examples
+      #  number_to_percentage(100)                         # =&gt; 100.000%
+      #  number_to_percentage(100, :precision =&gt; 0)        # =&gt; 100%
+      #
+      #  number_to_percentage(302.24398923423, :precision =&gt; 5)
+      #  # =&gt; 302.24399%
+      def number_to_percentage(number, options = {})
+        options   = options.stringify_keys
+        precision = options[&quot;precision&quot;] || 3
+        separator = options[&quot;separator&quot;] || &quot;.&quot;
+
+        begin
+          number = number_with_precision(number, precision)
+          parts = number.split('.')
+          if parts.at(1).nil?
+            parts[0] + &quot;%&quot;
+          else
+            parts[0] + separator + parts[1].to_s + &quot;%&quot;
+          end
+        rescue
+          number
+        end
+      end
+
+      # Formats a +number+ with grouped thousands using +delimiter+ (e.g., 12,324). You
+      # can customize the format using optional &lt;em&gt;delimiter&lt;/em&gt; and &lt;em&gt;separator&lt;/em&gt; parameters.
+      #
+      # ==== Options
+      # * &lt;tt&gt;delimiter&lt;/tt&gt;  - Sets the thousands delimiter (defaults to &quot;,&quot;).
+      # * &lt;tt&gt;separator&lt;/tt&gt;  - Sets the separator between the units (defaults to &quot;.&quot;).
+      #
+      # ==== Examples
+      #  number_with_delimiter(12345678)       # =&gt; 12,345,678
+      #  number_with_delimiter(12345678.05)    # =&gt; 12,345,678.05
+      #  number_with_delimiter(12345678, &quot;.&quot;)  # =&gt; 12.345.678
+      #
+      #  number_with_delimiter(98765432.98, &quot; &quot;, &quot;,&quot;)
+      #  # =&gt; 98 765 432,98
+      def number_with_delimiter(number, delimiter=&quot;,&quot;, separator=&quot;.&quot;)
+        begin
+          parts = number.to_s.split('.')
+          parts[0].gsub!(/(\d)(?=(\d\d\d)+(?!\d))/, &quot;\\1#{delimiter}&quot;)
+          parts.join separator
+        rescue
+          number
+        end
+      end
+
+      # Formats a +number+ with the specified level of +precision+ (e.g., 112.32 has a precision of 2). The default
+      # level of precision is 3.
+      #
+      # ==== Examples
+      #  number_with_precision(111.2345)     # =&gt; 111.235
+      #  number_with_precision(111.2345, 2)  # =&gt; 111.23
+      #  number_with_precision(13, 5)        # =&gt; 13.00000
+      #  number_with_precision(389.32314, 0) # =&gt; 389
+      def number_with_precision(number, precision=3)
+        &quot;%01.#{precision}f&quot; % ((Float(number) * (10 ** precision)).round.to_f / 10 ** precision)
+      rescue
+        number
+      end
+
+      # Formats the bytes in +size+ into a more understandable representation
+      # (e.g., giving it 1500 yields 1.5 KB). This method is useful for 
+      # reporting file sizes to users. This method returns nil if
+      # +size+ cannot be converted into a number. You can change the default
+      # precision of 1 using the precision parameter +precision+.
+      #
+      # ==== Examples
+      #  number_to_human_size(123)           # =&gt; 123 Bytes
+      #  number_to_human_size(1234)          # =&gt; 1.2 KB
+      #  number_to_human_size(12345)         # =&gt; 12.1 KB
+      #  number_to_human_size(1234567)       # =&gt; 1.2 MB
+      #  number_to_human_size(1234567890)    # =&gt; 1.1 GB
+      #  number_to_human_size(1234567890123) # =&gt; 1.1 TB
+      #  number_to_human_size(1234567, 2)    # =&gt; 1.18 MB
+      #  number_to_human_size(483989, 0)     # =&gt; 4 MB
+      def number_to_human_size(size, precision=1)
+        size = Kernel.Float(size)
+        case
+          when size.to_i == 1;    &quot;1 Byte&quot;
+          when size &lt; 1.kilobyte; &quot;%d Bytes&quot; % size
+          when size &lt; 1.megabyte; &quot;%.#{precision}f KB&quot;  % (size / 1.0.kilobyte)
+          when size &lt; 1.gigabyte; &quot;%.#{precision}f MB&quot;  % (size / 1.0.megabyte)
+          when size &lt; 1.terabyte; &quot;%.#{precision}f GB&quot;  % (size / 1.0.gigabyte)
+          else                    &quot;%.#{precision}f TB&quot;  % (size / 1.0.terabyte)
+        end.sub(/([0-9]\.\d*?)0+ /, '\1 ' ).sub(/\. /,' ')
+      rescue
+        nil
+      end
+    end
+  end
+end
+</pre>
+    </div>

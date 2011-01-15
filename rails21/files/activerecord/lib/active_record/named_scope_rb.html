@@ -1,0 +1,187 @@
+  <div id="fileHeader">
+    <h1>named_scope.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activerecord/lib/active_record/named_scope.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>module ActiveRecord
+  module NamedScope
+    # All subclasses of ActiveRecord::Base have two named_scopes:
+    # * &lt;tt&gt;all&lt;/tt&gt;, which is similar to a &lt;tt&gt;find(:all)&lt;/tt&gt; query, and
+    # * &lt;tt&gt;scoped&lt;/tt&gt;, which allows for the creation of anonymous scopes, on the fly: &lt;tt&gt;Shirt.scoped(:conditions =&gt; {:color =&gt; 'red'}).scoped(:include =&gt; :washing_instructions)&lt;/tt&gt;
+    #
+    # These anonymous scopes tend to be useful when procedurally generating complex queries, where passing
+    # intermediate values (scopes) around as first-class objects is convenient.
+    def self.included(base)
+      base.class_eval do
+        extend ClassMethods
+        named_scope :scoped, lambda { |scope| scope }
+      end
+    end
+
+    module ClassMethods
+      def scopes
+        read_inheritable_attribute(:scopes) || write_inheritable_attribute(:scopes, {})
+      end
+
+      # Adds a class method for retrieving and querying objects. A scope represents a narrowing of a database query,
+      # such as &lt;tt&gt;:conditions =&gt; {:color =&gt; :red}, :select =&gt; 'shirts.*', :include =&gt; :washing_instructions&lt;/tt&gt;.
+      #
+      #   class Shirt &lt; ActiveRecord::Base
+      #     named_scope :red, :conditions =&gt; {:color =&gt; 'red'}
+      #     named_scope :dry_clean_only, :joins =&gt; :washing_instructions, :conditions =&gt; ['washing_instructions.dry_clean_only = ?', true]
+      #   end
+      # 
+      # The above calls to &lt;tt&gt;named_scope&lt;/tt&gt; define class methods &lt;tt&gt;Shirt.red&lt;/tt&gt; and &lt;tt&gt;Shirt.dry_clean_only&lt;/tt&gt;. &lt;tt&gt;Shirt.red&lt;/tt&gt;, 
+      # in effect, represents the query &lt;tt&gt;Shirt.find(:all, :conditions =&gt; {:color =&gt; 'red'})&lt;/tt&gt;.
+      #
+      # Unlike Shirt.find(...), however, the object returned by &lt;tt&gt;Shirt.red&lt;/tt&gt; is not an Array; it resembles the association object
+      # constructed by a &lt;tt&gt;has_many&lt;/tt&gt; declaration. For instance, you can invoke &lt;tt&gt;Shirt.red.find(:first)&lt;/tt&gt;, &lt;tt&gt;Shirt.red.count&lt;/tt&gt;,
+      # &lt;tt&gt;Shirt.red.find(:all, :conditions =&gt; {:size =&gt; 'small'})&lt;/tt&gt;. Also, just
+      # as with the association objects, name scopes acts like an Array, implementing Enumerable; &lt;tt&gt;Shirt.red.each(&amp;block)&lt;/tt&gt;,
+      # &lt;tt&gt;Shirt.red.first&lt;/tt&gt;, and &lt;tt&gt;Shirt.red.inject(memo, &amp;block)&lt;/tt&gt; all behave as if Shirt.red really were an Array.
+      #
+      # These named scopes are composable. For instance, &lt;tt&gt;Shirt.red.dry_clean_only&lt;/tt&gt; will produce all shirts that are both red and dry clean only.
+      # Nested finds and calculations also work with these compositions: &lt;tt&gt;Shirt.red.dry_clean_only.count&lt;/tt&gt; returns the number of garments
+      # for which these criteria obtain. Similarly with &lt;tt&gt;Shirt.red.dry_clean_only.average(:thread_count)&lt;/tt&gt;.
+      #
+      # All scopes are available as class methods on the ActiveRecord::Base descendent upon which the scopes were defined. But they are also available to
+      # &lt;tt&gt;has_many&lt;/tt&gt; associations. If,
+      #
+      #   class Person &lt; ActiveRecord::Base
+      #     has_many :shirts
+      #   end
+      #
+      # then &lt;tt&gt;elton.shirts.red.dry_clean_only&lt;/tt&gt; will return all of Elton's red, dry clean
+      # only shirts.
+      #
+      # Named scopes can also be procedural.
+      #
+      #   class Shirt &lt; ActiveRecord::Base
+      #     named_scope :colored, lambda { |color|
+      #       { :conditions =&gt; { :color =&gt; color } }
+      #     }
+      #   end
+      #
+      # In this example, &lt;tt&gt;Shirt.colored('puce')&lt;/tt&gt; finds all puce shirts.
+      #
+      # Named scopes can also have extensions, just as with &lt;tt&gt;has_many&lt;/tt&gt; declarations:
+      #
+      #   class Shirt &lt; ActiveRecord::Base
+      #     named_scope :red, :conditions =&gt; {:color =&gt; 'red'} do
+      #       def dom_id
+      #         'red_shirts'
+      #       end
+      #     end
+      #   end
+      #
+      #
+      # For testing complex named scopes, you can examine the scoping options using the
+      # &lt;tt&gt;proxy_options&lt;/tt&gt; method on the proxy itself.
+      #
+      #   class Shirt &lt; ActiveRecord::Base
+      #     named_scope :colored, lambda { |color|
+      #       { :conditions =&gt; { :color =&gt; color } }
+      #     }
+      #   end
+      #
+      #   expected_options = { :conditions =&gt; { :colored =&gt; 'red' } }
+      #   assert_equal expected_options, Shirt.colored('red').proxy_options
+      def named_scope(name, options = {}, &amp;block)
+        name = name.to_sym
+        scopes[name] = lambda do |parent_scope, *args|
+          Scope.new(parent_scope, case options
+            when Hash
+              options
+            when Proc
+              options.call(*args)
+          end, &amp;block)
+        end
+        (class &lt;&lt; self; self end).instance_eval do
+          define_method name do |*args|
+            scopes[name].call(self, *args)
+          end
+        end
+      end
+    end
+    
+    class Scope
+      attr_reader :proxy_scope, :proxy_options
+
+      [].methods.each do |m|
+        unless m =~ /(^__|^nil\?|^send|^object_id$|class|extend|^find$|count|sum|average|maximum|minimum|paginate|first|last|empty\?|respond_to\?)/
+          delegate m, :to =&gt; :proxy_found
+        end
+      end
+
+      delegate :scopes, :with_scope, :to =&gt; :proxy_scope
+
+      def initialize(proxy_scope, options, &amp;block)
+        [options[:extend]].flatten.each { |extension| extend extension } if options[:extend]
+        extend Module.new(&amp;block) if block_given?
+        @proxy_scope, @proxy_options = proxy_scope, options.except(:extend)
+      end
+
+      def reload
+        load_found; self
+      end
+
+      def first(*args)
+        if args.first.kind_of?(Integer) || (@found &amp;&amp; !args.first.kind_of?(Hash))
+          proxy_found.first(*args)
+        else
+          find(:first, *args)
+        end
+      end
+
+      def last(*args)
+        if args.first.kind_of?(Integer) || (@found &amp;&amp; !args.first.kind_of?(Hash))
+          proxy_found.last(*args)
+        else
+          find(:last, *args)
+        end
+      end
+
+      def empty?
+        @found ? @found.empty? : count.zero?
+      end
+
+      def respond_to?(method, include_private = false)
+        super || @proxy_scope.respond_to?(method, include_private)
+      end
+
+      protected
+      def proxy_found
+        @found || load_found
+      end
+
+      private
+      def method_missing(method, *args, &amp;block)
+        if scopes.include?(method)
+          scopes[method].call(self, *args)
+        else
+          with_scope :find =&gt; proxy_options do
+            proxy_scope.send(method, *args, &amp;block)
+          end
+        end
+      end
+
+      def load_found
+        @found = find(:all)
+      end
+    end
+  end
+end
+</pre>
+    </div>

@@ -1,0 +1,50 @@
+  <div id="fileHeader">
+    <h1>attr_accessor_with_default.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activesupport/lib/active_support/core_ext/module/attr_accessor_with_default.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>class Module
+  # Declare an attribute accessor with an initial default return value.
+  #
+  # To give attribute &lt;tt&gt;:age&lt;/tt&gt; the initial value &lt;tt&gt;25&lt;/tt&gt;:
+  #  
+  #   class Person
+  #     attr_accessor_with_default :age, 25
+  #   end
+  #
+  #   some_person.age
+  #   =&gt; 25
+  #   some_person.age = 26
+  #   some_person.age
+  #   =&gt; 26
+  #
+  # To give attribute &lt;tt&gt;:element_name&lt;/tt&gt; a dynamic default value, evaluated
+  # in scope of self:
+  #
+  #   attr_accessor_with_default(:element_name) { name.underscore } 
+  #
+  def attr_accessor_with_default(sym, default = nil, &amp;block)
+    raise 'Default value or block required' unless !default.nil? || block
+    define_method(sym, block_given? ? block : Proc.new { default })
+    module_eval(&lt;&lt;-EVAL, __FILE__, __LINE__)
+      def #{sym}=(value)
+        class &lt;&lt; self; attr_reader :#{sym} end
+        @#{sym} = value
+      end
+    EVAL
+  end
+end
+</pre>
+    </div>

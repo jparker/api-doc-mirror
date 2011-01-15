@@ -1,0 +1,46 @@
+  <div id="fileHeader">
+    <h1>rjs.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionpack/lib/action_view/template_handlers/rjs.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:04 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>module ActionView
+  module TemplateHandlers
+    class RJS &lt; TemplateHandler
+      include Compilable
+
+      def self.line_offset
+        2
+      end
+
+      def compile(template)
+        &quot;controller.response.content_type ||= Mime::JS\n&quot; +
+        &quot;update_page do |page|\n#{template.source}\nend&quot;
+      end
+
+      def cache_fragment(block, name = {}, options = nil) #:nodoc:
+        @view.fragment_for(block, name, options) do
+          begin
+            debug_mode, ActionView::Base.debug_rjs = ActionView::Base.debug_rjs, false
+            eval('page.to_s', block.binding)
+          ensure
+            ActionView::Base.debug_rjs = debug_mode
+          end
+        end
+      end
+    end
+  end
+end
+</pre>
+    </div>

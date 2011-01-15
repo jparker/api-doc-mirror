@@ -1,0 +1,162 @@
+  <div id="fileHeader">
+    <h1>atom_feed_helper.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionpack/lib/action_view/helpers/atom_feed_helper.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:04 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre># Adds easy defaults to writing Atom feeds with the Builder template engine (this does not work on ERb or any other
+# template languages).
+module ActionView
+  module Helpers #:nodoc:
+    module AtomFeedHelper
+      # Full usage example:
+      #
+      #   config/routes.rb:
+      #     ActionController::Routing::Routes.draw do |map|
+      #       map.resources :posts
+      #       map.root :controller =&gt; &quot;posts&quot;
+      #     end
+      #
+      #   app/controllers/posts_controller.rb:
+      #     class PostsController &lt; ApplicationController::Base
+      #       # GET /posts.html
+      #       # GET /posts.atom
+      #       def index
+      #         @posts = Post.find(:all)
+      #         
+      #         respond_to do |format|
+      #           format.html
+      #           format.atom
+      #         end
+      #       end
+      #     end
+      #
+      #   app/views/posts/index.atom.builder:
+      #     atom_feed do |feed|
+      #       feed.title(&quot;My great blog!&quot;)
+      #       feed.updated((@posts.first.created_at))
+      #     
+      #       for post in @posts
+      #         feed.entry(post) do |entry|
+      #           entry.title(post.title)
+      #           entry.content(post.body, :type =&gt; 'html')
+      #     
+      #           entry.author do |author|
+      #             author.name(&quot;DHH&quot;)
+      #           end
+      #         end
+      #       end
+      #     end
+      #
+      # The options for atom_feed are:
+      #
+      # * &lt;tt&gt;:language&lt;/tt&gt;: Defaults to &quot;en-US&quot;.
+      # * &lt;tt&gt;:root_url&lt;/tt&gt;: The HTML alternative that this feed is doubling for. Defaults to / on the current host.
+      # * &lt;tt&gt;:url&lt;/tt&gt;: The URL for this feed. Defaults to the current URL.
+      # * &lt;tt&gt;:schema_date&lt;/tt&gt;: The date at which the tag scheme for the feed was first used. A good default is the year you 
+      #   created the feed. See http://feedvalidator.org/docs/error/InvalidTAG.html for more information. If not specified, 
+      #   2005 is used (as an &quot;I don't care&quot; value).
+      #
+      # Other namespaces can be added to the root element:
+      #
+      #   app/views/posts/index.atom.builder:
+      #     atom_feed({'xmlns:app' =&gt; 'http://www.w3.org/2007/app',
+      #         'xmlns:openSearch' =&gt; 'http://a9.com/-/spec/opensearch/1.1/'}) do |feed|
+      #       feed.title(&quot;My great blog!&quot;)
+      #       feed.updated((@posts.first.created_at))
+      #       feed.tag!(openSearch:totalResults, 10)
+      #
+      #       for post in @posts
+      #         feed.entry(post) do |entry|
+      #           entry.title(post.title)
+      #           entry.content(post.body, :type =&gt; 'html')
+      #           entry.tag!('app:edited', Time.now)
+      #
+      #           entry.author do |author|
+      #             author.name(&quot;DHH&quot;)
+      #           end
+      #         end
+      #       end
+      #     end
+      #
+      #
+      # atom_feed yields an AtomFeedBuilder instance.
+      def atom_feed(options = {}, &amp;block)
+        if options[:schema_date]
+          options[:schema_date] = options[:schema_date].strftime(&quot;%Y-%m-%d&quot;) if options[:schema_date].respond_to?(:strftime)
+        else
+          options[:schema_date] = &quot;2005&quot; # The Atom spec copyright date
+        end
+        
+        xml = options[:xml] || eval(&quot;xml&quot;, block.binding)
+        xml.instruct!
+
+        feed_opts = {&quot;xml:lang&quot; =&gt; options[:language] || &quot;en-US&quot;, &quot;xmlns&quot; =&gt; 'http://www.w3.org/2005/Atom'}
+        feed_opts.merge!(options).reject!{|k,v| !k.to_s.match(/^xml/)}
+
+        xml.feed(feed_opts) do
+          xml.id(&quot;tag:#{request.host},#{options[:schema_date]}:#{request.request_uri.split(&quot;.&quot;)[0]}&quot;)      
+          xml.link(:rel =&gt; 'alternate', :type =&gt; 'text/html', :href =&gt; options[:root_url] || (request.protocol + request.host_with_port))
+          xml.link(:rel =&gt; 'self', :type =&gt; 'application/atom+xml', :href =&gt; options[:url] || request.url)
+          
+          yield AtomFeedBuilder.new(xml, self, options)
+        end
+      end
+
+
+      class AtomFeedBuilder
+        def initialize(xml, view, feed_options = {})
+          @xml, @view, @feed_options = xml, view, feed_options
+        end
+        
+        # Accepts a Date or Time object and inserts it in the proper format. If nil is passed, current time in UTC is used.
+        def updated(date_or_time = nil)
+          @xml.updated((date_or_time || Time.now.utc).xmlschema)
+        end
+
+        # Creates an entry tag for a specific record and prefills the id using class and id.
+        #
+        # Options:
+        #
+        # * &lt;tt&gt;:published&lt;/tt&gt;: Time first published. Defaults to the created_at attribute on the record if one such exists.
+        # * &lt;tt&gt;:updated&lt;/tt&gt;: Time of update. Defaults to the updated_at attribute on the record if one such exists.
+        # * &lt;tt&gt;:url&lt;/tt&gt;: The URL for this entry. Defaults to the polymorphic_url for the record.
+        def entry(record, options = {})
+          @xml.entry do 
+            @xml.id(&quot;tag:#{@view.request.host},#{@feed_options[:schema_date]}:#{record.class}/#{record.id}&quot;)
+
+            if options[:published] || (record.respond_to?(:created_at) &amp;&amp; record.created_at)
+              @xml.published((options[:published] || record.created_at).xmlschema)
+            end
+
+            if options[:updated] || (record.respond_to?(:updated_at) &amp;&amp; record.updated_at)
+              @xml.updated((options[:updated] || record.updated_at).xmlschema)
+            end
+
+            @xml.link(:rel =&gt; 'alternate', :type =&gt; 'text/html', :href =&gt; options[:url] || @view.polymorphic_url(record))
+
+            yield @xml
+          end
+        end
+
+        private
+          def method_missing(method, *arguments, &amp;block)
+            @xml.__send__(method, *arguments, &amp;block)
+          end
+      end
+    end
+  end
+end
+</pre>
+    </div>

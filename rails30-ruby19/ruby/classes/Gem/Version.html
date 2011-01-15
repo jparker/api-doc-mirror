@@ -1,0 +1,802 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Gem::Version</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            Gem::Version 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../files/lib/rubygems/version_rb.html">lib/rubygems/version.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+The <a href="Version.html">Version</a> class processes string versions into
+comparable values. <a href="../A.html">A</a> version string should normally
+be a series of numbers separated by periods. Each part (digits separated by
+periods) is considered its own number, and these are used for sorting. So
+for instance, 3.10 sorts higher than 3.2 because ten is greater than two.
+</p>
+<p>
+If any part contains letters (currently only a-z are supported) then that
+version is considered prerelease. Versions with a prerelease part in the
+Nth part sort less than versions with N-1 parts. Prerelease parts are
+sorted alphabetically using the normal Ruby string sorting rules.
+</p>
+<p>
+Prereleases sort between real releases (newest to oldest):
+</p>
+<ol>
+<li>1.0
+
+</li>
+<li>1.0.b
+
+</li>
+<li>1.0.a
+
+</li>
+<li>0.9
+
+</li>
+</ol>
+<h2>How Software Changes</h2>
+<p>
+Users expect to be able to specify a version constraint that gives them
+some reasonable expectation that new versions of a library will work with
+their software if the version constraint is true, and not work with their
+software if the version constraint is false. In other words, the perfect
+system will accept all compatible versions of the library and reject all
+incompatible versions.
+</p>
+<p>
+Libraries change in 3 ways (well, more than 3, but stay focused here!).
+</p>
+<ol>
+<li>The change may be an implementation detail only and have no effect on the
+client software.
+
+</li>
+<li>The change may add new features, but do so in a way that client software
+written to an earlier version is still compatible.
+
+</li>
+<li>The change may change the public interface of the library in such a way
+that old software is no longer compatible.
+
+</li>
+</ol>
+<p>
+Some examples are appropriate at this point. Suppose I have a Stack class
+that supports a <tt>push</tt> and a <tt>pop</tt> method.
+</p>
+<h3>Examples of Category 1 changes:</h3>
+<ul>
+<li>Switch from an array based implementation to a linked-list based
+implementation.
+
+</li>
+<li>Provide an automatic (and transparent) backing store for large stacks.
+
+</li>
+</ul>
+<h3>Examples of Category 2 changes might be:</h3>
+<ul>
+<li>Add a <tt>depth</tt> method to return the current depth of the stack.
+
+</li>
+<li>Add a <tt>top</tt> method that returns the current top of stack (without
+changing the stack).
+
+</li>
+<li>Change <tt>push</tt> so that it returns the item pushed (previously it had
+no usable return value).
+
+</li>
+</ul>
+<h3>Examples of Category 3 changes might be:</h3>
+<ul>
+<li>Changes <tt>pop</tt> so that it no longer returns a value (you must use
+<tt>top</tt> to get the top of the stack).
+
+</li>
+<li>Rename the methods to <tt>push_item</tt> and <tt>pop_item</tt>.
+
+</li>
+</ul>
+<h2>RubyGems <a href="../Rational.html">Rational</a> Versioning</h2>
+<ul>
+<li>Versions shall be represented by three non-negative integers, separated by
+periods (e.g. 3.1.4). The first integers is the &#8220;major&#8221; version
+number, the second integer is the &#8220;minor&#8221; version number, and
+the third integer is the &#8220;build&#8221; number.
+
+</li>
+<li><a href="../A.html">A</a> category 1 change (implementation detail) will
+increment the build number.
+
+</li>
+<li><a href="../A.html">A</a> category 2 change (backwards compatible) will
+increment the minor version number and reset the build number.
+
+</li>
+<li><a href="../A.html">A</a> category 3 change (incompatible) will increment
+the major build number and reset the minor and build numbers.
+
+</li>
+<li>Any &#8220;public&#8221; release of a gem should have a different version.
+Normally that means incrementing the build number. This means a developer
+can generate builds all day long for himself, but as soon as he/she makes a
+public release, the version must be updated.
+
+</li>
+</ul>
+<h3>Examples</h3>
+<p>
+Let&#8217;s work through a project lifecycle using our Stack example from
+above.
+</p>
+<table>
+<tr><td valign="top"><a href="Version.html">Version</a> 0.0.1:</td><td>The initial Stack class is release.
+
+</td></tr>
+<tr><td valign="top"><a href="Version.html">Version</a> 0.0.2:</td><td>Switched to a linked=list implementation because it is cooler.
+
+</td></tr>
+<tr><td valign="top"><a href="Version.html">Version</a> 0.1.0:</td><td>Added a <tt>depth</tt> method.
+
+</td></tr>
+<tr><td valign="top"><a href="Version.html">Version</a> 1.0.0:</td><td>Added <tt>top</tt> and made <tt>pop</tt> return nil (<tt>pop</tt> used to
+return the old top item).
+
+</td></tr>
+<tr><td valign="top"><a href="Version.html">Version</a> 1.1.0:</td><td><tt>push</tt> now returns the value pushed (it used it return nil).
+
+</td></tr>
+<tr><td valign="top"><a href="Version.html">Version</a> 1.1.1:</td><td>Fixed a bug in the linked list implementation.
+
+</td></tr>
+<tr><td valign="top"><a href="Version.html">Version</a> 1.1.2:</td><td>Fixed a bug introduced in the last fix.
+
+</td></tr>
+</table>
+<p>
+Client <a href="../A.html">A</a> needs a stack with basic push/pop
+capability. He writes to the original interface (no <tt>top</tt>), so his
+version constraint looks like:
+</p>
+<pre>
+  gem 'stack', '~&gt; 0.0'
+</pre>
+<p>
+Essentially, any version is OK with Client <a href="../A.html">A</a>. An
+incompatible change to the library will cause him grief, but he is willing
+to take the chance (we call Client <a href="../A.html">A</a> optimistic).
+</p>
+<p>
+Client B is just like Client <a href="../A.html">A</a> except for two
+things: (1) He uses the <tt>depth</tt> method and (2) he is worried about
+future incompatibilities, so he writes his version constraint like this:
+</p>
+<pre>
+  gem 'stack', '~&gt; 0.1'
+</pre>
+<p>
+The <tt>depth</tt> method was introduced in version 0.1.0, so that version
+or anything later is fine, as long as the version stays below version 1.0
+where incompatibilities are introduced. We call Client B pessimistic
+because he is worried about incompatible future changes (it is OK to be
+pessimistic!).
+</p>
+<h2>Preventing <a href="Version.html">Version</a> Catastrophe:</h2>
+<p>
+From: <a
+href="http://blog.zenspider.com/2008/10/rubygems-howto-preventing-cata.html">blog.zenspider.com/2008/10/rubygems-howto-preventing-cata.html</a>
+</p>
+<p>
+Let&#8217;s say you&#8217;re depending on the fnord gem version 2.y.z. If
+you specify your dependency as &#8220;>= 2.0.0&#8220; then, you&#8217;re
+good, right? What happens if fnord 3.0 comes out and it isn&#8217;t
+backwards compatible with 2.y.z? Your stuff will break as a result of using
+&#8220;>=&#8221;. The better route is to specify your dependency with a
+&#8220;spermy&#8221; version specifier. They&#8217;re a tad confusing, so
+here is how the dependency specifiers work:
+</p>
+<pre>
+  Specification From  ... To (exclusive)
+  &quot;&gt;= 3.0&quot;      3.0   ... &amp;infin;
+  &quot;~&gt; 3.0&quot;      3.0   ... 4.0
+  &quot;~&gt; 3.0.0&quot;    3.0.0 ... 3.1
+  &quot;~&gt; 3.5&quot;      3.5   ... 4.0
+  &quot;~&gt; 3.5.0&quot;    3.5.0 ... 3.6
+</pre>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>#</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005475"><=></a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>B</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005464">bump</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005461">correct?</a>,</li>
+                
+                <li><a href="#M005462">create</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005465">eql?</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>M</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005468">marshal_dump</a>,</li>
+                
+                <li><a href="#M005469">marshal_load</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005463">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>P</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005470">prerelease?</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>R</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005472">release</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005474">spermy_recommendation</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+    <div class="sectiontitle">Included Modules</div>
+    <ul>
+        
+        <li>
+            
+            <a href="../Kernel.html">Kernel</a>
+            
+            START:includes
+        </li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Attributes</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>version</td>
+            <td class='attr-desc'><p>
+<a href="../A.html">A</a> string representation of this <a
+href="Version.html">Version</a>.
+</p></td>
+        </tr>
+        
+    </table>
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005461">
+                    
+                    <a name="M005461"></a><b>correct?</b>(version)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+True if the <tt>version</tt> string matches RubyGems&#8217; requirements.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005461_source')" id="l_M005461_source">show</a>
+                        
+                    </p>
+                    <div id="M005461_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/version.rb, line 155</span>
+155:   <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">correct?</span> <span class="ruby-identifier">version</span>
+156:     <span class="ruby-identifier">version</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">=~</span> <span class="ruby-constant">ANCHORED_VERSION_PATTERN</span>
+157:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005462">
+                    
+                    <a name="M005462"></a><b>create</b>(input)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Factory method to create a <a href="Version.html">Version</a> object. Input
+may be a <a href="Version.html">Version</a> or a <a
+href="../String.html">String</a>. Intended to simplify client code.
+</p>
+<pre>
+  ver1 = Version.create('1.3.17')   # -&gt; (Version object)
+  ver2 = Version.create(ver1)       # -&gt; (ver1)
+  ver3 = Version.create(nil)        # -&gt; nil
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005462_source')" id="l_M005462_source">show</a>
+                        
+                    </p>
+                    <div id="M005462_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/version.rb, line 167</span>
+167:   <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">create</span> <span class="ruby-identifier">input</span>
+168:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">input</span>.<span class="ruby-identifier">respond_to?</span> <span class="ruby-identifier">:version</span> <span class="ruby-keyword kw">then</span>
+169:       <span class="ruby-identifier">input</span>
+170:     <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">input</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-keyword kw">then</span>
+171:       <span class="ruby-keyword kw">nil</span>
+172:     <span class="ruby-keyword kw">else</span>
+173:       <span class="ruby-identifier">new</span> <span class="ruby-identifier">input</span>
+174:     <span class="ruby-keyword kw">end</span>
+175:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005463">
+                    
+                    <a name="M005463"></a><b>new</b>(version)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Constructs a <a href="Version.html">Version</a> from the <tt>version</tt>
+string. <a href="../A.html">A</a> version string is a series of digits or
+ASCII letters separated by dots.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005463_source')" id="l_M005463_source">show</a>
+                        
+                    </p>
+                    <div id="M005463_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/version.rb, line 181</span>
+181:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span> <span class="ruby-identifier">version</span>
+182:     <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;Malformed version number string #{version}&quot;</span> <span class="ruby-keyword kw">unless</span>
+183:       <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">correct?</span>(<span class="ruby-identifier">version</span>)
+184: 
+185:     <span class="ruby-ivar">@version</span> = <span class="ruby-identifier">version</span>.<span class="ruby-identifier">to_s</span>
+186:     <span class="ruby-ivar">@version</span>.<span class="ruby-identifier">strip!</span>
+187: 
+188:     <span class="ruby-identifier">segments</span> <span class="ruby-comment cmt"># prime @segments</span>
+189:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005475">
+                    
+                    <a name="M005475"></a><b>&lt;=&gt;</b>(other)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Compares this version with <tt>other</tt> returning -1, 0, or 1 if the
+other version is larger, the same, or smaller than this one.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005475_source')" id="l_M005475_source">show</a>
+                        
+                    </p>
+                    <div id="M005475_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/version.rb, line 290</span>
+290:   <span class="ruby-keyword kw">def</span> <span class="ruby-operator">&lt;=&gt;</span> <span class="ruby-identifier">other</span>
+291:     <span class="ruby-keyword kw">return</span>   <span class="ruby-value">1</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">other</span> <span class="ruby-comment cmt"># HACK: comparable with nil? why?</span>
+292:     <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">nil</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">other</span>
+293: 
+294:     <span class="ruby-identifier">lhsize</span> = <span class="ruby-identifier">segments</span>.<span class="ruby-identifier">size</span>
+295:     <span class="ruby-identifier">rhsize</span> = <span class="ruby-identifier">other</span>.<span class="ruby-identifier">segments</span>.<span class="ruby-identifier">size</span>
+296:     <span class="ruby-identifier">limit</span>  = (<span class="ruby-identifier">lhsize</span> <span class="ruby-operator">&gt;</span> <span class="ruby-identifier">rhsize</span> <span class="ruby-value">? </span><span class="ruby-identifier">lhsize</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">rhsize</span>) <span class="ruby-operator">-</span> <span class="ruby-value">1</span>
+297: 
+298:     <span class="ruby-value">0</span>.<span class="ruby-identifier">upto</span>(<span class="ruby-identifier">limit</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">i</span><span class="ruby-operator">|</span>
+299:       <span class="ruby-identifier">lhs</span>, <span class="ruby-identifier">rhs</span> = <span class="ruby-identifier">segments</span>[<span class="ruby-identifier">i</span>] <span class="ruby-operator">||</span> <span class="ruby-value">0</span>, <span class="ruby-identifier">other</span>.<span class="ruby-identifier">segments</span>[<span class="ruby-identifier">i</span>] <span class="ruby-operator">||</span> <span class="ruby-value">0</span>
+300: 
+301:       <span class="ruby-keyword kw">return</span>  <span class="ruby-value">-1</span>         <span class="ruby-keyword kw">if</span> <span class="ruby-constant">String</span>  <span class="ruby-operator">===</span> <span class="ruby-identifier">lhs</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-constant">Numeric</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">rhs</span>
+302:       <span class="ruby-keyword kw">return</span>   <span class="ruby-value">1</span>         <span class="ruby-keyword kw">if</span> <span class="ruby-constant">Numeric</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">lhs</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-constant">String</span>  <span class="ruby-operator">===</span> <span class="ruby-identifier">rhs</span>
+303:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">lhs</span> <span class="ruby-operator">&lt;=&gt;</span> <span class="ruby-identifier">rhs</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">lhs</span> <span class="ruby-operator">!=</span> <span class="ruby-identifier">rhs</span>
+304:     <span class="ruby-keyword kw">end</span>
+305: 
+306:     <span class="ruby-keyword kw">return</span> <span class="ruby-value">0</span>
+307:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005464">
+                    
+                    <a name="M005464"></a><b>bump</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Return a new version object where the next to the last revision number is
+one greater (e.g., 5.3.1 => 5.4).
+</p>
+<p>
+Pre-release (alpha) parts, e.g, 5.3.1.b2 => 5.4, are ignored.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005464_source')" id="l_M005464_source">show</a>
+                        
+                    </p>
+                    <div id="M005464_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/version.rb, line 197</span>
+197:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">bump</span>
+198:     <span class="ruby-identifier">segments</span> = <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">segments</span>.<span class="ruby-identifier">dup</span>
+199:     <span class="ruby-identifier">segments</span>.<span class="ruby-identifier">pop</span> <span class="ruby-keyword kw">while</span> <span class="ruby-identifier">segments</span>.<span class="ruby-identifier">any?</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">s</span><span class="ruby-operator">|</span> <span class="ruby-constant">String</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">s</span> }
+200:     <span class="ruby-identifier">segments</span>.<span class="ruby-identifier">pop</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">segments</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>
+201: 
+202:     <span class="ruby-identifier">segments</span>[<span class="ruby-value">-1</span>] = <span class="ruby-identifier">segments</span>[<span class="ruby-value">-1</span>].<span class="ruby-identifier">succ</span>
+203:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">segments</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;.&quot;</span>)
+204:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005465">
+                    
+                    <a name="M005465"></a><b>eql?</b>(other)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+<a href="../A.html">A</a> <a href="Version.html">Version</a> is only eql?
+to another version if it&#8217;s specified to the same precision. <a
+href="Version.html">Version</a> &#8220;1.0&#8220; is not the same as
+version &#8220;1&#8221;.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005465_source')" id="l_M005465_source">show</a>
+                        
+                    </p>
+                    <div id="M005465_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/version.rb, line 210</span>
+210:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">eql?</span> <span class="ruby-identifier">other</span>
+211:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">other</span> <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">segments</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">other</span>.<span class="ruby-identifier">segments</span>
+212:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005468">
+                    
+                    <a name="M005468"></a><b>marshal_dump</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Dump only the raw version string, not the complete object. It&#8217;s a
+string for backwards (RubyGems 1.3.5 and earlier) compatibility.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005468_source')" id="l_M005468_source">show</a>
+                        
+                    </p>
+                    <div id="M005468_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/version.rb, line 226</span>
+226:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">marshal_dump</span>
+227:     [<span class="ruby-identifier">version</span>]
+228:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005469">
+                    
+                    <a name="M005469"></a><b>marshal_load</b>(array)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Load custom marshal format. It&#8217;s a string for backwards (RubyGems
+1.3.5 and earlier) compatibility.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005469_source')" id="l_M005469_source">show</a>
+                        
+                    </p>
+                    <div id="M005469_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/version.rb, line 234</span>
+234:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">marshal_load</span> <span class="ruby-identifier">array</span>
+235:     <span class="ruby-identifier">initialize</span> <span class="ruby-identifier">array</span>[<span class="ruby-value">0</span>]
+236:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005470">
+                    
+                    <a name="M005470"></a><b>prerelease?</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+<a href="../A.html">A</a> version is considered a prerelease if it contains
+a letter.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005470_source')" id="l_M005470_source">show</a>
+                        
+                    </p>
+                    <div id="M005470_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/version.rb, line 241</span>
+241:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">prerelease?</span>
+242:     <span class="ruby-ivar">@prerelease</span> <span class="ruby-operator">||=</span> <span class="ruby-identifier">segments</span>.<span class="ruby-identifier">any?</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">s</span><span class="ruby-operator">|</span> <span class="ruby-constant">String</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">s</span> }
+243:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005472">
+                    
+                    <a name="M005472"></a><b>release</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+The release for this version (e.g. 1.2.0.a -> 1.2.0). Non-prerelease
+versions return themselves.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005472_source')" id="l_M005472_source">show</a>
+                        
+                    </p>
+                    <div id="M005472_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/version.rb, line 253</span>
+253:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">release</span>
+254:     <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">self</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">prerelease?</span>
+255: 
+256:     <span class="ruby-identifier">segments</span> = <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">segments</span>.<span class="ruby-identifier">dup</span>
+257:     <span class="ruby-identifier">segments</span>.<span class="ruby-identifier">pop</span> <span class="ruby-keyword kw">while</span> <span class="ruby-identifier">segments</span>.<span class="ruby-identifier">any?</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">s</span><span class="ruby-operator">|</span> <span class="ruby-constant">String</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">s</span> }
+258:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">segments</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">'.'</span>)
+259:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005474">
+                    
+                    <a name="M005474"></a><b>spermy_recommendation</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+<a href="../A.html">A</a> recommended version for use with a ~> <a
+href="Requirement.html">Requirement</a>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005474_source')" id="l_M005474_source">show</a>
+                        
+                    </p>
+                    <div id="M005474_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/version.rb, line 276</span>
+276:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">spermy_recommendation</span>
+277:     <span class="ruby-identifier">segments</span> = <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">segments</span>.<span class="ruby-identifier">dup</span>
+278: 
+279:     <span class="ruby-identifier">segments</span>.<span class="ruby-identifier">pop</span>    <span class="ruby-keyword kw">while</span> <span class="ruby-identifier">segments</span>.<span class="ruby-identifier">any?</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">s</span><span class="ruby-operator">|</span> <span class="ruby-constant">String</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">s</span> }
+280:     <span class="ruby-identifier">segments</span>.<span class="ruby-identifier">pop</span>    <span class="ruby-keyword kw">while</span> <span class="ruby-identifier">segments</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">2</span>
+281:     <span class="ruby-identifier">segments</span>.<span class="ruby-identifier">push</span> <span class="ruby-value">0</span> <span class="ruby-keyword kw">while</span> <span class="ruby-identifier">segments</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">&lt;</span> <span class="ruby-value">2</span>
+282: 
+283:     <span class="ruby-node">&quot;~&gt; #{segments.join(&quot;.&quot;)}&quot;</span>
+284:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

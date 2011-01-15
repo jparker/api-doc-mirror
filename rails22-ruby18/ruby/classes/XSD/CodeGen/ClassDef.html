@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>XSD::CodeGen::ClassDef</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            XSD::CodeGen::ClassDef 
+            
+                <span class="parent">&lt; 
+                    
+                    ModuleDef
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../../files/lib/xsd/codegen/classdef_rb.html">lib/xsd/codegen/classdef.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>D</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002961">def_attr</a>,</li>
+                
+                <li><a href="#M002960">def_classvar</a>,</li>
+                
+                <li><a href="#M002962">dump</a>,</li>
+                
+                <li><a href="#M002967">dump_accessor</a>,</li>
+                
+                <li><a href="#M002968">dump_attribute</a>,</li>
+                
+                <li><a href="#M002966">dump_attributes</a>,</li>
+                
+                <li><a href="#M002963">dump_class_def</a>,</li>
+                
+                <li><a href="#M002964">dump_class_def_end</a>,</li>
+                
+                <li><a href="#M002965">dump_classvar</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002959">new</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+    <div class="sectiontitle">Included Modules</div>
+    <ul>
+        
+        <li>
+            
+            <a href="../CodeGen.html">XSD::CodeGen</a>
+            
+            START:includes
+        </li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M002959">
+                    
+                    <a name="M002959"></a><b>new</b>(name, baseclass = nil)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002959_source')" id="l_M002959_source">show</a>
+                        
+                    </p>
+                    <div id="M002959_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/xsd/codegen/classdef.rb, line 21</span>
+21:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">baseclass</span> = <span class="ruby-keyword kw">nil</span>)
+22:     <span class="ruby-keyword kw">super</span>(<span class="ruby-identifier">name</span>)
+23:     <span class="ruby-ivar">@baseclass</span> = <span class="ruby-identifier">baseclass</span>
+24:     <span class="ruby-ivar">@classvar</span> = []
+25:     <span class="ruby-ivar">@attrdef</span> = []
+26:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M002961">
+                    
+                    <a name="M002961"></a><b>def_attr</b>(attrname, writable = true, varname = nil)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002961_source')" id="l_M002961_source">show</a>
+                        
+                    </p>
+                    <div id="M002961_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/xsd/codegen/classdef.rb, line 36</span>
+36:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">def_attr</span>(<span class="ruby-identifier">attrname</span>, <span class="ruby-identifier">writable</span> = <span class="ruby-keyword kw">true</span>, <span class="ruby-identifier">varname</span> = <span class="ruby-keyword kw">nil</span>)
+37:     <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">safevarname?</span>(<span class="ruby-identifier">varname</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">attrname</span>)
+38:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-node">&quot;#{varname || attrname} seems to be unsafe&quot;</span>)
+39:     <span class="ruby-keyword kw">end</span>
+40:     <span class="ruby-ivar">@attrdef</span> <span class="ruby-operator">&lt;&lt;</span> [<span class="ruby-identifier">attrname</span>, <span class="ruby-identifier">writable</span>, <span class="ruby-identifier">varname</span>]
+41:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002960">
+                    
+                    <a name="M002960"></a><b>def_classvar</b>(var, value)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002960_source')" id="l_M002960_source">show</a>
+                        
+                    </p>
+                    <div id="M002960_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/xsd/codegen/classdef.rb, line 28</span>
+28:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">def_classvar</span>(<span class="ruby-identifier">var</span>, <span class="ruby-identifier">value</span>)
+29:     <span class="ruby-identifier">var</span> = <span class="ruby-identifier">var</span>.<span class="ruby-identifier">sub</span>(<span class="ruby-regexp re">/\A@@/</span>, <span class="ruby-value str">&quot;&quot;</span>)
+30:     <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">safevarname?</span>(<span class="ruby-identifier">var</span>)
+31:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-node">&quot;#{var} seems to be unsafe&quot;</span>)
+32:     <span class="ruby-keyword kw">end</span>
+33:     <span class="ruby-ivar">@classvar</span> <span class="ruby-operator">&lt;&lt;</span> [<span class="ruby-identifier">var</span>, <span class="ruby-identifier">value</span>]
+34:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002962">
+                    
+                    <a name="M002962"></a><b>dump</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002962_source')" id="l_M002962_source">show</a>
+                        
+                    </p>
+                    <div id="M002962_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/xsd/codegen/classdef.rb, line 43</span>
+43:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">dump</span>
+44:     <span class="ruby-identifier">buf</span> = <span class="ruby-value str">&quot;&quot;</span>
+45:     <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@requirepath</span>.<span class="ruby-identifier">empty?</span>
+46:       <span class="ruby-identifier">buf</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">dump_requirepath</span> 
+47:     <span class="ruby-keyword kw">end</span>
+48:     <span class="ruby-identifier">buf</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">dump_emptyline</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">buf</span>.<span class="ruby-identifier">empty?</span>
+49:     <span class="ruby-identifier">package</span> = <span class="ruby-ivar">@name</span>.<span class="ruby-identifier">split</span>(<span class="ruby-regexp re">/::/</span>)[<span class="ruby-value">0</span><span class="ruby-operator">..</span><span class="ruby-value">-2</span>]
+50:     <span class="ruby-identifier">buf</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">dump_package_def</span>(<span class="ruby-identifier">package</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">package</span>.<span class="ruby-identifier">empty?</span>
+51:     <span class="ruby-identifier">buf</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">dump_comment</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@comment</span>
+52:     <span class="ruby-identifier">buf</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">dump_class_def</span>
+53:     <span class="ruby-identifier">spacer</span> = <span class="ruby-keyword kw">false</span>
+54:     <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@classvar</span>.<span class="ruby-identifier">empty?</span>
+55:       <span class="ruby-identifier">spacer</span> = <span class="ruby-keyword kw">true</span>
+56:       <span class="ruby-identifier">buf</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">dump_classvar</span>
+57:     <span class="ruby-keyword kw">end</span>
+58:     <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@const</span>.<span class="ruby-identifier">empty?</span>
+59:       <span class="ruby-identifier">buf</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">dump_emptyline</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">spacer</span>
+60:       <span class="ruby-identifier">spacer</span> = <span class="ruby-keyword kw">true</span>
+61:       <span class="ruby-identifier">buf</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">dump_const</span>
+62:     <span class="ruby-keyword kw">end</span>
+63:     <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@code</span>.<span class="ruby-identifier">empty?</span>
+64:       <span class="ruby-identifier">buf</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">dump_emptyline</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">spacer</span>
+65:       <span class="ruby-identifier">spacer</span> = <span class="ruby-keyword kw">true</span>
+66:       <span class="ruby-identifier">buf</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">dump_code</span>
+67:     <span class="ruby-keyword kw">end</span>
+68:     <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@attrdef</span>.<span class="ruby-identifier">empty?</span>
+69:       <span class="ruby-identifier">buf</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">dump_emptyline</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">spacer</span>
+70:       <span class="ruby-identifier">spacer</span> = <span class="ruby-keyword kw">true</span>
+71:       <span class="ruby-identifier">buf</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">dump_attributes</span>
+72:     <span class="ruby-keyword kw">end</span>
+73:     <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@methoddef</span>.<span class="ruby-identifier">empty?</span>
+74:       <span class="ruby-identifier">buf</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">dump_emptyline</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">spacer</span>
+75:       <span class="ruby-identifier">spacer</span> = <span class="ruby-keyword kw">true</span>
+76:       <span class="ruby-identifier">buf</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">dump_methods</span>
+77:     <span class="ruby-keyword kw">end</span>
+78:     <span class="ruby-identifier">buf</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">dump_class_def_end</span>
+79:     <span class="ruby-identifier">buf</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">dump_package_def_end</span>(<span class="ruby-identifier">package</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">package</span>.<span class="ruby-identifier">empty?</span>
+80:     <span class="ruby-identifier">buf</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/^\s+$/</span>, <span class="ruby-value str">''</span>)
+81:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Private methods</div>
+            
+            <div class="method">
+                <div class="title" id="M002967">
+                    
+                    <a name="M002967"></a><b>dump_accessor</b>(attrname, writable)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002967_source')" id="l_M002967_source">show</a>
+                        
+                    </p>
+                    <div id="M002967_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/xsd/codegen/classdef.rb, line 124</span>
+124:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">dump_accessor</span>(<span class="ruby-identifier">attrname</span>, <span class="ruby-identifier">writable</span>)
+125:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">writable</span>
+126:       <span class="ruby-node">&quot;attr_accessor :#{attrname}&quot;</span>
+127:     <span class="ruby-keyword kw">else</span>
+128:       <span class="ruby-node">&quot;attr_reader :#{attrname}&quot;</span>
+129:     <span class="ruby-keyword kw">end</span>
+130:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002968">
+                    
+                    <a name="M002968"></a><b>dump_attribute</b>(attrname, writable, varname)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002968_source')" id="l_M002968_source">show</a>
+                        
+                    </p>
+                    <div id="M002968_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/xsd/codegen/classdef.rb, line 132</span>
+132:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">dump_attribute</span>(<span class="ruby-identifier">attrname</span>, <span class="ruby-identifier">writable</span>, <span class="ruby-identifier">varname</span>)
+133:     <span class="ruby-identifier">str</span> = <span class="ruby-keyword kw">nil</span>
+134:     <span class="ruby-identifier">mr</span> = <span class="ruby-constant">MethodDef</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">attrname</span>)
+135:     <span class="ruby-identifier">mr</span>.<span class="ruby-identifier">definition</span> = <span class="ruby-node">&quot;@#{varname}&quot;</span>
+136:     <span class="ruby-identifier">str</span> = <span class="ruby-identifier">mr</span>.<span class="ruby-identifier">dump</span>
+137:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">writable</span>
+138:       <span class="ruby-identifier">mw</span> = <span class="ruby-constant">MethodDef</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">attrname</span> <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;=&quot;</span>, <span class="ruby-value str">'value'</span>)
+139:       <span class="ruby-identifier">mw</span>.<span class="ruby-identifier">definition</span> = <span class="ruby-node">&quot;@#{varname} = value&quot;</span>
+140:       <span class="ruby-identifier">str</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;\n&quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">mw</span>.<span class="ruby-identifier">dump</span>
+141:     <span class="ruby-keyword kw">end</span>
+142:     <span class="ruby-identifier">str</span>
+143:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002966">
+                    
+                    <a name="M002966"></a><b>dump_attributes</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002966_source')" id="l_M002966_source">show</a>
+                        
+                    </p>
+                    <div id="M002966_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/xsd/codegen/classdef.rb, line 106</span>
+106:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">dump_attributes</span>
+107:     <span class="ruby-identifier">str</span> = <span class="ruby-value str">&quot;&quot;</span>
+108:     <span class="ruby-ivar">@attrdef</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">attrname</span>, <span class="ruby-identifier">writable</span>, <span class="ruby-identifier">varname</span><span class="ruby-operator">|</span>
+109:       <span class="ruby-identifier">varname</span> <span class="ruby-operator">||=</span> <span class="ruby-identifier">attrname</span>
+110:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">attrname</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">varname</span>
+111:         <span class="ruby-identifier">str</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">format</span>(<span class="ruby-identifier">dump_accessor</span>(<span class="ruby-identifier">attrname</span>, <span class="ruby-identifier">writable</span>), <span class="ruby-value">2</span>)
+112:       <span class="ruby-keyword kw">end</span>
+113:     <span class="ruby-keyword kw">end</span>
+114:     <span class="ruby-ivar">@attrdef</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">attrname</span>, <span class="ruby-identifier">writable</span>, <span class="ruby-identifier">varname</span><span class="ruby-operator">|</span>
+115:       <span class="ruby-identifier">varname</span> <span class="ruby-operator">||=</span> <span class="ruby-identifier">attrname</span>
+116:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">attrname</span> <span class="ruby-operator">!=</span> <span class="ruby-identifier">varname</span>
+117:         <span class="ruby-identifier">str</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;\n&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">str</span>.<span class="ruby-identifier">empty?</span>
+118:         <span class="ruby-identifier">str</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">format</span>(<span class="ruby-identifier">dump_attribute</span>(<span class="ruby-identifier">attrname</span>, <span class="ruby-identifier">writable</span>, <span class="ruby-identifier">varname</span>), <span class="ruby-value">2</span>)
+119:       <span class="ruby-keyword kw">end</span>
+120:     <span class="ruby-keyword kw">end</span>
+121:     <span class="ruby-identifier">str</span>
+122:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002963">
+                    
+                    <a name="M002963"></a><b>dump_class_def</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002963_source')" id="l_M002963_source">show</a>
+                        
+                    </p>
+                    <div id="M002963_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/xsd/codegen/classdef.rb, line 85</span>
+85:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">dump_class_def</span>
+86:     <span class="ruby-identifier">name</span> = <span class="ruby-ivar">@name</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">split</span>(<span class="ruby-regexp re">/::/</span>)
+87:     <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@baseclass</span>
+88:       <span class="ruby-identifier">format</span>(<span class="ruby-node">&quot;class #{name.last} &lt; #{@baseclass}&quot;</span>)
+89:     <span class="ruby-keyword kw">else</span>
+90:       <span class="ruby-identifier">format</span>(<span class="ruby-node">&quot;class #{name.last}&quot;</span>)
+91:     <span class="ruby-keyword kw">end</span>
+92:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002964">
+                    
+                    <a name="M002964"></a><b>dump_class_def_end</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002964_source')" id="l_M002964_source">show</a>
+                        
+                    </p>
+                    <div id="M002964_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/xsd/codegen/classdef.rb, line 94</span>
+94:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">dump_class_def_end</span>
+95:     <span class="ruby-identifier">str</span> = <span class="ruby-identifier">format</span>(<span class="ruby-value str">&quot;end&quot;</span>)
+96:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002965">
+                    
+                    <a name="M002965"></a><b>dump_classvar</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002965_source')" id="l_M002965_source">show</a>
+                        
+                    </p>
+                    <div id="M002965_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/xsd/codegen/classdef.rb, line 98</span>
+ 98:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">dump_classvar</span>
+ 99:     <span class="ruby-identifier">dump_static</span>(
+100:       <span class="ruby-ivar">@classvar</span>.<span class="ruby-identifier">collect</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">var</span>, <span class="ruby-identifier">value</span><span class="ruby-operator">|</span>
+101:         <span class="ruby-node">%Q(@@#{var.sub(/^@@/, &quot;&quot;)} = #{dump_value(value)})</span>
+102:       }.<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;\n&quot;</span>)
+103:     )
+104:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

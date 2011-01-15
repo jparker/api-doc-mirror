@@ -1,0 +1,526 @@
+  <div id="fileHeader">
+    <h1>text_helper.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionpack/lib/action_view/helpers/text_helper.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:04 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>require 'action_view/helpers/tag_helper'
+require 'html/document'
+
+module ActionView
+  module Helpers #:nodoc:
+    # The TextHelper module provides a set of methods for filtering, formatting
+    # and transforming strings, which can reduce the amount of inline Ruby code in
+    # your views. These helper methods extend ActionView making them callable
+    # within your template files.
+    module TextHelper
+      # The preferred method of outputting text in your views is to use the
+      # &lt;%= &quot;text&quot; %&gt; eRuby syntax. The regular _puts_ and _print_ methods
+      # do not operate as expected in an eRuby code block. If you absolutely must
+      # output text within a non-output code block (i.e., &lt;% %&gt;), you can use the concat method.
+      #
+      # ==== Examples
+      #   &lt;%
+      #       concat &quot;hello&quot;, binding
+      #       # is the equivalent of &lt;%= &quot;hello&quot; %&gt;
+      #
+      #       if (logged_in == true):
+      #         concat &quot;Logged in!&quot;, binding
+      #       else
+      #         concat link_to('login', :action =&gt; login), binding
+      #       end
+      #       # will either display &quot;Logged in!&quot; or a login link
+      #   %&gt;
+      def concat(string, binding)
+        eval(ActionView::Base.erb_variable, binding) &lt;&lt; string
+      end
+
+      if RUBY_VERSION &lt; '1.9'
+        # If +text+ is longer than +length+, +text+ will be truncated to the length of
+        # +length+ (defaults to 30) and the last characters will be replaced with the +truncate_string+
+        # (defaults to &quot;...&quot;).
+        #
+        # ==== Examples
+        #   truncate(&quot;Once upon a time in a world far far away&quot;, 14)
+        #   # =&gt; Once upon a...
+        #
+        #   truncate(&quot;Once upon a time in a world far far away&quot;)
+        #   # =&gt; Once upon a time in a world f...
+        #
+        #   truncate(&quot;And they found that many people were sleeping better.&quot;, 25, &quot;(clipped)&quot;)
+        #   # =&gt; And they found that many (clipped)
+        #
+        #   truncate(&quot;And they found that many people were sleeping better.&quot;, 15, &quot;... (continued)&quot;)
+        #   # =&gt; And they found... (continued)
+        def truncate(text, length = 30, truncate_string = &quot;...&quot;)
+          if text
+            l = length - truncate_string.chars.length
+            chars = text.chars
+            (chars.length &gt; length ? chars[0...l] + truncate_string : text).to_s
+          end
+        end
+      else
+        def truncate(text, length = 30, truncate_string = &quot;...&quot;) #:nodoc:
+          if text
+            l = length - truncate_string.length
+            (text.length &gt; length ? text[0...l] + truncate_string : text).to_s
+          end
+        end
+      end
+
+      # Highlights one or more +phrases+ everywhere in +text+ by inserting it into
+      # a +highlighter+ string. The highlighter can be specialized by passing +highlighter+
+      # as a single-quoted string with \1 where the phrase is to be inserted (defaults to
+      # '&lt;strong class=&quot;highlight&quot;&gt;\1&lt;/strong&gt;')
+      #
+      # ==== Examples
+      #   highlight('You searched for: rails', 'rails')
+      #   # =&gt; You searched for: &lt;strong class=&quot;highlight&quot;&gt;rails&lt;/strong&gt;
+      #
+      #   highlight('You searched for: ruby, rails, dhh', 'actionpack')
+      #   # =&gt; You searched for: ruby, rails, dhh
+      #
+      #   highlight('You searched for: rails', ['for', 'rails'], '&lt;em&gt;\1&lt;/em&gt;')
+      #   # =&gt; You searched &lt;em&gt;for&lt;/em&gt;: &lt;em&gt;rails&lt;/em&gt;
+      #
+      #   highlight('You searched for: rails', 'rails', &quot;&lt;a href='search?q=\1'&gt;\1&lt;/a&gt;&quot;)
+      #   # =&gt; You searched for: &lt;a href='search?q=rails&gt;rails&lt;/a&gt;
+      def highlight(text, phrases, highlighter = '&lt;strong class=&quot;highlight&quot;&gt;\1&lt;/strong&gt;')
+        if text.blank? || phrases.blank?
+          text
+        else
+          match = Array(phrases).map { |p| Regexp.escape(p) }.join('|')
+          text.gsub(/(#{match})/i, highlighter)
+        end
+      end
+
+      if RUBY_VERSION &lt; '1.9'
+        # Extracts an excerpt from +text+ that matches the first instance of +phrase+.
+        # The +radius+ expands the excerpt on each side of the first occurrence of +phrase+ by the number of characters
+        # defined in +radius+ (which defaults to 100). If the excerpt radius overflows the beginning or end of the +text+,
+        # then the +excerpt_string+ will be prepended/appended accordingly. The resulting string will be stripped in any case.
+        # If the +phrase+ isn't found, nil is returned.
+        #
+        # ==== Examples
+        #   excerpt('This is an example', 'an', 5)
+        #   # =&gt; &quot;...s is an exam...&quot;
+        #
+        #   excerpt('This is an example', 'is', 5)
+        #   # =&gt; &quot;This is a...&quot;
+        #
+        #   excerpt('This is an example', 'is')
+        #   # =&gt; &quot;This is an example&quot;
+        #
+        #   excerpt('This next thing is an example', 'ex', 2)
+        #   # =&gt; &quot;...next...&quot;
+        #
+        #   excerpt('This is also an example', 'an', 8, '&lt;chop&gt; ')
+        #   # =&gt; &quot;&lt;chop&gt; is also an example&quot;
+        def excerpt(text, phrase, radius = 100, excerpt_string = &quot;...&quot;)
+          if text &amp;&amp; phrase
+            phrase = Regexp.escape(phrase)
+
+            if found_pos = text.chars =~ /(#{phrase})/i
+              start_pos = [ found_pos - radius, 0 ].max
+              end_pos   = [ [ found_pos + phrase.chars.length + radius - 1, 0].max, text.chars.length ].min
+
+              prefix  = start_pos &gt; 0 ? excerpt_string : &quot;&quot;
+              postfix = end_pos &lt; text.chars.length - 1 ? excerpt_string : &quot;&quot;
+
+              prefix + text.chars[start_pos..end_pos].strip + postfix
+            else
+              nil
+            end
+          end
+        end
+      else
+        def excerpt(text, phrase, radius = 100, excerpt_string = &quot;...&quot;) #:nodoc:
+          if text &amp;&amp; phrase
+            phrase = Regexp.escape(phrase)
+
+            if found_pos = text =~ /(#{phrase})/i
+              start_pos = [ found_pos - radius, 0 ].max
+              end_pos   = [ [ found_pos + phrase.length + radius - 1, 0].max, text.length ].min
+
+              prefix  = start_pos &gt; 0 ? excerpt_string : &quot;&quot;
+              postfix = end_pos &lt; text.length - 1 ? excerpt_string : &quot;&quot;
+
+              prefix + text[start_pos..end_pos].strip + postfix
+            else
+              nil
+            end
+          end
+        end
+      end
+
+      # Attempts to pluralize the +singular+ word unless +count+ is 1. If
+      # +plural+ is supplied, it will use that when count is &gt; 1, otherwise
+      # it will use the Inflector to determine the plural form
+      #
+      # ==== Examples
+      #   pluralize(1, 'person')
+      #   # =&gt; 1 person
+      #
+      #   pluralize(2, 'person')
+      #   # =&gt; 2 people
+      #
+      #   pluralize(3, 'person', 'users')
+      #   # =&gt; 3 users
+      #
+      #   pluralize(0, 'person')
+      #   # =&gt; 0 people
+      def pluralize(count, singular, plural = nil)
+        &quot;#{count || 0} &quot; + ((count == 1 || count == '1') ? singular : (plural || singular.pluralize))
+      end
+
+      # Wraps the +text+ into lines no longer than +line_width+ width. This method
+      # breaks on the first whitespace character that does not exceed +line_width+
+      # (which is 80 by default).
+      #
+      # ==== Examples
+      #   word_wrap('Once upon a time', 4)
+      #   # =&gt; Once\nupon\na\ntime
+      #
+      #   word_wrap('Once upon a time', 8)
+      #   # =&gt; Once upon\na time
+      #
+      #   word_wrap('Once upon a time')
+      #   # =&gt; Once upon a time
+      #
+      #   word_wrap('Once upon a time', 1)
+      #   # =&gt; Once\nupon\na\ntime
+      def word_wrap(text, line_width = 80)
+        text.split(&quot;\n&quot;).collect do |line|
+          line.length &gt; line_width ? line.gsub(/(.{1,#{line_width}})(\s+|$)/, &quot;\\1\n&quot;).strip : line
+        end * &quot;\n&quot;
+      end
+
+      begin
+        require_library_or_gem &quot;redcloth&quot; unless Object.const_defined?(:RedCloth)
+
+        # Returns the text with all the Textile[http://www.textism.com/tools/textile] codes turned into HTML tags.
+        #
+        # You can learn more about Textile's syntax at its website[http://www.textism.com/tools/textile].
+        # &lt;i&gt;This method is only available if RedCloth[http://whytheluckystiff.net/ruby/redcloth/]
+        # is available&lt;/i&gt;.
+        #
+        # ==== Examples
+        #   textilize(&quot;*This is Textile!*  Rejoice!&quot;)
+        #   # =&gt; &quot;&lt;p&gt;&lt;strong&gt;This is Textile!&lt;/strong&gt;  Rejoice!&lt;/p&gt;&quot;
+        #
+        #   textilize(&quot;I _love_ ROR(Ruby on Rails)!&quot;)
+        #   # =&gt; &quot;&lt;p&gt;I &lt;em&gt;love&lt;/em&gt; &lt;acronym title=&quot;Ruby on Rails&quot;&gt;ROR&lt;/acronym&gt;!&lt;/p&gt;&quot;
+        #
+        #   textilize(&quot;h2. Textile makes markup -easy- simple!&quot;)
+        #   # =&gt; &quot;&lt;h2&gt;Textile makes markup &lt;del&gt;easy&lt;/del&gt; simple!&lt;/h2&gt;&quot;
+        #
+        #   textilize(&quot;Visit the Rails website &quot;here&quot;:http://www.rubyonrails.org/.)
+        #   # =&gt; &quot;&lt;p&gt;Visit the Rails website &lt;a href=&quot;http://www.rubyonrails.org/&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;&quot;
+        def textilize(text)
+          if text.blank?
+            &quot;&quot;
+          else
+            textilized = RedCloth.new(text, [ :hard_breaks ])
+            textilized.hard_breaks = true if textilized.respond_to?(&quot;hard_breaks=&quot;)
+            textilized.to_html
+          end
+        end
+
+        # Returns the text with all the Textile codes turned into HTML tags,
+        # but without the bounding &lt;p&gt; tag that RedCloth adds.
+        #
+        # You can learn more about Textile's syntax at its website[http://www.textism.com/tools/textile].
+        # &lt;i&gt;This method is only available if RedCloth[http://whytheluckystiff.net/ruby/redcloth/]
+        # is available&lt;/i&gt;.
+        #
+        # ==== Examples
+        #   textilize_without_paragraph(&quot;*This is Textile!*  Rejoice!&quot;)
+        #   # =&gt; &quot;&lt;strong&gt;This is Textile!&lt;/strong&gt;  Rejoice!&quot;
+        #
+        #   textilize_without_paragraph(&quot;I _love_ ROR(Ruby on Rails)!&quot;)
+        #   # =&gt; &quot;I &lt;em&gt;love&lt;/em&gt; &lt;acronym title=&quot;Ruby on Rails&quot;&gt;ROR&lt;/acronym&gt;!&quot;
+        #
+        #   textilize_without_paragraph(&quot;h2. Textile makes markup -easy- simple!&quot;)
+        #   # =&gt; &quot;&lt;h2&gt;Textile makes markup &lt;del&gt;easy&lt;/del&gt; simple!&lt;/h2&gt;&quot;
+        #
+        #   textilize_without_paragraph(&quot;Visit the Rails website &quot;here&quot;:http://www.rubyonrails.org/.)
+        #   # =&gt; &quot;Visit the Rails website &lt;a href=&quot;http://www.rubyonrails.org/&quot;&gt;here&lt;/a&gt;.&quot;
+        def textilize_without_paragraph(text)
+          textiled = textilize(text)
+          if textiled[0..2] == &quot;&lt;p&gt;&quot; then textiled = textiled[3..-1] end
+          if textiled[-4..-1] == &quot;&lt;/p&gt;&quot; then textiled = textiled[0..-5] end
+          return textiled
+        end
+      rescue LoadError
+        # We can't really help what's not there
+      end
+
+      begin
+        require_library_or_gem &quot;bluecloth&quot; unless Object.const_defined?(:BlueCloth)
+
+        # Returns the text with all the Markdown codes turned into HTML tags.
+        # &lt;i&gt;This method is only available if BlueCloth[http://www.deveiate.org/projects/BlueCloth]
+        # is available&lt;/i&gt;.
+        #
+        # ==== Examples
+        #   markdown(&quot;We are using __Markdown__ now!&quot;)
+        #   # =&gt; &quot;&lt;p&gt;We are using &lt;strong&gt;Markdown&lt;/strong&gt; now!&lt;/p&gt;&quot;
+        #
+        #   markdown(&quot;We like to _write_ `code`, not just _read_ it!&quot;)
+        #   # =&gt; &quot;&lt;p&gt;We like to &lt;em&gt;write&lt;/em&gt; &lt;code&gt;code&lt;/code&gt;, not just &lt;em&gt;read&lt;/em&gt; it!&lt;/p&gt;&quot;
+        #
+        #   markdown(&quot;The [Markdown website](http://daringfireball.net/projects/markdown/) has more information.&quot;)
+        #   # =&gt; &quot;&lt;p&gt;The &lt;a href=&quot;http://daringfireball.net/projects/markdown/&quot;&gt;Markdown website&lt;/a&gt;
+        #   #     has more information.&lt;/p&gt;&quot;
+        #
+        #   markdown('![The ROR logo](http://rubyonrails.com/images/rails.png &quot;Ruby on Rails&quot;)')
+        #   # =&gt; '&lt;p&gt;&lt;img src=&quot;http://rubyonrails.com/images/rails.png&quot; alt=&quot;The ROR logo&quot; title=&quot;Ruby on Rails&quot; /&gt;&lt;/p&gt;'
+        def markdown(text)
+          text.blank? ? &quot;&quot; : BlueCloth.new(text).to_html
+        end
+      rescue LoadError
+        # We can't really help what's not there
+      end
+
+      # Returns +text+ transformed into HTML using simple formatting rules.
+      # Two or more consecutive newlines(&lt;tt&gt;\n\n&lt;/tt&gt;) are considered as a
+      # paragraph and wrapped in &lt;tt&gt;&lt;p&gt;&lt;/tt&gt; tags. One newline (&lt;tt&gt;\n&lt;/tt&gt;) is
+      # considered as a linebreak and a &lt;tt&gt;&lt;br /&gt;&lt;/tt&gt; tag is appended. This
+      # method does not remove the newlines from the +text+.
+      #
+      # You can pass any HTML attributes into &lt;tt&gt;html_options&lt;/tt&gt;.  These
+      # will be added to all created paragraphs.
+      # ==== Examples
+      #   my_text = &quot;Here is some basic text...\n...with a line break.&quot;
+      #
+      #   simple_format(my_text)
+      #   # =&gt; &quot;&lt;p&gt;Here is some basic text...\n&lt;br /&gt;...with a line break.&lt;/p&gt;&quot;
+      #
+      #   more_text = &quot;We want to put a paragraph...\n\n...right there.&quot;
+      #
+      #   simple_format(more_text)
+      #   # =&gt; &quot;&lt;p&gt;We want to put a paragraph...&lt;/p&gt;\n\n&lt;p&gt;...right there.&lt;/p&gt;&quot;
+      #
+      #   simple_format(&quot;Look ma! A class!&quot;, :class =&gt; 'description')
+      #   # =&gt; &quot;&lt;p class='description'&gt;Look ma! A class!&lt;/p&gt;&quot;
+      def simple_format(text, html_options={})
+        start_tag = tag('p', html_options, true)
+        text = text.to_s.dup
+        text.gsub!(/\r\n?/, &quot;\n&quot;)                    # \r\n and \r -&gt; \n
+        text.gsub!(/\n\n+/, &quot;&lt;/p&gt;\n\n#{start_tag}&quot;)  # 2+ newline  -&gt; paragraph
+        text.gsub!(/([^\n]\n)(?=[^\n])/, '\1&lt;br /&gt;') # 1 newline   -&gt; br
+        text.insert 0, start_tag
+        text &lt;&lt; &quot;&lt;/p&gt;&quot;
+      end
+
+      # Turns all URLs and e-mail addresses into clickable links. The +link+ parameter
+      # will limit what should be linked. You can add HTML attributes to the links using
+      # +href_options+. Options for +link+ are &lt;tt&gt;:all&lt;/tt&gt; (default),
+      # &lt;tt&gt;:email_addresses&lt;/tt&gt;, and &lt;tt&gt;:urls&lt;/tt&gt;. If a block is given, each URL and
+      # e-mail address is yielded and the result is used as the link text.
+      #
+      # ==== Examples
+      #   auto_link(&quot;Go to http://www.rubyonrails.org and say hello to david@loudthinking.com&quot;)
+      #   # =&gt; &quot;Go to &lt;a href=\&quot;http://www.rubyonrails.org\&quot;&gt;http://www.rubyonrails.org&lt;/a&gt; and
+      #   #     say hello to &lt;a href=\&quot;mailto:david@loudthinking.com\&quot;&gt;david@loudthinking.com&lt;/a&gt;&quot;
+      #
+      #   auto_link(&quot;Visit http://www.loudthinking.com/ or e-mail david@loudthinking.com&quot;, :urls)
+      #   # =&gt; &quot;Visit &lt;a href=\&quot;http://www.loudthinking.com/\&quot;&gt;http://www.loudthinking.com/&lt;/a&gt;
+      #   #     or e-mail david@loudthinking.com&quot;
+      #
+      #   auto_link(&quot;Visit http://www.loudthinking.com/ or e-mail david@loudthinking.com&quot;, :email_addresses)
+      #   # =&gt; &quot;Visit http://www.loudthinking.com/ or e-mail &lt;a href=\&quot;mailto:david@loudthinking.com\&quot;&gt;david@loudthinking.com&lt;/a&gt;&quot;
+      #
+      #   post_body = &quot;Welcome to my new blog at http://www.myblog.com/.  Please e-mail me at me@email.com.&quot;
+      #   auto_link(post_body, :all, :target =&gt; '_blank') do |text|
+      #     truncate(text, 15)
+      #   end
+      #   # =&gt; &quot;Welcome to my new blog at &lt;a href=\&quot;http://www.myblog.com/\&quot; target=\&quot;_blank\&quot;&gt;http://www.m...&lt;/a&gt;.
+      #         Please e-mail me at &lt;a href=\&quot;mailto:me@email.com\&quot;&gt;me@email.com&lt;/a&gt;.&quot;
+      #
+      def auto_link(text, link = :all, href_options = {}, &amp;block)
+        return '' if text.blank?
+        case link
+          when :all             then auto_link_email_addresses(auto_link_urls(text, href_options, &amp;block), &amp;block)
+          when :email_addresses then auto_link_email_addresses(text, &amp;block)
+          when :urls            then auto_link_urls(text, href_options, &amp;block)
+        end
+      end
+
+      # Creates a Cycle object whose _to_s_ method cycles through elements of an
+      # array every time it is called. This can be used for example, to alternate
+      # classes for table rows.  You can use named cycles to allow nesting in loops.
+      # Passing a Hash as the last parameter with a &lt;tt&gt;:name&lt;/tt&gt; key will create a
+      # named cycle.  You can manually reset a cycle by calling reset_cycle and passing the
+      # name of the cycle.
+      #
+      # ==== Examples
+      #   # Alternate CSS classes for even and odd numbers...
+      #   @items = [1,2,3,4]
+      #   &lt;table&gt;
+      #   &lt;% @items.each do |item| %&gt;
+      #     &lt;tr class=&quot;&lt;%= cycle(&quot;even&quot;, &quot;odd&quot;) -%&gt;&quot;&gt;
+      #       &lt;td&gt;item&lt;/td&gt;
+      #     &lt;/tr&gt;
+      #   &lt;% end %&gt;
+      #   &lt;/table&gt;
+      #
+      #
+      #   # Cycle CSS classes for rows, and text colors for values within each row
+      #   @items = x = [{:first =&gt; 'Robert', :middle =&gt; 'Daniel', :last =&gt; 'James'},
+      #                {:first =&gt; 'Emily', :middle =&gt; 'Shannon', :maiden =&gt; 'Pike', :last =&gt; 'Hicks'},
+      #               {:first =&gt; 'June', :middle =&gt; 'Dae', :last =&gt; 'Jones'}]
+      #   &lt;% @items.each do |item| %&gt;
+      #     &lt;tr class=&quot;&lt;%= cycle(&quot;even&quot;, &quot;odd&quot;, :name =&gt; &quot;row_class&quot;) -%&gt;&quot;&gt;
+      #       &lt;td&gt;
+      #         &lt;% item.values.each do |value| %&gt;
+      #           &lt;%# Create a named cycle &quot;colors&quot; %&gt;
+      #           &lt;span style=&quot;color:&lt;%= cycle(&quot;red&quot;, &quot;green&quot;, &quot;blue&quot;, :name =&gt; &quot;colors&quot;) -%&gt;&quot;&gt;
+      #             &lt;%= value %&gt;
+      #           &lt;/span&gt;
+      #         &lt;% end %&gt;
+      #         &lt;% reset_cycle(&quot;colors&quot;) %&gt;
+      #       &lt;/td&gt;
+      #    &lt;/tr&gt;
+      #  &lt;% end %&gt;
+      def cycle(first_value, *values)
+        if (values.last.instance_of? Hash)
+          params = values.pop
+          name = params[:name]
+        else
+          name = &quot;default&quot;
+        end
+        values.unshift(first_value)
+
+        cycle = get_cycle(name)
+        if (cycle.nil? || cycle.values != values)
+          cycle = set_cycle(name, Cycle.new(*values))
+        end
+        return cycle.to_s
+      end
+
+      # Resets a cycle so that it starts from the first element the next time
+      # it is called. Pass in +name+ to reset a named cycle.
+      #
+      # ==== Example
+      #   # Alternate CSS classes for even and odd numbers...
+      #   @items = [[1,2,3,4], [5,6,3], [3,4,5,6,7,4]]
+      #   &lt;table&gt;
+      #   &lt;% @items.each do |item| %&gt;
+      #     &lt;tr class=&quot;&lt;%= cycle(&quot;even&quot;, &quot;odd&quot;) -%&gt;&quot;&gt;
+      #         &lt;% item.each do |value| %&gt;
+      #           &lt;span style=&quot;color:&lt;%= cycle(&quot;#333&quot;, &quot;#666&quot;, &quot;#999&quot;, :name =&gt; &quot;colors&quot;) -%&gt;&quot;&gt;
+      #             &lt;%= value %&gt;
+      #           &lt;/span&gt;
+      #         &lt;% end %&gt;
+      #
+      #         &lt;% reset_cycle(&quot;colors&quot;) %&gt;
+      #     &lt;/tr&gt;
+      #   &lt;% end %&gt;
+      #   &lt;/table&gt;
+      def reset_cycle(name = &quot;default&quot;)
+        cycle = get_cycle(name)
+        cycle.reset unless cycle.nil?
+      end
+
+      class Cycle #:nodoc:
+        attr_reader :values
+
+        def initialize(first_value, *values)
+          @values = values.unshift(first_value)
+          reset
+        end
+
+        def reset
+          @index = 0
+        end
+
+        def to_s
+          value = @values[@index].to_s
+          @index = (@index + 1) % @values.size
+          return value
+        end
+      end
+
+      private
+        # The cycle helpers need to store the cycles in a place that is
+        # guaranteed to be reset every time a page is rendered, so it
+        # uses an instance variable of ActionView::Base.
+        def get_cycle(name)
+          @_cycles = Hash.new unless defined?(@_cycles)
+          return @_cycles[name]
+        end
+
+        def set_cycle(name, cycle_object)
+          @_cycles = Hash.new unless defined?(@_cycles)
+          @_cycles[name] = cycle_object
+        end
+
+        AUTO_LINK_RE = %r{
+                        (                          # leading text
+                          &lt;\w+.*?&gt;|                # leading HTML tag, or
+                          [^=!:'&quot;/]|               # leading punctuation, or
+                          ^                        # beginning of line
+                        )
+                        (
+                          (?:https?://)|           # protocol spec, or
+                          (?:www\.)                # www.*
+                        )
+                        (
+                          [-\w]+                   # subdomain or domain
+                          (?:\.[-\w]+)*            # remaining subdomains or domain
+                          (?::\d+)?                # port
+                          (?:/(?:(?:[~\w\+@%=\(\)-]|(?:[,.;:'][^\s$]))+)?)* # path
+                          (?:\?[\w\+@%&amp;=.;-]+)?     # query string
+                          (?:\#[\w\-]*)?           # trailing anchor
+                        )
+                        ([[:punct:]]|&lt;|$|)       # trailing text
+                       }x unless const_defined?(:AUTO_LINK_RE)
+
+        # Turns all urls into clickable links.  If a block is given, each url
+        # is yielded and the result is used as the link text.
+        def auto_link_urls(text, href_options = {})
+          extra_options = tag_options(href_options.stringify_keys) || &quot;&quot;
+          text.gsub(AUTO_LINK_RE) do
+            all, a, b, c, d = $&amp;, $1, $2, $3, $4
+            if a =~ /&lt;a\s/i # don't replace URL's that are already linked
+              all
+            else
+              text = b + c
+              text = yield(text) if block_given?
+              %(#{a}&lt;a href=&quot;#{b==&quot;www.&quot;?&quot;http://www.&quot;:b}#{c}&quot;#{extra_options}&gt;#{text}&lt;/a&gt;#{d})
+            end
+          end
+        end
+
+        # Turns all email addresses into clickable links.  If a block is given,
+        # each email is yielded and the result is used as the link text.
+        def auto_link_email_addresses(text)
+          body = text.dup
+          text.gsub(/([\w\.!#\$%\-+.]+@[A-Za-z0-9\-]+(\.[A-Za-z0-9\-]+)+)/) do
+            text = $1
+
+            if body.match(/&lt;a\b[^&gt;]*&gt;(.*)(#{Regexp.escape(text)})(.*)&lt;\/a&gt;/)
+              text
+            else
+              display_text = (block_given?) ? yield(text) : text
+              %{&lt;a href=&quot;mailto:#{text}&quot;&gt;#{display_text}&lt;/a&gt;}
+            end
+          end
+        end
+    end
+  end
+end
+</pre>
+    </div>

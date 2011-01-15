@@ -1,0 +1,406 @@
+  <div id="fileHeader">
+    <h1>routing.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionpack/lib/action_controller/routing.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:04 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>require 'cgi'
+require 'uri'
+require 'action_controller/polymorphic_routes'
+require 'action_controller/routing/optimisations'
+require 'action_controller/routing/routing_ext'
+require 'action_controller/routing/route'
+require 'action_controller/routing/segments'
+require 'action_controller/routing/builder'
+require 'action_controller/routing/route_set'
+require 'action_controller/routing/recognition_optimisation'
+
+module ActionController
+  # == Routing
+  #
+  # The routing module provides URL rewriting in native Ruby. It's a way to
+  # redirect incoming requests to controllers and actions. This replaces
+  # mod_rewrite rules. Best of all, Rails' Routing works with any web server.
+  # Routes are defined in &lt;tt&gt;config/routes.rb&lt;/tt&gt;.
+  #
+  # Consider the following route, installed by Rails when you generate your
+  # application:
+  #
+  #   map.connect ':controller/:action/:id'
+  #
+  # This route states that it expects requests to consist of a
+  # &lt;tt&gt;:controller&lt;/tt&gt; followed by an &lt;tt&gt;:action&lt;/tt&gt; that in turn is fed
+  # some &lt;tt&gt;:id&lt;/tt&gt;.
+  #
+  # Suppose you get an incoming request for &lt;tt&gt;/blog/edit/22&lt;/tt&gt;, you'll end up
+  # with:
+  #
+  #   params = { :controller =&gt; 'blog',
+  #              :action     =&gt; 'edit',
+  #              :id         =&gt; '22'
+  #           }
+  #
+  # Think of creating routes as drawing a map for your requests. The map tells
+  # them where to go based on some predefined pattern:
+  #
+  #   ActionController::Routing::Routes.draw do |map|
+  #     Pattern 1 tells some request to go to one place
+  #     Pattern 2 tell them to go to another
+  #     ...
+  #   end
+  #
+  # The following symbols are special:
+  #
+  #   :controller maps to your controller name
+  #   :action     maps to an action with your controllers
+  #
+  # Other names simply map to a parameter as in the case of &lt;tt&gt;:id&lt;/tt&gt;.
+  #
+  # == Route priority
+  #
+  # Not all routes are created equally. Routes have priority defined by the
+  # order of appearance of the routes in the &lt;tt&gt;config/routes.rb&lt;/tt&gt; file. The priority goes
+  # from top to bottom. The last route in that file is at the lowest priority
+  # and will be applied last. If no route matches, 404 is returned.
+  #
+  # Within blocks, the empty pattern is at the highest priority.
+  # In practice this works out nicely:
+  #
+  #   ActionController::Routing::Routes.draw do |map|
+  #     map.with_options :controller =&gt; 'blog' do |blog|
+  #       blog.show '',  :action =&gt; 'list'
+  #     end
+  #     map.connect ':controller/:action/:view'
+  #   end
+  #
+  # In this case, invoking blog controller (with an URL like '/blog/')
+  # without parameters will activate the 'list' action by default.
+  #
+  # == Defaults routes and default parameters
+  #
+  # Setting a default route is straightforward in Rails - you simply append a
+  # Hash at the end of your mapping to set any default parameters.
+  #
+  # Example:
+  #
+  #   ActionController::Routing:Routes.draw do |map|
+  #     map.connect ':controller/:action/:id', :controller =&gt; 'blog'
+  #   end
+  #
+  # This sets up +blog+ as the default controller if no other is specified.
+  # This means visiting '/' would invoke the blog controller.
+  #
+  # More formally, you can define defaults in a route with the &lt;tt&gt;:defaults&lt;/tt&gt; key.
+  #
+  #   map.connect ':controller/:action/:id', :action =&gt; 'show', :defaults =&gt; { :page =&gt; 'Dashboard' }
+  #
+  # Note: The default routes, as provided by the Rails generator, make all actions in every
+  # controller accessible via GET requests. You should consider removing them or commenting
+  # them out if you're using named routes and resources.
+  #
+  # == Named routes
+  #
+  # Routes can be named with the syntax &lt;tt&gt;map.name_of_route options&lt;/tt&gt;,
+  # allowing for easy reference within your source as +name_of_route_url+
+  # for the full URL and +name_of_route_path+ for the URI path.
+  #
+  # Example:
+  #
+  #   # In routes.rb
+  #   map.login 'login', :controller =&gt; 'accounts', :action =&gt; 'login'
+  #
+  #   # With render, redirect_to, tests, etc.
+  #   redirect_to login_url
+  #
+  # Arguments can be passed as well.
+  #
+  #   redirect_to show_item_path(:id =&gt; 25)
+  #
+  # Use &lt;tt&gt;map.root&lt;/tt&gt; as a shorthand to name a route for the root path &quot;&quot;.
+  #
+  #   # In routes.rb
+  #   map.root :controller =&gt; 'blogs'
+  #
+  #   # would recognize http://www.example.com/ as
+  #   params = { :controller =&gt; 'blogs', :action =&gt; 'index' }
+  #
+  #   # and provide these named routes
+  #   root_url   # =&gt; 'http://www.example.com/'
+  #   root_path  # =&gt; ''
+  #
+  # You can also specify an already-defined named route in your &lt;tt&gt;map.root&lt;/tt&gt; call:
+  #
+  #   # In routes.rb
+  #   map.new_session :controller =&gt; 'sessions', :action =&gt; 'new'
+  #   map.root :new_session
+  #
+  # Note: when using +with_options+, the route is simply named after the
+  # method you call on the block parameter rather than map.
+  #
+  #   # In routes.rb
+  #   map.with_options :controller =&gt; 'blog' do |blog|
+  #     blog.show    '',            :action  =&gt; 'list'
+  #     blog.delete  'delete/:id',  :action  =&gt; 'delete',
+  #     blog.edit    'edit/:id',    :action  =&gt; 'edit'
+  #   end
+  #
+  #   # provides named routes for show, delete, and edit
+  #   link_to @article.title, show_path(:id =&gt; @article.id)
+  #
+  # == Pretty URLs
+  #
+  # Routes can generate pretty URLs. For example:
+  #
+  #   map.connect 'articles/:year/:month/:day',
+  #               :controller =&gt; 'articles',
+  #               :action     =&gt; 'find_by_date',
+  #               :year       =&gt; /\d{4}/,
+  #               :month      =&gt; /\d{1,2}/,
+  #               :day        =&gt; /\d{1,2}/
+  #
+  # Using the route above, the URL &quot;http://localhost:3000/articles/2005/11/06&quot;
+  # maps to
+  #
+  #   params = {:year =&gt; '2005', :month =&gt; '11', :day =&gt; '06'}
+  #
+  # == Regular Expressions and parameters
+  # You can specify a regular expression to define a format for a parameter.
+  #
+  #   map.geocode 'geocode/:postalcode', :controller =&gt; 'geocode',
+  #               :action =&gt; 'show', :postalcode =&gt; /\d{5}(-\d{4})?/
+  #
+  # or, more formally:
+  #
+  #   map.geocode 'geocode/:postalcode', :controller =&gt; 'geocode',
+  #               :action =&gt; 'show', :requirements =&gt; { :postalcode =&gt; /\d{5}(-\d{4})?/ }
+  #
+  # Formats can include the 'ignorecase' and 'extended syntax' regular
+  # expression modifiers:
+  #
+  #   map.geocode 'geocode/:postalcode', :controller =&gt; 'geocode',
+  #               :action =&gt; 'show', :postalcode =&gt; /hx\d\d\s\d[a-z]{2}/i
+  #
+  #   map.geocode 'geocode/:postalcode', :controller =&gt; 'geocode',
+  #               :action =&gt; 'show',:requirements =&gt; {
+  #                 :postalcode =&gt; /# Postcode format
+  #                                 \d{5} #Prefix
+  #                                 (-\d{4})? #Suffix
+  #                                 /x
+  #               }
+  #
+  # Using the multiline match modifier will raise an ArgumentError.
+  # Encoding regular expression modifiers are silently ignored. The
+  # match will always use the default encoding or ASCII.
+  #
+  # == Route globbing
+  #
+  # Specifying &lt;tt&gt;*[string]&lt;/tt&gt; as part of a rule like:
+  #
+  #   map.connect '*path' , :controller =&gt; 'blog' , :action =&gt; 'unrecognized?'
+  #
+  # will glob all remaining parts of the route that were not recognized earlier. This idiom
+  # must appear at the end of the path. The globbed values are in &lt;tt&gt;params[:path]&lt;/tt&gt; in
+  # this case.
+  #
+  # == Route conditions
+  #
+  # With conditions you can define restrictions on routes. Currently the only valid condition is &lt;tt&gt;:method&lt;/tt&gt;.
+  #
+  # * &lt;tt&gt;:method&lt;/tt&gt; - Allows you to specify which method can access the route. Possible values are &lt;tt&gt;:post&lt;/tt&gt;,
+  #   &lt;tt&gt;:get&lt;/tt&gt;, &lt;tt&gt;:put&lt;/tt&gt;, &lt;tt&gt;:delete&lt;/tt&gt; and &lt;tt&gt;:any&lt;/tt&gt;. The default value is &lt;tt&gt;:any&lt;/tt&gt;, 
+  #   &lt;tt&gt;:any&lt;/tt&gt; means that any method can access the route.
+  #
+  # Example:
+  #
+  #   map.connect 'post/:id', :controller =&gt; 'posts', :action =&gt; 'show',
+  #               :conditions =&gt; { :method =&gt; :get }
+  #   map.connect 'post/:id', :controller =&gt; 'posts', :action =&gt; 'create_comment',
+  #               :conditions =&gt; { :method =&gt; :post }
+  #
+  # Now, if you POST to &lt;tt&gt;/posts/:id&lt;/tt&gt;, it will route to the &lt;tt&gt;create_comment&lt;/tt&gt; action. A GET on the same
+  # URL will route to the &lt;tt&gt;show&lt;/tt&gt; action.
+  # 
+  # == Reloading routes
+  #
+  # You can reload routes if you feel you must:
+  #
+  #   ActionController::Routing::Routes.reload
+  #
+  # This will clear all named routes and reload routes.rb if the file has been modified from
+  # last load. To absolutely force reloading, use &lt;tt&gt;reload!&lt;/tt&gt;.
+  #
+  # == Testing Routes
+  #
+  # The two main methods for testing your routes:
+  #
+  # === +assert_routing+
+  #
+  #   def test_movie_route_properly_splits
+  #    opts = {:controller =&gt; &quot;plugin&quot;, :action =&gt; &quot;checkout&quot;, :id =&gt; &quot;2&quot;}
+  #    assert_routing &quot;plugin/checkout/2&quot;, opts
+  #   end
+  #
+  # +assert_routing+ lets you test whether or not the route properly resolves into options.
+  #
+  # === +assert_recognizes+
+  #
+  #   def test_route_has_options
+  #    opts = {:controller =&gt; &quot;plugin&quot;, :action =&gt; &quot;show&quot;, :id =&gt; &quot;12&quot;}
+  #    assert_recognizes opts, &quot;/plugins/show/12&quot;
+  #   end
+  #
+  # Note the subtle difference between the two: +assert_routing+ tests that
+  # a URL fits options while +assert_recognizes+ tests that a URL
+  # breaks into parameters properly.
+  #
+  # In tests you can simply pass the URL or named route to +get+ or +post+.
+  #
+  #   def send_to_jail
+  #     get '/jail'
+  #     assert_response :success
+  #     assert_template &quot;jail/front&quot;
+  #   end
+  #
+  #   def goes_to_login
+  #     get login_url
+  #     #...
+  #   end
+  #
+  # == View a list of all your routes
+  #
+  # Run &lt;tt&gt;rake routes&lt;/tt&gt;.
+  #
+  module Routing
+    SEPARATORS = %w( / . ? )
+
+    HTTP_METHODS = [:get, :head, :post, :put, :delete]
+
+    ALLOWED_REQUIREMENTS_FOR_OPTIMISATION = [:controller, :action].to_set
+
+    # The root paths which may contain controller files
+    mattr_accessor :controller_paths
+    self.controller_paths = []
+
+    # A helper module to hold URL related helpers.
+    module Helpers
+      include PolymorphicRoutes
+    end
+
+    class &lt;&lt; self
+	  # Expects an array of controller names as the first argument.  
+	  # Executes the passed block with only the named controllers named available.
+	  # This method is used in internal Rails testing.
+      def with_controllers(names)
+        prior_controllers = @possible_controllers
+        use_controllers! names
+        yield
+      ensure
+        use_controllers! prior_controllers
+      end
+
+	  # Returns an array of paths, cleaned of double-slashes and relative path references.
+	  # * &quot;\\\&quot; and &quot;//&quot;  become &quot;\\&quot; or &quot;/&quot;. 
+	  # * &quot;/foo/bar/../config&quot; becomes &quot;/foo/config&quot;.
+	  # The returned array is sorted by length, descending.
+      def normalize_paths(paths)
+        # do the hokey-pokey of path normalization...
+        paths = paths.collect do |path|
+          path = path.
+            gsub(&quot;//&quot;, &quot;/&quot;).           # replace double / chars with a single
+            gsub(&quot;\\\\&quot;, &quot;\\&quot;).        # replace double \ chars with a single
+            gsub(%r{(.)[\\/]$}, '\1')  # drop final / or \ if path ends with it
+
+          # eliminate .. paths where possible
+          re = %r{[^/\\]+[/\\]\.\.[/\\]}
+          path.gsub!(re, &quot;&quot;) while path.match(re)
+          path
+        end
+
+        # start with longest path, first
+        paths = paths.uniq.sort_by { |path| - path.length }
+      end
+
+	  # Returns the array of controller names currently available to ActionController::Routing.
+      def possible_controllers
+        unless @possible_controllers
+          @possible_controllers = []
+
+          paths = controller_paths.select { |path| File.directory?(path) &amp;&amp; path != &quot;.&quot; }
+
+          seen_paths = Hash.new {|h, k| h[k] = true; false}
+          normalize_paths(paths).each do |load_path|
+            Dir[&quot;#{load_path}/**/*_controller.rb&quot;].collect do |path|
+              next if seen_paths[path.gsub(%r{^\.[/\\]}, &quot;&quot;)]
+
+              controller_name = path[(load_path.length + 1)..-1]
+
+              controller_name.gsub!(/_controller\.rb\Z/, '')
+              @possible_controllers &lt;&lt; controller_name
+            end
+          end
+
+          # remove duplicates
+          @possible_controllers.uniq!
+        end
+        @possible_controllers
+      end
+
+	  # Replaces the internal list of controllers available to ActionController::Routing with the passed argument.
+	  #   ActionController::Routing.use_controllers!([ &quot;posts&quot;, &quot;comments&quot;, &quot;admin/comments&quot; ])
+      def use_controllers!(controller_names)
+        @possible_controllers = controller_names
+      end
+
+	  # Returns a controller path for a new +controller+ based on a +previous+ controller path.
+	  # Handles 4 scenarios:
+	  #
+	  # * stay in the previous controller:
+	  #     controller_relative_to( nil, &quot;groups/discussion&quot; ) # =&gt; &quot;groups/discussion&quot;
+	  #
+	  # * stay in the previous namespace:
+	  #     controller_relative_to( &quot;posts&quot;, &quot;groups/discussion&quot; ) # =&gt; &quot;groups/posts&quot;
+	  #
+	  # * forced move to the root namespace:
+	  #     controller_relative_to( &quot;/posts&quot;, &quot;groups/discussion&quot; ) # =&gt; &quot;posts&quot;
+	  #
+	  # * previous namespace is root:
+	  #     controller_relative_to( &quot;posts&quot;, &quot;anything_with_no_slashes&quot; ) # =&gt;&quot;posts&quot;
+	  #
+	  
+      def controller_relative_to(controller, previous)
+        if controller.nil?           then previous
+        elsif controller[0] == ?/    then controller[1..-1]
+        elsif %r{^(.*)/} =~ previous then &quot;#{$1}/#{controller}&quot;
+        else controller
+        end
+      end
+    end
+    
+
+    Routes = RouteSet.new
+
+    ActiveSupport::Inflector.module_eval do
+	  # Ensures that routes are reloaded when Rails inflections are updated.
+      def inflections_with_route_reloading(&amp;block)
+        returning(inflections_without_route_reloading(&amp;block)) {
+          ActionController::Routing::Routes.reload! if block_given?
+        }
+      end
+
+      alias_method_chain :inflections, :route_reloading
+    end
+  end
+end
+</pre>
+    </div>

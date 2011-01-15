@@ -1,0 +1,197 @@
+  <div id="C00000587">
+<div class='banner'>
+  <span class="file-title-prefix">Module</span><br />ClassMethods<br/>
+  In:
+<a href="#" onclick="jsHref('files/activerecord/lib/active_record/locking/optimistic_rb.html');">activerecord/lib/active_record/locking/optimistic.rb</a>
+
+</div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+      <div id="content">
+
+
+
+
+  <div class="sectiontitle">Methods</div>
+  <ul>
+  <li><a href="index.html?a=M001485&name=extended" >extended</a></li>
+  <li><a href="index.html?a=M001488&name=locking_column" >locking_column</a></li>
+  <li><a href="index.html?a=M001486&name=locking_enabled?" >locking_enabled?</a></li>
+  <li><a href="index.html?a=M001489&name=quoted_locking_column" >quoted_locking_column</a></li>
+  <li><a href="index.html?a=M001490&name=reset_locking_column" >reset_locking_column</a></li>
+  <li><a href="index.html?a=M001487&name=set_locking_column" >set_locking_column</a></li>
+  <li><a href="index.html?a=M001491&name=update_counters_with_lock" >update_counters_with_lock</a></li>
+  </ul>
+
+
+
+
+  <div class="sectiontitle">Constants</div>
+  <table border='0' cellpadding='5'>
+  <tr valign='top'>
+    <td class="attr-name">DEFAULT_LOCKING_COLUMN</td>
+    <td>=</td>
+    <td class="attr-value">'lock_version'</td>
+  </tr>
+  </table>
+
+
+<div class="sectiontitle">Public Class methods</div>
+<div id="M001485" class="method">
+  <div id="M001485_title" class="title">
+    <b>extended</b>(base)
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001485_source')" id="l_M001485_source">show source</a> ]</p>
+  <div id="M001485_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activerecord/lib/active_record/locking/optimistic.rb, line 105</span>
+105:         <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">extended</span>(<span class="ruby-identifier">base</span>)
+106:           <span class="ruby-keyword kw">class</span> <span class="ruby-operator">&lt;&lt;</span><span class="ruby-identifier">base</span>
+107:             <span class="ruby-identifier">alias_method_chain</span> <span class="ruby-identifier">:update_counters</span>, <span class="ruby-identifier">:lock</span>
+108:           <span class="ruby-keyword kw">end</span>
+109:         <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div class="sectiontitle">Public Instance methods</div>
+<div id="M001488" class="method">
+  <div id="M001488_title" class="title">
+    <b>locking_column</b>()
+  </div>
+  <div class="description">
+  <p>
+The version column used for optimistic locking. Defaults to
+<tt>lock_version</tt>.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001488_source')" id="l_M001488_source">show source</a> ]</p>
+  <div id="M001488_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activerecord/lib/active_record/locking/optimistic.rb, line 126</span>
+126:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">locking_column</span>
+127:           <span class="ruby-identifier">reset_locking_column</span>
+128:         <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M001486" class="method">
+  <div id="M001486_title" class="title">
+    <b>locking_enabled?</b>()
+  </div>
+  <div class="description">
+  <p>
+Is optimistic locking enabled for this table? Returns true if the
+<tt>lock_optimistically</tt> flag is set to true (which it is, by default)
+and the table includes the <tt><a
+href="index.html?a=M001488&name=locking_column">locking_column</a></tt>
+column (defaults to <tt>lock_version</tt>).
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001486_source')" id="l_M001486_source">show source</a> ]</p>
+  <div id="M001486_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activerecord/lib/active_record/locking/optimistic.rb, line 115</span>
+115:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">locking_enabled?</span>
+116:           <span class="ruby-identifier">lock_optimistically</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">columns_hash</span>[<span class="ruby-identifier">locking_column</span>]
+117:         <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M001489" class="method">
+  <div id="M001489_title" class="title">
+    <b>quoted_locking_column</b>()
+  </div>
+  <div class="description">
+  <p>
+Quote the column name used for optimistic locking.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001489_source')" id="l_M001489_source">show source</a> ]</p>
+  <div id="M001489_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activerecord/lib/active_record/locking/optimistic.rb, line 131</span>
+131:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">quoted_locking_column</span>
+132:           <span class="ruby-identifier">connection</span>.<span class="ruby-identifier">quote_column_name</span>(<span class="ruby-identifier">locking_column</span>)
+133:         <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M001490" class="method">
+  <div id="M001490_title" class="title">
+    <b>reset_locking_column</b>()
+  </div>
+  <div class="description">
+  <p>
+Reset the column used for optimistic locking back to the
+<tt>lock_version</tt> default.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001490_source')" id="l_M001490_source">show source</a> ]</p>
+  <div id="M001490_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activerecord/lib/active_record/locking/optimistic.rb, line 136</span>
+136:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">reset_locking_column</span>
+137:           <span class="ruby-identifier">set_locking_column</span> <span class="ruby-constant">DEFAULT_LOCKING_COLUMN</span>
+138:         <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M001487" class="method">
+  <div id="M001487_title" class="title">
+    <b>set_locking_column</b>(value = nil, &amp;block)
+  </div>
+  <div class="description">
+  <p>
+Set the column to use for optimistic locking. Defaults to
+<tt>lock_version</tt>.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001487_source')" id="l_M001487_source">show source</a> ]</p>
+  <div id="M001487_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activerecord/lib/active_record/locking/optimistic.rb, line 120</span>
+120:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">set_locking_column</span>(<span class="ruby-identifier">value</span> = <span class="ruby-keyword kw">nil</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+121:           <span class="ruby-identifier">define_attr_method</span> <span class="ruby-identifier">:locking_column</span>, <span class="ruby-identifier">value</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>
+122:           <span class="ruby-identifier">value</span>
+123:         <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M001491" class="method">
+  <div id="M001491_title" class="title">
+    <b>update_counters_with_lock</b>(id, counters)
+  </div>
+  <div class="description">
+  <p>
+Make sure the lock version column gets updated when counters are updated.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001491_source')" id="l_M001491_source">show source</a> ]</p>
+  <div id="M001491_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activerecord/lib/active_record/locking/optimistic.rb, line 142</span>
+142:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">update_counters_with_lock</span>(<span class="ruby-identifier">id</span>, <span class="ruby-identifier">counters</span>)
+143:           <span class="ruby-identifier">counters</span> = <span class="ruby-identifier">counters</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">locking_column</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">locking_enabled?</span>
+144:           <span class="ruby-identifier">update_counters_without_lock</span>(<span class="ruby-identifier">id</span>, <span class="ruby-identifier">counters</span>)
+145:         <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+</div>
+
+  </div>

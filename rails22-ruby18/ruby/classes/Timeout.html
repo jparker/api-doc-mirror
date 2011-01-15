@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Timeout</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Module</span> 
+            Timeout 
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/lib/timeout_rb.html">lib/timeout.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <h1>Description</h1>
+<p>
+A way of performing a potentially long-running operation in a thread, and
+terminating it&#8217;s execution if it hasn&#8217;t finished within fixed
+amount of time.
+</p>
+<p>
+Previous versions of timeout didn&#8217;t use a module for namespace. This
+version provides both <a href="Timeout.html#M003543">Timeout.timeout</a>,
+and a backwards-compatible <a href="Timeout.html#M003543">timeout</a>.
+</p>
+<h1>Synopsis</h1>
+<pre>
+  require 'timeout'
+  status = Timeout::timeout(5) {
+    # Something that should be interrupted if it takes too much time...
+  }
+</pre>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>T</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003543">timeout</a>,</li>
+                
+                <li><a href="#M003543">timeout</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Classes and Modules</div>
+    <ul>
+        
+        <li><span class="type">CLASS</span> <a href="Timeout/Error.html">Timeout::Error</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="Timeout/ExitException.html">Timeout::ExitException</a></li>
+        
+    </ul>
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">THIS_FILE</td>
+            <td>=</td>
+            <td class="attr-value">/\A#{Regexp.quote(__FILE__)}:/o</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">CALLER_OFFSET</td>
+            <td>=</td>
+            <td class="attr-value">((c = caller[0]) &amp;&amp; THIS_FILE =~ c) ? 1 : 0</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M003543">
+                    
+                    <a name="M003543"></a><b>timeout</b>(sec, klass = nil)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Executes the method&#8217;s block. If the block execution terminates before
+<tt>sec</tt> seconds has passed, it returns true. If not, it terminates the
+execution and raises <tt>exception</tt> (which defaults to <a
+href="Timeout/Error.html">Timeout::Error</a>).
+</p>
+<p>
+Note that this is both a method of module <a
+href="Timeout.html">Timeout</a>, so you can &#8216;include Timeout&#8217;
+into your classes so they have a <a href="Timeout.html#M003543">timeout</a>
+method, as well as a module method, so you can call it directly as <a
+href="Timeout.html#M003543">Timeout.timeout()</a>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003543_source')" id="l_M003543_source">show</a>
+                        
+                    </p>
+                    <div id="M003543_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/timeout.rb, line 52</span>
+52:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">timeout</span>(<span class="ruby-identifier">sec</span>, <span class="ruby-identifier">klass</span> = <span class="ruby-keyword kw">nil</span>)
+53:     <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">yield</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">sec</span> <span class="ruby-operator">==</span> <span class="ruby-keyword kw">nil</span> <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">sec</span>.<span class="ruby-identifier">zero?</span>
+54:     <span class="ruby-identifier">raise</span> <span class="ruby-constant">ThreadError</span>, <span class="ruby-value str">&quot;timeout within critical session&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">critical</span>
+55:     <span class="ruby-identifier">exception</span> = <span class="ruby-identifier">klass</span> <span class="ruby-operator">||</span> <span class="ruby-constant">Class</span>.<span class="ruby-identifier">new</span>(<span class="ruby-constant">ExitException</span>)
+56:     <span class="ruby-keyword kw">begin</span>
+57:       <span class="ruby-identifier">x</span> = <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>
+58:       <span class="ruby-identifier">y</span> = <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">start</span> {
+59:         <span class="ruby-identifier">sleep</span> <span class="ruby-identifier">sec</span>
+60:         <span class="ruby-identifier">x</span>.<span class="ruby-identifier">raise</span> <span class="ruby-identifier">exception</span>, <span class="ruby-value str">&quot;execution expired&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">x</span>.<span class="ruby-identifier">alive?</span>
+61:       }
+62:       <span class="ruby-keyword kw">yield</span> <span class="ruby-identifier">sec</span>
+63:       <span class="ruby-comment cmt">#    return true</span>
+64:     <span class="ruby-keyword kw">rescue</span> <span class="ruby-identifier">exception</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+65:       <span class="ruby-identifier">rej</span> = <span class="ruby-node">/\A#{Regexp.quote(__FILE__)}:#{__LINE__-4}\z/o</span>
+66:       (<span class="ruby-identifier">bt</span> = <span class="ruby-identifier">e</span>.<span class="ruby-identifier">backtrace</span>).<span class="ruby-identifier">reject!</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">m</span><span class="ruby-operator">|</span> <span class="ruby-identifier">rej</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">m</span>}
+67:       <span class="ruby-identifier">level</span> = <span class="ruby-operator">-</span><span class="ruby-identifier">caller</span>(<span class="ruby-constant">CALLER_OFFSET</span>).<span class="ruby-identifier">size</span>
+68:       <span class="ruby-keyword kw">while</span> <span class="ruby-constant">THIS_FILE</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">bt</span>[<span class="ruby-identifier">level</span>]
+69:         <span class="ruby-identifier">bt</span>.<span class="ruby-identifier">delete_at</span>(<span class="ruby-identifier">level</span>)
+70:         <span class="ruby-identifier">level</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
+71:       <span class="ruby-keyword kw">end</span>
+72:       <span class="ruby-identifier">raise</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">klass</span>            <span class="ruby-comment cmt"># if exception class is specified, it</span>
+73:                                 <span class="ruby-comment cmt"># would be expected outside.</span>
+74:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">Error</span>, <span class="ruby-identifier">e</span>.<span class="ruby-identifier">message</span>, <span class="ruby-identifier">e</span>.<span class="ruby-identifier">backtrace</span>
+75:     <span class="ruby-keyword kw">ensure</span>
+76:       <span class="ruby-identifier">y</span>.<span class="ruby-identifier">kill</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">y</span> <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">y</span>.<span class="ruby-identifier">alive?</span>
+77:     <span class="ruby-keyword kw">end</span>
+78:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Private methods</div>
+            
+            <div class="method">
+                <div class="title" id="M003543">
+                    
+                    <a name="M003543"></a><b>timeout</b>(sec, klass = nil)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Executes the method&#8217;s block. If the block execution terminates before
+<tt>sec</tt> seconds has passed, it returns true. If not, it terminates the
+execution and raises <tt>exception</tt> (which defaults to <a
+href="Timeout/Error.html">Timeout::Error</a>).
+</p>
+<p>
+Note that this is both a method of module <a
+href="Timeout.html">Timeout</a>, so you can &#8216;include Timeout&#8217;
+into your classes so they have a <a href="Timeout.html#M003543">timeout</a>
+method, as well as a module method, so you can call it directly as <a
+href="Timeout.html#M003543">Timeout.timeout()</a>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003543_source')" id="l_M003543_source">show</a>
+                        
+                    </p>
+                    <div id="M003543_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/timeout.rb, line 52</span>
+52:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">timeout</span>(<span class="ruby-identifier">sec</span>, <span class="ruby-identifier">klass</span> = <span class="ruby-keyword kw">nil</span>)
+53:     <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">yield</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">sec</span> <span class="ruby-operator">==</span> <span class="ruby-keyword kw">nil</span> <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">sec</span>.<span class="ruby-identifier">zero?</span>
+54:     <span class="ruby-identifier">raise</span> <span class="ruby-constant">ThreadError</span>, <span class="ruby-value str">&quot;timeout within critical session&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">critical</span>
+55:     <span class="ruby-identifier">exception</span> = <span class="ruby-identifier">klass</span> <span class="ruby-operator">||</span> <span class="ruby-constant">Class</span>.<span class="ruby-identifier">new</span>(<span class="ruby-constant">ExitException</span>)
+56:     <span class="ruby-keyword kw">begin</span>
+57:       <span class="ruby-identifier">x</span> = <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>
+58:       <span class="ruby-identifier">y</span> = <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">start</span> {
+59:         <span class="ruby-identifier">sleep</span> <span class="ruby-identifier">sec</span>
+60:         <span class="ruby-identifier">x</span>.<span class="ruby-identifier">raise</span> <span class="ruby-identifier">exception</span>, <span class="ruby-value str">&quot;execution expired&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">x</span>.<span class="ruby-identifier">alive?</span>
+61:       }
+62:       <span class="ruby-keyword kw">yield</span> <span class="ruby-identifier">sec</span>
+63:       <span class="ruby-comment cmt">#    return true</span>
+64:     <span class="ruby-keyword kw">rescue</span> <span class="ruby-identifier">exception</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+65:       <span class="ruby-identifier">rej</span> = <span class="ruby-node">/\A#{Regexp.quote(__FILE__)}:#{__LINE__-4}\z/o</span>
+66:       (<span class="ruby-identifier">bt</span> = <span class="ruby-identifier">e</span>.<span class="ruby-identifier">backtrace</span>).<span class="ruby-identifier">reject!</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">m</span><span class="ruby-operator">|</span> <span class="ruby-identifier">rej</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">m</span>}
+67:       <span class="ruby-identifier">level</span> = <span class="ruby-operator">-</span><span class="ruby-identifier">caller</span>(<span class="ruby-constant">CALLER_OFFSET</span>).<span class="ruby-identifier">size</span>
+68:       <span class="ruby-keyword kw">while</span> <span class="ruby-constant">THIS_FILE</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">bt</span>[<span class="ruby-identifier">level</span>]
+69:         <span class="ruby-identifier">bt</span>.<span class="ruby-identifier">delete_at</span>(<span class="ruby-identifier">level</span>)
+70:         <span class="ruby-identifier">level</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
+71:       <span class="ruby-keyword kw">end</span>
+72:       <span class="ruby-identifier">raise</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">klass</span>            <span class="ruby-comment cmt"># if exception class is specified, it</span>
+73:                                 <span class="ruby-comment cmt"># would be expected outside.</span>
+74:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">Error</span>, <span class="ruby-identifier">e</span>.<span class="ruby-identifier">message</span>, <span class="ruby-identifier">e</span>.<span class="ruby-identifier">backtrace</span>
+75:     <span class="ruby-keyword kw">ensure</span>
+76:       <span class="ruby-identifier">y</span>.<span class="ruby-identifier">kill</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">y</span> <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">y</span>.<span class="ruby-identifier">alive?</span>
+77:     <span class="ruby-keyword kw">end</span>
+78:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

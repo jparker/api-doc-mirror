@@ -1,0 +1,77 @@
+  <div id="fileHeader">
+    <h1>record_tag_helper.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionpack/lib/action_view/helpers/record_tag_helper.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:04 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>module ActionView
+  module Helpers
+    module RecordTagHelper
+      # Produces a wrapper DIV element with id and class parameters that
+      # relate to the specified Active Record object. Usage example:
+      #
+      #    &lt;% div_for(@person, :class =&gt; &quot;foo&quot;) do %&gt;
+      #       &lt;%=h @person.name %&gt;
+      #    &lt;% end %&gt;
+      #
+      # produces:
+      #
+      #    &lt;div id=&quot;person_123&quot; class=&quot;person foo&quot;&gt; Joe Bloggs &lt;/div&gt;
+      #
+      def div_for(record, *args, &amp;block)
+        content_tag_for(:div, record, *args, &amp;block)
+      end
+  
+      # content_tag_for creates an HTML element with id and class parameters
+      # that relate to the specified Active Record object. For example:
+      #
+      #    &lt;% content_tag_for(:tr, @person) do %&gt;
+      #      &lt;td&gt;&lt;%=h @person.first_name %&gt;&lt;/td&gt;
+      #      &lt;td&gt;&lt;%=h @person.last_name %&gt;&lt;/td&gt;
+      #    &lt;% end %&gt;
+      #
+      # would produce the following HTML (assuming @person is an instance of
+      # a Person object, with an id value of 123):
+      #
+      #    &lt;tr id=&quot;person_123&quot; class=&quot;person&quot;&gt;....&lt;/tr&gt;
+      #
+      # If you require the HTML id attribute to have a prefix, you can specify it:
+      #
+      #    &lt;% content_tag_for(:tr, @person, :foo) do %&gt; ...
+      #
+      # produces:
+      #    
+      #    &lt;tr id=&quot;foo_person_123&quot; class=&quot;person&quot;&gt;...
+      #
+      # content_tag_for also accepts a hash of options, which will be converted to
+      # additional HTML attributes. If you specify a &lt;tt&gt;:class&lt;/tt&gt; value, it will be combined
+      # with the default class name for your object. For example:
+      #
+      #    &lt;% content_tag_for(:li, @person, :class =&gt; &quot;bar&quot;) %&gt;...
+      #
+      # produces:
+      #
+      #    &lt;li id=&quot;person_123&quot; class=&quot;person bar&quot;&gt;...
+      #
+      def content_tag_for(tag_name, record, *args, &amp;block)
+        prefix  = args.first.is_a?(Hash) ? nil : args.shift
+        options = args.first.is_a?(Hash) ? args.shift : {}
+        concat content_tag(tag_name, capture(&amp;block), 
+          options.merge({ :class =&gt; &quot;#{dom_class(record)} #{options[:class]}&quot;.strip, :id =&gt; dom_id(record, prefix) })), 
+          block.binding
+      end
+    end
+  end
+end</pre>
+    </div>

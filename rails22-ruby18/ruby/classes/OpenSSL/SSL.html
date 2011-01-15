@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>OpenSSL::SSL</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Module</span> 
+            OpenSSL::SSL 
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../files/ext/openssl/ossl_c.html">ext/openssl/ossl.c</a></li>
+            
+            <li><a href="../../files/ext/openssl/lib/openssl/ssl_rb.html">ext/openssl/lib/openssl/ssl.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <pre>
+   let rdoc know about mOSSL
+</pre>
+<p>
+# &#8212;
+</p>
+<pre>
+   let rdoc know about mOSSL
+</pre>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>V</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007532">verify_certificate_identity</a>,</li>
+                
+                <li><a href="#M007532">verify_certificate_identity</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Classes and Modules</div>
+    <ul>
+        
+        <li><span class="type">MODULE</span> <a href="SSL/Nonblock.html">OpenSSL::SSL::Nonblock</a></li>
+        
+        <li><span class="type">MODULE</span> <a href="SSL/SocketForwarder.html">OpenSSL::SSL::SocketForwarder</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="SSL/SSLContext.html">OpenSSL::SSL::SSLContext</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="SSL/SSLError.html">OpenSSL::SSL::SSLError</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="SSL/SSLServer.html">OpenSSL::SSL::SSLServer</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="SSL/SSLSocket.html">OpenSSL::SSL::SSLSocket</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="SSL/Session.html">OpenSSL::SSL::Session</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M007532">
+                    
+                    <a name="M007532"></a><b>verify_certificate_identity</b>(cert, hostname)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007532_source')" id="l_M007532_source">show</a>
+                        
+                    </p>
+                    <div id="M007532_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File ext/openssl/lib/openssl/ssl.rb, line 89</span>
+ 89:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">verify_certificate_identity</span>(<span class="ruby-identifier">cert</span>, <span class="ruby-identifier">hostname</span>)
+ 90:       <span class="ruby-identifier">should_verify_common_name</span> = <span class="ruby-keyword kw">true</span>
+ 91:       <span class="ruby-identifier">cert</span>.<span class="ruby-identifier">extensions</span>.<span class="ruby-identifier">each</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">ext</span><span class="ruby-operator">|</span>
+ 92:         <span class="ruby-keyword kw">next</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">ext</span>.<span class="ruby-identifier">oid</span> <span class="ruby-operator">!=</span> <span class="ruby-value str">&quot;subjectAltName&quot;</span>
+ 93:         <span class="ruby-identifier">ext</span>.<span class="ruby-identifier">value</span>.<span class="ruby-identifier">split</span>(<span class="ruby-regexp re">/,\s+/</span>).<span class="ruby-identifier">each</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">general_name</span><span class="ruby-operator">|</span>
+ 94:           <span class="ruby-keyword kw">if</span> <span class="ruby-regexp re">/\ADNS:(.*)/</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">general_name</span>
+ 95:             <span class="ruby-identifier">should_verify_common_name</span> = <span class="ruby-keyword kw">false</span>
+ 96:             <span class="ruby-identifier">reg</span> = <span class="ruby-constant">Regexp</span>.<span class="ruby-identifier">escape</span>(<span class="ruby-identifier">$1</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/\\\*/</span>, <span class="ruby-value str">&quot;[^.]+&quot;</span>)
+ 97:             <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">true</span> <span class="ruby-keyword kw">if</span> <span class="ruby-node">/\A#{reg}\z/i</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">hostname</span>
+ 98:           <span class="ruby-keyword kw">elsif</span> <span class="ruby-regexp re">/\AIP Address:(.*)/</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">general_name</span>
+ 99:             <span class="ruby-identifier">should_verify_common_name</span> = <span class="ruby-keyword kw">false</span>
+100:             <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">true</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">$1</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">hostname</span>
+101:           <span class="ruby-keyword kw">end</span>
+102:         }
+103:       }
+104:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">should_verify_common_name</span>
+105:         <span class="ruby-identifier">cert</span>.<span class="ruby-identifier">subject</span>.<span class="ruby-identifier">to_a</span>.<span class="ruby-identifier">each</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">oid</span>, <span class="ruby-identifier">value</span><span class="ruby-operator">|</span>
+106:           <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">oid</span> <span class="ruby-operator">==</span> <span class="ruby-value str">&quot;CN&quot;</span>
+107:             <span class="ruby-identifier">reg</span> = <span class="ruby-constant">Regexp</span>.<span class="ruby-identifier">escape</span>(<span class="ruby-identifier">value</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/\\\*/</span>, <span class="ruby-value str">&quot;[^.]+&quot;</span>)
+108:             <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">true</span> <span class="ruby-keyword kw">if</span> <span class="ruby-node">/\A#{reg}\z/i</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">hostname</span>
+109:           <span class="ruby-keyword kw">end</span>
+110:         }
+111:       <span class="ruby-keyword kw">end</span>
+112:       <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">false</span>
+113:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Private methods</div>
+            
+            <div class="method">
+                <div class="title" id="M007532">
+                    
+                    <a name="M007532"></a><b>verify_certificate_identity</b>(cert, hostname)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007532_source')" id="l_M007532_source">show</a>
+                        
+                    </p>
+                    <div id="M007532_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File ext/openssl/lib/openssl/ssl.rb, line 89</span>
+ 89:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">verify_certificate_identity</span>(<span class="ruby-identifier">cert</span>, <span class="ruby-identifier">hostname</span>)
+ 90:       <span class="ruby-identifier">should_verify_common_name</span> = <span class="ruby-keyword kw">true</span>
+ 91:       <span class="ruby-identifier">cert</span>.<span class="ruby-identifier">extensions</span>.<span class="ruby-identifier">each</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">ext</span><span class="ruby-operator">|</span>
+ 92:         <span class="ruby-keyword kw">next</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">ext</span>.<span class="ruby-identifier">oid</span> <span class="ruby-operator">!=</span> <span class="ruby-value str">&quot;subjectAltName&quot;</span>
+ 93:         <span class="ruby-identifier">ext</span>.<span class="ruby-identifier">value</span>.<span class="ruby-identifier">split</span>(<span class="ruby-regexp re">/,\s+/</span>).<span class="ruby-identifier">each</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">general_name</span><span class="ruby-operator">|</span>
+ 94:           <span class="ruby-keyword kw">if</span> <span class="ruby-regexp re">/\ADNS:(.*)/</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">general_name</span>
+ 95:             <span class="ruby-identifier">should_verify_common_name</span> = <span class="ruby-keyword kw">false</span>
+ 96:             <span class="ruby-identifier">reg</span> = <span class="ruby-constant">Regexp</span>.<span class="ruby-identifier">escape</span>(<span class="ruby-identifier">$1</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/\\\*/</span>, <span class="ruby-value str">&quot;[^.]+&quot;</span>)
+ 97:             <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">true</span> <span class="ruby-keyword kw">if</span> <span class="ruby-node">/\A#{reg}\z/i</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">hostname</span>
+ 98:           <span class="ruby-keyword kw">elsif</span> <span class="ruby-regexp re">/\AIP Address:(.*)/</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">general_name</span>
+ 99:             <span class="ruby-identifier">should_verify_common_name</span> = <span class="ruby-keyword kw">false</span>
+100:             <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">true</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">$1</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">hostname</span>
+101:           <span class="ruby-keyword kw">end</span>
+102:         }
+103:       }
+104:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">should_verify_common_name</span>
+105:         <span class="ruby-identifier">cert</span>.<span class="ruby-identifier">subject</span>.<span class="ruby-identifier">to_a</span>.<span class="ruby-identifier">each</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">oid</span>, <span class="ruby-identifier">value</span><span class="ruby-operator">|</span>
+106:           <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">oid</span> <span class="ruby-operator">==</span> <span class="ruby-value str">&quot;CN&quot;</span>
+107:             <span class="ruby-identifier">reg</span> = <span class="ruby-constant">Regexp</span>.<span class="ruby-identifier">escape</span>(<span class="ruby-identifier">value</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/\\\*/</span>, <span class="ruby-value str">&quot;[^.]+&quot;</span>)
+108:             <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">true</span> <span class="ruby-keyword kw">if</span> <span class="ruby-node">/\A#{reg}\z/i</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">hostname</span>
+109:           <span class="ruby-keyword kw">end</span>
+110:         }
+111:       <span class="ruby-keyword kw">end</span>
+112:       <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">false</span>
+113:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

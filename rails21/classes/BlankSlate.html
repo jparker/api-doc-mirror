@@ -1,0 +1,118 @@
+  <div id="C00000042">
+<div class='banner'>
+  <span class="file-title-prefix">Class</span><br />BlankSlate<br/>
+  In:
+<a href="#" onclick="jsHref('files/activesupport/lib/active_support/vendor/builder-2_1_2/blankslate_rb.html');">activesupport/lib/active_support/vendor/builder-2.1.2/blankslate.rb</a>
+
+Parent:&nbsp;
+        <a href="#" onclick="jsHref('classes/Object.html');">
+Object
+         </a>
+</div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+      <div id="content">
+
+  <div class="description"><p>
+<a href="index.html?a=C00000042&name=BlankSlate">BlankSlate</a> provides an
+abstract base class with no predefined methods (except for
+<tt>__send__</tt> and <tt>__id__</tt>). <a
+href="index.html?a=C00000042&name=BlankSlate">BlankSlate</a> is useful as a
+base class when writing classes that depend upon <tt>method_missing</tt>
+(e.g. dynamic proxies).
+</p>
+</div>
+
+
+
+  <div class="sectiontitle">Methods</div>
+  <ul>
+  <li><a href="index.html?a=M000130&name=find_hidden_method" >find_hidden_method</a></li>
+  <li><a href="index.html?a=M000129&name=hide" >hide</a></li>
+  <li><a href="index.html?a=M000131&name=reveal" >reveal</a></li>
+  </ul>
+
+
+
+
+
+
+<div class="sectiontitle">Public Class methods</div>
+<div id="M000130" class="method">
+  <div id="M000130_title" class="title">
+    <b>find_hidden_method</b>(name)
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000130_source')" id="l_M000130_source">show source</a> ]</p>
+  <div id="M000130_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activesupport/lib/active_support/vendor/builder-2.1.2/blankslate.rb, line 31</span>
+31:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">find_hidden_method</span>(<span class="ruby-identifier">name</span>)
+32:       <span class="ruby-ivar">@hidden_methods</span> <span class="ruby-operator">||=</span> {}
+33:       <span class="ruby-ivar">@hidden_methods</span>[<span class="ruby-identifier">name</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">superclass</span>.<span class="ruby-identifier">find_hidden_method</span>(<span class="ruby-identifier">name</span>)
+34:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000129" class="method">
+  <div id="M000129_title" class="title">
+    <b>hide</b>(name)
+  </div>
+  <div class="description">
+  <p>
+Hide the method named <tt>name</tt> in the <a
+href="index.html?a=C00000042&name=BlankSlate">BlankSlate</a> class.
+Don&#8216;t hide <tt>instance_eval</tt> or any method beginning with
+&quot;__&quot;.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000129_source')" id="l_M000129_source">show source</a> ]</p>
+  <div id="M000129_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activesupport/lib/active_support/vendor/builder-2.1.2/blankslate.rb, line 22</span>
+22:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">hide</span>(<span class="ruby-identifier">name</span>)
+23:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">instance_methods</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_s</span>) <span class="ruby-keyword kw">and</span>
+24:         <span class="ruby-identifier">name</span> <span class="ruby-operator">!~</span> <span class="ruby-regexp re">/^(__|instance_eval)/</span>
+25:         <span class="ruby-ivar">@hidden_methods</span> <span class="ruby-operator">||=</span> {}
+26:         <span class="ruby-ivar">@hidden_methods</span>[<span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_sym</span>] = <span class="ruby-identifier">instance_method</span>(<span class="ruby-identifier">name</span>)
+27:         <span class="ruby-identifier">undef_method</span> <span class="ruby-identifier">name</span>
+28:       <span class="ruby-keyword kw">end</span>
+29:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000131" class="method">
+  <div id="M000131_title" class="title">
+    <b>reveal</b>(name)
+  </div>
+  <div class="description">
+  <p>
+Redefine a previously hidden method so that it may be called on a blank
+slate object.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000131_source')" id="l_M000131_source">show source</a> ]</p>
+  <div id="M000131_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activesupport/lib/active_support/vendor/builder-2.1.2/blankslate.rb, line 38</span>
+38:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">reveal</span>(<span class="ruby-identifier">name</span>)
+39:       <span class="ruby-identifier">bound_method</span> = <span class="ruby-keyword kw">nil</span>
+40:       <span class="ruby-identifier">unbound_method</span> = <span class="ruby-identifier">find_hidden_method</span>(<span class="ruby-identifier">name</span>)
+41:       <span class="ruby-identifier">fail</span> <span class="ruby-node">&quot;Don't know how to reveal method '#{name}'&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">unbound_method</span>
+42:       <span class="ruby-identifier">define_method</span>(<span class="ruby-identifier">name</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-operator">*</span><span class="ruby-identifier">args</span><span class="ruby-operator">|</span>
+43:         <span class="ruby-identifier">bound_method</span> <span class="ruby-operator">||=</span> <span class="ruby-identifier">unbound_method</span>.<span class="ruby-identifier">bind</span>(<span class="ruby-keyword kw">self</span>)
+44:         <span class="ruby-identifier">bound_method</span>.<span class="ruby-identifier">call</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+45:       <span class="ruby-keyword kw">end</span>
+46:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+</div>
+
+  </div>

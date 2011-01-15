@@ -1,0 +1,233 @@
+  <div id="C00000124">
+<div class='banner'>
+  <span class="file-title-prefix">Module</span><br />RequestForgeryProtection<br/>
+  In:
+<a href="#" onclick="jsHref('files/actionpack/lib/action_controller/request_forgery_protection_rb.html');">actionpack/lib/action_controller/request_forgery_protection.rb</a>
+
+</div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+      <div id="content">
+
+
+
+
+  <div class="sectiontitle">Methods</div>
+  <ul>
+  <li><a href="index.html?a=M000306&name=authenticity_token_from_cookie_session" >authenticity_token_from_cookie_session</a></li>
+  <li><a href="index.html?a=M000305&name=authenticity_token_from_session_id" >authenticity_token_from_session_id</a></li>
+  <li><a href="index.html?a=M000304&name=form_authenticity_token" >form_authenticity_token</a></li>
+  <li><a href="index.html?a=M000300&name=included" >included</a></li>
+  <li><a href="index.html?a=M000307&name=protect_against_forgery?" >protect_against_forgery?</a></li>
+  <li><a href="index.html?a=M000303&name=verifiable_request_format?" >verifiable_request_format?</a></li>
+  <li><a href="index.html?a=M000302&name=verified_request?" >verified_request?</a></li>
+  <li><a href="index.html?a=M000301&name=verify_authenticity_token" >verify_authenticity_token</a></li>
+  </ul>
+
+
+
+  <div class="sectiontitle">Classes and Modules</div>
+  Module "<a href="#" onclick="jsHref('classes/ActionController/RequestForgeryProtection/ClassMethods.html');" class="link">ActionController::RequestForgeryProtection::ClassMethods</a>"<br />
+
+
+
+
+<div class="sectiontitle">Public Class methods</div>
+<div id="M000300" class="method">
+  <div id="M000300_title" class="title">
+    <b>included</b>(base)
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000300_source')" id="l_M000300_source">show source</a> ]</p>
+  <div id="M000300_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File actionpack/lib/action_controller/request_forgery_protection.rb, line 6</span>
+ 6:     <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">included</span>(<span class="ruby-identifier">base</span>)
+ 7:       <span class="ruby-identifier">base</span>.<span class="ruby-identifier">class_eval</span> <span class="ruby-keyword kw">do</span>
+ 8:         <span class="ruby-identifier">class_inheritable_accessor</span> <span class="ruby-identifier">:request_forgery_protection_options</span>
+ 9:         <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">request_forgery_protection_options</span> = {}
+10:         <span class="ruby-identifier">helper_method</span> <span class="ruby-identifier">:form_authenticity_token</span>
+11:         <span class="ruby-identifier">helper_method</span> <span class="ruby-identifier">:protect_against_forgery?</span>
+12:       <span class="ruby-keyword kw">end</span>
+13:       <span class="ruby-identifier">base</span>.<span class="ruby-identifier">extend</span>(<span class="ruby-constant">ClassMethods</span>)
+14:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div class="sectiontitle">Protected Instance methods</div>
+<div id="M000306" class="method">
+  <div id="M000306_title" class="title">
+    <b>authenticity_token_from_cookie_session</b>()
+  </div>
+  <div class="description">
+  <p>
+No secret was given, so assume this is a cookie session store.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000306_source')" id="l_M000306_source">show source</a> ]</p>
+  <div id="M000306_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File actionpack/lib/action_controller/request_forgery_protection.rb, line 131</span>
+131:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">authenticity_token_from_cookie_session</span>
+132:         <span class="ruby-identifier">session</span>[<span class="ruby-identifier">:csrf_id</span>] <span class="ruby-operator">||=</span> <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-constant">Session</span>.<span class="ruby-identifier">generate_unique_id</span>
+133:         <span class="ruby-identifier">session</span>.<span class="ruby-identifier">dbman</span>.<span class="ruby-identifier">generate_digest</span>(<span class="ruby-identifier">session</span>[<span class="ruby-identifier">:csrf_id</span>])
+134:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000305" class="method">
+  <div id="M000305_title" class="title">
+    <b>authenticity_token_from_session_id</b>()
+  </div>
+  <div class="description">
+  <p>
+Generates a unique digest using the session_id and the CSRF secret.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000305_source')" id="l_M000305_source">show source</a> ]</p>
+  <div id="M000305_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File actionpack/lib/action_controller/request_forgery_protection.rb, line 120</span>
+120:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">authenticity_token_from_session_id</span>
+121:         <span class="ruby-identifier">key</span> = <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">request_forgery_protection_options</span>[<span class="ruby-identifier">:secret</span>].<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">:call</span>)
+122:           <span class="ruby-identifier">request_forgery_protection_options</span>[<span class="ruby-identifier">:secret</span>].<span class="ruby-identifier">call</span>(<span class="ruby-ivar">@session</span>)
+123:         <span class="ruby-keyword kw">else</span>
+124:           <span class="ruby-identifier">request_forgery_protection_options</span>[<span class="ruby-identifier">:secret</span>]
+125:         <span class="ruby-keyword kw">end</span>
+126:         <span class="ruby-identifier">digest</span> = <span class="ruby-identifier">request_forgery_protection_options</span>[<span class="ruby-identifier">:digest</span>] <span class="ruby-operator">||=</span> <span class="ruby-value str">'SHA1'</span>
+127:         <span class="ruby-constant">OpenSSL</span><span class="ruby-operator">::</span><span class="ruby-constant">HMAC</span>.<span class="ruby-identifier">hexdigest</span>(<span class="ruby-constant">OpenSSL</span><span class="ruby-operator">::</span><span class="ruby-constant">Digest</span><span class="ruby-operator">::</span><span class="ruby-constant">Digest</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">digest</span>), <span class="ruby-identifier">key</span>.<span class="ruby-identifier">to_s</span>, <span class="ruby-identifier">session</span>.<span class="ruby-identifier">session_id</span>.<span class="ruby-identifier">to_s</span>)
+128:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000304" class="method">
+  <div id="M000304_title" class="title">
+    <b>form_authenticity_token</b>()
+  </div>
+  <div class="description">
+  <p>
+Sets the token value for the current session. Pass a <tt>:secret</tt>
+option in <tt>protect_from_forgery</tt> to add a custom salt to the hash.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000304_source')" id="l_M000304_source">show source</a> ]</p>
+  <div id="M000304_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File actionpack/lib/action_controller/request_forgery_protection.rb, line 107</span>
+107:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">form_authenticity_token</span>
+108:         <span class="ruby-ivar">@form_authenticity_token</span> <span class="ruby-operator">||=</span> <span class="ruby-keyword kw">if</span> <span class="ruby-operator">!</span><span class="ruby-identifier">session</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">:session_id</span>)
+109:           <span class="ruby-identifier">raise</span> <span class="ruby-constant">InvalidAuthenticityToken</span>, <span class="ruby-value str">&quot;Request Forgery Protection requires a valid session.  Use #allow_forgery_protection to disable it, or use a valid session.&quot;</span>
+110:         <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">request_forgery_protection_options</span>[<span class="ruby-identifier">:secret</span>]
+111:           <span class="ruby-identifier">authenticity_token_from_session_id</span>
+112:         <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">session</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">:dbman</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">session</span>.<span class="ruby-identifier">dbman</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">:generate_digest</span>)
+113:           <span class="ruby-identifier">authenticity_token_from_cookie_session</span>
+114:         <span class="ruby-keyword kw">else</span>
+115:           <span class="ruby-identifier">raise</span> <span class="ruby-constant">InvalidAuthenticityToken</span>, <span class="ruby-value str">&quot;No :secret given to the #protect_from_forgery call.  Set that or use a session store capable of generating its own keys (Cookie Session Store).&quot;</span>
+116:         <span class="ruby-keyword kw">end</span>
+117:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000307" class="method">
+  <div id="M000307_title" class="title">
+    <b>protect_against_forgery?</b>()
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000307_source')" id="l_M000307_source">show source</a> ]</p>
+  <div id="M000307_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File actionpack/lib/action_controller/request_forgery_protection.rb, line 136</span>
+136:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">protect_against_forgery?</span>
+137:         <span class="ruby-identifier">allow_forgery_protection</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">request_forgery_protection_token</span>
+138:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000303" class="method">
+  <div id="M000303_title" class="title">
+    <b>verifiable_request_format?</b>()
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000303_source')" id="l_M000303_source">show source</a> ]</p>
+  <div id="M000303_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File actionpack/lib/action_controller/request_forgery_protection.rb, line 101</span>
+101:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">verifiable_request_format?</span>
+102:         <span class="ruby-identifier">request</span>.<span class="ruby-identifier">content_type</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">request</span>.<span class="ruby-identifier">content_type</span>.<span class="ruby-identifier">verify_request?</span>
+103:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000302" class="method">
+  <div id="M000302_title" class="title">
+    <b>verified_request?</b>()
+  </div>
+  <div class="description">
+  <p>
+Returns true or false if a request is verified. Checks:
+</p>
+<ul>
+<li>is the format restricted? By default, only HTML and AJAX requests are
+checked.
+
+</li>
+<li>is it a GET request? Gets should be safe and idempotent
+
+</li>
+<li>Does the <a
+href="index.html?a=M000304&name=form_authenticity_token">form_authenticity_token</a>
+match the given _token value from the params?
+
+</li>
+</ul>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000302_source')" id="l_M000302_source">show source</a> ]</p>
+  <div id="M000302_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File actionpack/lib/action_controller/request_forgery_protection.rb, line 94</span>
+94:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">verified_request?</span>
+95:         <span class="ruby-operator">!</span><span class="ruby-identifier">protect_against_forgery?</span>     <span class="ruby-operator">||</span>
+96:           <span class="ruby-identifier">request</span>.<span class="ruby-identifier">method</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">:get</span>      <span class="ruby-operator">||</span>
+97:           <span class="ruby-operator">!</span><span class="ruby-identifier">verifiable_request_format?</span> <span class="ruby-operator">||</span>
+98:           <span class="ruby-identifier">form_authenticity_token</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">params</span>[<span class="ruby-identifier">request_forgery_protection_token</span>]
+99:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000301" class="method">
+  <div id="M000301_title" class="title">
+    <b>verify_authenticity_token</b>()
+  </div>
+  <div class="description">
+  <p>
+The actual before_filter that is used. Modify this to change how you handle
+unverified requests.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000301_source')" id="l_M000301_source">show source</a> ]</p>
+  <div id="M000301_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File actionpack/lib/action_controller/request_forgery_protection.rb, line 85</span>
+85:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">verify_authenticity_token</span>
+86:         <span class="ruby-identifier">verified_request?</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">raise</span>(<span class="ruby-constant">ActionController</span><span class="ruby-operator">::</span><span class="ruby-constant">InvalidAuthenticityToken</span>)
+87:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+</div>
+
+  </div>

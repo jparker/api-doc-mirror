@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Precision</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Module</span> 
+            Precision 
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/prec_c.html">prec.c</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+<a href="Precision.html">Precision</a> is a mixin for concrete numeric
+classes with precision. Here, `precision&#8217; means the fineness of
+approximation of a real number, so, this module should not be included into
+anything which is not a subset of Real (so it should not be included in
+classes such as <tt>Complex</tt> or <tt>Matrix</tt>).
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>I</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001022">included</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>P</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001023">prec</a>,</li>
+                
+                <li><a href="#M001025">prec_f</a>,</li>
+                
+                <li><a href="#M001024">prec_i</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M001022">
+                    
+                    <a name="M001022"></a><b>included</b>(p1)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call_seq:
+</p>
+<pre>
+  included
+</pre>
+<p>
+When the <tt>Precision</tt> module is mixed-in to a class, this
+<tt>included</tt> method is used to add our default <tt>induced_from</tt>
+implementation to the host class.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001022_source')" id="l_M001022_source">show</a>
+                        
+                    </p>
+                    <div id="M001022_source" class="dyn-source">
+                        <pre>static VALUE
+prec_included(module, include)
+    VALUE module, include;
+{
+    switch (TYPE(include)) {
+      case T_CLASS:
+      case T_MODULE:
+       break;
+      default:
+       Check_Type(include, T_CLASS);
+       break;
+    }
+    rb_define_singleton_method(include, &quot;induced_from&quot;, prec_induced_from, 1);
+    return module;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M001023">
+                    
+                    <a name="M001023"></a><b>num.prec(klass)   => a_klass
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Converts <em>self</em> into an instance of <em>klass</em>. By default,
+<tt>prec</tt> invokes
+</p>
+<pre>
+   klass.induced_from(num)
+</pre>
+<p>
+and returns its value. So, if <tt>klass.induced_from</tt> doesn&#8217;t
+return an instance of <em>klass</em>, it will be necessary to reimplement
+<tt>prec</tt>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001023_source')" id="l_M001023_source">show</a>
+                        
+                    </p>
+                    <div id="M001023_source" class="dyn-source">
+                        <pre>static VALUE
+prec_prec(x, klass)
+    VALUE x, klass;
+{
+    return rb_funcall(klass, prc_if, 1, x);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001025">
+                    
+                    <a name="M001025"></a><b>num.prec_f  =>  Float
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns a <tt>Float</tt> converted from <em>num</em>. It is equivalent to
+<tt>prec(<a href="Float.html">Float</a>)</tt>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001025_source')" id="l_M001025_source">show</a>
+                        
+                    </p>
+                    <div id="M001025_source" class="dyn-source">
+                        <pre>static VALUE
+prec_prec_f(x)
+    VALUE x;
+{
+    VALUE klass = rb_cFloat;
+
+    return rb_funcall(x, prc_pr, 1, klass);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001024">
+                    
+                    <a name="M001024"></a><b>num.prec_i  =>  Integer
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns an <tt>Integer</tt> converted from <em>num</em>. It is equivalent
+to <tt>prec(<a href="Integer.html">Integer</a>)</tt>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001024_source')" id="l_M001024_source">show</a>
+                        
+                    </p>
+                    <div id="M001024_source" class="dyn-source">
+                        <pre>static VALUE
+prec_prec_i(x)
+    VALUE x;
+{
+    VALUE klass = rb_cInteger;
+
+    return rb_funcall(x, prc_pr, 1, klass);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

@@ -1,0 +1,51 @@
+  <div id="fileHeader">
+    <h1>blockless_step.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activesupport/lib/active_support/core_ext/range/blockless_step.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>module ActiveSupport #:nodoc:
+  module CoreExtensions #:nodoc:
+    module Range #:nodoc:
+      # Return an array when step is called without a block.
+      module BlocklessStep
+        def self.included(base) #:nodoc:
+          base.alias_method_chain :step, :blockless
+        end
+
+        if RUBY_VERSION &lt; '1.9'
+          def step_with_blockless(value = 1, &amp;block)
+            if block_given?
+              step_without_blockless(value, &amp;block)
+            else
+              returning [] do |array|
+                step_without_blockless(value) { |step| array &lt;&lt; step }
+              end
+            end
+          end
+        else
+          def step_with_blockless(value = 1, &amp;block)
+            if block_given?
+              step_without_blockless(value, &amp;block)
+            else
+              step_without_blockless(value).to_a
+            end
+          end
+        end
+      end
+    end
+  end
+end
+</pre>
+    </div>

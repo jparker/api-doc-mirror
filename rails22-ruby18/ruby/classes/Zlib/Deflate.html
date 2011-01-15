@@ -1,0 +1,581 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Zlib::Deflate</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            Zlib::Deflate 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="ZStream.html">Zlib::ZStream</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../files/ext/zlib/zlib_c.html">ext/zlib/zlib.c</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+<a href="Deflate.html">Zlib::Deflate</a> is the class for compressing data.
+See Zlib::Stream for more information.
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>#</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006784"><<</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>D</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006780">deflate</a>,</li>
+                
+                <li><a href="#M006783">deflate</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>F</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006785">flush</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>I</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006782">initialize_copy</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006781">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>P</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006786">params</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006787">set_dictionary</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M006780">
+                    
+                    <a name="M006780"></a><b> Zlib::Deflate.deflate(string[, level])
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Compresses the given <tt>string</tt>. Valid values of level are
+<tt>Zlib::NO_COMPRESSION</tt>, <tt>Zlib::BEST_SPEED</tt>,
+<tt>Zlib::BEST_COMPRESSION</tt>, <tt>Zlib::DEFAULT_COMPRESSION</tt>, and an
+integer from 0 to 9.
+</p>
+<p>
+This method is almost equivalent to the following code:
+</p>
+<pre>
+  def deflate(string, level)
+    z = Zlib::Deflate.new(level)
+    dst = z.deflate(string, Zlib::FINISH)
+    z.close
+    dst
+  end
+</pre>
+<p>
+TODO: what&#8217;s default value of <tt>level</tt>?
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006780_source')" id="l_M006780_source">show</a>
+                        
+                    </p>
+                    <div id="M006780_source" class="dyn-source">
+                        <pre>static VALUE
+rb_deflate_s_deflate(argc, argv, klass)
+    int argc;
+    VALUE *argv;
+    VALUE klass;
+{
+    struct zstream z;
+    VALUE src, level, dst, args[2];
+    int err, lev;
+
+    rb_scan_args(argc, argv, &quot;11&quot;, &amp;src, &amp;level);
+
+    lev = ARG_LEVEL(level);
+    StringValue(src);
+    zstream_init_deflate(&amp;z);
+    err = deflateInit(&amp;z.stream, lev);
+    if (err != Z_OK) {
+        raise_zlib_error(err, z.stream.msg);
+    }
+    ZSTREAM_READY(&amp;z);
+
+    args[0] = (VALUE)&amp;z;
+    args[1] = src;
+    dst = rb_ensure(deflate_run, (VALUE)args, zstream_end, (VALUE)&amp;z);
+
+    OBJ_INFECT(dst, src);
+    return dst;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006781">
+                    
+                    <a name="M006781"></a><b> Zlib::Deflate.new(level=nil, windowBits=nil, memlevel=nil, strategy=nil)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Creates a new deflate stream for compression. See zlib.h for details of
+each argument. If an argument is nil, the default value of that argument is
+used.
+</p>
+<p>
+TODO: document better!
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006781_source')" id="l_M006781_source">show</a>
+                        
+                    </p>
+                    <div id="M006781_source" class="dyn-source">
+                        <pre>static VALUE
+rb_deflate_initialize(argc, argv, obj)
+    int argc;
+    VALUE *argv;
+    VALUE obj;
+{
+    struct zstream *z;
+    VALUE level, wbits, memlevel, strategy;
+    int err;
+
+    rb_scan_args(argc, argv, &quot;04&quot;, &amp;level, &amp;wbits, &amp;memlevel, &amp;strategy);
+    Data_Get_Struct(obj, struct zstream, z);
+
+    err = deflateInit2(&amp;z-&gt;stream, ARG_LEVEL(level), Z_DEFLATED,
+                       ARG_WBITS(wbits), ARG_MEMLEVEL(memlevel),
+                       ARG_STRATEGY(strategy));
+    if (err != Z_OK) {
+        raise_zlib_error(err, z-&gt;stream.msg);
+    }
+    ZSTREAM_READY(z);
+
+    return obj;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M006784">
+                    
+                    <a name="M006784"></a><b>&lt;&lt;</b>(p1)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Same as <a href="../IO.html">IO</a>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006784_source')" id="l_M006784_source">show</a>
+                        
+                    </p>
+                    <div id="M006784_source" class="dyn-source">
+                        <pre>static VALUE
+rb_deflate_addstr(obj, src)
+    VALUE obj, src;
+{
+    OBJ_INFECT(obj, src);
+    do_deflate(get_zstream(obj), src, Z_NO_FLUSH);
+    return obj;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006783">
+                    
+                    <a name="M006783"></a><b> deflate(string[, flush])
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Inputs <tt>string</tt> into the deflate stream and returns the output from
+the stream. On calling this method, both the input and the output buffers
+of the stream are flushed. If <tt>string</tt> is nil, this method finishes
+the stream, just like <a
+href="ZStream.html#M006777">Zlib::ZStream#finish</a>.
+</p>
+<p>
+The value of <tt>flush</tt> should be either <tt>Zlib::NO_FLUSH</tt>,
+<tt>Zlib::SYNC_FLUSH</tt>, <tt>Zlib::FULL_FLUSH</tt>, or
+<tt>Zlib::FINISH</tt>. See zlib.h for details.
+</p>
+<p>
+TODO: document better!
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006783_source')" id="l_M006783_source">show</a>
+                        
+                    </p>
+                    <div id="M006783_source" class="dyn-source">
+                        <pre>static VALUE
+rb_deflate_deflate(argc, argv, obj)
+    int argc;
+    VALUE *argv;
+    VALUE obj;
+{
+    struct zstream *z = get_zstream(obj);
+    VALUE src, flush, dst;
+
+    rb_scan_args(argc, argv, &quot;11&quot;, &amp;src, &amp;flush);
+    OBJ_INFECT(obj, src);
+    do_deflate(z, src, ARG_FLUSH(flush));
+    dst = zstream_detach_buffer(z);
+
+    OBJ_INFECT(dst, obj);
+    return dst;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006785">
+                    
+                    <a name="M006785"></a><b> flush(flush)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+This method is equivalent to <tt>deflate('', flush)</tt>. If flush is
+omitted, <tt>Zlib::SYNC_FLUSH</tt> is used as flush. This method is just
+provided to improve the readability of your Ruby program.
+</p>
+<p>
+TODO: document better!
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006785_source')" id="l_M006785_source">show</a>
+                        
+                    </p>
+                    <div id="M006785_source" class="dyn-source">
+                        <pre>static VALUE
+rb_deflate_flush(argc, argv, obj)
+    int argc;
+    VALUE *argv;
+    VALUE obj;
+{
+    struct zstream *z = get_zstream(obj);
+    VALUE v_flush, dst;
+    int flush;
+
+    rb_scan_args(argc, argv, &quot;01&quot;, &amp;v_flush);
+    flush = FIXNUMARG(v_flush, Z_SYNC_FLUSH);
+    if (flush != Z_NO_FLUSH) {  /* prevent Z_BUF_ERROR */
+        zstream_run(z, &quot;&quot;, 0, flush);
+    }
+    dst = zstream_detach_buffer(z);
+
+    OBJ_INFECT(dst, obj);
+    return dst;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006782">
+                    
+                    <a name="M006782"></a><b>initialize_copy</b>(p1)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Duplicates the deflate stream.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006782_source')" id="l_M006782_source">show</a>
+                        
+                    </p>
+                    <div id="M006782_source" class="dyn-source">
+                        <pre>static VALUE
+rb_deflate_init_copy(self, orig)
+    VALUE self, orig;
+{
+    struct zstream *z1, *z2;
+    int err;
+
+    Data_Get_Struct(self, struct zstream, z1);
+    z2 = get_zstream(orig);
+
+    err = deflateCopy(&amp;z1-&gt;stream, &amp;z2-&gt;stream);
+    if (err != Z_OK) {
+        raise_zlib_error(err, 0);
+    }
+    z1-&gt;input = NIL_P(z2-&gt;input) ? Qnil : rb_str_dup(z2-&gt;input);
+    z1-&gt;buf   = NIL_P(z2-&gt;buf)   ? Qnil : rb_str_dup(z2-&gt;buf);
+    z1-&gt;buf_filled = z2-&gt;buf_filled;
+    z1-&gt;flags = z2-&gt;flags;
+
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006786">
+                    
+                    <a name="M006786"></a><b> params(level, strategy)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Changes the parameters of the deflate stream. See zlib.h for details. The
+output from the stream by changing the params is preserved in output
+buffer.
+</p>
+<p>
+TODO: document better!
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006786_source')" id="l_M006786_source">show</a>
+                        
+                    </p>
+                    <div id="M006786_source" class="dyn-source">
+                        <pre>static VALUE
+rb_deflate_params(obj, v_level, v_strategy)
+    VALUE obj, v_level, v_strategy;
+{
+    struct zstream *z = get_zstream(obj);
+    int level, strategy;
+    int err;
+
+    level = ARG_LEVEL(v_level);
+    strategy = ARG_STRATEGY(v_strategy);
+
+    err = deflateParams(&amp;z-&gt;stream, level, strategy);
+    while (err == Z_BUF_ERROR) {
+        rb_warning(&quot;deflateParams() returned Z_BUF_ERROR&quot;);
+        zstream_expand_buffer(z);
+        err = deflateParams(&amp;z-&gt;stream, level, strategy);
+    }
+    if (err != Z_OK) {
+        raise_zlib_error(err, z-&gt;stream.msg);
+    }
+
+    return Qnil;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006787">
+                    
+                    <a name="M006787"></a><b> set_dictionary(string)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Sets the preset dictionary and returns <tt>string</tt>. This method is
+available just only after <a
+href="Deflate.html#M006781">Zlib::Deflate.new</a> or <a
+href="ZStream.html#M006776">Zlib::ZStream#reset</a> method was called. See
+zlib.h for details.
+</p>
+<p>
+TODO: document better!
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006787_source')" id="l_M006787_source">show</a>
+                        
+                    </p>
+                    <div id="M006787_source" class="dyn-source">
+                        <pre>static VALUE
+rb_deflate_set_dictionary(obj, dic)
+    VALUE obj, dic;
+{
+    struct zstream *z = get_zstream(obj);
+    VALUE src = dic;
+    int err;
+
+    OBJ_INFECT(obj, dic);
+    StringValue(src);
+    err = deflateSetDictionary(&amp;z-&gt;stream,
+                               RSTRING(src)-&gt;ptr, RSTRING(src)-&gt;len);
+    if (err != Z_OK) {
+        raise_zlib_error(err, z-&gt;stream.msg);
+    }
+
+    return dic;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>XMLRPC::Create</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            XMLRPC::Create 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../files/lib/xmlrpc/create_rb.html">lib/xmlrpc/create.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002779">conv2value</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>M</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002777">methodCall</a>,</li>
+                
+                <li><a href="#M002778">methodResponse</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002776">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>W</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002780">wrong_type</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M002776">
+                    
+                    <a name="M002776"></a><b>new</b>(xml_writer = nil)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002776_source')" id="l_M002776_source">show</a>
+                        
+                    </p>
+                    <div id="M002776_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/xmlrpc/create.rb, line 105</span>
+105:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">xml_writer</span> = <span class="ruby-keyword kw">nil</span>)
+106:       <span class="ruby-ivar">@writer</span> = <span class="ruby-identifier">xml_writer</span> <span class="ruby-operator">||</span> <span class="ruby-constant">Config</span><span class="ruby-operator">::</span><span class="ruby-constant">DEFAULT_WRITER</span>.<span class="ruby-identifier">new</span>
+107:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M002777">
+                    
+                    <a name="M002777"></a><b>methodCall</b>(name, *params)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002777_source')" id="l_M002777_source">show</a>
+                        
+                    </p>
+                    <div id="M002777_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/xmlrpc/create.rb, line 110</span>
+110:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">methodCall</span>(<span class="ruby-identifier">name</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">params</span>)
+111:       <span class="ruby-identifier">name</span> = <span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_s</span>
+112: 
+113:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">name</span> <span class="ruby-operator">!~</span> <span class="ruby-regexp re">/[a-zA-Z0-9_.:\/]+/</span>
+114:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-value str">&quot;Wrong XML-RPC method-name&quot;</span>
+115:       <span class="ruby-keyword kw">end</span>
+116: 
+117:       <span class="ruby-identifier">parameter</span> = <span class="ruby-identifier">params</span>.<span class="ruby-identifier">collect</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">param</span><span class="ruby-operator">|</span>
+118:         <span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">ele</span>(<span class="ruby-value str">&quot;param&quot;</span>, <span class="ruby-identifier">conv2value</span>(<span class="ruby-identifier">param</span>))
+119:       <span class="ruby-keyword kw">end</span>
+120: 
+121:       <span class="ruby-identifier">tree</span> = <span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">document</span>(
+122:                <span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">pi</span>(<span class="ruby-value str">&quot;xml&quot;</span>, <span class="ruby-value str">'version=&quot;1.0&quot;'</span>),
+123:                <span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">ele</span>(<span class="ruby-value str">&quot;methodCall&quot;</span>,   
+124:                  <span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">tag</span>(<span class="ruby-value str">&quot;methodName&quot;</span>, <span class="ruby-identifier">name</span>),
+125:                  <span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">ele</span>(<span class="ruby-value str">&quot;params&quot;</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">parameter</span>)    
+126:                )
+127:              )
+128: 
+129:       <span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">document_to_str</span>(<span class="ruby-identifier">tree</span>) <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;\n&quot;</span>
+130:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002778">
+                    
+                    <a name="M002778"></a><b>methodResponse</b>(is_ret, *params)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+generates a XML-RPC methodResponse document
+</p>
+<p>
+if is_ret == false then the params array must contain only one element,
+which is a structure of a fault return-value.
+</p>
+<p>
+if is_ret == true then a normal return-value of all the given params is
+created.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002778_source')" id="l_M002778_source">show</a>
+                        
+                    </p>
+                    <div id="M002778_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/xmlrpc/create.rb, line 144</span>
+144:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">methodResponse</span>(<span class="ruby-identifier">is_ret</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">params</span>)
+145: 
+146:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">is_ret</span> 
+147:         <span class="ruby-identifier">resp</span> = <span class="ruby-identifier">params</span>.<span class="ruby-identifier">collect</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">param</span><span class="ruby-operator">|</span>
+148:           <span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">ele</span>(<span class="ruby-value str">&quot;param&quot;</span>, <span class="ruby-identifier">conv2value</span>(<span class="ruby-identifier">param</span>))
+149:         <span class="ruby-keyword kw">end</span>
+150:      
+151:         <span class="ruby-identifier">resp</span> = [<span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">ele</span>(<span class="ruby-value str">&quot;params&quot;</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">resp</span>)]
+152:       <span class="ruby-keyword kw">else</span>
+153:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">params</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">!=</span> <span class="ruby-value">1</span> <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">params</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">===</span> <span class="ruby-constant">XMLRPC</span><span class="ruby-operator">::</span><span class="ruby-constant">FaultException</span> 
+154:           <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-value str">&quot;no valid fault-structure given&quot;</span>
+155:         <span class="ruby-keyword kw">end</span>
+156:         <span class="ruby-identifier">resp</span> = <span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">ele</span>(<span class="ruby-value str">&quot;fault&quot;</span>, <span class="ruby-identifier">conv2value</span>(<span class="ruby-identifier">params</span>[<span class="ruby-value">0</span>].<span class="ruby-identifier">to_h</span>))
+157:       <span class="ruby-keyword kw">end</span>
+158: 
+159:         
+160:       <span class="ruby-identifier">tree</span> = <span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">document</span>(
+161:                <span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">pi</span>(<span class="ruby-value str">&quot;xml&quot;</span>, <span class="ruby-value str">'version=&quot;1.0&quot;'</span>),
+162:                <span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">ele</span>(<span class="ruby-value str">&quot;methodResponse&quot;</span>, <span class="ruby-identifier">resp</span>) 
+163:              )
+164: 
+165:       <span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">document_to_str</span>(<span class="ruby-identifier">tree</span>) <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;\n&quot;</span>
+166:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Private methods</div>
+            
+            <div class="method">
+                <div class="title" id="M002779">
+                    
+                    <a name="M002779"></a><b>conv2value</b>(param)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+converts a Ruby object into a XML-RPC <value> tag
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002779_source')" id="l_M002779_source">show</a>
+                        
+                    </p>
+                    <div id="M002779_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/xmlrpc/create.rb, line 178</span>
+178:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">conv2value</span>(<span class="ruby-identifier">param</span>)
+179: 
+180:         <span class="ruby-identifier">val</span> = <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">param</span>
+181:         <span class="ruby-keyword kw">when</span> <span class="ruby-constant">Fixnum</span> 
+182:           <span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">tag</span>(<span class="ruby-value str">&quot;i4&quot;</span>, <span class="ruby-identifier">param</span>.<span class="ruby-identifier">to_s</span>)
+183: 
+184:         <span class="ruby-keyword kw">when</span> <span class="ruby-constant">Bignum</span>
+185:           <span class="ruby-keyword kw">if</span> <span class="ruby-constant">Config</span><span class="ruby-operator">::</span><span class="ruby-constant">ENABLE_BIGINT</span>
+186:             <span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">tag</span>(<span class="ruby-value str">&quot;i4&quot;</span>, <span class="ruby-identifier">param</span>.<span class="ruby-identifier">to_s</span>)
+187:           <span class="ruby-keyword kw">else</span>
+188:             <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">param</span> <span class="ruby-operator">&gt;=</span> <span class="ruby-operator">-</span>(<span class="ruby-value">2</span><span class="ruby-operator">**</span><span class="ruby-value">31</span>) <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">param</span> <span class="ruby-operator">&lt;=</span> (<span class="ruby-value">2</span><span class="ruby-operator">**</span><span class="ruby-value">31</span><span class="ruby-operator">-</span><span class="ruby-value">1</span>)
+189:               <span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">tag</span>(<span class="ruby-value str">&quot;i4&quot;</span>, <span class="ruby-identifier">param</span>.<span class="ruby-identifier">to_s</span>)
+190:             <span class="ruby-keyword kw">else</span>
+191:               <span class="ruby-identifier">raise</span> <span class="ruby-value str">&quot;Bignum is too big! Must be signed 32-bit integer!&quot;</span>
+192:             <span class="ruby-keyword kw">end</span>
+193:           <span class="ruby-keyword kw">end</span>
+194:         <span class="ruby-keyword kw">when</span> <span class="ruby-constant">TrueClass</span>, <span class="ruby-constant">FalseClass</span>
+195:           <span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">tag</span>(<span class="ruby-value str">&quot;boolean&quot;</span>, <span class="ruby-identifier">param</span> <span class="ruby-value">? </span><span class="ruby-value str">&quot;1&quot;</span> <span class="ruby-operator">:</span> <span class="ruby-value str">&quot;0&quot;</span>)
+196: 
+197:         <span class="ruby-keyword kw">when</span> <span class="ruby-constant">String</span> 
+198:           <span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">tag</span>(<span class="ruby-value str">&quot;string&quot;</span>, <span class="ruby-identifier">param</span>)
+199: 
+200:         <span class="ruby-keyword kw">when</span> <span class="ruby-constant">Symbol</span> 
+201:           <span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">tag</span>(<span class="ruby-value str">&quot;string&quot;</span>, <span class="ruby-identifier">param</span>.<span class="ruby-identifier">to_s</span>)
+202: 
+203:         <span class="ruby-keyword kw">when</span> <span class="ruby-constant">NilClass</span>
+204:           <span class="ruby-keyword kw">if</span> <span class="ruby-constant">Config</span><span class="ruby-operator">::</span><span class="ruby-constant">ENABLE_NIL_CREATE</span>
+205:             <span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">ele</span>(<span class="ruby-value str">&quot;nil&quot;</span>)
+206:           <span class="ruby-keyword kw">else</span>
+207:             <span class="ruby-identifier">raise</span> <span class="ruby-value str">&quot;Wrong type NilClass. Not allowed!&quot;</span>
+208:           <span class="ruby-keyword kw">end</span>
+209: 
+210:         <span class="ruby-keyword kw">when</span> <span class="ruby-constant">Float</span>
+211:           <span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">tag</span>(<span class="ruby-value str">&quot;double&quot;</span>, <span class="ruby-identifier">param</span>.<span class="ruby-identifier">to_s</span>)
+212: 
+213:         <span class="ruby-keyword kw">when</span> <span class="ruby-constant">Struct</span>
+214:           <span class="ruby-identifier">h</span> = <span class="ruby-identifier">param</span>.<span class="ruby-identifier">members</span>.<span class="ruby-identifier">collect</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">key</span><span class="ruby-operator">|</span> 
+215:             <span class="ruby-identifier">value</span> = <span class="ruby-identifier">param</span>[<span class="ruby-identifier">key</span>]
+216:             <span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">ele</span>(<span class="ruby-value str">&quot;member&quot;</span>, 
+217:               <span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">tag</span>(<span class="ruby-value str">&quot;name&quot;</span>, <span class="ruby-identifier">key</span>.<span class="ruby-identifier">to_s</span>),
+218:               <span class="ruby-identifier">conv2value</span>(<span class="ruby-identifier">value</span>) 
+219:             )
+220:           <span class="ruby-keyword kw">end</span>
+221: 
+222:           <span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">ele</span>(<span class="ruby-value str">&quot;struct&quot;</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">h</span>) 
+223: 
+224:         <span class="ruby-keyword kw">when</span> <span class="ruby-constant">Hash</span>
+225:           <span class="ruby-comment cmt"># TODO: can a Hash be empty?</span>
+226:           
+227:           <span class="ruby-identifier">h</span> = <span class="ruby-identifier">param</span>.<span class="ruby-identifier">collect</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">key</span>, <span class="ruby-identifier">value</span><span class="ruby-operator">|</span>
+228:             <span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">ele</span>(<span class="ruby-value str">&quot;member&quot;</span>, 
+229:               <span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">tag</span>(<span class="ruby-value str">&quot;name&quot;</span>, <span class="ruby-identifier">key</span>.<span class="ruby-identifier">to_s</span>),
+230:               <span class="ruby-identifier">conv2value</span>(<span class="ruby-identifier">value</span>) 
+231:             )
+232:           <span class="ruby-keyword kw">end</span>
+233: 
+234:           <span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">ele</span>(<span class="ruby-value str">&quot;struct&quot;</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">h</span>) 
+235: 
+236:         <span class="ruby-keyword kw">when</span> <span class="ruby-constant">Array</span>
+237:           <span class="ruby-comment cmt"># TODO: can an Array be empty?</span>
+238:           <span class="ruby-identifier">a</span> = <span class="ruby-identifier">param</span>.<span class="ruby-identifier">collect</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">v</span><span class="ruby-operator">|</span> <span class="ruby-identifier">conv2value</span>(<span class="ruby-identifier">v</span>) }
+239:           
+240:           <span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">ele</span>(<span class="ruby-value str">&quot;array&quot;</span>, 
+241:             <span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">ele</span>(<span class="ruby-value str">&quot;data&quot;</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">a</span>)
+242:           )
+243: 
+244:         <span class="ruby-keyword kw">when</span> <span class="ruby-constant">Time</span>, <span class="ruby-constant">Date</span>, <span class="ruby-operator">::</span><span class="ruby-constant">DateTime</span>
+245:           <span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">tag</span>(<span class="ruby-value str">&quot;dateTime.iso8601&quot;</span>, <span class="ruby-identifier">param</span>.<span class="ruby-identifier">strftime</span>(<span class="ruby-value str">&quot;%Y%m%dT%H:%M:%S&quot;</span>))  
+246: 
+247:         <span class="ruby-keyword kw">when</span> <span class="ruby-constant">XMLRPC</span><span class="ruby-operator">::</span><span class="ruby-constant">DateTime</span>
+248:           <span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">tag</span>(<span class="ruby-value str">&quot;dateTime.iso8601&quot;</span>, 
+249:             <span class="ruby-identifier">format</span>(<span class="ruby-value str">&quot;%.4d%02d%02dT%02d:%02d:%02d&quot;</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">param</span>.<span class="ruby-identifier">to_a</span>))
+250:    
+251:         <span class="ruby-keyword kw">when</span> <span class="ruby-constant">XMLRPC</span><span class="ruby-operator">::</span><span class="ruby-constant">Base64</span>
+252:           <span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">tag</span>(<span class="ruby-value str">&quot;base64&quot;</span>, <span class="ruby-identifier">param</span>.<span class="ruby-identifier">encoded</span>) 
+253: 
+254:         <span class="ruby-keyword kw">else</span> 
+255:           <span class="ruby-keyword kw">if</span> <span class="ruby-constant">Config</span><span class="ruby-operator">::</span><span class="ruby-constant">ENABLE_MARSHALLING</span> <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">param</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">included_modules</span>.<span class="ruby-identifier">include?</span> <span class="ruby-constant">XMLRPC</span><span class="ruby-operator">::</span><span class="ruby-constant">Marshallable</span>
+256:             <span class="ruby-comment cmt"># convert Ruby object into Hash</span>
+257:             <span class="ruby-identifier">ret</span> = {<span class="ruby-value str">&quot;___class___&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">param</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">name</span>}
+258:             <span class="ruby-identifier">param</span>.<span class="ruby-identifier">instance_variables</span>.<span class="ruby-identifier">each</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">v</span><span class="ruby-operator">|</span> 
+259:               <span class="ruby-identifier">name</span> = <span class="ruby-identifier">v</span>[<span class="ruby-value">1</span><span class="ruby-operator">..</span><span class="ruby-value">-1</span>]
+260:               <span class="ruby-identifier">val</span> = <span class="ruby-identifier">param</span>.<span class="ruby-identifier">instance_variable_get</span>(<span class="ruby-identifier">v</span>)
+261: 
+262:               <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">val</span>.<span class="ruby-identifier">nil?</span>
+263:                 <span class="ruby-identifier">ret</span>[<span class="ruby-identifier">name</span>] = <span class="ruby-identifier">val</span> <span class="ruby-keyword kw">if</span> <span class="ruby-constant">Config</span><span class="ruby-operator">::</span><span class="ruby-constant">ENABLE_NIL_CREATE</span>
+264:               <span class="ruby-keyword kw">else</span>
+265:                 <span class="ruby-identifier">ret</span>[<span class="ruby-identifier">name</span>] = <span class="ruby-identifier">val</span>
+266:               <span class="ruby-keyword kw">end</span>
+267:             }
+268:             <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">conv2value</span>(<span class="ruby-identifier">ret</span>)
+269:           <span class="ruby-keyword kw">else</span> 
+270:             <span class="ruby-identifier">ok</span>, <span class="ruby-identifier">pa</span> = <span class="ruby-identifier">wrong_type</span>(<span class="ruby-identifier">param</span>)
+271:             <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">ok</span>
+272:               <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">conv2value</span>(<span class="ruby-identifier">pa</span>)
+273:             <span class="ruby-keyword kw">else</span> 
+274:               <span class="ruby-identifier">raise</span> <span class="ruby-value str">&quot;Wrong type!&quot;</span>
+275:             <span class="ruby-keyword kw">end</span>
+276:           <span class="ruby-keyword kw">end</span>
+277:         <span class="ruby-keyword kw">end</span>
+278:          
+279:         <span class="ruby-ivar">@writer</span>.<span class="ruby-identifier">ele</span>(<span class="ruby-value str">&quot;value&quot;</span>, <span class="ruby-identifier">val</span>)
+280:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002780">
+                    
+                    <a name="M002780"></a><b>wrong_type</b>(value)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002780_source')" id="l_M002780_source">show</a>
+                        
+                    </p>
+                    <div id="M002780_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/xmlrpc/create.rb, line 282</span>
+282:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">wrong_type</span>(<span class="ruby-identifier">value</span>)
+283:       <span class="ruby-keyword kw">false</span>
+284:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

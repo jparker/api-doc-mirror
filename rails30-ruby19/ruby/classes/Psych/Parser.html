@@ -1,0 +1,523 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Psych::Parser</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            Psych::Parser 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../files/ext/psych/to_ruby_c.html">ext/psych/to_ruby.c</a></li>
+            
+            <li><a href="../../files/ext/psych/lib/psych/parser_rb.html">ext/psych/lib/psych/parser.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+<a href="../YAML.html">YAML</a> event parser class. This class parses a <a
+href="../YAML.html">YAML</a> document and calls events on the handler that
+is passed to the constructor. The events can be used for things such as
+constructing a <a href="../YAML.html">YAML</a> AST or deserializing <a
+href="../YAML.html">YAML</a> documents. It can even be fed back to <a
+href="Emitter.html">Psych::Emitter</a> to emit the same document that was
+parsed.
+</p>
+<p>
+See <a href="Handler.html">Psych::Handler</a> for documentation on the
+events that <a href="Parser.html">Psych::Parser</a> emits.
+</p>
+<p>
+Here is an example that prints out ever scalar found in a <a
+href="../YAML.html">YAML</a> document:
+</p>
+<pre>
+  # Handler for detecting scalar values
+  class ScalarHandler &lt; Psych::Handler
+    def scalar value, anchor, tag, plain, quoted, style
+      puts value
+    end
+  end
+
+  parser = Psych::Parser.new(ScalarHandler.new)
+  parser.parse(yaml_document)
+</pre>
+<p>
+Here is an example that feeds the parser back in to <a
+href="Emitter.html">Psych::Emitter</a>. The <a href="../YAML.html">YAML</a>
+document is read from STDIN and written back out to STDERR:
+</p>
+<pre>
+  parser = Psych::Parser.new(Psych::Emitter.new($stderr))
+  parser.parse($stdin)
+</pre>
+<p>
+<a href="../Psych.html">Psych</a> uses <a
+href="Parser.html">Psych::Parser</a> in combination with <a
+href="TreeBuilder.html">Psych::TreeBuilder</a> to construct an AST of the
+parsed <a href="../YAML.html">YAML</a> document.
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007665">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>P</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006926">parse</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">ANY</td>
+            <td>=</td>
+            <td class="attr-value">Any encoding</td>
+        </tr>
+        
+        <tr valign='top'>
+            <td>&nbsp;</td>
+            <td colspan="2" class="attr-desc"><p>
+Let the parser choose the encoding
+</p>
+</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">UTF8</td>
+            <td>=</td>
+            <td class="attr-value">INT2NUM(YAML_UTF8_ENCODING)</td>
+        </tr>
+        
+        <tr valign='top'>
+            <td>&nbsp;</td>
+            <td colspan="2" class="attr-desc"><p>
+UTF-8 <a href="../Encoding.html">Encoding</a>
+</p>
+</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">UTF16LE</td>
+            <td>=</td>
+            <td class="attr-value">INT2NUM(YAML_UTF16LE_ENCODING)</td>
+        </tr>
+        
+        <tr valign='top'>
+            <td>&nbsp;</td>
+            <td colspan="2" class="attr-desc"><p>
+UTF-16-LE <a href="../Encoding.html">Encoding</a> with BOM
+</p>
+</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">UTF16BE</td>
+            <td>=</td>
+            <td class="attr-value">INT2NUM(YAML_UTF16BE_ENCODING)</td>
+        </tr>
+        
+        <tr valign='top'>
+            <td>&nbsp;</td>
+            <td colspan="2" class="attr-desc"><p>
+UTF-16-BE <a href="../Encoding.html">Encoding</a> with BOM
+</p>
+</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+    <div class="sectiontitle">Attributes</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [RW]
+            </td>
+            <td class='attr-name'>handler</td>
+            <td class='attr-desc'><p>
+The handler on which events will be called
+</p></td>
+        </tr>
+        
+    </table>
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M007665">
+                    
+                    <a name="M007665"></a><b>new</b>(handler = Handler.new)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Creates a new <a href="Parser.html">Psych::Parser</a> instance with
+<tt>handler</tt>. <a href="../YAML.html">YAML</a> events will be called on
+<tt>handler</tt>. See <a href="Parser.html">Psych::Parser</a> for more
+details.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007665_source')" id="l_M007665_source">show</a>
+                        
+                    </p>
+                    <div id="M007665_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File ext/psych/lib/psych/parser.rb, line 40</span>
+40:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span> <span class="ruby-identifier">handler</span> = <span class="ruby-constant">Handler</span>.<span class="ruby-identifier">new</span>
+41:       <span class="ruby-ivar">@handler</span> = <span class="ruby-identifier">handler</span>
+42:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M006926">
+                    
+                    <a name="M006926"></a><b>parser.parse(yaml)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Parse the <a href="../YAML.html">YAML</a> document contained in
+<tt>yaml</tt>. Events will be called on the handler set on the parser
+instance.
+</p>
+<p>
+See <a href="Parser.html">Psych::Parser</a> and <a
+href="Parser.html#handler">Psych::Parser#handler</a>
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006926_source')" id="l_M006926_source">show</a>
+                        
+                    </p>
+                    <div id="M006926_source" class="dyn-source">
+                        <pre>static VALUE parse(VALUE self, VALUE yaml)
+{
+    yaml_parser_t parser;
+    yaml_event_t event;
+    int done = 0;
+#ifdef HAVE_RUBY_ENCODING_H
+    int encoding = rb_enc_find_index(&quot;ASCII-8BIT&quot;);
+    rb_encoding * internal_enc;
+#endif
+    VALUE handler = rb_iv_get(self, &quot;@handler&quot;);
+
+
+    yaml_parser_initialize(&amp;parser);
+
+    if(rb_respond_to(yaml, id_read)) {
+        yaml_parser_set_input(&amp;parser, io_reader, (void *)yaml);
+    } else {
+        StringValue(yaml);
+        yaml_parser_set_input_string(
+                &amp;parser,
+                (const unsigned char *)RSTRING_PTR(yaml),
+                (size_t)RSTRING_LEN(yaml)
+                );
+    }
+
+    while(!done) {
+        if(!yaml_parser_parse(&amp;parser, &amp;event)) {
+            size_t line   = parser.mark.line;
+            size_t column = parser.mark.column;
+
+            yaml_parser_delete(&amp;parser);
+            rb_raise(ePsychSyntaxError, &quot;couldn't parse YAML at line %d column %d&quot;,
+                    (int)line, (int)column);
+        }
+
+        switch(event.type) {
+          case YAML_STREAM_START_EVENT:
+
+#ifdef HAVE_RUBY_ENCODING_H
+            switch(event.data.stream_start.encoding) {
+              case YAML_ANY_ENCODING:
+                break;
+              case YAML_UTF8_ENCODING:
+                encoding = rb_enc_find_index(&quot;UTF-8&quot;);
+                break;
+              case YAML_UTF16LE_ENCODING:
+                encoding = rb_enc_find_index(&quot;UTF-16LE&quot;);
+                break;
+              case YAML_UTF16BE_ENCODING:
+                encoding = rb_enc_find_index(&quot;UTF-16BE&quot;);
+                break;
+              default:
+                break;
+            }
+            internal_enc = rb_default_internal_encoding();
+#endif
+
+            rb_funcall(handler, id_start_stream, 1,
+                       INT2NUM((long)event.data.stream_start.encoding)
+                );
+            break;
+          case YAML_DOCUMENT_START_EVENT:
+            {
+                /* Get a list of tag directives (if any) */
+                VALUE tag_directives = rb_ary_new();
+                /* Grab the document version */
+                VALUE version = event.data.document_start.version_directive ?
+                    rb_ary_new3(
+                        (long)2,
+                        INT2NUM((long)event.data.document_start.version_directive-&gt;major),
+                        INT2NUM((long)event.data.document_start.version_directive-&gt;minor)
+                        ) : rb_ary_new();
+
+                if(event.data.document_start.tag_directives.start) {
+                    yaml_tag_directive_t *start =
+                        event.data.document_start.tag_directives.start;
+                    yaml_tag_directive_t *end =
+                        event.data.document_start.tag_directives.end;
+                    for(; start != end; start++) {
+                        VALUE handle = Qnil;
+                        VALUE prefix = Qnil;
+                        if(start-&gt;handle) {
+                            handle = rb_str_new2((const char *)start-&gt;handle);
+#ifdef HAVE_RUBY_ENCODING_H
+                            PSYCH_TRANSCODE(handle, encoding, internal_enc);
+#endif
+                        }
+
+                        if(start-&gt;prefix) {
+                            prefix = rb_str_new2((const char *)start-&gt;prefix);
+#ifdef HAVE_RUBY_ENCODING_H
+                            PSYCH_TRANSCODE(prefix, encoding, internal_enc);
+#endif
+                        }
+
+                        rb_ary_push(tag_directives, rb_ary_new3((long)2, handle, prefix));
+                    }
+                }
+                rb_funcall(handler, id_start_document, 3,
+                           version, tag_directives,
+                           event.data.document_start.implicit == 1 ? Qtrue : Qfalse
+                    );
+            }
+            break;
+          case YAML_DOCUMENT_END_EVENT:
+            rb_funcall(handler, id_end_document, 1,
+                       event.data.document_end.implicit == 1 ? Qtrue : Qfalse
+                );
+            break;
+          case YAML_ALIAS_EVENT:
+            {
+                VALUE alias = Qnil;
+                if(event.data.alias.anchor) {
+                    alias = rb_str_new2((const char *)event.data.alias.anchor);
+#ifdef HAVE_RUBY_ENCODING_H
+                    PSYCH_TRANSCODE(alias, encoding, internal_enc);
+#endif
+                }
+
+                rb_funcall(handler, id_alias, 1, alias);
+            }
+            break;
+          case YAML_SCALAR_EVENT:
+            {
+                VALUE anchor = Qnil;
+                VALUE tag = Qnil;
+                VALUE plain_implicit, quoted_implicit, style;
+                VALUE val = rb_str_new(
+                    (const char *)event.data.scalar.value,
+                    (long)event.data.scalar.length
+                    );
+
+#ifdef HAVE_RUBY_ENCODING_H
+                PSYCH_TRANSCODE(val, encoding, internal_enc);
+#endif
+
+                if(event.data.scalar.anchor) {
+                    anchor = rb_str_new2((const char *)event.data.scalar.anchor);
+#ifdef HAVE_RUBY_ENCODING_H
+                    PSYCH_TRANSCODE(anchor, encoding, internal_enc);
+#endif
+                }
+
+                if(event.data.scalar.tag) {
+                    tag = rb_str_new2((const char *)event.data.scalar.tag);
+#ifdef HAVE_RUBY_ENCODING_H
+                    PSYCH_TRANSCODE(tag, encoding, internal_enc);
+#endif
+                }
+
+                plain_implicit =
+                    event.data.scalar.plain_implicit == 0 ? Qfalse : Qtrue;
+
+                quoted_implicit =
+                    event.data.scalar.quoted_implicit == 0 ? Qfalse : Qtrue;
+
+                style = INT2NUM((long)event.data.scalar.style);
+
+                rb_funcall(handler, id_scalar, 6,
+                           val, anchor, tag, plain_implicit, quoted_implicit, style);
+            }
+            break;
+          case YAML_SEQUENCE_START_EVENT:
+            {
+                VALUE anchor = Qnil;
+                VALUE tag = Qnil;
+                VALUE implicit, style;
+                if(event.data.sequence_start.anchor) {
+                    anchor = rb_str_new2((const char *)event.data.sequence_start.anchor);
+#ifdef HAVE_RUBY_ENCODING_H
+                    PSYCH_TRANSCODE(anchor, encoding, internal_enc);
+#endif
+                }
+
+                tag = Qnil;
+                if(event.data.sequence_start.tag) {
+                    tag = rb_str_new2((const char *)event.data.sequence_start.tag);
+#ifdef HAVE_RUBY_ENCODING_H
+                    PSYCH_TRANSCODE(tag, encoding, internal_enc);
+#endif
+                }
+
+                implicit =
+                    event.data.sequence_start.implicit == 0 ? Qfalse : Qtrue;
+
+                style = INT2NUM((long)event.data.sequence_start.style);
+
+                rb_funcall(handler, id_start_sequence, 4,
+                           anchor, tag, implicit, style);
+            }
+            break;
+          case YAML_SEQUENCE_END_EVENT:
+            rb_funcall(handler, id_end_sequence, 0);
+            break;
+          case YAML_MAPPING_START_EVENT:
+            {
+                VALUE anchor = Qnil;
+                VALUE tag = Qnil;
+                VALUE implicit, style;
+                if(event.data.mapping_start.anchor) {
+                    anchor = rb_str_new2((const char *)event.data.mapping_start.anchor);
+#ifdef HAVE_RUBY_ENCODING_H
+                    PSYCH_TRANSCODE(anchor, encoding, internal_enc);
+#endif
+                }
+
+                if(event.data.mapping_start.tag) {
+                    tag = rb_str_new2((const char *)event.data.mapping_start.tag);
+#ifdef HAVE_RUBY_ENCODING_H
+                    PSYCH_TRANSCODE(tag, encoding, internal_enc);
+#endif
+                }
+
+                implicit =
+                    event.data.mapping_start.implicit == 0 ? Qfalse : Qtrue;
+
+                style = INT2NUM((long)event.data.mapping_start.style);
+
+                rb_funcall(handler, id_start_mapping, 4,
+                           anchor, tag, implicit, style);
+            }
+            break;
+          case YAML_MAPPING_END_EVENT:
+            rb_funcall(handler, id_end_mapping, 0);
+            break;
+          case YAML_NO_EVENT:
+            rb_funcall(handler, id_empty, 0);
+            break;
+          case YAML_STREAM_END_EVENT:
+            rb_funcall(handler, id_end_stream, 0);
+            done = 1;
+            break;
+        }
+    }
+
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

@@ -1,0 +1,340 @@
+  <div id="C00000194">
+<div class='banner'>
+  <span class="file-title-prefix">Class</span><br />Dispatcher<br/>
+  In:
+<a href="#" onclick="jsHref('files/actionpack/lib/action_controller/dispatcher_rb.html');">actionpack/lib/action_controller/dispatcher.rb</a>
+
+Parent:&nbsp;
+        <a href="#" onclick="jsHref('classes/Object.html');">
+Object
+         </a>
+</div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+      <div id="content">
+
+  <div class="description"><p>
+Dispatches requests to the appropriate controller and takes care of
+reloading the app after each request when Dependencies.load? is true.
+</p>
+</div>
+
+
+
+  <div class="sectiontitle">Methods</div>
+  <ul>
+  <li><a href="index.html?a=M000462&name=cleanup_application" >cleanup_application</a></li>
+  <li><a href="index.html?a=M000454&name=define_dispatcher_callbacks" >define_dispatcher_callbacks</a></li>
+  <li><a href="index.html?a=M000455&name=dispatch" >dispatch</a></li>
+  <li><a href="index.html?a=M000459&name=dispatch" >dispatch</a></li>
+  <li><a href="index.html?a=M000460&name=dispatch_cgi" >dispatch_cgi</a></li>
+  <li><a href="index.html?a=M000465&name=failsafe_rescue" >failsafe_rescue</a></li>
+  <li><a href="index.html?a=M000457&name=failsafe_response" >failsafe_response</a></li>
+  <li><a href="index.html?a=M000463&name=flush_logger" >flush_logger</a></li>
+  <li><a href="index.html?a=M000464&name=handle_request" >handle_request</a></li>
+  <li><a href="index.html?a=M000458&name=new" >new</a></li>
+  <li><a href="index.html?a=M000461&name=reload_application" >reload_application</a></li>
+  <li><a href="index.html?a=M000456&name=to_prepare" >to_prepare</a></li>
+  </ul>
+
+<div class="sectiontitle">Included Modules</div>
+<ul>
+  <li><a href="#" onclick="jsHref('classes/ActiveSupport/Callbacks.html');">ActiveSupport::Callbacks</a></li>
+</ul>
+
+
+
+
+
+<div class="sectiontitle">Public Class methods</div>
+<div id="M000454" class="method">
+  <div id="M000454_title" class="title">
+    <b>define_dispatcher_callbacks</b>(cache_classes)
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000454_source')" id="l_M000454_source">show source</a> ]</p>
+  <div id="M000454_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File actionpack/lib/action_controller/dispatcher.rb, line 8</span>
+ 8:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">define_dispatcher_callbacks</span>(<span class="ruby-identifier">cache_classes</span>)
+ 9:         <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">cache_classes</span>
+10:           <span class="ruby-comment cmt"># Development mode callbacks</span>
+11:           <span class="ruby-identifier">before_dispatch</span> <span class="ruby-identifier">:reload_application</span>
+12:           <span class="ruby-identifier">after_dispatch</span> <span class="ruby-identifier">:cleanup_application</span>
+13:         <span class="ruby-keyword kw">end</span>
+14: 
+15:         <span class="ruby-comment cmt"># Common callbacks</span>
+16:         <span class="ruby-identifier">to_prepare</span> <span class="ruby-identifier">:load_application_controller</span> <span class="ruby-keyword kw">do</span>
+17:           <span class="ruby-keyword kw">begin</span>
+18:             <span class="ruby-identifier">require_dependency</span> <span class="ruby-value str">'application'</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-keyword kw">defined?</span>(<span class="ruby-operator">::</span><span class="ruby-constant">ApplicationController</span>)
+19:           <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">LoadError</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">error</span>
+20:             <span class="ruby-identifier">raise</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">error</span>.<span class="ruby-identifier">message</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/application\.rb/</span>
+21:           <span class="ruby-keyword kw">end</span>
+22:         <span class="ruby-keyword kw">end</span>
+23: 
+24:         <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">defined?</span>(<span class="ruby-constant">ActiveRecord</span>)
+25:           <span class="ruby-identifier">before_dispatch</span> { <span class="ruby-constant">ActiveRecord</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">verify_active_connections!</span> }
+26:           <span class="ruby-identifier">to_prepare</span>(<span class="ruby-identifier">:activerecord_instantiate_observers</span>) { <span class="ruby-constant">ActiveRecord</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">instantiate_observers</span> }
+27:         <span class="ruby-keyword kw">end</span>
+28: 
+29:         <span class="ruby-identifier">after_dispatch</span> <span class="ruby-identifier">:flush_logger</span> <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">defined?</span>(<span class="ruby-constant">RAILS_DEFAULT_LOGGER</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-constant">RAILS_DEFAULT_LOGGER</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">:flush</span>)
+30:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000455" class="method">
+  <div id="M000455_title" class="title">
+    <b>dispatch</b>(cgi = nil, session_options = CgiRequest::DEFAULT_SESSION_OPTIONS, output = $stdout)
+  </div>
+  <div class="description">
+  <p>
+Backward-compatible class method takes CGI-specific args. Deprecated in
+favor of <a
+href="index.html?a=M000458&name=Dispatcher.new">Dispatcher.new</a>(output,
+request, response).dispatch.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000455_source')" id="l_M000455_source">show source</a> ]</p>
+  <div id="M000455_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File actionpack/lib/action_controller/dispatcher.rb, line 34</span>
+34:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">dispatch</span>(<span class="ruby-identifier">cgi</span> = <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">session_options</span> = <span class="ruby-constant">CgiRequest</span><span class="ruby-operator">::</span><span class="ruby-constant">DEFAULT_SESSION_OPTIONS</span>, <span class="ruby-identifier">output</span> = <span class="ruby-identifier">$stdout</span>)
+35:         <span class="ruby-identifier">new</span>(<span class="ruby-identifier">output</span>).<span class="ruby-identifier">dispatch_cgi</span>(<span class="ruby-identifier">cgi</span>, <span class="ruby-identifier">session_options</span>)
+36:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000457" class="method">
+  <div id="M000457_title" class="title">
+    <b>failsafe_response</b>(fallback_output, status, originating_exception = nil) {|| ...}
+  </div>
+  <div class="description">
+  <p>
+If the block raises, send status code as a last-ditch response.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000457_source')" id="l_M000457_source">show source</a> ]</p>
+  <div id="M000457_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File actionpack/lib/action_controller/dispatcher.rb, line 53</span>
+53:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">failsafe_response</span>(<span class="ruby-identifier">fallback_output</span>, <span class="ruby-identifier">status</span>, <span class="ruby-identifier">originating_exception</span> = <span class="ruby-keyword kw">nil</span>)
+54:         <span class="ruby-keyword kw">yield</span>
+55:       <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Exception</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">exception</span>
+56:         <span class="ruby-keyword kw">begin</span>
+57:           <span class="ruby-identifier">log_failsafe_exception</span>(<span class="ruby-identifier">status</span>, <span class="ruby-identifier">originating_exception</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">exception</span>)
+58:           <span class="ruby-identifier">body</span> = <span class="ruby-identifier">failsafe_response_body</span>(<span class="ruby-identifier">status</span>)
+59:           <span class="ruby-identifier">fallback_output</span>.<span class="ruby-identifier">write</span> <span class="ruby-node">&quot;Status: #{status}\r\nContent-Type: text/html\r\n\r\n#{body}&quot;</span>
+60:           <span class="ruby-keyword kw">nil</span>
+61:         <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Exception</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">failsafe_error</span> <span class="ruby-comment cmt"># Logger or IO errors</span>
+62:           <span class="ruby-identifier">$stderr</span>.<span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;Error during failsafe response: #{failsafe_error}&quot;</span>
+63:           <span class="ruby-identifier">$stderr</span>.<span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;(originally #{originating_exception})&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">originating_exception</span>
+64:         <span class="ruby-keyword kw">end</span>
+65:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000458" class="method">
+  <div id="M000458_title" class="title">
+    <b>new</b>(output, request = nil, response = nil)
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000458_source')" id="l_M000458_source">show source</a> ]</p>
+  <div id="M000458_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File actionpack/lib/action_controller/dispatcher.rb, line 99</span>
+ 99:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">output</span>, <span class="ruby-identifier">request</span> = <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">response</span> = <span class="ruby-keyword kw">nil</span>)
+100:       <span class="ruby-ivar">@output</span>, <span class="ruby-ivar">@request</span>, <span class="ruby-ivar">@response</span> = <span class="ruby-identifier">output</span>, <span class="ruby-identifier">request</span>, <span class="ruby-identifier">response</span>
+101:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000456" class="method">
+  <div id="M000456_title" class="title">
+    <b>to_prepare</b>(identifier = nil, &amp;block)
+  </div>
+  <div class="description">
+  <p>
+Add a preparation callback. Preparation callbacks are run before every
+request in development mode, and before the first request in production
+mode.
+</p>
+<p>
+An optional identifier may be supplied for the callback. If provided, <a
+href="index.html?a=M000456&name=to_prepare">to_prepare</a> may be called
+again with the same identifier to replace the existing callback. Passing an
+identifier is a suggested practice if the code adding a preparation block
+may be reloaded.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000456_source')" id="l_M000456_source">show source</a> ]</p>
+  <div id="M000456_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File actionpack/lib/action_controller/dispatcher.rb, line 46</span>
+46:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">to_prepare</span>(<span class="ruby-identifier">identifier</span> = <span class="ruby-keyword kw">nil</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+47:         <span class="ruby-ivar">@prepare_dispatch_callbacks</span> <span class="ruby-operator">||=</span> <span class="ruby-constant">ActiveSupport</span><span class="ruby-operator">::</span><span class="ruby-constant">Callbacks</span><span class="ruby-operator">::</span><span class="ruby-constant">CallbackChain</span>.<span class="ruby-identifier">new</span>
+48:         <span class="ruby-identifier">callback</span> = <span class="ruby-constant">ActiveSupport</span><span class="ruby-operator">::</span><span class="ruby-constant">Callbacks</span><span class="ruby-operator">::</span><span class="ruby-constant">Callback</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">:prepare_dispatch</span>, <span class="ruby-identifier">block</span>, <span class="ruby-identifier">:identifier</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">identifier</span>)
+49:         <span class="ruby-ivar">@prepare_dispatch_callbacks</span> <span class="ruby-operator">|</span> <span class="ruby-identifier">callback</span>
+50:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div class="sectiontitle">Public Instance methods</div>
+<div id="M000462" class="method">
+  <div id="M000462_title" class="title">
+    <b>cleanup_application</b>()
+  </div>
+  <div class="description">
+  <p>
+Cleanup the application by clearing out loaded classes so they can be
+reloaded on the next request without restarting the server.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000462_source')" id="l_M000462_source">show source</a> ]</p>
+  <div id="M000462_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File actionpack/lib/action_controller/dispatcher.rb, line 136</span>
+136:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">cleanup_application</span>
+137:       <span class="ruby-constant">ActiveRecord</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">reset_subclasses</span> <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">defined?</span>(<span class="ruby-constant">ActiveRecord</span>)
+138:       <span class="ruby-constant">ActiveSupport</span><span class="ruby-operator">::</span><span class="ruby-constant">Dependencies</span>.<span class="ruby-identifier">clear</span>
+139:       <span class="ruby-constant">ActiveRecord</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">clear_reloadable_connections!</span> <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">defined?</span>(<span class="ruby-constant">ActiveRecord</span>)
+140:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000459" class="method">
+  <div id="M000459_title" class="title">
+    <b>dispatch</b>()
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000459_source')" id="l_M000459_source">show source</a> ]</p>
+  <div id="M000459_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File actionpack/lib/action_controller/dispatcher.rb, line 103</span>
+103:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">dispatch</span>
+104:       <span class="ruby-ivar">@@guard</span>.<span class="ruby-identifier">synchronize</span> <span class="ruby-keyword kw">do</span>
+105:         <span class="ruby-keyword kw">begin</span>
+106:           <span class="ruby-identifier">run_callbacks</span> <span class="ruby-identifier">:before_dispatch</span>
+107:           <span class="ruby-identifier">handle_request</span>
+108:         <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Exception</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">exception</span>
+109:           <span class="ruby-identifier">failsafe_rescue</span> <span class="ruby-identifier">exception</span>
+110:         <span class="ruby-keyword kw">ensure</span>
+111:           <span class="ruby-identifier">run_callbacks</span> <span class="ruby-identifier">:after_dispatch</span>, <span class="ruby-identifier">:enumerator</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">:reverse_each</span>
+112:         <span class="ruby-keyword kw">end</span>
+113:       <span class="ruby-keyword kw">end</span>
+114:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000460" class="method">
+  <div id="M000460_title" class="title">
+    <b>dispatch_cgi</b>(cgi, session_options)
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000460_source')" id="l_M000460_source">show source</a> ]</p>
+  <div id="M000460_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File actionpack/lib/action_controller/dispatcher.rb, line 116</span>
+116:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">dispatch_cgi</span>(<span class="ruby-identifier">cgi</span>, <span class="ruby-identifier">session_options</span>)
+117:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">cgi</span> <span class="ruby-operator">||=</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">failsafe_response</span>(<span class="ruby-ivar">@output</span>, <span class="ruby-value str">'400 Bad Request'</span>) { <span class="ruby-constant">CGI</span>.<span class="ruby-identifier">new</span> }
+118:         <span class="ruby-ivar">@request</span> = <span class="ruby-constant">CgiRequest</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">cgi</span>, <span class="ruby-identifier">session_options</span>)
+119:         <span class="ruby-ivar">@response</span> = <span class="ruby-constant">CgiResponse</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">cgi</span>)
+120:         <span class="ruby-identifier">dispatch</span>
+121:       <span class="ruby-keyword kw">end</span>
+122:     <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Exception</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">exception</span>
+123:       <span class="ruby-identifier">failsafe_rescue</span> <span class="ruby-identifier">exception</span>
+124:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000463" class="method">
+  <div id="M000463_title" class="title">
+    <b>flush_logger</b>()
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000463_source')" id="l_M000463_source">show source</a> ]</p>
+  <div id="M000463_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File actionpack/lib/action_controller/dispatcher.rb, line 142</span>
+142:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">flush_logger</span>
+143:       <span class="ruby-constant">RAILS_DEFAULT_LOGGER</span>.<span class="ruby-identifier">flush</span>
+144:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000461" class="method">
+  <div id="M000461_title" class="title">
+    <b>reload_application</b>()
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000461_source')" id="l_M000461_source">show source</a> ]</p>
+  <div id="M000461_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File actionpack/lib/action_controller/dispatcher.rb, line 126</span>
+126:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">reload_application</span>
+127:       <span class="ruby-comment cmt"># Run prepare callbacks before every request in development mode</span>
+128:       <span class="ruby-identifier">run_callbacks</span> <span class="ruby-identifier">:prepare_dispatch</span>
+129: 
+130:       <span class="ruby-constant">Routing</span><span class="ruby-operator">::</span><span class="ruby-constant">Routes</span>.<span class="ruby-identifier">reload</span>
+131:       <span class="ruby-constant">ActionView</span><span class="ruby-operator">::</span><span class="ruby-constant">TemplateFinder</span>.<span class="ruby-identifier">reload!</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-constant">ActionView</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">cache_template_loading</span>
+132:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div class="sectiontitle">Protected Instance methods</div>
+<div id="M000465" class="method">
+  <div id="M000465_title" class="title">
+    <b>failsafe_rescue</b>(exception)
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000465_source')" id="l_M000465_source">show source</a> ]</p>
+  <div id="M000465_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File actionpack/lib/action_controller/dispatcher.rb, line 152</span>
+152:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">failsafe_rescue</span>(<span class="ruby-identifier">exception</span>)
+153:         <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">failsafe_response</span>(<span class="ruby-ivar">@output</span>, <span class="ruby-value str">'500 Internal Server Error'</span>, <span class="ruby-identifier">exception</span>) <span class="ruby-keyword kw">do</span>
+154:           <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@controller</span> <span class="ruby-operator">||=</span> <span class="ruby-keyword kw">defined?</span>(<span class="ruby-operator">::</span><span class="ruby-constant">ApplicationController</span>) <span class="ruby-operator">?</span> <span class="ruby-operator">::</span><span class="ruby-constant">ApplicationController</span> <span class="ruby-operator">:</span> <span class="ruby-constant">Base</span>
+155:             <span class="ruby-ivar">@controller</span>.<span class="ruby-identifier">process_with_exception</span>(<span class="ruby-ivar">@request</span>, <span class="ruby-ivar">@response</span>, <span class="ruby-identifier">exception</span>).<span class="ruby-identifier">out</span>(<span class="ruby-ivar">@output</span>)
+156:           <span class="ruby-keyword kw">else</span>
+157:             <span class="ruby-identifier">raise</span> <span class="ruby-identifier">exception</span>
+158:           <span class="ruby-keyword kw">end</span>
+159:         <span class="ruby-keyword kw">end</span>
+160:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000464" class="method">
+  <div id="M000464_title" class="title">
+    <b>handle_request</b>()
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000464_source')" id="l_M000464_source">show source</a> ]</p>
+  <div id="M000464_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File actionpack/lib/action_controller/dispatcher.rb, line 147</span>
+147:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">handle_request</span>
+148:         <span class="ruby-ivar">@controller</span> = <span class="ruby-constant">Routing</span><span class="ruby-operator">::</span><span class="ruby-constant">Routes</span>.<span class="ruby-identifier">recognize</span>(<span class="ruby-ivar">@request</span>)
+149:         <span class="ruby-ivar">@controller</span>.<span class="ruby-identifier">process</span>(<span class="ruby-ivar">@request</span>, <span class="ruby-ivar">@response</span>).<span class="ruby-identifier">out</span>(<span class="ruby-ivar">@output</span>)
+150:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+</div>
+
+  </div>

@@ -1,0 +1,311 @@
+  <div id="fileHeader">
+    <h1>calculations.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activerecord/lib/active_record/calculations.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>module ActiveRecord
+  module Calculations #:nodoc:
+    CALCULATIONS_OPTIONS = [:conditions, :joins, :order, :select, :group, :having, :distinct, :limit, :offset, :include, :from]
+    def self.included(base)
+      base.extend(ClassMethods)
+    end
+
+    module ClassMethods
+      # Count operates using three different approaches.
+      #
+      # * Count all: By not passing any parameters to count, it will return a count of all the rows for the model.
+      # * Count using column: By passing a column name to count, it will return a count of all the rows for the model with supplied column present
+      # * Count using options will find the row count matched by the options used.
+      #
+      # The third approach, count using options, accepts an option hash as the only parameter. The options are:
+      #
+      # * &lt;tt&gt;:conditions&lt;/tt&gt;: An SQL fragment like &quot;administrator = 1&quot; or [ &quot;user_name = ?&quot;, username ]. See conditions in the intro.
+      # * &lt;tt&gt;:joins&lt;/tt&gt;: Either an SQL fragment for additional joins like &quot;LEFT JOIN comments ON comments.post_id = id&quot; (rarely needed)
+      #   or named associations in the same form used for the &lt;tt&gt;:include&lt;/tt&gt; option, which will perform an INNER JOIN on the associated table(s).
+      #   If the value is a string, then the records will be returned read-only since they will have attributes that do not correspond to the table's columns.
+      #   Pass &lt;tt&gt;:readonly =&gt; false&lt;/tt&gt; to override.
+      # * &lt;tt&gt;:include&lt;/tt&gt;: Named associations that should be loaded alongside using LEFT OUTER JOINs. The symbols named refer
+      #   to already defined associations. When using named associations, count returns the number of DISTINCT items for the model you're counting.
+      #   See eager loading under Associations.
+      # * &lt;tt&gt;:order&lt;/tt&gt;: An SQL fragment like &quot;created_at DESC, name&quot; (really only used with GROUP BY calculations).
+      # * &lt;tt&gt;:group&lt;/tt&gt;: An attribute name by which the result should be grouped. Uses the GROUP BY SQL-clause.
+      # * &lt;tt&gt;:select&lt;/tt&gt;: By default, this is * as in SELECT * FROM, but can be changed if you, for example, want to do a join but not
+      #   include the joined columns.
+      # * &lt;tt&gt;:distinct&lt;/tt&gt;: Set this to true to make this a distinct calculation, such as SELECT COUNT(DISTINCT posts.id) ...
+      # * &lt;tt&gt;:from&lt;/tt&gt; - By default, this is the table name of the class, but can be changed to an alternate table name (or even the name
+      #   of a database view).
+      #
+      # Examples for counting all:
+      #   Person.count         # returns the total count of all people
+      #
+      # Examples for counting by column:
+      #   Person.count(:age)  # returns the total count of all people whose age is present in database
+      #
+      # Examples for count with options:
+      #   Person.count(:conditions =&gt; &quot;age &gt; 26&quot;)
+      #   Person.count(:conditions =&gt; &quot;age &gt; 26 AND job.salary &gt; 60000&quot;, :include =&gt; :job) # because of the named association, it finds the DISTINCT count using LEFT OUTER JOIN.
+      #   Person.count(:conditions =&gt; &quot;age &gt; 26 AND job.salary &gt; 60000&quot;, :joins =&gt; &quot;LEFT JOIN jobs on jobs.person_id = person.id&quot;) # finds the number of rows matching the conditions and joins.
+      #   Person.count('id', :conditions =&gt; &quot;age &gt; 26&quot;) # Performs a COUNT(id)
+      #   Person.count(:all, :conditions =&gt; &quot;age &gt; 26&quot;) # Performs a COUNT(*) (:all is an alias for '*')
+      #
+      # Note: &lt;tt&gt;Person.count(:all)&lt;/tt&gt; will not work because it will use &lt;tt&gt;:all&lt;/tt&gt; as the condition.  Use Person.count instead.
+      def count(*args)
+        calculate(:count, *construct_count_options_from_args(*args))
+      end
+
+      # Calculates the average value on a given column.  The value is returned as a float.  See +calculate+ for examples with options.
+      #
+      #   Person.average('age')
+      def average(column_name, options = {})
+        calculate(:avg, column_name, options)
+      end
+
+      # Calculates the minimum value on a given column.  The value is returned with the same data type of the column.  See +calculate+ for examples with options.
+      #
+      #   Person.minimum('age')
+      def minimum(column_name, options = {})
+        calculate(:min, column_name, options)
+      end
+
+      # Calculates the maximum value on a given column.  The value is returned with the same data type of the column.  See +calculate+ for examples with options.
+      #
+      #   Person.maximum('age')
+      def maximum(column_name, options = {})
+        calculate(:max, column_name, options)
+      end
+
+      # Calculates the sum of values on a given column.  The value is returned with the same data type of the column.  See +calculate+ for examples with options.
+      #
+      #   Person.sum('age')
+      def sum(column_name, options = {})
+        calculate(:sum, column_name, options)
+      end
+
+      # This calculates aggregate values in the given column.  Methods for count, sum, average, minimum, and maximum have been added as shortcuts.
+      # Options such as &lt;tt&gt;:conditions&lt;/tt&gt;, &lt;tt&gt;:order&lt;/tt&gt;, &lt;tt&gt;:group&lt;/tt&gt;, &lt;tt&gt;:having&lt;/tt&gt;, and &lt;tt&gt;:joins&lt;/tt&gt; can be passed to customize the query.
+      #
+      # There are two basic forms of output:
+      #   * Single aggregate value: The single value is type cast to Fixnum for COUNT, Float for AVG, and the given column's type for everything else.
+      #   * Grouped values: This returns an ordered hash of the values and groups them by the &lt;tt&gt;:group&lt;/tt&gt; option.  It takes either a column name, or the name
+      #     of a belongs_to association.
+      #
+      #       values = Person.maximum(:age, :group =&gt; 'last_name')
+      #       puts values[&quot;Drake&quot;]
+      #       =&gt; 43
+      #
+      #       drake  = Family.find_by_last_name('Drake')
+      #       values = Person.maximum(:age, :group =&gt; :family) # Person belongs_to :family
+      #       puts values[drake]
+      #       =&gt; 43
+      #
+      #       values.each do |family, max_age|
+      #       ...
+      #       end
+      #
+      # Options:
+      # * &lt;tt&gt;:conditions&lt;/tt&gt; - An SQL fragment like &quot;administrator = 1&quot; or [ &quot;user_name = ?&quot;, username ]. See conditions in the intro.
+      # * &lt;tt&gt;:include&lt;/tt&gt;: Eager loading, see Associations for details.  Since calculations don't load anything, the purpose of this is to access fields on joined tables in your conditions, order, or group clauses.
+      # * &lt;tt&gt;:joins&lt;/tt&gt; - An SQL fragment for additional joins like &quot;LEFT JOIN comments ON comments.post_id = id&quot;. (Rarely needed).
+      #   The records will be returned read-only since they will have attributes that do not correspond to the table's columns.
+      # * &lt;tt&gt;:order&lt;/tt&gt; - An SQL fragment like &quot;created_at DESC, name&quot; (really only used with GROUP BY calculations).
+      # * &lt;tt&gt;:group&lt;/tt&gt; - An attribute name by which the result should be grouped. Uses the GROUP BY SQL-clause.
+      # * &lt;tt&gt;:select&lt;/tt&gt; - By default, this is * as in SELECT * FROM, but can be changed if you for example want to do a join, but not
+      #   include the joined columns.
+      # * &lt;tt&gt;:distinct&lt;/tt&gt; - Set this to true to make this a distinct calculation, such as SELECT COUNT(DISTINCT posts.id) ...
+      #
+      # Examples:
+      #   Person.calculate(:count, :all) # The same as Person.count
+      #   Person.average(:age) # SELECT AVG(age) FROM people...
+      #   Person.minimum(:age, :conditions =&gt; ['last_name != ?', 'Drake']) # Selects the minimum age for everyone with a last name other than 'Drake'
+      #   Person.minimum(:age, :having =&gt; 'min(age) &gt; 17', :group =&gt; :last_name) # Selects the minimum age for any family without any minors
+      #   Person.sum(&quot;2 * age&quot;)
+      def calculate(operation, column_name, options = {})
+        validate_calculation_options(operation, options)
+        column_name     = options[:select] if options[:select]
+        column_name     = '*' if column_name == :all
+        column          = column_for column_name
+        catch :invalid_query do
+          if options[:group]
+            return execute_grouped_calculation(operation, column_name, column, options)
+          else
+            return execute_simple_calculation(operation, column_name, column, options)
+          end
+        end
+        0
+      end
+
+      protected
+        def construct_count_options_from_args(*args)
+          options     = {}
+          column_name = :all
+          
+          # We need to handle
+          #   count()
+          #   count(:column_name=:all)
+          #   count(options={})
+          #   count(column_name=:all, options={})
+          case args.size
+          when 1
+            args[0].is_a?(Hash) ? options = args[0] : column_name = args[0]
+          when 2
+            column_name, options = args
+          else
+            raise ArgumentError, &quot;Unexpected parameters passed to count(): #{args.inspect}&quot;
+          end if args.size &gt; 0
+          
+          [column_name, options]
+        end
+
+        def construct_calculation_sql(operation, column_name, options) #:nodoc:
+          operation = operation.to_s.downcase
+          options = options.symbolize_keys
+
+          scope           = scope(:find)
+          merged_includes = merge_includes(scope ? scope[:include] : [], options[:include])
+          aggregate_alias = column_alias_for(operation, column_name)
+          column_name     = &quot;#{connection.quote_table_name(table_name)}.#{column_name}&quot; if column_names.include?(column_name.to_s)
+
+          if operation == 'count'
+            if merged_includes.any?
+              options[:distinct] = true
+              column_name = options[:select] || [connection.quote_table_name(table_name), primary_key] * '.'
+            end
+
+            if options[:distinct]
+              use_workaround = !connection.supports_count_distinct?
+            end
+          end
+
+          if options[:distinct] &amp;&amp; column_name.to_s !~ /\s*DISTINCT\s+/i
+            distinct = 'DISTINCT ' 
+          end
+          sql = &quot;SELECT #{operation}(#{distinct}#{column_name}) AS #{aggregate_alias}&quot;
+
+          # A (slower) workaround if we're using a backend, like sqlite, that doesn't support COUNT DISTINCT.
+          sql = &quot;SELECT COUNT(*) AS #{aggregate_alias}&quot; if use_workaround
+
+          sql &lt;&lt; &quot;, #{options[:group_field]} AS #{options[:group_alias]}&quot; if options[:group]
+          if options[:from]
+            sql &lt;&lt; &quot; FROM #{options[:from]} &quot;
+          else
+            sql &lt;&lt; &quot; FROM (SELECT #{distinct}#{column_name}&quot; if use_workaround
+            sql &lt;&lt; &quot; FROM #{connection.quote_table_name(table_name)} &quot;
+          end
+
+          joins = &quot;&quot;
+          add_joins!(joins, options, scope)
+
+          if merged_includes.any?
+            join_dependency = ActiveRecord::Associations::ClassMethods::JoinDependency.new(self, merged_includes, joins)
+            sql &lt;&lt; join_dependency.join_associations.collect{|join| join.association_join }.join
+          end
+
+          sql &lt;&lt; joins unless joins.blank?
+
+          add_conditions!(sql, options[:conditions], scope)
+          add_limited_ids_condition!(sql, options, join_dependency) if join_dependency &amp;&amp; !using_limitable_reflections?(join_dependency.reflections) &amp;&amp; ((scope &amp;&amp; scope[:limit]) || options[:limit])
+
+          if options[:group]
+            group_key = connection.adapter_name == 'FrontBase' ?  :group_alias : :group_field
+            sql &lt;&lt; &quot; GROUP BY #{options[group_key]} &quot;
+          end
+
+          if options[:group] &amp;&amp; options[:having]
+            # FrontBase requires identifiers in the HAVING clause and chokes on function calls
+            if connection.adapter_name == 'FrontBase'
+              options[:having].downcase!
+              options[:having].gsub!(/#{operation}\s*\(\s*#{column_name}\s*\)/, aggregate_alias)
+            end
+
+            sql &lt;&lt; &quot; HAVING #{options[:having]} &quot;
+          end
+
+          sql &lt;&lt; &quot; ORDER BY #{options[:order]} &quot;       if options[:order]
+          add_limit!(sql, options, scope)
+          sql &lt;&lt; &quot;) #{aggregate_alias}_subquery&quot; if use_workaround
+          sql
+        end
+
+        def execute_simple_calculation(operation, column_name, column, options) #:nodoc:
+          value = connection.select_value(construct_calculation_sql(operation, column_name, options))
+          type_cast_calculated_value(value, column, operation)
+        end
+
+        def execute_grouped_calculation(operation, column_name, column, options) #:nodoc:
+          group_attr      = options[:group].to_s
+          association     = reflect_on_association(group_attr.to_sym)
+          associated      = association &amp;&amp; association.macro == :belongs_to # only count belongs_to associations
+          group_field     = associated ? association.primary_key_name : group_attr
+          group_alias     = column_alias_for(group_field)
+          group_column    = column_for group_field
+          sql             = construct_calculation_sql(operation, column_name, options.merge(:group_field =&gt; group_field, :group_alias =&gt; group_alias))
+          calculated_data = connection.select_all(sql)
+          aggregate_alias = column_alias_for(operation, column_name)
+
+          if association
+            key_ids     = calculated_data.collect { |row| row[group_alias] }
+            key_records = association.klass.base_class.find(key_ids)
+            key_records = key_records.inject({}) { |hsh, r| hsh.merge(r.id =&gt; r) }
+          end
+
+          calculated_data.inject(ActiveSupport::OrderedHash.new) do |all, row|
+            key   = type_cast_calculated_value(row[group_alias], group_column)
+            key   = key_records[key] if associated
+            value = row[aggregate_alias]
+            all[key] = type_cast_calculated_value(value, column, operation)
+            all
+          end
+        end
+
+      private
+        def validate_calculation_options(operation, options = {})
+          options.assert_valid_keys(CALCULATIONS_OPTIONS)
+        end
+
+        # Converts the given keys to the value that the database adapter returns as
+        # a usable column name:
+        #
+        #   column_alias_for(&quot;users.id&quot;)                 # =&gt; &quot;users_id&quot;
+        #   column_alias_for(&quot;sum(id)&quot;)                  # =&gt; &quot;sum_id&quot;
+        #   column_alias_for(&quot;count(distinct users.id)&quot;) # =&gt; &quot;count_distinct_users_id&quot;
+        #   column_alias_for(&quot;count(*)&quot;)                 # =&gt; &quot;count_all&quot;
+        #   column_alias_for(&quot;count&quot;, &quot;id&quot;)              # =&gt; &quot;count_id&quot;
+        def column_alias_for(*keys)
+          connection.table_alias_for(keys.join(' ').downcase.gsub(/\*/, 'all').gsub(/\W+/, ' ').strip.gsub(/ +/, '_'))
+        end
+
+        def column_for(field)
+          field_name = field.to_s.split('.').last
+          columns.detect { |c| c.name.to_s == field_name }
+        end
+
+        def type_cast_calculated_value(value, column, operation = nil)
+          operation = operation.to_s.downcase
+          case operation
+            when 'count' then value.to_i
+            when 'sum'   then type_cast_using_column(value || '0', column)
+            when 'avg'   then value &amp;&amp; value.to_d
+            else type_cast_using_column(value, column)
+          end
+        end
+
+        def type_cast_using_column(value, column)
+          column ? column.type_cast(value) : value
+        end
+    end
+  end
+end
+</pre>
+    </div>

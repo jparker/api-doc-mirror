@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>ConditionVariable</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            ConditionVariable 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/lib/thread_rb.html">lib/thread.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+<a href="ConditionVariable.html">ConditionVariable</a> objects augment
+class <a href="Mutex.html">Mutex</a>. Using condition variables, it is
+possible to suspend while in the middle of a critical section until a
+resource becomes available.
+</p>
+<p>
+Example:
+</p>
+<pre>
+  require 'thread'
+
+  mutex = Mutex.new
+  resource = ConditionVariable.new
+
+  a = Thread.new {
+    mutex.synchronize {
+      # Thread 'a' now needs the resource
+      resource.wait(mutex)
+      # 'a' can now have the resource
+    }
+  }
+
+  b = Thread.new {
+    mutex.synchronize {
+      # Thread 'b' has finished using the resource
+      resource.signal
+    }
+  }
+</pre>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>B</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002116">broadcast</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002113">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002115">signal</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>W</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002114">wait</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M002113">
+                    
+                    <a name="M002113"></a><b>new</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Creates a new <a href="ConditionVariable.html">ConditionVariable</a>
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002113_source')" id="l_M002113_source">show</a>
+                        
+                    </p>
+                    <div id="M002113_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/thread.rb, line 54</span>
+54:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>
+55:     <span class="ruby-ivar">@waiters</span> = []
+56:     <span class="ruby-ivar">@waiters_mutex</span> = <span class="ruby-constant">Mutex</span>.<span class="ruby-identifier">new</span>
+57:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M002116">
+                    
+                    <a name="M002116"></a><b>broadcast</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Wakes up all threads waiting for this lock.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002116_source')" id="l_M002116_source">show</a>
+                        
+                    </p>
+                    <div id="M002116_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/thread.rb, line 92</span>
+ 92:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">broadcast</span>
+ 93:     <span class="ruby-comment cmt"># TODO: imcomplete</span>
+ 94:     <span class="ruby-identifier">waiters0</span> = <span class="ruby-keyword kw">nil</span>
+ 95:     <span class="ruby-ivar">@waiters_mutex</span>.<span class="ruby-identifier">synchronize</span> <span class="ruby-keyword kw">do</span>
+ 96:       <span class="ruby-identifier">waiters0</span> = <span class="ruby-ivar">@waiters</span>.<span class="ruby-identifier">dup</span>
+ 97:       <span class="ruby-ivar">@waiters</span>.<span class="ruby-identifier">clear</span>
+ 98:     <span class="ruby-keyword kw">end</span>
+ 99:     <span class="ruby-keyword kw">for</span> <span class="ruby-identifier">t</span> <span class="ruby-keyword kw">in</span> <span class="ruby-identifier">waiters0</span>
+100:       <span class="ruby-keyword kw">begin</span>
+101:         <span class="ruby-identifier">t</span>.<span class="ruby-identifier">run</span>
+102:       <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">ThreadError</span>
+103:       <span class="ruby-keyword kw">end</span>
+104:     <span class="ruby-keyword kw">end</span>
+105:     <span class="ruby-keyword kw">self</span>
+106:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002115">
+                    
+                    <a name="M002115"></a><b>signal</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Wakes up the first thread in line waiting for this lock.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002115_source')" id="l_M002115_source">show</a>
+                        
+                    </p>
+                    <div id="M002115_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/thread.rb, line 79</span>
+79:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">signal</span>
+80:     <span class="ruby-keyword kw">begin</span>
+81:       <span class="ruby-identifier">t</span> = <span class="ruby-ivar">@waiters_mutex</span>.<span class="ruby-identifier">synchronize</span> { <span class="ruby-ivar">@waiters</span>.<span class="ruby-identifier">shift</span> }
+82:       <span class="ruby-identifier">t</span>.<span class="ruby-identifier">run</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">t</span>
+83:     <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">ThreadError</span>
+84:       <span class="ruby-keyword kw">retry</span>
+85:     <span class="ruby-keyword kw">end</span>
+86:     <span class="ruby-keyword kw">self</span>
+87:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002114">
+                    
+                    <a name="M002114"></a><b>wait</b>(mutex, timeout=nil)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Releases the lock held in <tt>mutex</tt> and waits; reacquires the lock on
+wakeup.
+</p>
+<p>
+If <tt>timeout</tt> is given, this method returns after <tt>timeout</tt>
+seconds passed, even if no other thread doesn&#8217;t signal.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002114_source')" id="l_M002114_source">show</a>
+                        
+                    </p>
+                    <div id="M002114_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/thread.rb, line 65</span>
+65:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">wait</span>(<span class="ruby-identifier">mutex</span>, <span class="ruby-identifier">timeout</span>=<span class="ruby-keyword kw">nil</span>)
+66:     <span class="ruby-keyword kw">begin</span>
+67:       <span class="ruby-comment cmt"># TODO: mutex should not be used</span>
+68:       <span class="ruby-ivar">@waiters_mutex</span>.<span class="ruby-identifier">synchronize</span> <span class="ruby-keyword kw">do</span>
+69:         <span class="ruby-ivar">@waiters</span>.<span class="ruby-identifier">push</span>(<span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>)
+70:       <span class="ruby-keyword kw">end</span>
+71:       <span class="ruby-identifier">mutex</span>.<span class="ruby-identifier">sleep</span> <span class="ruby-identifier">timeout</span>
+72:     <span class="ruby-keyword kw">end</span>
+73:     <span class="ruby-keyword kw">self</span>
+74:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

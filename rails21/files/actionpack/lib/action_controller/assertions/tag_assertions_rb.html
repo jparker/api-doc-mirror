@@ -1,0 +1,148 @@
+  <div id="fileHeader">
+    <h1>tag_assertions.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionpack/lib/action_controller/assertions/tag_assertions.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:04 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>require 'rexml/document'
+require 'html/document'
+
+module ActionController
+  module Assertions
+    # Pair of assertions to testing elements in the HTML output of the response.
+    module TagAssertions
+      # Asserts that there is a tag/node/element in the body of the response
+      # that meets all of the given conditions. The +conditions+ parameter must
+      # be a hash of any of the following keys (all are optional):
+      #
+      # * &lt;tt&gt;:tag&lt;/tt&gt;: the node type must match the corresponding value
+      # * &lt;tt&gt;:attributes&lt;/tt&gt;: a hash. The node's attributes must match the
+      #   corresponding values in the hash.
+      # * &lt;tt&gt;:parent&lt;/tt&gt;: a hash. The node's parent must match the
+      #   corresponding hash.
+      # * &lt;tt&gt;:child&lt;/tt&gt;: a hash. At least one of the node's immediate children
+      #   must meet the criteria described by the hash.
+      # * &lt;tt&gt;:ancestor&lt;/tt&gt;: a hash. At least one of the node's ancestors must
+      #   meet the criteria described by the hash.
+      # * &lt;tt&gt;:descendant&lt;/tt&gt;: a hash. At least one of the node's descendants
+      #   must meet the criteria described by the hash.
+      # * &lt;tt&gt;:sibling&lt;/tt&gt;: a hash. At least one of the node's siblings must
+      #   meet the criteria described by the hash.
+      # * &lt;tt&gt;:after&lt;/tt&gt;: a hash. The node must be after any sibling meeting
+      #   the criteria described by the hash, and at least one sibling must match.
+      # * &lt;tt&gt;:before&lt;/tt&gt;: a hash. The node must be before any sibling meeting
+      #   the criteria described by the hash, and at least one sibling must match.
+      # * &lt;tt&gt;:children&lt;/tt&gt;: a hash, for counting children of a node. Accepts
+      #   the keys:
+      #   * &lt;tt&gt;:count&lt;/tt&gt;: either a number or a range which must equal (or
+      #     include) the number of children that match.
+      #   * &lt;tt&gt;:less_than&lt;/tt&gt;: the number of matching children must be less
+      #     than this number.
+      #   * &lt;tt&gt;:greater_than&lt;/tt&gt;: the number of matching children must be
+      #     greater than this number.
+      #   * &lt;tt&gt;:only&lt;/tt&gt;: another hash consisting of the keys to use
+      #     to match on the children, and only matching children will be
+      #     counted.
+      # * &lt;tt&gt;:content&lt;/tt&gt;: the textual content of the node must match the
+      #   given value. This will not match HTML tags in the body of a
+      #   tag--only text.
+      #
+      # Conditions are matched using the following algorithm:
+      #
+      # * if the condition is a string, it must be a substring of the value.
+      # * if the condition is a regexp, it must match the value.
+      # * if the condition is a number, the value must match number.to_s.
+      # * if the condition is +true+, the value must not be +nil+.
+      # * if the condition is +false+ or +nil+, the value must be +nil+.
+      #
+      # === Examples
+      #
+      #   # Assert that there is a &quot;span&quot; tag
+      #   assert_tag :tag =&gt; &quot;span&quot;
+      #
+      #   # Assert that there is a &quot;span&quot; tag with id=&quot;x&quot;
+      #   assert_tag :tag =&gt; &quot;span&quot;, :attributes =&gt; { :id =&gt; &quot;x&quot; }
+      #
+      #   # Assert that there is a &quot;span&quot; tag using the short-hand
+      #   assert_tag :span
+      #
+      #   # Assert that there is a &quot;span&quot; tag with id=&quot;x&quot; using the short-hand
+      #   assert_tag :span, :attributes =&gt; { :id =&gt; &quot;x&quot; }
+      #
+      #   # Assert that there is a &quot;span&quot; inside of a &quot;div&quot;
+      #   assert_tag :tag =&gt; &quot;span&quot;, :parent =&gt; { :tag =&gt; &quot;div&quot; }
+      #
+      #   # Assert that there is a &quot;span&quot; somewhere inside a table
+      #   assert_tag :tag =&gt; &quot;span&quot;, :ancestor =&gt; { :tag =&gt; &quot;table&quot; }
+      #
+      #   # Assert that there is a &quot;span&quot; with at least one &quot;em&quot; child
+      #   assert_tag :tag =&gt; &quot;span&quot;, :child =&gt; { :tag =&gt; &quot;em&quot; }
+      #
+      #   # Assert that there is a &quot;span&quot; containing a (possibly nested)
+      #   # &quot;strong&quot; tag.
+      #   assert_tag :tag =&gt; &quot;span&quot;, :descendant =&gt; { :tag =&gt; &quot;strong&quot; }
+      #
+      #   # Assert that there is a &quot;span&quot; containing between 2 and 4 &quot;em&quot; tags
+      #   # as immediate children
+      #   assert_tag :tag =&gt; &quot;span&quot;,
+      #              :children =&gt; { :count =&gt; 2..4, :only =&gt; { :tag =&gt; &quot;em&quot; } } 
+      #
+      #   # Get funky: assert that there is a &quot;div&quot;, with an &quot;ul&quot; ancestor
+      #   # and an &quot;li&quot; parent (with &quot;class&quot; = &quot;enum&quot;), and containing a 
+      #   # &quot;span&quot; descendant that contains text matching /hello world/
+      #   assert_tag :tag =&gt; &quot;div&quot;,
+      #              :ancestor =&gt; { :tag =&gt; &quot;ul&quot; },
+      #              :parent =&gt; { :tag =&gt; &quot;li&quot;,
+      #                           :attributes =&gt; { :class =&gt; &quot;enum&quot; } },
+      #              :descendant =&gt; { :tag =&gt; &quot;span&quot;,
+      #                               :child =&gt; /hello world/ }
+      #
+      # &lt;b&gt;Please note&lt;/b&gt;: +assert_tag+ and +assert_no_tag+ only work
+      # with well-formed XHTML. They recognize a few tags as implicitly self-closing
+      # (like br and hr and such) but will not work correctly with tags
+      # that allow optional closing tags (p, li, td). &lt;em&gt;You must explicitly
+      # close all of your tags to use these assertions.&lt;/em&gt;
+      def assert_tag(*opts)
+        clean_backtrace do
+          opts = opts.size &gt; 1 ? opts.last.merge({ :tag =&gt; opts.first.to_s }) : opts.first
+          tag = find_tag(opts)
+          assert tag, &quot;expected tag, but no tag found matching #{opts.inspect} in:\n#{@response.body.inspect}&quot;
+        end
+      end
+      
+      # Identical to +assert_tag+, but asserts that a matching tag does _not_
+      # exist. (See +assert_tag+ for a full discussion of the syntax.)
+      #
+      # === Examples
+      #   # Assert that there is not a &quot;div&quot; containing a &quot;p&quot;
+      #   assert_no_tag :tag =&gt; &quot;div&quot;, :descendant =&gt; { :tag =&gt; &quot;p&quot; }
+      #
+      #   # Assert that an unordered list is empty
+      #   assert_no_tag :tag =&gt; &quot;ul&quot;, :descendant =&gt; { :tag =&gt; &quot;li&quot; }
+      #
+      #   # Assert that there is not a &quot;p&quot; tag with between 1 to 3 &quot;img&quot; tags
+      #   # as immediate children
+      #   assert_no_tag :tag =&gt; &quot;p&quot;,
+      #              :children =&gt; { :count =&gt; 1..3, :only =&gt; { :tag =&gt; &quot;img&quot; } }
+      def assert_no_tag(*opts)
+        clean_backtrace do
+          opts = opts.size &gt; 1 ? opts.last.merge({ :tag =&gt; opts.first.to_s }) : opts.first
+          tag = find_tag(opts)
+          assert !tag, &quot;expected no tag, but found tag matching #{opts.inspect} in:\n#{@response.body.inspect}&quot;
+        end
+      end
+    end
+  end
+end</pre>
+    </div>

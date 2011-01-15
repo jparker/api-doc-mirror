@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>XSD::XSDDateTimeImpl</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Module</span> 
+            XSD::XSDDateTimeImpl 
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../files/lib/xsd/datatypes_rb.html">lib/xsd/datatypes.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>A</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003053">add_tz</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>O</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003051">of2tz</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003052">screen_data</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>T</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003048">to_date</a>,</li>
+                
+                <li><a href="#M003049">to_datetime</a>,</li>
+                
+                <li><a href="#M003046">to_obj</a>,</li>
+                
+                <li><a href="#M003047">to_time</a>,</li>
+                
+                <li><a href="#M003050">tz2of</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">SecInDay</td>
+            <td>=</td>
+            <td class="attr-value">86400</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+
+    
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M003053">
+                    
+                    <a name="M003053"></a><b>add_tz</b>(s)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003053_source')" id="l_M003053_source">show</a>
+                        
+                    </p>
+                    <div id="M003053_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/xsd/datatypes.rb, line 582</span>
+582:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">add_tz</span>(<span class="ruby-identifier">s</span>)
+583:     <span class="ruby-identifier">s</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">of2tz</span>(<span class="ruby-ivar">@data</span>.<span class="ruby-identifier">offset</span>)
+584:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003051">
+                    
+                    <a name="M003051"></a><b>of2tz</b>(offset)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003051_source')" id="l_M003051_source">show</a>
+                        
+                    </p>
+                    <div id="M003051_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/xsd/datatypes.rb, line 551</span>
+551:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">of2tz</span>(<span class="ruby-identifier">offset</span>)
+552:     <span class="ruby-identifier">diffmin</span> = <span class="ruby-identifier">offset</span> <span class="ruby-operator">*</span> <span class="ruby-value">24</span> <span class="ruby-operator">*</span> <span class="ruby-value">60</span>
+553:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">diffmin</span>.<span class="ruby-identifier">zero?</span>
+554:       <span class="ruby-value str">'Z'</span>
+555:     <span class="ruby-keyword kw">else</span>
+556:       ((<span class="ruby-identifier">diffmin</span> <span class="ruby-operator">&lt;</span> <span class="ruby-value">0</span>) <span class="ruby-operator">?</span> <span class="ruby-value str">'-'</span> <span class="ruby-operator">:</span> <span class="ruby-value str">'+'</span>) <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">format</span>(<span class="ruby-value str">'%02d:%02d'</span>,
+557:         (<span class="ruby-identifier">diffmin</span>.<span class="ruby-identifier">abs</span> <span class="ruby-operator">/</span> <span class="ruby-value">60.0</span>).<span class="ruby-identifier">to_i</span>, (<span class="ruby-identifier">diffmin</span>.<span class="ruby-identifier">abs</span> <span class="ruby-operator">%</span> <span class="ruby-value">60.0</span>).<span class="ruby-identifier">to_i</span>)
+558:     <span class="ruby-keyword kw">end</span>
+559:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003052">
+                    
+                    <a name="M003052"></a><b>screen_data</b>(t)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003052_source')" id="l_M003052_source">show</a>
+                        
+                    </p>
+                    <div id="M003052_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/xsd/datatypes.rb, line 561</span>
+561:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">screen_data</span>(<span class="ruby-identifier">t</span>)
+562:     <span class="ruby-comment cmt"># convert t to a DateTime as an internal representation.</span>
+563:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">t</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">:to_datetime</span>)      <span class="ruby-comment cmt"># 1.9 or later</span>
+564:       <span class="ruby-identifier">t</span>.<span class="ruby-identifier">to_datetime</span>
+565:     <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">t</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">DateTime</span>)
+566:       <span class="ruby-identifier">t</span>
+567:     <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">t</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Date</span>)
+568:       <span class="ruby-identifier">t</span> = <span class="ruby-identifier">screen_data_str</span>(<span class="ruby-identifier">t</span>)
+569:       <span class="ruby-identifier">t</span> <span class="ruby-operator">&lt;&lt;=</span> <span class="ruby-value">12</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">t</span>.<span class="ruby-identifier">year</span> <span class="ruby-operator">&lt;</span> <span class="ruby-value">0</span>
+570:       <span class="ruby-identifier">t</span>
+571:     <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">t</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Time</span>)
+572:       <span class="ruby-identifier">jd</span> = <span class="ruby-constant">DateTime</span>.<span class="ruby-identifier">civil_to_jd</span>(<span class="ruby-identifier">t</span>.<span class="ruby-identifier">year</span>, <span class="ruby-identifier">t</span>.<span class="ruby-identifier">mon</span>, <span class="ruby-identifier">t</span>.<span class="ruby-identifier">mday</span>, <span class="ruby-constant">DateTime</span><span class="ruby-operator">::</span><span class="ruby-constant">ITALY</span>)
+573:       <span class="ruby-identifier">fr</span> = <span class="ruby-constant">DateTime</span>.<span class="ruby-identifier">time_to_day_fraction</span>(<span class="ruby-identifier">t</span>.<span class="ruby-identifier">hour</span>, <span class="ruby-identifier">t</span>.<span class="ruby-identifier">min</span>, [<span class="ruby-identifier">t</span>.<span class="ruby-identifier">sec</span>, <span class="ruby-value">59</span>].<span class="ruby-identifier">min</span>) <span class="ruby-operator">+</span>
+574:         <span class="ruby-identifier">t</span>.<span class="ruby-identifier">usec</span>.<span class="ruby-identifier">to_r</span> <span class="ruby-operator">/</span> <span class="ruby-value">1000000</span> <span class="ruby-operator">/</span> <span class="ruby-constant">SecInDay</span>
+575:       <span class="ruby-identifier">of</span> = <span class="ruby-identifier">t</span>.<span class="ruby-identifier">utc_offset</span>.<span class="ruby-identifier">to_r</span> <span class="ruby-operator">/</span> <span class="ruby-constant">SecInDay</span>
+576:       <span class="ruby-constant">DateTime</span>.<span class="ruby-identifier">new0</span>(<span class="ruby-constant">DateTime</span>.<span class="ruby-identifier">jd_to_ajd</span>(<span class="ruby-identifier">jd</span>, <span class="ruby-identifier">fr</span>, <span class="ruby-identifier">of</span>), <span class="ruby-identifier">of</span>, <span class="ruby-constant">DateTime</span><span class="ruby-operator">::</span><span class="ruby-constant">ITALY</span>)
+577:     <span class="ruby-keyword kw">else</span>
+578:       <span class="ruby-identifier">screen_data_str</span>(<span class="ruby-identifier">t</span>)
+579:     <span class="ruby-keyword kw">end</span>
+580:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003048">
+                    
+                    <a name="M003048"></a><b>to_date</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003048_source')" id="l_M003048_source">show</a>
+                        
+                    </p>
+                    <div id="M003048_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/xsd/datatypes.rb, line 526</span>
+526:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">to_date</span>
+527:     <span class="ruby-constant">Date</span>.<span class="ruby-identifier">new0</span>(<span class="ruby-ivar">@data</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">jd_to_ajd</span>(<span class="ruby-ivar">@data</span>.<span class="ruby-identifier">jd</span>, <span class="ruby-value">0</span>, <span class="ruby-value">0</span>), <span class="ruby-value">0</span>, <span class="ruby-ivar">@data</span>.<span class="ruby-identifier">start</span>)
+528:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003049">
+                    
+                    <a name="M003049"></a><b>to_datetime</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003049_source')" id="l_M003049_source">show</a>
+                        
+                    </p>
+                    <div id="M003049_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/xsd/datatypes.rb, line 530</span>
+530:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">to_datetime</span>
+531:     <span class="ruby-identifier">data</span>
+532:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003046">
+                    
+                    <a name="M003046"></a><b>to_obj</b>(klass)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003046_source')" id="l_M003046_source">show</a>
+                        
+                    </p>
+                    <div id="M003046_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/xsd/datatypes.rb, line 498</span>
+498:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">to_obj</span>(<span class="ruby-identifier">klass</span>)
+499:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">klass</span> <span class="ruby-operator">==</span> <span class="ruby-constant">Time</span>
+500:       <span class="ruby-identifier">to_time</span>
+501:     <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">klass</span> <span class="ruby-operator">==</span> <span class="ruby-constant">Date</span>
+502:       <span class="ruby-identifier">to_date</span>
+503:     <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">klass</span> <span class="ruby-operator">==</span> <span class="ruby-constant">DateTime</span>
+504:       <span class="ruby-identifier">to_datetime</span>
+505:     <span class="ruby-keyword kw">else</span>
+506:       <span class="ruby-keyword kw">nil</span>
+507:     <span class="ruby-keyword kw">end</span>
+508:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003047">
+                    
+                    <a name="M003047"></a><b>to_time</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003047_source')" id="l_M003047_source">show</a>
+                        
+                    </p>
+                    <div id="M003047_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/xsd/datatypes.rb, line 510</span>
+510:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">to_time</span>
+511:     <span class="ruby-keyword kw">begin</span>
+512:       <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@data</span>.<span class="ruby-identifier">offset</span> <span class="ruby-operator">*</span> <span class="ruby-constant">SecInDay</span> <span class="ruby-operator">==</span> <span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span>.<span class="ruby-identifier">utc_offset</span>
+513:         <span class="ruby-identifier">d</span> = <span class="ruby-ivar">@data</span>
+514:         <span class="ruby-identifier">usec</span> = (<span class="ruby-identifier">d</span>.<span class="ruby-identifier">sec_fraction</span> <span class="ruby-operator">*</span> <span class="ruby-constant">SecInDay</span> <span class="ruby-operator">*</span> <span class="ruby-value">1000000</span>).<span class="ruby-identifier">round</span>
+515:         <span class="ruby-constant">Time</span>.<span class="ruby-identifier">local</span>(<span class="ruby-identifier">d</span>.<span class="ruby-identifier">year</span>, <span class="ruby-identifier">d</span>.<span class="ruby-identifier">month</span>, <span class="ruby-identifier">d</span>.<span class="ruby-identifier">mday</span>, <span class="ruby-identifier">d</span>.<span class="ruby-identifier">hour</span>, <span class="ruby-identifier">d</span>.<span class="ruby-identifier">min</span>, <span class="ruby-identifier">d</span>.<span class="ruby-identifier">sec</span>, <span class="ruby-identifier">usec</span>)
+516:       <span class="ruby-keyword kw">else</span>
+517:         <span class="ruby-identifier">d</span> = <span class="ruby-ivar">@data</span>.<span class="ruby-identifier">newof</span>
+518:         <span class="ruby-identifier">usec</span> = (<span class="ruby-identifier">d</span>.<span class="ruby-identifier">sec_fraction</span> <span class="ruby-operator">*</span> <span class="ruby-constant">SecInDay</span> <span class="ruby-operator">*</span> <span class="ruby-value">1000000</span>).<span class="ruby-identifier">round</span>
+519:         <span class="ruby-constant">Time</span>.<span class="ruby-identifier">gm</span>(<span class="ruby-identifier">d</span>.<span class="ruby-identifier">year</span>, <span class="ruby-identifier">d</span>.<span class="ruby-identifier">month</span>, <span class="ruby-identifier">d</span>.<span class="ruby-identifier">mday</span>, <span class="ruby-identifier">d</span>.<span class="ruby-identifier">hour</span>, <span class="ruby-identifier">d</span>.<span class="ruby-identifier">min</span>, <span class="ruby-identifier">d</span>.<span class="ruby-identifier">sec</span>, <span class="ruby-identifier">usec</span>)
+520:       <span class="ruby-keyword kw">end</span>
+521:     <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">ArgumentError</span>
+522:       <span class="ruby-keyword kw">nil</span>
+523:     <span class="ruby-keyword kw">end</span>
+524:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003050">
+                    
+                    <a name="M003050"></a><b>tz2of</b>(str)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003050_source')" id="l_M003050_source">show</a>
+                        
+                    </p>
+                    <div id="M003050_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/xsd/datatypes.rb, line 534</span>
+534:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">tz2of</span>(<span class="ruby-identifier">str</span>)
+535:     <span class="ruby-regexp re">/^(?:Z|(?:([+\-])(\d\d):(\d\d))?)$/</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">str</span>
+536:     <span class="ruby-identifier">sign</span> = <span class="ruby-identifier">$1</span>
+537:     <span class="ruby-identifier">hour</span> = <span class="ruby-identifier">$2</span>.<span class="ruby-identifier">to_i</span>
+538:     <span class="ruby-identifier">min</span> = <span class="ruby-identifier">$3</span>.<span class="ruby-identifier">to_i</span>
+539: 
+540:     <span class="ruby-identifier">of</span> = <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">sign</span>
+541:       <span class="ruby-keyword kw">when</span> <span class="ruby-value str">'+'</span>
+542:         <span class="ruby-identifier">of</span> = <span class="ruby-operator">+</span>(<span class="ruby-identifier">hour</span>.<span class="ruby-identifier">to_r</span> <span class="ruby-operator">*</span> <span class="ruby-value">60</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">min</span>) <span class="ruby-operator">/</span> <span class="ruby-value">1440</span>    <span class="ruby-comment cmt"># 24 * 60</span>
+543:       <span class="ruby-keyword kw">when</span> <span class="ruby-value str">'-'</span>
+544:         <span class="ruby-identifier">of</span> = <span class="ruby-operator">-</span>(<span class="ruby-identifier">hour</span>.<span class="ruby-identifier">to_r</span> <span class="ruby-operator">*</span> <span class="ruby-value">60</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">min</span>) <span class="ruby-operator">/</span> <span class="ruby-value">1440</span>    <span class="ruby-comment cmt"># 24 * 60</span>
+545:       <span class="ruby-keyword kw">else</span>
+546:         <span class="ruby-value">0</span>
+547:       <span class="ruby-keyword kw">end</span>
+548:     <span class="ruby-identifier">of</span>
+549:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

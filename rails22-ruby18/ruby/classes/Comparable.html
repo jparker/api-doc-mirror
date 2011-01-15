@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Comparable</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Module</span> 
+            Comparable 
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/compar_c.html">compar.c</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+The <tt>Comparable</tt> mixin is used by classes whose objects may be
+ordered. The class must define the <tt>&lt;=&gt;</tt> operator, which
+compares the receiver against another object, returning -1, 0, or +1
+depending on whether the receiver is less than, equal to, or greater than
+the other object. <tt>Comparable</tt> uses <tt>&lt;=&gt;</tt> to implement
+the conventional comparison operators (<tt>&lt;</tt>, <tt>&lt;=</tt>,
+<tt>==</tt>, <tt>&gt;=</tt>, and <tt>&gt;</tt>) and the method
+<tt>between?</tt>.
+</p>
+<pre>
+   class SizeMatters
+     include Comparable
+     attr :str
+     def &lt;=&gt;(anOther)
+       str.size &lt;=&gt; anOther.str.size
+     end
+     def initialize(str)
+       @str = str
+     end
+     def inspect
+       @str
+     end
+   end
+
+   s1 = SizeMatters.new(&quot;Z&quot;)
+   s2 = SizeMatters.new(&quot;YY&quot;)
+   s3 = SizeMatters.new(&quot;XXX&quot;)
+   s4 = SizeMatters.new(&quot;WWWW&quot;)
+   s5 = SizeMatters.new(&quot;VVVVV&quot;)
+
+   s1 &lt; s2                       #=&gt; true
+   s4.between?(s1, s3)           #=&gt; false
+   s4.between?(s3, s5)           #=&gt; true
+   [ s3, s2, s5, s4, s1 ].sort   #=&gt; [Z, YY, XXX, WWWW, VVVVV]
+</pre>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>#</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001084"><</a>,</li>
+                
+                <li><a href="#M001085"><=</a>,</li>
+                
+                <li><a href="#M001081">==</a>,</li>
+                
+                <li><a href="#M001082">></a>,</li>
+                
+                <li><a href="#M001083">>=</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>B</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001086">between?</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M001084">
+                    
+                    <a name="M001084"></a><b>obj < other    => true or false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Compares two objects based on the receiver&#8217;s <tt>&lt;=&gt;</tt>
+method, returning true if it returns -1.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001084_source')" id="l_M001084_source">show</a>
+                        
+                    </p>
+                    <div id="M001084_source" class="dyn-source">
+                        <pre>static VALUE
+cmp_lt(x, y)
+    VALUE x, y;
+{
+    VALUE c = rb_funcall(x, cmp, 1, y);
+
+    if (NIL_P(c)) return cmperr();
+    if (rb_cmpint(c, x, y) &lt; 0) return Qtrue;
+    return Qfalse;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001085">
+                    
+                    <a name="M001085"></a><b>obj <= other    => true or false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Compares two objects based on the receiver&#8217;s <tt>&lt;=&gt;</tt>
+method, returning true if it returns -1 or 0.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001085_source')" id="l_M001085_source">show</a>
+                        
+                    </p>
+                    <div id="M001085_source" class="dyn-source">
+                        <pre>static VALUE
+cmp_le(x, y)
+    VALUE x, y;
+{
+    VALUE c = rb_funcall(x, cmp, 1, y);
+
+    if (NIL_P(c)) return cmperr();
+    if (rb_cmpint(c, x, y) &lt;= 0) return Qtrue;
+    return Qfalse;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001081">
+                    
+                    <a name="M001081"></a><b>obj == other    => true or false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Compares two objects based on the receiver&#8217;s <tt>&lt;=&gt;</tt>
+method, returning true if it returns 0. Also returns true if <em>obj</em>
+and <em>other</em> are the same object.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001081_source')" id="l_M001081_source">show</a>
+                        
+                    </p>
+                    <div id="M001081_source" class="dyn-source">
+                        <pre>static VALUE
+cmp_equal(x, y)
+    VALUE x, y;
+{
+    VALUE a[2];
+
+    if (x == y) return Qtrue;
+
+    a[0] = x; a[1] = y;
+    return rb_rescue(cmp_eq, (VALUE)a, cmp_failed, 0);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001082">
+                    
+                    <a name="M001082"></a><b>obj > other    => true or false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Compares two objects based on the receiver&#8217;s <tt>&lt;=&gt;</tt>
+method, returning true if it returns 1.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001082_source')" id="l_M001082_source">show</a>
+                        
+                    </p>
+                    <div id="M001082_source" class="dyn-source">
+                        <pre>static VALUE
+cmp_gt(x, y)
+    VALUE x, y;
+{
+    VALUE c = rb_funcall(x, cmp, 1, y);
+
+    if (NIL_P(c)) return cmperr();
+    if (rb_cmpint(c, x, y) &gt; 0) return Qtrue;
+    return Qfalse;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001083">
+                    
+                    <a name="M001083"></a><b>obj >= other    => true or false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Compares two objects based on the receiver&#8217;s <tt>&lt;=&gt;</tt>
+method, returning true if it returns 0 or 1.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001083_source')" id="l_M001083_source">show</a>
+                        
+                    </p>
+                    <div id="M001083_source" class="dyn-source">
+                        <pre>static VALUE
+cmp_ge(x, y)
+    VALUE x, y;
+{
+    VALUE c = rb_funcall(x, cmp, 1, y);
+
+    if (NIL_P(c)) return cmperr();
+    if (rb_cmpint(c, x, y) &gt;= 0) return Qtrue;
+    return Qfalse;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001086">
+                    
+                    <a name="M001086"></a><b>obj.between?(min, max)    => true or false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns <tt>false</tt> if <em>obj</em> <tt>&lt;=&gt;</tt> <em>min</em> is
+less than zero or if <em>anObject</em> <tt>&lt;=&gt;</tt> <em>max</em> is
+greater than zero, <tt>true</tt> otherwise.
+</p>
+<pre>
+   3.between?(1, 5)               #=&gt; true
+   6.between?(1, 5)               #=&gt; false
+   'cat'.between?('ant', 'dog')   #=&gt; true
+   'gnu'.between?('ant', 'dog')   #=&gt; false
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001086_source')" id="l_M001086_source">show</a>
+                        
+                    </p>
+                    <div id="M001086_source" class="dyn-source">
+                        <pre>static VALUE
+cmp_between(x, min, max)
+    VALUE x, min, max;
+{
+    if (RTEST(cmp_lt(x, min))) return Qfalse;
+    if (RTEST(cmp_gt(x, max))) return Qfalse;
+    return Qtrue;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

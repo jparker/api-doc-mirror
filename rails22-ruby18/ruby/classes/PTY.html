@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>PTY</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Module</span> 
+            PTY 
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/ext/pty/pty_c.html">ext/pty/pty.c</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+ruby function: <a href="PTY.html#M007415">reset_signal</a> - obsolete
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>G</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007412">getpty</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>P</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007414">protect_signal</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>R</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007415">reset_signal</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007413">spawn</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Classes and Modules</div>
+    <ul>
+        
+        <li><span class="type">CLASS</span> <a href="PTY/ChildExited.html">PTY::ChildExited</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M007412">
+                    
+                    <a name="M007412"></a><b>getpty</b>(...)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+ruby function: getpty
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007412_source')" id="l_M007412_source">show</a>
+                        
+                    </p>
+                    <div id="M007412_source" class="dyn-source">
+                        <pre>static VALUE
+pty_getpty(argc, argv, self)
+    int argc;
+    VALUE *argv;
+    VALUE self;
+{
+    VALUE res;
+    struct pty_info info;
+    struct pty_info thinfo;
+    rb_io_t *wfptr,*rfptr;
+    VALUE rport = rb_obj_alloc(rb_cFile);
+    VALUE wport = rb_obj_alloc(rb_cFile);
+    char SlaveName[DEVICELEN];
+
+    MakeOpenFile(rport, rfptr);
+    MakeOpenFile(wport, wfptr);
+
+    establishShell(argc, argv, &amp;info, SlaveName);
+
+    rfptr-&gt;mode = rb_io_mode_flags(&quot;r&quot;);
+    rfptr-&gt;f = fdopen(info.fd, &quot;r&quot;);
+    rfptr-&gt;path = strdup(SlaveName);
+
+    wfptr-&gt;mode = rb_io_mode_flags(&quot;w&quot;) | FMODE_SYNC;
+    wfptr-&gt;f = fdopen(dup(info.fd), &quot;w&quot;);
+    wfptr-&gt;path = strdup(SlaveName);
+
+    res = rb_ary_new2(3);
+    rb_ary_store(res,0,(VALUE)rport);
+    rb_ary_store(res,1,(VALUE)wport);
+    rb_ary_store(res,2,INT2FIX(info.child_pid));
+
+    thinfo.thread = rb_thread_create(pty_syswait, (void*)&amp;info);
+    thinfo.child_pid = info.child_pid;
+    rb_thread_schedule();
+
+    if (rb_block_given_p()) {
+        rb_ensure(rb_yield, res, pty_finalize_syswait, (VALUE)&amp;thinfo);
+        return Qnil;
+    }
+    return res;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007414">
+                    
+                    <a name="M007414"></a><b>protect_signal</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+ruby function: <a href="PTY.html#M007414">protect_signal</a> - obsolete
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007414_source')" id="l_M007414_source">show</a>
+                        
+                    </p>
+                    <div id="M007414_source" class="dyn-source">
+                        <pre>static VALUE
+pty_protect(self)
+    VALUE self;
+{
+    rb_warn(&quot;PTY::protect_signal is no longer needed&quot;);
+    rb_yield(Qnil);
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007415">
+                    
+                    <a name="M007415"></a><b>reset_signal</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+ruby function: <a href="PTY.html#M007415">reset_signal</a> - obsolete
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007415_source')" id="l_M007415_source">show</a>
+                        
+                    </p>
+                    <div id="M007415_source" class="dyn-source">
+                        <pre>static VALUE
+pty_reset_signal(self)
+    VALUE self;
+{
+    rb_warn(&quot;PTY::reset_signal is no longer needed&quot;);
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007413">
+                    
+                    <a name="M007413"></a><b>spawn</b>(...)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+ruby function: getpty
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007413_source')" id="l_M007413_source">show</a>
+                        
+                    </p>
+                    <div id="M007413_source" class="dyn-source">
+                        <pre>static VALUE
+pty_getpty(argc, argv, self)
+    int argc;
+    VALUE *argv;
+    VALUE self;
+{
+    VALUE res;
+    struct pty_info info;
+    struct pty_info thinfo;
+    rb_io_t *wfptr,*rfptr;
+    VALUE rport = rb_obj_alloc(rb_cFile);
+    VALUE wport = rb_obj_alloc(rb_cFile);
+    char SlaveName[DEVICELEN];
+
+    MakeOpenFile(rport, rfptr);
+    MakeOpenFile(wport, wfptr);
+
+    establishShell(argc, argv, &amp;info, SlaveName);
+
+    rfptr-&gt;mode = rb_io_mode_flags(&quot;r&quot;);
+    rfptr-&gt;f = fdopen(info.fd, &quot;r&quot;);
+    rfptr-&gt;path = strdup(SlaveName);
+
+    wfptr-&gt;mode = rb_io_mode_flags(&quot;w&quot;) | FMODE_SYNC;
+    wfptr-&gt;f = fdopen(dup(info.fd), &quot;w&quot;);
+    wfptr-&gt;path = strdup(SlaveName);
+
+    res = rb_ary_new2(3);
+    rb_ary_store(res,0,(VALUE)rport);
+    rb_ary_store(res,1,(VALUE)wport);
+    rb_ary_store(res,2,INT2FIX(info.child_pid));
+
+    thinfo.thread = rb_thread_create(pty_syswait, (void*)&amp;info);
+    thinfo.child_pid = info.child_pid;
+    rb_thread_schedule();
+
+    if (rb_block_given_p()) {
+        rb_ensure(rb_yield, res, pty_finalize_syswait, (VALUE)&amp;thinfo);
+        return Qnil;
+    }
+    return res;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

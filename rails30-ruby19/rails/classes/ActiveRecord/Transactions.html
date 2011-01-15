@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>ActiveRecord::Transactions</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Module</span> 
+            ActiveRecord::Transactions 
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../files/activerecord/lib/active_record/transactions_rb.html">activerecord/lib/active_record/transactions.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+See <a
+href="Transactions/ClassMethods.html">ActiveRecord::Transactions::ClassMethods</a>
+for documentation.
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>A</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000895">add_to_transaction</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000898">clear_transaction_record_state</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>R</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000897">remember_transaction_record_state</a>,</li>
+                
+                <li><a href="#M000899">restore_transaction_record_state</a>,</li>
+                
+                <li><a href="#M000892">rollback_active_record_state!</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>T</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000888">transaction</a>,</li>
+                
+                <li><a href="#M000901">transaction_include_action?</a>,</li>
+                
+                <li><a href="#M000900">transaction_record_state</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>W</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000896">with_transaction_returning_status</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Classes and Modules</div>
+    <ul>
+        
+        <li><span class="type">MODULE</span> <a href="Transactions/ClassMethods.html">ActiveRecord::Transactions::ClassMethods</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="Transactions/TransactionError.html">ActiveRecord::Transactions::TransactionError</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M000895">
+                    
+                    <a name="M000895"></a><b>add_to_transaction</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Add the record to the current transaction so that the :after_rollback and
+:after_commit callbacks can be called.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000895_source')" id="l_M000895_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/207fa59675cb624dde0e01c1d57597f752cdf095/activerecord/lib/active_record/transactions.rb#L273" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000895_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File activerecord/lib/active_record/transactions.rb, line 273</span>
+273:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">add_to_transaction</span>
+274:       <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">connection</span>.<span class="ruby-identifier">add_transaction_record</span>(<span class="ruby-keyword kw">self</span>)
+275:         <span class="ruby-identifier">remember_transaction_record_state</span>
+276:       <span class="ruby-keyword kw">end</span>
+277:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000892">
+                    
+                    <a name="M000892"></a><b>rollback_active_record_state!</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Reset id and @new_record if the transaction rolls back.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000892_source')" id="l_M000892_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/207fa59675cb624dde0e01c1d57597f752cdf095/activerecord/lib/active_record/transactions.rb#L246" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000892_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File activerecord/lib/active_record/transactions.rb, line 246</span>
+246:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">rollback_active_record_state!</span>
+247:       <span class="ruby-identifier">remember_transaction_record_state</span>
+248:       <span class="ruby-keyword kw">yield</span>
+249:     <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Exception</span>
+250:       <span class="ruby-identifier">restore_transaction_record_state</span>
+251:       <span class="ruby-identifier">raise</span>
+252:     <span class="ruby-keyword kw">ensure</span>
+253:       <span class="ruby-identifier">clear_transaction_record_state</span>
+254:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000888">
+                    
+                    <a name="M000888"></a><b>transaction</b>(&amp;block)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+See <a
+href="Transactions/ClassMethods.html">ActiveRecord::Transactions::ClassMethods</a>
+for detailed documentation.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000888_source')" id="l_M000888_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/207fa59675cb624dde0e01c1d57597f752cdf095/activerecord/lib/active_record/transactions.rb#L227" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000888_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File activerecord/lib/active_record/transactions.rb, line 227</span>
+227:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">transaction</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+228:       <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">transaction</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+229:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000896">
+                    
+                    <a name="M000896"></a><b>with_transaction_returning_status</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Executes <tt>method</tt> within a transaction and captures its return value
+as a status flag. If the status is true the transaction is committed,
+otherwise a ROLLBACK is issued. In any case the status flag is returned.
+</p>
+<p>
+This method is available within the context of an <a
+href="Base.html">ActiveRecord::Base</a> instance.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000896_source')" id="l_M000896_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/207fa59675cb624dde0e01c1d57597f752cdf095/activerecord/lib/active_record/transactions.rb#L285" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000896_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File activerecord/lib/active_record/transactions.rb, line 285</span>
+285:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">with_transaction_returning_status</span>
+286:       <span class="ruby-identifier">status</span> = <span class="ruby-keyword kw">nil</span>
+287:       <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">transaction</span> <span class="ruby-keyword kw">do</span>
+288:         <span class="ruby-identifier">add_to_transaction</span>
+289:         <span class="ruby-identifier">status</span> = <span class="ruby-keyword kw">yield</span>
+290:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">ActiveRecord</span><span class="ruby-operator">::</span><span class="ruby-constant">Rollback</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">status</span>
+291:       <span class="ruby-keyword kw">end</span>
+292:       <span class="ruby-identifier">status</span>
+293:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Protected methods</div>
+            
+            <div class="method">
+                <div class="title" id="M000898">
+                    
+                    <a name="M000898"></a><b>clear_transaction_record_state</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Clear the new record state and id of a record.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000898_source')" id="l_M000898_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/207fa59675cb624dde0e01c1d57597f752cdf095/activerecord/lib/active_record/transactions.rb#L311" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000898_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File activerecord/lib/active_record/transactions.rb, line 311</span>
+311:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">clear_transaction_record_state</span> <span class="ruby-comment cmt">#:nodoc</span>
+312:       <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">defined?</span>(<span class="ruby-ivar">@_start_transaction_state</span>)
+313:         <span class="ruby-ivar">@_start_transaction_state</span>[<span class="ruby-identifier">:level</span>] = (<span class="ruby-ivar">@_start_transaction_state</span>[<span class="ruby-identifier">:level</span>] <span class="ruby-operator">||</span> <span class="ruby-value">0</span>) <span class="ruby-operator">-</span> <span class="ruby-value">1</span>
+314:         <span class="ruby-identifier">remove_instance_variable</span>(<span class="ruby-identifier">:@_start_transaction_state</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@_start_transaction_state</span>[<span class="ruby-identifier">:level</span>] <span class="ruby-operator">&lt;</span> <span class="ruby-value">1</span>
+315:       <span class="ruby-keyword kw">end</span>
+316:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000897">
+                    
+                    <a name="M000897"></a><b>remember_transaction_record_state</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Save the new record state and id of a record so it can be restored later if
+a transaction fails.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000897_source')" id="l_M000897_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/207fa59675cb624dde0e01c1d57597f752cdf095/activerecord/lib/active_record/transactions.rb#L298" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000897_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File activerecord/lib/active_record/transactions.rb, line 298</span>
+298:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">remember_transaction_record_state</span> <span class="ruby-comment cmt">#:nodoc</span>
+299:       <span class="ruby-ivar">@_start_transaction_state</span> <span class="ruby-operator">||=</span> {}
+300:       <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@_start_transaction_state</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">:new_record</span>)
+301:         <span class="ruby-ivar">@_start_transaction_state</span>[<span class="ruby-identifier">:id</span>] = <span class="ruby-identifier">id</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">has_attribute?</span>(<span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">primary_key</span>)
+302:         <span class="ruby-ivar">@_start_transaction_state</span>[<span class="ruby-identifier">:new_record</span>] = <span class="ruby-ivar">@new_record</span>
+303:       <span class="ruby-keyword kw">end</span>
+304:       <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@_start_transaction_state</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">:destroyed</span>)
+305:         <span class="ruby-ivar">@_start_transaction_state</span>[<span class="ruby-identifier">:destroyed</span>] = <span class="ruby-ivar">@destroyed</span>
+306:       <span class="ruby-keyword kw">end</span>
+307:       <span class="ruby-ivar">@_start_transaction_state</span>[<span class="ruby-identifier">:level</span>] = (<span class="ruby-ivar">@_start_transaction_state</span>[<span class="ruby-identifier">:level</span>] <span class="ruby-operator">||</span> <span class="ruby-value">0</span>) <span class="ruby-operator">+</span> <span class="ruby-value">1</span>
+308:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000899">
+                    
+                    <a name="M000899"></a><b>restore_transaction_record_state</b>(force = false)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Restore the new record state and id of a record that was previously saved
+by a call to save_record_state.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000899_source')" id="l_M000899_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/207fa59675cb624dde0e01c1d57597f752cdf095/activerecord/lib/active_record/transactions.rb#L319" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000899_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File activerecord/lib/active_record/transactions.rb, line 319</span>
+319:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">restore_transaction_record_state</span>(<span class="ruby-identifier">force</span> = <span class="ruby-keyword kw">false</span>) <span class="ruby-comment cmt">#:nodoc</span>
+320:       <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">defined?</span>(<span class="ruby-ivar">@_start_transaction_state</span>)
+321:         <span class="ruby-ivar">@_start_transaction_state</span>[<span class="ruby-identifier">:level</span>] = (<span class="ruby-ivar">@_start_transaction_state</span>[<span class="ruby-identifier">:level</span>] <span class="ruby-operator">||</span> <span class="ruby-value">0</span>) <span class="ruby-operator">-</span> <span class="ruby-value">1</span>
+322:         <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@_start_transaction_state</span>[<span class="ruby-identifier">:level</span>] <span class="ruby-operator">&lt;</span> <span class="ruby-value">1</span>
+323:           <span class="ruby-identifier">restore_state</span> = <span class="ruby-identifier">remove_instance_variable</span>(<span class="ruby-identifier">:@_start_transaction_state</span>)
+324:           <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">restore_state</span>
+325:             <span class="ruby-ivar">@attributes</span> = <span class="ruby-ivar">@attributes</span>.<span class="ruby-identifier">dup</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@attributes</span>.<span class="ruby-identifier">frozen?</span>
+326:             <span class="ruby-ivar">@new_record</span> = <span class="ruby-identifier">restore_state</span>[<span class="ruby-identifier">:new_record</span>]
+327:             <span class="ruby-ivar">@destroyed</span> = <span class="ruby-identifier">restore_state</span>[<span class="ruby-identifier">:destroyed</span>]
+328:             <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">restore_state</span>[<span class="ruby-identifier">:id</span>]
+329:               <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">id</span> = <span class="ruby-identifier">restore_state</span>[<span class="ruby-identifier">:id</span>]
+330:             <span class="ruby-keyword kw">else</span>
+331:               <span class="ruby-ivar">@attributes</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">primary_key</span>)
+332:               <span class="ruby-ivar">@attributes_cache</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">primary_key</span>)
+333:             <span class="ruby-keyword kw">end</span>
+334:           <span class="ruby-keyword kw">end</span>
+335:         <span class="ruby-keyword kw">end</span>
+336:       <span class="ruby-keyword kw">end</span>
+337:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000901">
+                    
+                    <a name="M000901"></a><b>transaction_include_action?</b>(action)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Determine if a transaction included an action for :create, :update, or
+:destroy. Used in filtering callbacks.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000901_source')" id="l_M000901_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/207fa59675cb624dde0e01c1d57597f752cdf095/activerecord/lib/active_record/transactions.rb#L345" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000901_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File activerecord/lib/active_record/transactions.rb, line 345</span>
+345:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">transaction_include_action?</span>(<span class="ruby-identifier">action</span>) <span class="ruby-comment cmt">#:nodoc</span>
+346:       <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">action</span>
+347:       <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:create</span>
+348:         <span class="ruby-identifier">transaction_record_state</span>(<span class="ruby-identifier">:new_record</span>)
+349:       <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:destroy</span>
+350:         <span class="ruby-identifier">destroyed?</span>
+351:       <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:update</span>
+352:         <span class="ruby-operator">!</span>(<span class="ruby-identifier">transaction_record_state</span>(<span class="ruby-identifier">:new_record</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">destroyed?</span>)
+353:       <span class="ruby-keyword kw">end</span>
+354:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000900">
+                    
+                    <a name="M000900"></a><b>transaction_record_state</b>(state)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Determine if a record was created or destroyed in a transaction. State
+should be one of :new_record or :destroyed.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000900_source')" id="l_M000900_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/207fa59675cb624dde0e01c1d57597f752cdf095/activerecord/lib/active_record/transactions.rb#L340" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M000900_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File activerecord/lib/active_record/transactions.rb, line 340</span>
+340:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">transaction_record_state</span>(<span class="ruby-identifier">state</span>) <span class="ruby-comment cmt">#:nodoc</span>
+341:       <span class="ruby-ivar">@_start_transaction_state</span>[<span class="ruby-identifier">state</span>] <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">defined?</span>(<span class="ruby-ivar">@_start_transaction_state</span>)
+342:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

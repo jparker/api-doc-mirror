@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Newton</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Module</span> 
+            Newton 
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/ext/bigdecimal/lib/bigdecimal/newton_rb.html">ext/bigdecimal/lib/bigdecimal/newton.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007763">nlsolve</a>,</li>
+                
+                <li><a href="#M007762">norm</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+    <div class="sectiontitle">Included Modules</div>
+    <ul>
+        
+        <li>
+            
+            <a href="Marshal.html">Marshal</a>
+            
+            START:includes
+        </li>
+        
+        <li>
+            
+            <a href="Marshal.html">Marshal</a>
+            
+            START:includes
+        </li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M007763">
+                    
+                    <a name="M007763"></a><b>nlsolve</b>(f,x)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007763_source')" id="l_M007763_source">show</a>
+                        
+                    </p>
+                    <div id="M007763_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File ext/bigdecimal/lib/bigdecimal/newton.rb, line 41</span>
+41:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">nlsolve</span>(<span class="ruby-identifier">f</span>,<span class="ruby-identifier">x</span>)
+42:     <span class="ruby-identifier">nRetry</span> = <span class="ruby-value">0</span>
+43:     <span class="ruby-identifier">n</span> = <span class="ruby-identifier">x</span>.<span class="ruby-identifier">size</span>
+44: 
+45:     <span class="ruby-identifier">f0</span> = <span class="ruby-identifier">f</span>.<span class="ruby-identifier">values</span>(<span class="ruby-identifier">x</span>)
+46:     <span class="ruby-identifier">zero</span> = <span class="ruby-identifier">f</span>.<span class="ruby-identifier">zero</span>
+47:     <span class="ruby-identifier">one</span>  = <span class="ruby-identifier">f</span>.<span class="ruby-identifier">one</span>
+48:     <span class="ruby-identifier">two</span>  = <span class="ruby-identifier">f</span>.<span class="ruby-identifier">two</span>
+49:     <span class="ruby-identifier">p5</span> = <span class="ruby-identifier">one</span><span class="ruby-operator">/</span><span class="ruby-identifier">two</span>
+50:     <span class="ruby-identifier">d</span>  = <span class="ruby-identifier">norm</span>(<span class="ruby-identifier">f0</span>,<span class="ruby-identifier">zero</span>)
+51:     <span class="ruby-identifier">minfact</span> = <span class="ruby-identifier">f</span>.<span class="ruby-identifier">ten</span><span class="ruby-operator">*</span><span class="ruby-identifier">f</span>.<span class="ruby-identifier">ten</span><span class="ruby-operator">*</span><span class="ruby-identifier">f</span>.<span class="ruby-identifier">ten</span>
+52:     <span class="ruby-identifier">minfact</span> = <span class="ruby-identifier">one</span><span class="ruby-operator">/</span><span class="ruby-identifier">minfact</span>
+53:     <span class="ruby-identifier">e</span> = <span class="ruby-identifier">f</span>.<span class="ruby-identifier">eps</span>
+54:     <span class="ruby-keyword kw">while</span> <span class="ruby-identifier">d</span> <span class="ruby-operator">&gt;=</span> <span class="ruby-identifier">e</span> <span class="ruby-keyword kw">do</span>
+55:       <span class="ruby-identifier">nRetry</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
+56:       <span class="ruby-comment cmt"># Not yet converged. =&gt; Compute Jacobian matrix</span>
+57:       <span class="ruby-identifier">dfdx</span> = <span class="ruby-identifier">jacobian</span>(<span class="ruby-identifier">f</span>,<span class="ruby-identifier">f0</span>,<span class="ruby-identifier">x</span>)
+58:       <span class="ruby-comment cmt"># Solve dfdx*dx = -f0 to estimate dx</span>
+59:       <span class="ruby-identifier">dx</span> = <span class="ruby-identifier">lusolve</span>(<span class="ruby-identifier">dfdx</span>,<span class="ruby-identifier">f0</span>,<span class="ruby-identifier">ludecomp</span>(<span class="ruby-identifier">dfdx</span>,<span class="ruby-identifier">n</span>,<span class="ruby-identifier">zero</span>,<span class="ruby-identifier">one</span>),<span class="ruby-identifier">zero</span>)
+60:       <span class="ruby-identifier">fact</span> = <span class="ruby-identifier">two</span>
+61:       <span class="ruby-identifier">xs</span> = <span class="ruby-identifier">x</span>.<span class="ruby-identifier">dup</span>
+62:       <span class="ruby-keyword kw">begin</span>
+63:         <span class="ruby-identifier">fact</span> <span class="ruby-operator">*=</span> <span class="ruby-identifier">p5</span>
+64:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">fact</span> <span class="ruby-operator">&lt;</span> <span class="ruby-identifier">minfact</span> <span class="ruby-keyword kw">then</span>
+65:           <span class="ruby-identifier">raise</span> <span class="ruby-value str">&quot;Failed to reduce function values.&quot;</span>
+66:         <span class="ruby-keyword kw">end</span>
+67:         <span class="ruby-keyword kw">for</span> <span class="ruby-identifier">i</span> <span class="ruby-keyword kw">in</span> <span class="ruby-value">0</span><span class="ruby-operator">...</span><span class="ruby-identifier">n</span> <span class="ruby-keyword kw">do</span>
+68:           <span class="ruby-identifier">x</span>[<span class="ruby-identifier">i</span>] = <span class="ruby-identifier">xs</span>[<span class="ruby-identifier">i</span>] <span class="ruby-operator">-</span> <span class="ruby-identifier">dx</span>[<span class="ruby-identifier">i</span>]<span class="ruby-operator">*</span><span class="ruby-identifier">fact</span>
+69:         <span class="ruby-keyword kw">end</span>
+70:         <span class="ruby-identifier">f0</span> = <span class="ruby-identifier">f</span>.<span class="ruby-identifier">values</span>(<span class="ruby-identifier">x</span>)
+71:         <span class="ruby-identifier">dn</span> = <span class="ruby-identifier">norm</span>(<span class="ruby-identifier">f0</span>,<span class="ruby-identifier">zero</span>)
+72:       <span class="ruby-keyword kw">end</span> <span class="ruby-keyword kw">while</span>(<span class="ruby-identifier">dn</span><span class="ruby-operator">&gt;=</span><span class="ruby-identifier">d</span>)
+73:       <span class="ruby-identifier">d</span> = <span class="ruby-identifier">dn</span>
+74:     <span class="ruby-keyword kw">end</span>
+75:     <span class="ruby-identifier">nRetry</span>
+76:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007762">
+                    
+                    <a name="M007762"></a><b>norm</b>(fv,zero=0.0)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007762_source')" id="l_M007762_source">show</a>
+                        
+                    </p>
+                    <div id="M007762_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File ext/bigdecimal/lib/bigdecimal/newton.rb, line 32</span>
+32:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">norm</span>(<span class="ruby-identifier">fv</span>,<span class="ruby-identifier">zero</span>=<span class="ruby-value">0</span><span class="ruby-value">.0</span>)
+33:     <span class="ruby-identifier">s</span> = <span class="ruby-identifier">zero</span>
+34:     <span class="ruby-identifier">n</span> = <span class="ruby-identifier">fv</span>.<span class="ruby-identifier">size</span>
+35:     <span class="ruby-keyword kw">for</span> <span class="ruby-identifier">i</span> <span class="ruby-keyword kw">in</span> <span class="ruby-value">0</span><span class="ruby-operator">...</span><span class="ruby-identifier">n</span> <span class="ruby-keyword kw">do</span>
+36:       <span class="ruby-identifier">s</span> <span class="ruby-operator">+=</span> <span class="ruby-identifier">fv</span>[<span class="ruby-identifier">i</span>]<span class="ruby-operator">*</span><span class="ruby-identifier">fv</span>[<span class="ruby-identifier">i</span>]
+37:     <span class="ruby-keyword kw">end</span>
+38:     <span class="ruby-identifier">s</span>
+39:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

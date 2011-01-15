@@ -1,0 +1,711 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>UnboundMethod</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            UnboundMethod 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/eval_c.html">eval.c</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+Ruby supports two forms of objectified methods. <a
+href="Class.html">Class</a> <tt>Method</tt> is used to represent methods
+that are associated with a particular object: these method objects are
+bound to that object. Bound method objects for an object can be created
+using <tt><a href="Object.html#M001106">Object#method</a></tt>.
+</p>
+<p>
+Ruby also supports unbound methods; methods objects that are not associated
+with a particular object. These can be created either by calling <tt><a
+href="Module.html#M001115">Module#instance_method</a></tt> or by calling
+<tt>unbind</tt> on a bound method object. The result of both of these is an
+<tt>UnboundMethod</tt> object.
+</p>
+<p>
+Unbound methods can only be called after they are bound to an object. That
+object must be be a kind_of? the method&#8217;s original class.
+</p>
+<pre>
+   class Square
+     def area
+       @side * @side
+     end
+     def initialize(side)
+       @side = side
+     end
+   end
+
+   area_un = Square.instance_method(:area)
+
+   s = Square.new(12)
+   area = area_un.bind(s)
+   area.call   #=&gt; 144
+</pre>
+<p>
+Unbound methods are a reference to the method at the time it was
+objectified: subsequent changes to the underlying class will not affect the
+unbound method.
+</p>
+<pre>
+   class Test
+     def test
+       :original
+     end
+   end
+   um = Test.instance_method(:test)
+   class Test
+     def test
+       :modified
+     end
+   end
+   t = Test.new
+   t.test            #=&gt; :modified
+   um.bind(t).call   #=&gt; :original
+</pre>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>#</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001107">==</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>A</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001109">arity</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>B</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001114">bind</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001108">clone</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>I</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001110">inspect</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001112">name</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>O</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001113">owner</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>T</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001111">to_s</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M001107">
+                    
+                    <a name="M001107"></a><b>meth == other_meth  => true or false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Two method objects are equal if that are bound to the same object and
+contain the same body.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001107_source')" id="l_M001107_source">show</a>
+                        
+                    </p>
+                    <div id="M001107_source" class="dyn-source">
+                        <pre>static VALUE
+method_eq(method, other)
+    VALUE method, other;
+{
+    struct METHOD *m1, *m2;
+
+    if (TYPE(other) != T_DATA || RDATA(other)-&gt;dmark != (RUBY_DATA_FUNC)bm_mark)
+        return Qfalse;
+    if (CLASS_OF(method) != CLASS_OF(other))
+        return Qfalse;
+
+    Data_Get_Struct(method, struct METHOD, m1);
+    Data_Get_Struct(other, struct METHOD, m2);
+
+    if (m1-&gt;klass != m2-&gt;klass || m1-&gt;rklass != m2-&gt;rklass ||
+        m1-&gt;recv != m2-&gt;recv || m1-&gt;body != m2-&gt;body)
+        return Qfalse;
+
+    return Qtrue;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001109">
+                    
+                    <a name="M001109"></a><b>meth.arity    => fixnum
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns an indication of the number of arguments accepted by a method.
+Returns a nonnegative integer for methods that take a fixed number of
+arguments. For Ruby methods that take a variable number of arguments,
+returns -n-1, where n is the number of required arguments. For methods
+written in C, returns -1 if the call takes a variable number of arguments.
+</p>
+<pre>
+   class C
+     def one;    end
+     def two(a); end
+     def three(*a);  end
+     def four(a, b); end
+     def five(a, b, *c);    end
+     def six(a, b, *c, &amp;d); end
+   end
+   c = C.new
+   c.method(:one).arity     #=&gt; 0
+   c.method(:two).arity     #=&gt; 1
+   c.method(:three).arity   #=&gt; -1
+   c.method(:four).arity    #=&gt; 2
+   c.method(:five).arity    #=&gt; -3
+   c.method(:six).arity     #=&gt; -3
+
+   &quot;cat&quot;.method(:size).arity      #=&gt; 0
+   &quot;cat&quot;.method(:replace).arity   #=&gt; 1
+   &quot;cat&quot;.method(:squeeze).arity   #=&gt; -1
+   &quot;cat&quot;.method(:count).arity     #=&gt; -1
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001109_source')" id="l_M001109_source">show</a>
+                        
+                    </p>
+                    <div id="M001109_source" class="dyn-source">
+                        <pre>static VALUE
+method_arity(method)
+    VALUE method;
+{
+    struct METHOD *data;
+    NODE *body;
+    int n;
+
+    Data_Get_Struct(method, struct METHOD, data);
+
+    body = data-&gt;body;
+    switch (nd_type(body)) {
+      case NODE_CFUNC:
+        if (body-&gt;nd_argc &lt; 0) return INT2FIX(-1);
+        return INT2FIX(body-&gt;nd_argc);
+      case NODE_ZSUPER:
+        return INT2FIX(-1);
+      case NODE_ATTRSET:
+        return INT2FIX(1);
+      case NODE_IVAR:
+        return INT2FIX(0);
+      case NODE_BMETHOD:
+        return proc_arity(body-&gt;nd_cval);
+      case NODE_DMETHOD:
+        return method_arity(body-&gt;nd_cval);
+      case NODE_SCOPE:
+        body = body-&gt;nd_next;  /* skip NODE_SCOPE */
+        if (nd_type(body) == NODE_BLOCK)
+            body = body-&gt;nd_head;
+        if (!body) return INT2FIX(0);
+        n = body-&gt;nd_cnt;
+        if (body-&gt;nd_opt || body-&gt;nd_rest)
+            n = -n-1;
+        return INT2FIX(n);
+      default:
+        rb_raise(rb_eArgError, &quot;invalid node 0x%x&quot;, nd_type(body));
+   }
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001114">
+                    
+                    <a name="M001114"></a><b>umeth.bind(obj) &rarr; method
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Bind <em>umeth</em> to <em>obj</em>. If <tt>Klass</tt> was the class from
+which <em>umeth</em> was obtained, <tt>obj.kind_of?(Klass)</tt> must be
+true.
+</p>
+<pre>
+   class A
+     def test
+       puts &quot;In test, class = #{self.class}&quot;
+     end
+   end
+   class B &lt; A
+   end
+   class C &lt; B
+   end
+
+   um = B.instance_method(:test)
+   bm = um.bind(C.new)
+   bm.call
+   bm = um.bind(B.new)
+   bm.call
+   bm = um.bind(A.new)
+   bm.call
+</pre>
+<p>
+<em>produces:</em>
+</p>
+<pre>
+   In test, class = C
+   In test, class = B
+   prog.rb:16:in `bind': bind argument must be an instance of B (TypeError)
+    from prog.rb:16
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001114_source')" id="l_M001114_source">show</a>
+                        
+                    </p>
+                    <div id="M001114_source" class="dyn-source">
+                        <pre>static VALUE
+umethod_bind(method, recv)
+    VALUE method, recv;
+{
+    struct METHOD *data, *bound;
+    VALUE rklass = CLASS_OF(recv);
+
+    Data_Get_Struct(method, struct METHOD, data);
+    if (data-&gt;rklass != rklass) {
+        if (FL_TEST(data-&gt;rklass, FL_SINGLETON)) {
+            rb_raise(rb_eTypeError, &quot;singleton method bound for a different object&quot;);
+        }
+        if (TYPE(data-&gt;rklass) == T_MODULE) {
+            st_table *m_tbl = RCLASS(data-&gt;rklass)-&gt;m_tbl;
+            while (RCLASS(rklass)-&gt;m_tbl != m_tbl) {
+                rklass = RCLASS(rklass)-&gt;super;
+                if (!rklass) goto not_instace;
+            }
+        }
+        else if (!rb_obj_is_kind_of(recv, data-&gt;rklass)) {
+          not_instace:
+            rb_raise(rb_eTypeError, &quot;bind argument must be an instance of %s&quot;,
+                     rb_class2name(data-&gt;rklass));
+        }
+    }
+
+    method = Data_Make_Struct(rb_cMethod,struct METHOD,bm_mark,free,bound);
+    *bound = *data;
+    bound-&gt;recv = recv;
+    bound-&gt;rklass = rklass;
+
+    return method;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001108">
+                    
+                    <a name="M001108"></a><b>clone</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+MISSING: documentation
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001108_source')" id="l_M001108_source">show</a>
+                        
+                    </p>
+                    <div id="M001108_source" class="dyn-source">
+                        <pre>static VALUE
+method_clone(self)
+    VALUE self;
+{
+    VALUE clone;
+    struct METHOD *orig, *data;
+
+    Data_Get_Struct(self, struct METHOD, orig);
+    clone = Data_Make_Struct(CLASS_OF(self),struct METHOD, bm_mark, free, data);
+    CLONESETUP(clone, self);
+    *data = *orig;
+
+    return clone;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001110">
+                    
+                    <a name="M001110"></a><b>meth.to_s      =>  string
+meth.inspect   =>  string
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Show the name of the underlying method.
+</p>
+<pre>
+  &quot;cat&quot;.method(:count).inspect   #=&gt; &quot;#&lt;Method: String#count&gt;&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001110_source')" id="l_M001110_source">show</a>
+                        
+                    </p>
+                    <div id="M001110_source" class="dyn-source">
+                        <pre>static VALUE
+method_inspect(method)
+    VALUE method;
+{
+    struct METHOD *data;
+    VALUE str;
+    const char *s;
+    const char *sharp = &quot;#&quot;;
+
+    Data_Get_Struct(method, struct METHOD, data);
+    str = rb_str_buf_new2(&quot;#&lt;&quot;);
+    s = rb_obj_classname(method);
+    rb_str_buf_cat2(str, s);
+    rb_str_buf_cat2(str, &quot;: &quot;);
+
+    if (FL_TEST(data-&gt;klass, FL_SINGLETON)) {
+        VALUE v = rb_iv_get(data-&gt;klass, &quot;__attached__&quot;);
+
+        if (data-&gt;recv == Qundef) {
+            rb_str_buf_append(str, rb_inspect(data-&gt;klass));
+        }
+        else if (data-&gt;recv == v) {
+            rb_str_buf_append(str, rb_inspect(v));
+            sharp = &quot;.&quot;;
+        }
+        else {
+            rb_str_buf_append(str, rb_inspect(data-&gt;recv));
+            rb_str_buf_cat2(str, &quot;(&quot;);
+            rb_str_buf_append(str, rb_inspect(v));
+            rb_str_buf_cat2(str, &quot;)&quot;);
+            sharp = &quot;.&quot;;
+        }
+    }
+    else {
+        rb_str_buf_cat2(str, rb_class2name(data-&gt;rklass));
+        if (data-&gt;rklass != data-&gt;klass) {
+            rb_str_buf_cat2(str, &quot;(&quot;);
+            rb_str_buf_cat2(str, rb_class2name(data-&gt;klass));
+            rb_str_buf_cat2(str, &quot;)&quot;);
+        }
+    }
+    rb_str_buf_cat2(str, sharp);
+    rb_str_buf_cat2(str, rb_id2name(data-&gt;oid));
+    rb_str_buf_cat2(str, &quot;&gt;&quot;);
+
+    return str;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001112">
+                    
+                    <a name="M001112"></a><b>meth.name    => string
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the name of the method.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001112_source')" id="l_M001112_source">show</a>
+                        
+                    </p>
+                    <div id="M001112_source" class="dyn-source">
+                        <pre>static VALUE
+method_name(obj)
+    VALUE obj;
+{
+    struct METHOD *data;
+
+    Data_Get_Struct(obj, struct METHOD, data);
+    return rb_str_new2(rb_id2name(data-&gt;oid));
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001113">
+                    
+                    <a name="M001113"></a><b>meth.owner    => class_or_module
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the class or module that defines the method.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001113_source')" id="l_M001113_source">show</a>
+                        
+                    </p>
+                    <div id="M001113_source" class="dyn-source">
+                        <pre>static VALUE
+method_owner(obj)
+    VALUE obj;
+{
+    struct METHOD *data;
+
+    Data_Get_Struct(obj, struct METHOD, data);
+    return data-&gt;klass;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001111">
+                    
+                    <a name="M001111"></a><b>meth.to_s      =>  string
+meth.inspect   =>  string
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Show the name of the underlying method.
+</p>
+<pre>
+  &quot;cat&quot;.method(:count).inspect   #=&gt; &quot;#&lt;Method: String#count&gt;&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001111_source')" id="l_M001111_source">show</a>
+                        
+                    </p>
+                    <div id="M001111_source" class="dyn-source">
+                        <pre>static VALUE
+method_inspect(method)
+    VALUE method;
+{
+    struct METHOD *data;
+    VALUE str;
+    const char *s;
+    const char *sharp = &quot;#&quot;;
+
+    Data_Get_Struct(method, struct METHOD, data);
+    str = rb_str_buf_new2(&quot;#&lt;&quot;);
+    s = rb_obj_classname(method);
+    rb_str_buf_cat2(str, s);
+    rb_str_buf_cat2(str, &quot;: &quot;);
+
+    if (FL_TEST(data-&gt;klass, FL_SINGLETON)) {
+        VALUE v = rb_iv_get(data-&gt;klass, &quot;__attached__&quot;);
+
+        if (data-&gt;recv == Qundef) {
+            rb_str_buf_append(str, rb_inspect(data-&gt;klass));
+        }
+        else if (data-&gt;recv == v) {
+            rb_str_buf_append(str, rb_inspect(v));
+            sharp = &quot;.&quot;;
+        }
+        else {
+            rb_str_buf_append(str, rb_inspect(data-&gt;recv));
+            rb_str_buf_cat2(str, &quot;(&quot;);
+            rb_str_buf_append(str, rb_inspect(v));
+            rb_str_buf_cat2(str, &quot;)&quot;);
+            sharp = &quot;.&quot;;
+        }
+    }
+    else {
+        rb_str_buf_cat2(str, rb_class2name(data-&gt;rklass));
+        if (data-&gt;rklass != data-&gt;klass) {
+            rb_str_buf_cat2(str, &quot;(&quot;);
+            rb_str_buf_cat2(str, rb_class2name(data-&gt;klass));
+            rb_str_buf_cat2(str, &quot;)&quot;);
+        }
+    }
+    rb_str_buf_cat2(str, sharp);
+    rb_str_buf_cat2(str, rb_id2name(data-&gt;oid));
+    rb_str_buf_cat2(str, &quot;&gt;&quot;);
+
+    return str;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

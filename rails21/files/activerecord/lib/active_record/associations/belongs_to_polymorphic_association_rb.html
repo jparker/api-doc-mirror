@@ -1,0 +1,68 @@
+  <div id="fileHeader">
+    <h1>belongs_to_polymorphic_association.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activerecord/lib/active_record/associations/belongs_to_polymorphic_association.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>module ActiveRecord
+  module Associations
+    class BelongsToPolymorphicAssociation &lt; AssociationProxy #:nodoc:
+      def replace(record)
+        if record.nil?
+          @target = @owner[@reflection.primary_key_name] = @owner[@reflection.options[:foreign_type]] = nil
+        else
+          @target = (AssociationProxy === record ? record.target : record)
+
+          @owner[@reflection.primary_key_name] = record.id
+          @owner[@reflection.options[:foreign_type]] = record.class.base_class.name.to_s
+
+          @updated = true
+        end
+
+        loaded
+        record
+      end
+
+      def updated?
+        @updated
+      end
+
+      private
+        def find_target
+          return nil if association_class.nil?
+
+          if @reflection.options[:conditions]
+            association_class.find(
+              @owner[@reflection.primary_key_name],
+              :select     =&gt; @reflection.options[:select],
+              :conditions =&gt; conditions,
+              :include    =&gt; @reflection.options[:include]
+            )
+          else
+            association_class.find(@owner[@reflection.primary_key_name], :select =&gt; @reflection.options[:select], :include =&gt; @reflection.options[:include])
+          end
+        end
+
+        def foreign_key_present
+          !@owner[@reflection.primary_key_name].nil?
+        end
+
+        def association_class
+          @owner[@reflection.options[:foreign_type]] ? @owner[@reflection.options[:foreign_type]].constantize : nil
+        end
+    end
+  end
+end
+</pre>
+    </div>

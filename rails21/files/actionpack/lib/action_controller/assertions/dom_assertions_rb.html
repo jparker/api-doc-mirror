@@ -1,0 +1,58 @@
+  <div id="fileHeader">
+    <h1>dom_assertions.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionpack/lib/action_controller/assertions/dom_assertions.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:04 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>module ActionController
+  module Assertions
+    module DomAssertions
+      # Test two HTML strings for equivalency (e.g., identical up to reordering of attributes)
+      #
+      # ==== Examples
+      #
+      #   # assert that the referenced method generates the appropriate HTML string
+      #   assert_dom_equal '&lt;a href=&quot;http://www.example.com&quot;&gt;Apples&lt;/a&gt;', link_to(&quot;Apples&quot;, &quot;http://www.example.com&quot;)
+      #
+      def assert_dom_equal(expected, actual, message = &quot;&quot;)
+        clean_backtrace do
+          expected_dom = HTML::Document.new(expected).root
+          actual_dom   = HTML::Document.new(actual).root
+          full_message = build_message(message, &quot;&lt;?&gt; expected to be == to\n&lt;?&gt;.&quot;, expected_dom.to_s, actual_dom.to_s)
+
+          assert_block(full_message) { expected_dom == actual_dom }
+        end
+      end
+      
+      # The negated form of +assert_dom_equivalent+.
+      #
+      # ==== Examples
+      #
+      #   # assert that the referenced method does not generate the specified HTML string
+      #   assert_dom_not_equal '&lt;a href=&quot;http://www.example.com&quot;&gt;Apples&lt;/a&gt;', link_to(&quot;Oranges&quot;, &quot;http://www.example.com&quot;)
+      #
+      def assert_dom_not_equal(expected, actual, message = &quot;&quot;)
+        clean_backtrace do
+          expected_dom = HTML::Document.new(expected).root
+          actual_dom   = HTML::Document.new(actual).root
+          full_message = build_message(message, &quot;&lt;?&gt; expected to be != to\n&lt;?&gt;.&quot;, expected_dom.to_s, actual_dom.to_s)
+
+          assert_block(full_message) { expected_dom != actual_dom }
+        end
+      end
+    end
+  end
+end
+</pre>
+    </div>

@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>NTFS</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Module</span> 
+            NTFS 
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/ext/dl/sample/stream_rb.html">ext/dl/sample/stream.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007687">streams</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">OPEN_EXISTING</td>
+            <td>=</td>
+            <td class="attr-value">3</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">GENERIC_READ</td>
+            <td>=</td>
+            <td class="attr-value">0x80000000</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">BACKUP_DATA</td>
+            <td>=</td>
+            <td class="attr-value">0x00000001</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">BACKUP_ALTERNATE_DATA</td>
+            <td>=</td>
+            <td class="attr-value">0x00000004</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">FILE_SHARE_READ</td>
+            <td>=</td>
+            <td class="attr-value">0x00000001</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">FILE_FLAG_BACKUP_SEMANTICS</td>
+            <td>=</td>
+            <td class="attr-value">0x02000000</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+
+    
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M007687">
+                    
+                    <a name="M007687"></a><b>streams</b>(filename)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007687_source')" id="l_M007687_source">show</a>
+                        
+                    </p>
+                    <div id="M007687_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File ext/dl/sample/stream.rb, line 29</span>
+29:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">streams</span>(<span class="ruby-identifier">filename</span>)
+30:     <span class="ruby-identifier">status</span> = []
+31:     <span class="ruby-identifier">h</span> = <span class="ruby-identifier">createFile</span>(<span class="ruby-identifier">filename</span>,<span class="ruby-constant">GENERIC_READ</span>,<span class="ruby-constant">FILE_SHARE_READ</span>,<span class="ruby-keyword kw">nil</span>,
+32:                    <span class="ruby-constant">OPEN_EXISTING</span>,<span class="ruby-constant">FILE_FLAG_BACKUP_SEMANTICS</span>,<span class="ruby-value">0</span>)
+33:     <span class="ruby-keyword kw">if</span>( <span class="ruby-identifier">h</span> <span class="ruby-operator">!=</span> <span class="ruby-value">0</span> )
+34:       <span class="ruby-keyword kw">begin</span>
+35:         <span class="ruby-comment cmt"># allocate the memory for backup data used in backupRead().</span>
+36:         <span class="ruby-identifier">data</span> = <span class="ruby-constant">DL</span>.<span class="ruby-identifier">malloc</span>(<span class="ruby-constant">DL</span>.<span class="ruby-identifier">sizeof</span>(<span class="ruby-value str">&quot;L5&quot;</span>))
+37:         <span class="ruby-identifier">data</span>.<span class="ruby-identifier">struct!</span>(<span class="ruby-value str">&quot;LLLLL&quot;</span>, <span class="ruby-identifier">:id</span>, <span class="ruby-identifier">:attrs</span>, <span class="ruby-identifier">:size_low</span>, <span class="ruby-identifier">:size_high</span>, <span class="ruby-identifier">:name_size</span>)
+38: 
+39:         <span class="ruby-comment cmt"># allocate memories for references to long values used in backupRead().</span>
+40:         <span class="ruby-identifier">context</span> = <span class="ruby-constant">DL</span>.<span class="ruby-identifier">malloc</span>(<span class="ruby-constant">DL</span>.<span class="ruby-identifier">sizeof</span>(<span class="ruby-value str">&quot;L&quot;</span>))
+41:         <span class="ruby-identifier">lval</span> = <span class="ruby-constant">DL</span>.<span class="ruby-identifier">malloc</span>(<span class="ruby-constant">DL</span>.<span class="ruby-identifier">sizeof</span>(<span class="ruby-value str">&quot;L&quot;</span>))
+42: 
+43:         <span class="ruby-keyword kw">while</span>( <span class="ruby-identifier">backupRead</span>(<span class="ruby-identifier">h</span>, <span class="ruby-identifier">data</span>, <span class="ruby-identifier">data</span>.<span class="ruby-identifier">size</span>, <span class="ruby-identifier">lval</span>, <span class="ruby-keyword kw">false</span>, <span class="ruby-keyword kw">false</span>, <span class="ruby-identifier">context</span>) )
+44:           <span class="ruby-identifier">size</span> = <span class="ruby-identifier">data</span>[<span class="ruby-identifier">:size_low</span>] <span class="ruby-operator">+</span> (<span class="ruby-identifier">data</span>[<span class="ruby-identifier">:size_high</span>] <span class="ruby-operator">&lt;&lt;</span> (<span class="ruby-constant">DL</span>.<span class="ruby-identifier">sizeof</span>(<span class="ruby-value str">&quot;I&quot;</span>) <span class="ruby-operator">*</span> <span class="ruby-value">8</span>))
+45:           <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">data</span>[<span class="ruby-identifier">:id</span>]
+46:           <span class="ruby-keyword kw">when</span> <span class="ruby-constant">BACKUP_ALTERNATE_DATA</span>
+47:             <span class="ruby-identifier">stream_name</span> = <span class="ruby-constant">DL</span>.<span class="ruby-identifier">malloc</span>(<span class="ruby-identifier">data</span>[<span class="ruby-identifier">:name_size</span>])
+48:             <span class="ruby-identifier">backupRead</span>(<span class="ruby-identifier">h</span>, <span class="ruby-identifier">stream_name</span>, <span class="ruby-identifier">stream_name</span>.<span class="ruby-identifier">size</span>,
+49:                        <span class="ruby-identifier">lval</span>, <span class="ruby-keyword kw">false</span>, <span class="ruby-keyword kw">false</span>, <span class="ruby-identifier">context</span>)
+50:             <span class="ruby-identifier">name</span> = <span class="ruby-identifier">stream_name</span>[<span class="ruby-value">0</span>, <span class="ruby-identifier">stream_name</span>.<span class="ruby-identifier">size</span>]
+51:             <span class="ruby-identifier">name</span>.<span class="ruby-identifier">tr!</span>(<span class="ruby-value str">&quot;\000&quot;</span>,<span class="ruby-value str">&quot;&quot;</span>)
+52:             <span class="ruby-keyword kw">if</span>( <span class="ruby-identifier">name</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/^:(.*?):.*$/</span> )
+53:               <span class="ruby-identifier">status</span>.<span class="ruby-identifier">push</span>([<span class="ruby-identifier">$1</span>,<span class="ruby-identifier">size</span>])
+54:             <span class="ruby-keyword kw">end</span>
+55:           <span class="ruby-keyword kw">when</span> <span class="ruby-constant">BACKUP_DATA</span>
+56:             <span class="ruby-identifier">status</span>.<span class="ruby-identifier">push</span>([<span class="ruby-keyword kw">nil</span>,<span class="ruby-identifier">size</span>])
+57:           <span class="ruby-keyword kw">else</span>
+58:             <span class="ruby-identifier">raise</span>(<span class="ruby-constant">RuntimeError</span>, <span class="ruby-node">&quot;unknown data type #{data[:id]}.&quot;</span>)
+59:           <span class="ruby-keyword kw">end</span>
+60:           <span class="ruby-identifier">l1</span> = <span class="ruby-constant">DL</span>.<span class="ruby-identifier">malloc</span>(<span class="ruby-constant">DL</span>.<span class="ruby-identifier">sizeof</span>(<span class="ruby-value str">&quot;L&quot;</span>))
+61:           <span class="ruby-identifier">l2</span> = <span class="ruby-constant">DL</span>.<span class="ruby-identifier">malloc</span>(<span class="ruby-constant">DL</span>.<span class="ruby-identifier">sizeof</span>(<span class="ruby-value str">&quot;L&quot;</span>))
+62:           <span class="ruby-keyword kw">if</span>( <span class="ruby-operator">!</span><span class="ruby-identifier">backupSeek</span>(<span class="ruby-identifier">h</span>, <span class="ruby-identifier">data</span>[<span class="ruby-identifier">:size_low</span>], <span class="ruby-identifier">data</span>[<span class="ruby-identifier">:size_high</span>], <span class="ruby-identifier">l1</span>, <span class="ruby-identifier">l2</span>, <span class="ruby-identifier">context</span>) )
+63:             <span class="ruby-keyword kw">break</span>
+64:           <span class="ruby-keyword kw">end</span>
+65:         <span class="ruby-keyword kw">end</span>
+66:       <span class="ruby-keyword kw">ensure</span>
+67:         <span class="ruby-identifier">backupRead</span>(<span class="ruby-identifier">h</span>, <span class="ruby-keyword kw">nil</span>, <span class="ruby-value">0</span>, <span class="ruby-identifier">lval</span>, <span class="ruby-keyword kw">true</span>, <span class="ruby-keyword kw">false</span>, <span class="ruby-identifier">context</span>)
+68:         <span class="ruby-identifier">closeHandle</span>(<span class="ruby-identifier">h</span>)
+69:       <span class="ruby-keyword kw">end</span>
+70:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">status</span>
+71:     <span class="ruby-keyword kw">else</span>
+72:       <span class="ruby-identifier">raise</span>(<span class="ruby-constant">RuntimeError</span>, <span class="ruby-node">&quot;can't open #{filename}.\n&quot;</span>)
+73:     <span class="ruby-keyword kw">end</span>
+74:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

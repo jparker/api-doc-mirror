@@ -1,0 +1,44 @@
+  <div id="fileHeader">
+    <h1>daemon.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activesupport/lib/active_support/core_ext/process/daemon.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>if RUBY_VERSION &lt; &quot;1.9&quot;
+  module Process
+    def self.daemon(nochdir = nil, noclose = nil)
+      exit if fork                     # Parent exits, child continues.
+      Process.setsid                   # Become session leader.
+      exit if fork                     # Zap session leader. See [1].
+
+      unless nochdir
+        Dir.chdir &quot;/&quot;                  # Release old working directory.
+      end
+
+      File.umask 0000                  # Ensure sensible umask. Adjust as needed.
+
+      unless noclose
+        STDIN.reopen &quot;/dev/null&quot;       # Free file descriptors and
+        STDOUT.reopen &quot;/dev/null&quot;, &quot;a&quot; # point them somewhere sensible.
+        STDERR.reopen '/dev/null', 'a'
+      end
+
+      trap(&quot;TERM&quot;) { exit }
+
+      return 0
+    end
+  end
+end
+</pre>
+    </div>

@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Marshal</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Module</span> 
+            Marshal 
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/marshal_c.html">marshal.c</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+The marshaling library converts collections of Ruby objects into a byte
+stream, allowing them to be stored outside the currently active script.
+This data may subsequently be read and the original objects reconstituted.
+Marshaled data has major and minor version numbers stored along with the
+object information. In normal use, marshaling can only load data written
+with the same major version number and an equal or lower minor version
+number. If Ruby&#8217;s ``verbose&#8217;&#8217; flag is set (normally using
+-d, -v, -w, or &#8212;verbose) the major and minor numbers must match
+exactly. <a href="Marshal.html">Marshal</a> versioning is independent of
+Ruby&#8217;s version numbers. You can extract the version by reading the
+first two bytes of marshaled data.
+</p>
+<pre>
+    str = Marshal.dump(&quot;thing&quot;)
+    RUBY_VERSION   #=&gt; &quot;1.8.0&quot;
+    str[0]         #=&gt; 4
+    str[1]         #=&gt; 8
+</pre>
+<p>
+Some objects cannot be dumped: if the objects to be dumped include
+bindings, procedure or method objects, instances of class <a
+href="IO.html">IO</a>, or singleton objects, a <a
+href="TypeError.html">TypeError</a> will be raised. If your class has
+special serialization needs (for example, if you want to serialize in some
+specific format), or if it contains objects that would otherwise not be
+serializable, you can implement your own serialization strategy by defining
+two methods, _dump and _load: The instance method _dump should return a <a
+href="String.html">String</a> object containing all the information
+necessary to reconstitute objects of this class and all referenced objects
+up to a maximum depth given as an integer parameter (a value of -1 implies
+that you should disable depth checking). The class method _load should take
+a <a href="String.html">String</a> and return an object of this class.
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>D</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000000">dump</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>L</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000001">load</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>R</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000002">restore</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">MAJOR_VERSION</td>
+            <td>=</td>
+            <td class="attr-value">INT2FIX(MARSHAL_MAJOR)</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">MINOR_VERSION</td>
+            <td>=</td>
+            <td class="attr-value">INT2FIX(MARSHAL_MINOR)</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M000000">
+                    
+                    <a name="M000000"></a><b>dump( obj [, anIO] , limit=--1 ) => anIO
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Serializes obj and all descendent objects. If an<a href="IO.html">IO</a> is
+specified, the serialized data will be written to it, otherwise the data
+will be returned as a <a href="String.html">String</a>. If limit is
+specified, the traversal of subobjects will be limited to that depth. If
+limit is negative, no checking of depth will be performed.
+</p>
+<pre>
+    class Klass
+      def initialize(str)
+        @str = str
+      end
+      def sayHello
+        @str
+      end
+    end
+</pre>
+<p>
+(produces no output)
+</p>
+<pre>
+    o = Klass.new(&quot;hello\n&quot;)
+    data = Marshal.dump(o)
+    obj = Marshal.load(data)
+    obj.sayHello   #=&gt; &quot;hello\n&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000000_source')" id="l_M000000_source">show</a>
+                        
+                    </p>
+                    <div id="M000000_source" class="dyn-source">
+                        <pre>static VALUE
+marshal_dump(argc, argv)
+    int argc;
+    VALUE* argv;
+{
+    VALUE obj, port, a1, a2;
+    int limit = -1;
+    struct dump_arg arg;
+    struct dump_call_arg c_arg;
+
+    port = Qnil;
+    rb_scan_args(argc, argv, &quot;12&quot;, &amp;obj, &amp;a1, &amp;a2);
+    if (argc == 3) {
+        if (!NIL_P(a2)) limit = NUM2INT(a2);
+        if (NIL_P(a1)) goto type_error;
+        port = a1;
+    }
+    else if (argc == 2) {
+        if (FIXNUM_P(a1)) limit = FIX2INT(a1);
+        else if (NIL_P(a1)) goto type_error;
+        else port = a1;
+    }
+    arg.dest = 0;
+    arg.symbols = st_init_numtable();
+    arg.data    = st_init_numtable();
+    arg.taint   = Qfalse;
+    arg.str = rb_str_buf_new(0);
+    RBASIC(arg.str)-&gt;klass = 0;
+    arg.wrapper = Data_Wrap_Struct(rb_cData, mark_dump_arg, 0, &amp;arg);
+    if (!NIL_P(port)) {
+        if (!rb_respond_to(port, s_write)) {
+          type_error:
+            rb_raise(rb_eTypeError, &quot;instance of IO needed&quot;);
+        }
+        arg.dest = port;
+        if (rb_respond_to(port, s_binmode)) {
+            rb_funcall2(port, s_binmode, 0, 0);
+            check_dump_arg(&amp;arg, s_binmode);
+        }
+    }
+    else {
+        port = arg.str;
+    }
+
+    c_arg.obj   = obj;
+    c_arg.arg   = &amp;arg;
+    c_arg.limit = limit;
+
+    w_byte(MARSHAL_MAJOR, &amp;arg);
+    w_byte(MARSHAL_MINOR, &amp;arg);
+
+    rb_ensure(dump, (VALUE)&amp;c_arg, dump_ensure, (VALUE)&amp;arg);
+    RBASIC(arg.str)-&gt;klass = rb_cString;
+
+    return port;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000001">
+                    
+                    <a name="M000001"></a><b>load( source [, proc] ) => obj
+restore( source [, proc] ) => obj
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the result of converting the serialized data in source into a Ruby
+object (possibly with associated subordinate objects). source may be either
+an instance of <a href="IO.html">IO</a> or an object that responds to
+to_str. If proc is specified, it will be passed each object as it is
+deserialized.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000001_source')" id="l_M000001_source">show</a>
+                        
+                    </p>
+                    <div id="M000001_source" class="dyn-source">
+                        <pre>static VALUE
+marshal_load(argc, argv)
+    int argc;
+    VALUE *argv;
+{
+    VALUE port, proc;
+    int major, minor;
+    VALUE v;
+    struct load_arg arg;
+
+    rb_scan_args(argc, argv, &quot;11&quot;, &amp;port, &amp;proc);
+    v = rb_check_string_type(port);
+    if (!NIL_P(v)) {
+        arg.taint = OBJ_TAINTED(port); /* original taintedness */
+        port = v;
+    }
+    else if (rb_respond_to(port, s_getc) &amp;&amp; rb_respond_to(port, s_read)) {
+        if (rb_respond_to(port, s_binmode)) {
+            rb_funcall2(port, s_binmode, 0, 0);
+        }
+        arg.taint = Qtrue;
+    }
+    else {
+        rb_raise(rb_eTypeError, &quot;instance of IO needed&quot;);
+    }
+    arg.src = port;
+    arg.offset = 0;
+    arg.symbols = st_init_numtable();
+    arg.data    = st_init_numtable();
+    arg.proc = 0;
+    arg.wrapper = Data_Wrap_Struct(rb_cData, mark_load_arg, 0, &amp;arg);
+
+    major = r_byte(&amp;arg);
+    minor = r_byte(&amp;arg);
+    if (major != MARSHAL_MAJOR || minor &gt; MARSHAL_MINOR) {
+        rb_raise(rb_eTypeError, &quot;incompatible marshal file format (can't be read)\n\
+\tformat version %d.%d required; %d.%d given&quot;,
+                 MARSHAL_MAJOR, MARSHAL_MINOR, major, minor);
+    }
+    if (RTEST(ruby_verbose) &amp;&amp; minor != MARSHAL_MINOR) {
+        rb_warn(&quot;incompatible marshal file format (can be read)\n\
+\tformat version %d.%d required; %d.%d given&quot;,
+                MARSHAL_MAJOR, MARSHAL_MINOR, major, minor);
+    }
+
+    if (!NIL_P(proc)) arg.proc = proc;
+    v = rb_ensure(load, (VALUE)&amp;arg, load_ensure, (VALUE)&amp;arg);
+
+    return v;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000002">
+                    
+                    <a name="M000002"></a><b>load( source [, proc] ) => obj
+restore( source [, proc] ) => obj
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the result of converting the serialized data in source into a Ruby
+object (possibly with associated subordinate objects). source may be either
+an instance of <a href="IO.html">IO</a> or an object that responds to
+to_str. If proc is specified, it will be passed each object as it is
+deserialized.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000002_source')" id="l_M000002_source">show</a>
+                        
+                    </p>
+                    <div id="M000002_source" class="dyn-source">
+                        <pre>static VALUE
+marshal_load(argc, argv)
+    int argc;
+    VALUE *argv;
+{
+    VALUE port, proc;
+    int major, minor;
+    VALUE v;
+    struct load_arg arg;
+
+    rb_scan_args(argc, argv, &quot;11&quot;, &amp;port, &amp;proc);
+    v = rb_check_string_type(port);
+    if (!NIL_P(v)) {
+        arg.taint = OBJ_TAINTED(port); /* original taintedness */
+        port = v;
+    }
+    else if (rb_respond_to(port, s_getc) &amp;&amp; rb_respond_to(port, s_read)) {
+        if (rb_respond_to(port, s_binmode)) {
+            rb_funcall2(port, s_binmode, 0, 0);
+        }
+        arg.taint = Qtrue;
+    }
+    else {
+        rb_raise(rb_eTypeError, &quot;instance of IO needed&quot;);
+    }
+    arg.src = port;
+    arg.offset = 0;
+    arg.symbols = st_init_numtable();
+    arg.data    = st_init_numtable();
+    arg.proc = 0;
+    arg.wrapper = Data_Wrap_Struct(rb_cData, mark_load_arg, 0, &amp;arg);
+
+    major = r_byte(&amp;arg);
+    minor = r_byte(&amp;arg);
+    if (major != MARSHAL_MAJOR || minor &gt; MARSHAL_MINOR) {
+        rb_raise(rb_eTypeError, &quot;incompatible marshal file format (can't be read)\n\
+\tformat version %d.%d required; %d.%d given&quot;,
+                 MARSHAL_MAJOR, MARSHAL_MINOR, major, minor);
+    }
+    if (RTEST(ruby_verbose) &amp;&amp; minor != MARSHAL_MINOR) {
+        rb_warn(&quot;incompatible marshal file format (can be read)\n\
+\tformat version %d.%d required; %d.%d given&quot;,
+                MARSHAL_MAJOR, MARSHAL_MINOR, major, minor);
+    }
+
+    if (!NIL_P(proc)) arg.proc = proc;
+    v = rb_ensure(load, (VALUE)&amp;arg, load_ensure, (VALUE)&amp;arg);
+
+    return v;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

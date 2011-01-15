@@ -1,0 +1,116 @@
+  <div id="fileHeader">
+    <h1>sweeping.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionpack/lib/action_controller/caching/sweeping.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:04 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>module ActionController #:nodoc:
+  module Caching
+    # Sweepers are the terminators of the caching world and responsible for expiring caches when model objects change.
+    # They do this by being half-observers, half-filters and implementing callbacks for both roles. A Sweeper example:
+    #
+    #   class ListSweeper &lt; ActionController::Caching::Sweeper
+    #     observe List, Item
+    #
+    #     def after_save(record)
+    #       list = record.is_a?(List) ? record : record.list
+    #       expire_page(:controller =&gt; &quot;lists&quot;, :action =&gt; %w( show public feed ), :id =&gt; list.id)
+    #       expire_action(:controller =&gt; &quot;lists&quot;, :action =&gt; &quot;all&quot;)
+    #       list.shares.each { |share| expire_page(:controller =&gt; &quot;lists&quot;, :action =&gt; &quot;show&quot;, :id =&gt; share.url_key) }
+    #     end
+    #   end
+    #
+    # The sweeper is assigned in the controllers that wish to have its job performed using the &lt;tt&gt;cache_sweeper&lt;/tt&gt; class method:
+    #
+    #   class ListsController &lt; ApplicationController
+    #     caches_action :index, :show, :public, :feed
+    #     cache_sweeper :list_sweeper, :only =&gt; [ :edit, :destroy, :share ]
+    #   end
+    #
+    # In the example above, four actions are cached and three actions are responsible for expiring those caches.
+    #
+    # You can also name an explicit class in the declaration of a sweeper, which is needed if the sweeper is in a module:
+    #
+    #   class ListsController &lt; ApplicationController
+    #     caches_action :index, :show, :public, :feed
+    #     cache_sweeper OpenBar::Sweeper, :only =&gt; [ :edit, :destroy, :share ]
+    #   end
+    module Sweeping
+      def self.included(base) #:nodoc:
+        base.extend(ClassMethods)
+      end
+
+      module ClassMethods #:nodoc:
+        def cache_sweeper(*sweepers)
+          configuration = sweepers.extract_options!
+
+          sweepers.each do |sweeper|
+            ActiveRecord::Base.observers &lt;&lt; sweeper if defined?(ActiveRecord) and defined?(ActiveRecord::Base)
+            sweeper_instance = (sweeper.is_a?(Symbol) ? Object.const_get(sweeper.to_s.classify) : sweeper).instance
+
+            if sweeper_instance.is_a?(Sweeper)
+              around_filter(sweeper_instance, :only =&gt; configuration[:only])
+            else
+              after_filter(sweeper_instance, :only =&gt; configuration[:only])
+            end
+          end
+        end
+      end
+    end
+
+    if defined?(ActiveRecord) and defined?(ActiveRecord::Observer)
+      class Sweeper &lt; ActiveRecord::Observer #:nodoc:
+        attr_accessor :controller
+
+        def before(controller)
+          self.controller = controller
+          callback(:before) if controller.perform_caching
+        end
+
+        def after(controller)
+          callback(:after) if controller.perform_caching
+          # Clean up, so that the controller can be collected after this request
+          self.controller = nil
+        end
+
+        protected
+          # gets the action cache path for the given options.
+          def action_path_for(options)
+            ActionController::Caching::Actions::ActionCachePath.path_for(controller, options)
+          end
+
+          # Retrieve instance variables set in the controller.
+          def assigns(key)
+            controller.instance_variable_get(&quot;@#{key}&quot;)
+          end
+
+        private
+          def callback(timing)
+            controller_callback_method_name = &quot;#{timing}_#{controller.controller_name.underscore}&quot;
+            action_callback_method_name     = &quot;#{controller_callback_method_name}_#{controller.action_name}&quot;
+
+            send!(controller_callback_method_name) if respond_to?(controller_callback_method_name, true)
+            send!(action_callback_method_name)     if respond_to?(action_callback_method_name, true)
+          end
+
+          def method_missing(method, *arguments)
+            return if @controller.nil?
+            @controller.send!(method, *arguments)
+          end
+      end
+    end
+  end
+end
+</pre>
+    </div>

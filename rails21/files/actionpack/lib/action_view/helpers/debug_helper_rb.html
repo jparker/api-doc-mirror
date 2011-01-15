@@ -1,0 +1,49 @@
+  <div id="fileHeader">
+    <h1>debug_helper.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionpack/lib/action_view/helpers/debug_helper.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:04 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>module ActionView
+  module Helpers
+    # Provides a set of methods for making it easier to debug Rails objects.
+    module DebugHelper
+      # Returns a &lt;pre&gt;-tag that has +object+ dumped by YAML. This creates a very
+      # readable way to inspect an object.
+      #
+      # ==== Example
+      #  my_hash = {'first' =&gt; 1, 'second' =&gt; 'two', 'third' =&gt; [1,2,3]}
+      #  debug(my_hash)
+      #
+      #  =&gt; &lt;pre class='debug_dump'&gt;--- 
+      #  first: 1
+      #  second: two
+      #  third: 
+      #  - 1
+      #  - 2
+      #  - 3
+      #  &lt;/pre&gt;
+      def debug(object)
+        begin
+          Marshal::dump(object)
+          &quot;&lt;pre class='debug_dump'&gt;#{h(object.to_yaml).gsub(&quot;  &quot;, &quot;&amp;nbsp; &quot;)}&lt;/pre&gt;&quot;
+        rescue Exception =&gt; e  # errors from Marshal or YAML
+          # Object couldn't be dumped, perhaps because of singleton methods -- this is the fallback
+          &quot;&lt;code class='debug_dump'&gt;#{h(object.inspect)}&lt;/code&gt;&quot;
+        end
+      end
+    end
+  end
+end</pre>
+    </div>

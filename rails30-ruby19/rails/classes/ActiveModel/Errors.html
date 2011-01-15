@@ -1,0 +1,980 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>ActiveModel::Errors</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            ActiveModel::Errors 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../ActiveSupport/OrderedHash.html">ActiveSupport::OrderedHash</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../files/activemodel/lib/active_model/errors_rb.html">activemodel/lib/active_model/errors.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <h2>Active Model <a href="Errors.html">Errors</a></h2>
+<p>
+Provides a modified <tt>OrderedHash</tt> that you can include in your
+object for handling error messages and interacting with Action Pack
+helpers.
+</p>
+<p>
+A minimal implementation could be:
+</p>
+<pre>
+  class Person
+
+    # Required dependency for ActiveModel::Errors
+    extend ActiveModel::Naming
+
+    def initialize
+      @errors = ActiveModel::Errors.new(self)
+    end
+
+    attr_accessor :name
+    attr_reader   :errors
+
+    def validate!
+      errors.add(:name, &quot;can not be nil&quot;) if name == nil
+    end
+
+    # The following methods are needed to be minimally implemented
+
+    def read_attribute_for_validation(attr)
+      send(attr)
+    end
+
+    def Person.human_attribute_name(attr, options = {})
+      attr
+    end
+
+    def Person.lookup_ancestors
+      [self]
+    end
+
+  end
+</pre>
+<p>
+The last three methods are required in your object for <a
+href="Errors.html">Errors</a> to be able to generate error messages
+correctly and also handle multiple languages. Of course, if you extend your
+object with ActiveModel::Translations you will not need to implement the
+last two. Likewise, using <a
+href="Validations.html">ActiveModel::Validations</a> will handle the
+validation related methods for you.
+</p>
+<p>
+The above allows you to do:
+</p>
+<pre>
+  p = Person.new
+  p.validate!             # =&gt; [&quot;can not be nil&quot;]
+  p.errors.full_messages  # =&gt; [&quot;name can not be nil&quot;]
+  # etc..
+</pre>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>#</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003824">[]</a>,</li>
+                
+                <li><a href="#M003826">[]=</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>A</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003834">add</a>,</li>
+                
+                <li><a href="#M003836">add_on_blank</a>,</li>
+                
+                <li><a href="#M003835">add_on_empty</a>,</li>
+                
+                <li><a href="#M003833">as_json</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003830">count</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003827">each</a>,</li>
+                
+                <li><a href="#M003831">empty?</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>F</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003837">full_messages</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>G</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003838">generate_message</a>,</li>
+                
+                <li><a href="#M003825">get</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003823">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003828">size</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>T</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003829">to_a</a>,</li>
+                
+                <li><a href="#M003832">to_xml</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+    <div class="sectiontitle">Included Modules</div>
+    <ul>
+        
+        <li>
+            
+            <a href="../ActiveModel.html">ActiveModel</a>
+            
+            START:includes
+        </li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">CALLBACKS_OPTIONS</td>
+            <td>=</td>
+            <td class="attr-value">[:if, :unless, :on, :allow_nil, :allow_blank]</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M003823">
+                    
+                    <a name="M003823"></a><b>new</b>(base)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Pass in the instance of the object that is using the errors object.
+</p>
+<pre>
+  class Person
+    def initialize
+      @errors = ActiveModel::Errors.new(self)
+    end
+  end
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003823_source')" id="l_M003823_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/c7106e827e34b34da8cb348e5ec387d87def24ec/activemodel/lib/active_model/errors.rb#L75" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M003823_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File activemodel/lib/active_model/errors.rb, line 75</span>
+75:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">base</span>)
+76:       <span class="ruby-ivar">@base</span> = <span class="ruby-identifier">base</span>
+77:       <span class="ruby-keyword kw">super</span>()
+78:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M003824">
+                    
+                    <a name="M003824"></a><b>[]</b>(attribute)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+When passed a symbol or a name of a method, returns an array of errors for
+the method.
+</p>
+<pre>
+  p.errors[:name]   # =&gt; [&quot;can not be nil&quot;]
+  p.errors['name']  # =&gt; [&quot;can not be nil&quot;]
+</pre>
+
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="Errors.html#M003825">get</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003824_source')" id="l_M003824_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/c7106e827e34b34da8cb348e5ec387d87def24ec/activemodel/lib/active_model/errors.rb#L88" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M003824_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File activemodel/lib/active_model/errors.rb, line 88</span>
+88:     <span class="ruby-keyword kw">def</span> <span class="ruby-operator">[]</span>(<span class="ruby-identifier">attribute</span>)
+89:       <span class="ruby-identifier">get</span>(<span class="ruby-identifier">attribute</span>.<span class="ruby-identifier">to_sym</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">set</span>(<span class="ruby-identifier">attribute</span>.<span class="ruby-identifier">to_sym</span>, [])
+90:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003826">
+                    
+                    <a name="M003826"></a><b>[]=</b>(attribute, error)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Adds to the supplied attribute the supplied error message.
+</p>
+<pre>
+  p.errors[:name] = &quot;must be set&quot;
+  p.errors[:name] # =&gt; ['must be set']
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003826_source')" id="l_M003826_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/c7106e827e34b34da8cb348e5ec387d87def24ec/activemodel/lib/active_model/errors.rb#L96" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M003826_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File activemodel/lib/active_model/errors.rb, line 96</span>
+96:     <span class="ruby-keyword kw">def</span> <span class="ruby-operator">[]=</span>(<span class="ruby-identifier">attribute</span>, <span class="ruby-identifier">error</span>)
+97:       <span class="ruby-keyword kw">self</span>[<span class="ruby-identifier">attribute</span>.<span class="ruby-identifier">to_sym</span>] <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">error</span>
+98:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003834">
+                    
+                    <a name="M003834"></a><b>add</b>(attribute, message = nil, options = {})
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Adds <tt>message</tt> to the error messages on <tt>attribute</tt>, which
+will be returned on a call to <tt>on(attribute)</tt> for the same
+attribute. More than one error can be added to the same <tt>attribute</tt>
+in which case an array will be returned on a call to
+<tt>on(attribute)</tt>. If no <tt>message</tt> is supplied,
+<tt>:invalid</tt> is assumed.
+</p>
+<p>
+If <tt>message</tt> is a symbol, it will be translated using the
+appropriate scope (see <tt>translate_error</tt>). If <tt>message</tt> is a
+proc, it will be called, allowing for things like <tt>Time.now</tt> to be
+used within an error.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003834_source')" id="l_M003834_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/c7106e827e34b34da8cb348e5ec387d87def24ec/activemodel/lib/active_model/errors.rb#L180" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M003834_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File activemodel/lib/active_model/errors.rb, line 180</span>
+180:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">add</span>(<span class="ruby-identifier">attribute</span>, <span class="ruby-identifier">message</span> = <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">options</span> = {})
+181:       <span class="ruby-identifier">message</span> <span class="ruby-operator">||=</span> <span class="ruby-identifier">:invalid</span>
+182: 
+183:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">message</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Symbol</span>)
+184:         <span class="ruby-identifier">message</span> = <span class="ruby-identifier">generate_message</span>(<span class="ruby-identifier">attribute</span>, <span class="ruby-identifier">message</span>, <span class="ruby-identifier">options</span>.<span class="ruby-identifier">except</span>(<span class="ruby-operator">*</span><span class="ruby-constant">CALLBACKS_OPTIONS</span>))
+185:       <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">message</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Proc</span>)
+186:         <span class="ruby-identifier">message</span> = <span class="ruby-identifier">message</span>.<span class="ruby-identifier">call</span>
+187:       <span class="ruby-keyword kw">end</span>
+188: 
+189:       <span class="ruby-keyword kw">self</span>[<span class="ruby-identifier">attribute</span>] <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">message</span>
+190:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003836">
+                    
+                    <a name="M003836"></a><b>add_on_blank</b>(attributes, options = {})
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Will add an error message to each of the attributes in <tt>attributes</tt>
+that is blank (using <a href="../Object.html#M003406">Object#blank?</a>).
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003836_source')" id="l_M003836_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/c7106e827e34b34da8cb348e5ec387d87def24ec/activemodel/lib/active_model/errors.rb#L209" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M003836_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File activemodel/lib/active_model/errors.rb, line 209</span>
+209:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">add_on_blank</span>(<span class="ruby-identifier">attributes</span>, <span class="ruby-identifier">options</span> = {})
+210:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-identifier">options</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>)
+211:         <span class="ruby-identifier">options</span> = { <span class="ruby-identifier">:message</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">options</span> }
+212:         <span class="ruby-constant">ActiveSupport</span><span class="ruby-operator">::</span><span class="ruby-constant">Deprecation</span>.<span class="ruby-identifier">warn</span> \
+213:           <span class="ruby-value str">&quot;ActiveModel::Errors#add_on_blank(attributes, custom_message) has been deprecated.\n&quot;</span> <span class="ruby-operator">+</span>
+214:           <span class="ruby-value str">&quot;Instead of passing a custom_message pass an options Hash { :message =&gt; custom_message }.&quot;</span>
+215:       <span class="ruby-keyword kw">end</span>
+216: 
+217:       [<span class="ruby-identifier">attributes</span>].<span class="ruby-identifier">flatten</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">attribute</span><span class="ruby-operator">|</span>
+218:         <span class="ruby-identifier">value</span> = <span class="ruby-ivar">@base</span>.<span class="ruby-identifier">send</span>(<span class="ruby-identifier">:read_attribute_for_validation</span>, <span class="ruby-identifier">attribute</span>)
+219:         <span class="ruby-identifier">add</span>(<span class="ruby-identifier">attribute</span>, <span class="ruby-identifier">:blank</span>, <span class="ruby-identifier">options</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">blank?</span>
+220:       <span class="ruby-keyword kw">end</span>
+221:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003835">
+                    
+                    <a name="M003835"></a><b>add_on_empty</b>(attributes, options = {})
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Will add an error message to each of the attributes in <tt>attributes</tt>
+that is empty.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003835_source')" id="l_M003835_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/c7106e827e34b34da8cb348e5ec387d87def24ec/activemodel/lib/active_model/errors.rb#L193" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M003835_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File activemodel/lib/active_model/errors.rb, line 193</span>
+193:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">add_on_empty</span>(<span class="ruby-identifier">attributes</span>, <span class="ruby-identifier">options</span> = {})
+194:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-identifier">options</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>)
+195:         <span class="ruby-identifier">options</span> = { <span class="ruby-identifier">:message</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">options</span> }
+196:         <span class="ruby-constant">ActiveSupport</span><span class="ruby-operator">::</span><span class="ruby-constant">Deprecation</span>.<span class="ruby-identifier">warn</span> \
+197:           <span class="ruby-value str">&quot;ActiveModel::Errors#add_on_empty(attributes, custom_message) has been deprecated.\n&quot;</span> <span class="ruby-operator">+</span>
+198:           <span class="ruby-value str">&quot;Instead of passing a custom_message pass an options Hash { :message =&gt; custom_message }.&quot;</span>
+199:       <span class="ruby-keyword kw">end</span>
+200: 
+201:       [<span class="ruby-identifier">attributes</span>].<span class="ruby-identifier">flatten</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">attribute</span><span class="ruby-operator">|</span>
+202:         <span class="ruby-identifier">value</span> = <span class="ruby-ivar">@base</span>.<span class="ruby-identifier">send</span>(<span class="ruby-identifier">:read_attribute_for_validation</span>, <span class="ruby-identifier">attribute</span>)
+203:         <span class="ruby-identifier">is_empty</span> = <span class="ruby-identifier">value</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">:empty?</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">empty?</span> <span class="ruby-operator">:</span> <span class="ruby-keyword kw">false</span>
+204:         <span class="ruby-identifier">add</span>(<span class="ruby-identifier">attribute</span>, <span class="ruby-identifier">:empty</span>, <span class="ruby-identifier">options</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">is_empty</span>
+205:       <span class="ruby-keyword kw">end</span>
+206:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003833">
+                    
+                    <a name="M003833"></a><b>as_json</b>(options=nil)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns an ActiveSupport::OrderedHash that can be used as the JSON
+representation for this object.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003833_source')" id="l_M003833_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/c7106e827e34b34da8cb348e5ec387d87def24ec/activemodel/lib/active_model/errors.rb#L169" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M003833_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File activemodel/lib/active_model/errors.rb, line 169</span>
+169:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">as_json</span>(<span class="ruby-identifier">options</span>=<span class="ruby-keyword kw">nil</span>)
+170:       <span class="ruby-keyword kw">self</span>
+171:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003830">
+                    
+                    <a name="M003830"></a><b>count</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the number of error messages.
+</p>
+<pre>
+  p.errors.add(:name, &quot;can't be blank&quot;)
+  p.errors.count # =&gt; 1
+  p.errors.add(:name, &quot;must be specified&quot;)
+  p.errors.count # =&gt; 2
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003830_source')" id="l_M003830_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/c7106e827e34b34da8cb348e5ec387d87def24ec/activemodel/lib/active_model/errors.rb#L144" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M003830_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File activemodel/lib/active_model/errors.rb, line 144</span>
+144:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">count</span>
+145:       <span class="ruby-identifier">to_a</span>.<span class="ruby-identifier">size</span>
+146:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003827">
+                    
+                    <a name="M003827"></a><b>each</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Iterates through each error key, value pair in the error messages hash.
+Yields the attribute and the error for that attribute. If the attribute has
+more than one error message, yields once for each error message.
+</p>
+<pre>
+  p.errors.add(:name, &quot;can't be blank&quot;)
+  p.errors.each do |attribute, errors_array|
+    # Will yield :name and &quot;can't be blank&quot;
+  end
+
+  p.errors.add(:name, &quot;must be specified&quot;)
+  p.errors.each do |attribute, errors_array|
+    # Will yield :name and &quot;can't be blank&quot;
+    # then yield :name and &quot;must be specified&quot;
+  end
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003827_source')" id="l_M003827_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/c7106e827e34b34da8cb348e5ec387d87def24ec/activemodel/lib/active_model/errors.rb#L114" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M003827_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File activemodel/lib/active_model/errors.rb, line 114</span>
+114:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">each</span>
+115:       <span class="ruby-identifier">each_key</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">attribute</span><span class="ruby-operator">|</span>
+116:         <span class="ruby-keyword kw">self</span>[<span class="ruby-identifier">attribute</span>].<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">error</span><span class="ruby-operator">|</span> <span class="ruby-keyword kw">yield</span> <span class="ruby-identifier">attribute</span>, <span class="ruby-identifier">error</span> }
+117:       <span class="ruby-keyword kw">end</span>
+118:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003831">
+                    
+                    <a name="M003831"></a><b>empty?</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns true if there are any errors, false if not.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003831_source')" id="l_M003831_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/c7106e827e34b34da8cb348e5ec387d87def24ec/activemodel/lib/active_model/errors.rb#L149" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M003831_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File activemodel/lib/active_model/errors.rb, line 149</span>
+149:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">empty?</span>
+150:       <span class="ruby-identifier">all?</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">k</span>, <span class="ruby-identifier">v</span><span class="ruby-operator">|</span> <span class="ruby-identifier">v</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">v</span>.<span class="ruby-identifier">empty?</span> }
+151:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003837">
+                    
+                    <a name="M003837"></a><b>full_messages</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns all the full error messages in an array.
+</p>
+<pre>
+  class Company
+    validates_presence_of :name, :address, :email
+    validates_length_of :name, :in =&gt; 5..30
+  end
+
+  company = Company.create(:address =&gt; '123 First St.')
+  company.errors.full_messages # =&gt;
+    [&quot;Name is too short (minimum is 5 characters)&quot;, &quot;Name can't be blank&quot;, &quot;Address can't be blank&quot;]
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003837_source')" id="l_M003837_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/c7106e827e34b34da8cb348e5ec387d87def24ec/activemodel/lib/active_model/errors.rb#L233" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M003837_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File activemodel/lib/active_model/errors.rb, line 233</span>
+233:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">full_messages</span>
+234:       <span class="ruby-identifier">full_messages</span> = []
+235: 
+236:       <span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">attribute</span>, <span class="ruby-identifier">messages</span><span class="ruby-operator">|</span>
+237:         <span class="ruby-identifier">messages</span> = <span class="ruby-constant">Array</span>.<span class="ruby-identifier">wrap</span>(<span class="ruby-identifier">messages</span>)
+238:         <span class="ruby-keyword kw">next</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">messages</span>.<span class="ruby-identifier">empty?</span>
+239: 
+240:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">attribute</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">:base</span>
+241:           <span class="ruby-identifier">messages</span>.<span class="ruby-identifier">each</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">m</span><span class="ruby-operator">|</span> <span class="ruby-identifier">full_messages</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">m</span> }
+242:         <span class="ruby-keyword kw">else</span>
+243:           <span class="ruby-identifier">attr_name</span> = <span class="ruby-identifier">attribute</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-value str">'.'</span>, <span class="ruby-value str">'_'</span>).<span class="ruby-identifier">humanize</span>
+244:           <span class="ruby-identifier">attr_name</span> = <span class="ruby-ivar">@base</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">human_attribute_name</span>(<span class="ruby-identifier">attribute</span>, <span class="ruby-identifier">:default</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">attr_name</span>)
+245:           <span class="ruby-identifier">options</span> = { <span class="ruby-identifier">:default</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">&quot;%{attribute} %{message}&quot;</span>, <span class="ruby-identifier">:attribute</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">attr_name</span> }
+246: 
+247:           <span class="ruby-identifier">messages</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">m</span><span class="ruby-operator">|</span>
+248:             <span class="ruby-identifier">full_messages</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-constant">I18n</span>.<span class="ruby-identifier">t</span>(<span class="ruby-identifier">:&quot;errors.format&quot;</span>, <span class="ruby-identifier">options</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">:message</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">m</span>))
+249:           <span class="ruby-keyword kw">end</span>
+250:         <span class="ruby-keyword kw">end</span>
+251:       <span class="ruby-keyword kw">end</span>
+252: 
+253:       <span class="ruby-identifier">full_messages</span>
+254:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003838">
+                    
+                    <a name="M003838"></a><b>generate_message</b>(attribute, type = :invalid, options = {})
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Translates an error message in its default scope
+(<tt>activemodel.errors.messages</tt>).
+</p>
+<p>
+Error messages are first looked up in
+<tt>models.MODEL.attributes.ATTRIBUTE.MESSAGE</tt>, if it&#8217;s not
+there, it&#8217;s looked up in <tt>models.MODEL.MESSAGE</tt> and if that is
+not there also, it returns the translation of the default message (e.g.
+<tt>activemodel.errors.messages.MESSAGE</tt>). The translated model name,
+translated attribute name and the value are available for interpolation.
+</p>
+<p>
+When using inheritance in your models, it will check all the inherited
+models too, but only if the model itself hasn&#8217;t been found. Say you
+have <tt>class Admin &lt; User; end</tt> and you wanted the translation for
+the <tt>:blank</tt> error <tt>message</tt> for the <tt>title</tt>
+<tt>attribute</tt>, it looks for these translations:
+</p>
+<p>
+<ol>
+<li><tt>activemodel.errors.models.admin.attributes.title.blank</tt></li>
+<li><tt>activemodel.errors.models.admin.blank</tt></li>
+<li><tt>activemodel.errors.models.user.attributes.title.blank</tt></li>
+<li><tt>activemodel.errors.models.user.blank</tt></li> <li>any default you
+provided through the <tt>options</tt> hash (in the activemodel.errors
+scope)</li> <li><tt>activemodel.errors.messages.blank</tt></li>
+<li><tt>errors.attributes.title.blank</tt></li>
+<li><tt>errors.messages.blank</tt></li> </ol>
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003838_source')" id="l_M003838_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/c7106e827e34b34da8cb348e5ec387d87def24ec/activemodel/lib/active_model/errors.rb#L281" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M003838_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File activemodel/lib/active_model/errors.rb, line 281</span>
+281:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">generate_message</span>(<span class="ruby-identifier">attribute</span>, <span class="ruby-identifier">type</span> = <span class="ruby-identifier">:invalid</span>, <span class="ruby-identifier">options</span> = {})
+282:       <span class="ruby-identifier">type</span> = <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:message</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:message</span>].<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Symbol</span>)
+283: 
+284:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:default</span>]
+285:         <span class="ruby-constant">ActiveSupport</span><span class="ruby-operator">::</span><span class="ruby-constant">Deprecation</span>.<span class="ruby-identifier">warn</span> \
+286:           <span class="ruby-value str">&quot;Giving :default as validation option to errors.add has been deprecated.\n&quot;</span> <span class="ruby-operator">+</span>
+287:           <span class="ruby-value str">&quot;Please use :message instead.&quot;</span>
+288:         <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:message</span>] = <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:default</span>)
+289:       <span class="ruby-keyword kw">end</span>
+290: 
+291:       <span class="ruby-identifier">defaults</span> = <span class="ruby-ivar">@base</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">lookup_ancestors</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">klass</span><span class="ruby-operator">|</span>
+292:         [ <span class="ruby-identifier">:&quot;#{@base.class.i18n_scope}.errors.models.#{klass.model_name.underscore}.attributes.#{attribute}.#{type}&quot;</span>,
+293:           <span class="ruby-identifier">:&quot;#{@base.class.i18n_scope}.errors.models.#{klass.model_name.underscore}.#{type}&quot;</span> ]
+294:       <span class="ruby-keyword kw">end</span>
+295: 
+296:       <span class="ruby-identifier">defaults</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:message</span>)
+297:       <span class="ruby-identifier">defaults</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">:&quot;#{@base.class.i18n_scope}.errors.messages.#{type}&quot;</span>
+298:       <span class="ruby-identifier">defaults</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">:&quot;errors.attributes.#{attribute}.#{type}&quot;</span>
+299:       <span class="ruby-identifier">defaults</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">:&quot;errors.messages.#{type}&quot;</span>
+300: 
+301:       <span class="ruby-identifier">defaults</span>.<span class="ruby-identifier">compact!</span>
+302:       <span class="ruby-identifier">defaults</span>.<span class="ruby-identifier">flatten!</span>
+303: 
+304:       <span class="ruby-identifier">key</span> = <span class="ruby-identifier">defaults</span>.<span class="ruby-identifier">shift</span>
+305:       <span class="ruby-identifier">value</span> = (<span class="ruby-identifier">attribute</span> <span class="ruby-operator">!=</span> <span class="ruby-identifier">:base</span> <span class="ruby-operator">?</span> <span class="ruby-ivar">@base</span>.<span class="ruby-identifier">send</span>(<span class="ruby-identifier">:read_attribute_for_validation</span>, <span class="ruby-identifier">attribute</span>) <span class="ruby-operator">:</span> <span class="ruby-keyword kw">nil</span>)
+306: 
+307:       <span class="ruby-identifier">options</span> = {
+308:         <span class="ruby-identifier">:default</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">defaults</span>,
+309:         <span class="ruby-identifier">:model</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-ivar">@base</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">model_name</span>.<span class="ruby-identifier">human</span>,
+310:         <span class="ruby-identifier">:attribute</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-ivar">@base</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">human_attribute_name</span>(<span class="ruby-identifier">attribute</span>),
+311:         <span class="ruby-identifier">:value</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">value</span>
+312:       }.<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">options</span>)
+313: 
+314:       <span class="ruby-constant">I18n</span>.<span class="ruby-identifier">translate</span>(<span class="ruby-identifier">key</span>, <span class="ruby-identifier">options</span>)
+315:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003825">
+                    
+                    <a name="M003825"></a><b>get</b>(attribute)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for #[]
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003828">
+                    
+                    <a name="M003828"></a><b>size</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the number of error messages.
+</p>
+<pre>
+  p.errors.add(:name, &quot;can't be blank&quot;)
+  p.errors.size # =&gt; 1
+  p.errors.add(:name, &quot;must be specified&quot;)
+  p.errors.size # =&gt; 2
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003828_source')" id="l_M003828_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/c7106e827e34b34da8cb348e5ec387d87def24ec/activemodel/lib/active_model/errors.rb#L126" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M003828_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File activemodel/lib/active_model/errors.rb, line 126</span>
+126:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">size</span>
+127:       <span class="ruby-identifier">values</span>.<span class="ruby-identifier">flatten</span>.<span class="ruby-identifier">size</span>
+128:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003829">
+                    
+                    <a name="M003829"></a><b>to_a</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns an array of error messages, with the attribute name included
+</p>
+<pre>
+  p.errors.add(:name, &quot;can't be blank&quot;)
+  p.errors.add(:name, &quot;must be specified&quot;)
+  p.errors.to_a # =&gt; [&quot;name can't be blank&quot;, &quot;name must be specified&quot;]
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003829_source')" id="l_M003829_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/c7106e827e34b34da8cb348e5ec387d87def24ec/activemodel/lib/active_model/errors.rb#L135" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M003829_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File activemodel/lib/active_model/errors.rb, line 135</span>
+135:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">to_a</span>
+136:       <span class="ruby-identifier">full_messages</span>
+137:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003832">
+                    
+                    <a name="M003832"></a><b>to_xml</b>(options={})
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns an xml formatted representation of the <a
+href="Errors.html">Errors</a> hash.
+</p>
+<pre>
+  p.errors.add(:name, &quot;can't be blank&quot;)
+  p.errors.add(:name, &quot;must be specified&quot;)
+  p.errors.to_xml
+  # =&gt;
+  #  &lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;UTF-8\&quot;?&gt;
+  #  &lt;errors&gt;
+  #    &lt;error&gt;name can't be blank&lt;/error&gt;
+  #    &lt;error&gt;name must be specified&lt;/error&gt;
+  #  &lt;/errors&gt;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003832_source')" id="l_M003832_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/c7106e827e34b34da8cb348e5ec387d87def24ec/activemodel/lib/active_model/errors.rb#L164" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M003832_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File activemodel/lib/active_model/errors.rb, line 164</span>
+164:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">to_xml</span>(<span class="ruby-identifier">options</span>={})
+165:       <span class="ruby-identifier">to_a</span>.<span class="ruby-identifier">to_xml</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">reverse_merge</span>(<span class="ruby-identifier">:root</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">&quot;errors&quot;</span>, <span class="ruby-identifier">:skip_types</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">true</span>)
+166:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

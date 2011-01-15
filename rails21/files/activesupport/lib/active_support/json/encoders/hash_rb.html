@@ -1,0 +1,66 @@
+  <div id="fileHeader">
+    <h1>hash.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activesupport/lib/active_support/json/encoders/hash.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>class Hash
+  # Returns a JSON string representing the hash.
+  #
+  # Without any +options+, the returned JSON string will include all
+  # the hash keys. For example:
+  #
+  #   { :name =&gt; &quot;Konata Izumi&quot;, 'age' =&gt; 16, 1 =&gt; 2 }.to_json
+  #   # =&gt; {&quot;name&quot;: &quot;Konata Izumi&quot;, 1: 2, &quot;age&quot;: 16}
+  #
+  # The keys in the JSON string are unordered due to the nature of hashes.
+  #
+  # The &lt;tt&gt;:only&lt;/tt&gt; and &lt;tt&gt;:except&lt;/tt&gt; options can be used to limit the
+  # attributes included, and will accept 1 or more hash keys to include/exclude.
+  #
+  #   { :name =&gt; &quot;Konata Izumi&quot;, 'age' =&gt; 16, 1 =&gt; 2 }.to_json(:only =&gt; [:name, 'age'])
+  #   # =&gt; {&quot;name&quot;: &quot;Konata Izumi&quot;, &quot;age&quot;: 16}
+  #
+  #   { :name =&gt; &quot;Konata Izumi&quot;, 'age' =&gt; 16, 1 =&gt; 2 }.to_json(:except =&gt; 1)
+  #   # =&gt; {&quot;name&quot;: &quot;Konata Izumi&quot;, &quot;age&quot;: 16}
+  #
+  # The +options+ also filter down to any hash values. This is particularly
+  # useful for converting hashes containing ActiveRecord objects or any object
+  # that responds to options in their &lt;tt&gt;to_json&lt;/tt&gt; method. For example:
+  #
+  #   users = User.find(:all)
+  #   { :users =&gt; users, :count =&gt; users.size }.to_json(:include =&gt; :posts)
+  #
+  # would pass the &lt;tt&gt;:include =&gt; :posts&lt;/tt&gt; option to &lt;tt&gt;users&lt;/tt&gt;,
+  # allowing the posts association in the User model to be converted to JSON
+  # as well.
+  def to_json(options = {}) #:nodoc:
+    hash_keys = self.keys
+
+    if options[:except]
+      hash_keys = hash_keys - Array(options[:except])
+    elsif options[:only]
+      hash_keys = hash_keys &amp; Array(options[:only])
+    end
+
+    returning result = '{' do
+      result &lt;&lt; hash_keys.map do |key|
+        &quot;#{ActiveSupport::JSON.encode(key)}: #{ActiveSupport::JSON.encode(self[key], options)}&quot;
+      end * ', '
+      result &lt;&lt; '}'
+    end
+  end
+end
+</pre>
+    </div>

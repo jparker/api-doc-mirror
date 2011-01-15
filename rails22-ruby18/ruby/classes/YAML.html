@@ -1,0 +1,1857 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>YAML</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Module</span> 
+            YAML 
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/lib/yaml_rb.html">lib/yaml.rb</a></li>
+            
+            <li><a href="../files/lib/yaml/ypath_rb.html">lib/yaml/ypath.rb</a></li>
+            
+            <li><a href="../files/lib/yaml/constants_rb.html">lib/yaml/constants.rb</a></li>
+            
+            <li><a href="../files/lib/yaml/syck_rb.html">lib/yaml/syck.rb</a></li>
+            
+            <li><a href="../files/lib/yaml/types_rb.html">lib/yaml/types.rb</a></li>
+            
+            <li><a href="../files/lib/yaml/loader_rb.html">lib/yaml/loader.rb</a></li>
+            
+            <li><a href="../files/lib/yaml/basenode_rb.html">lib/yaml/basenode.rb</a></li>
+            
+            <li><a href="../files/lib/yaml/baseemitter_rb.html">lib/yaml/baseemitter.rb</a></li>
+            
+            <li><a href="../files/lib/yaml/dbm_rb.html">lib/yaml/dbm.rb</a></li>
+            
+            <li><a href="../files/lib/yaml/encoding_rb.html">lib/yaml/encoding.rb</a></li>
+            
+            <li><a href="../files/lib/yaml/yamlnode_rb.html">lib/yaml/yamlnode.rb</a></li>
+            
+            <li><a href="../files/lib/yaml/error_rb.html">lib/yaml/error.rb</a></li>
+            
+            <li><a href="../files/lib/yaml/tag_rb.html">lib/yaml/tag.rb</a></li>
+            
+            <li><a href="../files/lib/yaml/stream_rb.html">lib/yaml/stream.rb</a></li>
+            
+            <li><a href="../files/ext/syck/rubyext_c.html">ext/syck/rubyext.c</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+# == <a href="YAML.html">YAML</a> # # YAML(tm) (rhymes with
+&#8216;camel&#8217;) is a # straightforward machine parsable data
+serialization format designed for # human readability and interaction with
+scripting languages such as Perl # and Python. <a href="YAML.html">YAML</a>
+is optimized for data serialization, formatted # dumping, configuration
+files, log files, Internet messaging and # filtering. This specification
+describes the <a href="YAML.html">YAML</a> information model and #
+serialization format. Together with the Unicode standard for characters, it
+# provides all the information necessary to understand <a
+href="YAML.html">YAML</a> Version 1.0 # and construct computer programs to
+process it. # # See <a href="http://yaml.org/">yaml.org/</a> for more
+information. For a quick tutorial, please # visit <a
+href="YAML.html">YAML</a> In Five Minutes (<a
+href="http://yaml.kwiki.org/?YamlInFiveMinutes">yaml.kwiki.org/?YamlInFiveMinutes</a>).
+# # == About This Library # # The <a href="YAML.html">YAML</a> 1.0
+specification outlines four stages of <a href="YAML.html">YAML</a> loading
+and dumping. # This library honors all four of those stages, although data
+is really only # available to you in three stages. # # The four stages are:
+native, representation, serialization, and presentation. # # The native
+stage refers to data which has been loaded completely into Ruby&#8217;s #
+own types. (See +YAML::load+.) # # The representation stage means data
+which has been composed into # +YAML::BaseNode+ objects. In this stage, the
+document is available as a # tree of node objects. You can perform <a
+href="YAML/YPath.html">YPath</a> queries and transformations # at this
+level. (See +YAML::parse+.) # # The serialization stage happens inside the
+parser. The <a href="YAML.html">YAML</a> parser used in # Ruby is called <a
+href="YAML/Syck.html">Syck</a>. Serialized nodes are available in the
+extension as # SyckNode structs. # # The presentation stage is the <a
+href="YAML.html">YAML</a> document itself. This is accessible # to you as a
+string. (See +YAML::dump+.) # # For more information about the various
+information models, see Chapter # 3 of the <a href="YAML.html">YAML</a> 1.0
+Specification (<a
+href="http://yaml.org/spec/#id2491269">yaml.org/spec/#id2491269</a>). # #
+The <a href="YAML.html">YAML</a> module provides quick access to the most
+common loading (YAML::load) # and dumping (YAML::dump) tasks. This module
+also provides an API for registering # global types
+(YAML::add_domain_type). # # == Example # # A simple round-trip (load and
+dump) of an object. # # require &#8220;yaml&#8221; # # test_obj =
+[&#8220;dogs&#8221;, &#8220;cats&#8221;, &#8220;badgers&#8221;] # #
+yaml_obj = YAML::dump( test_obj ) # # -> &#8212; # - dogs # - cats # -
+badgers # ruby_obj = YAML::load( yaml_obj ) # # => [&#8220;dogs&#8221;,
+&#8220;cats&#8221;, &#8220;badgers&#8221;] # ruby_obj == test_obj # # =>
+true # # To register your custom types with the global resolver, use <tt><a
+href="YAML.html#M005857">add_domain_type</a></tt>. # # YAML::<a
+href="YAML.html#M005857">add_domain_type</a>(
+&#8220;your-site.com,2004&#8221;, &#8220;widget&#8221; ) do |type, val| #
+Widget.new( val ) # end #
+</p>
+<p>
+# &#8212; # # <a href="YAML/YPath.html">YAML::YPath</a> #
+</p>
+<p>
+# &#8212; # # Constants used throughout the library #
+</p>
+<p>
+# &#8212; # # Classes required by the full core typeset #
+</p>
+<p>
+# &#8212; # # <a href="YAML/Loader.html">YAML::Loader</a> class # .. type
+handling .. #
+</p>
+<p>
+# &#8212; # # <a href="YAML.html">YAML</a> + <a
+href="YAML/DBM.html">DBM</a> = YDBM # - Same interface as <a
+href="YAML/DBM.html">DBM</a> class #
+</p>
+<p>
+# &#8212; # # Handle Unicode-to-Internal conversion #
+</p>
+<p>
+# &#8212; # # <a href="YAML/Error.html">Error</a> messages and exception
+class #
+</p>
+<p>
+# &#8212; # $Id: tag.rb 16084 2008-04-19 11:45:39Z knu $ # # = yaml/tag.rb:
+methods for associating a taguri to a class. #
+</p>
+<table>
+<tr><td valign="top"># Author:</td><td>why the lucky stiff
+
+</td></tr>
+</table>
+<p>
+#
+</p>
+<p>
+# &#8212;
+</p>
+<pre>
+   Initialize Syck extension
+</pre>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>A</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005858">add_builtin_type</a>,</li>
+                
+                <li><a href="#M005857">add_domain_type</a>,</li>
+                
+                <li><a href="#M005860">add_private_type</a>,</li>
+                
+                <li><a href="#M005859">add_ruby_type</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>D</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005861">detect_implicit</a>,</li>
+                
+                <li><a href="#M005846">dump</a>,</li>
+                
+                <li><a href="#M005856">dump_stream</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005851">each_document</a>,</li>
+                
+                <li><a href="#M005853">each_node</a>,</li>
+                
+                <li><a href="#M005845">emitter</a>,</li>
+                
+                <li><a href="#M006054">escape</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>G</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005843">generic_parser</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>L</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005847">load</a>,</li>
+                
+                <li><a href="#M005852">load_documents</a>,</li>
+                
+                <li><a href="#M005848">load_file</a>,</li>
+                
+                <li><a href="#M005855">load_stream</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>M</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006103">make_stream</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>O</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005866">object_maker</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>P</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005849">parse</a>,</li>
+                
+                <li><a href="#M005854">parse_documents</a>,</li>
+                
+                <li><a href="#M005850">parse_file</a>,</li>
+                
+                <li><a href="#M005842">parser</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>Q</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005867">quick_emit</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>R</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005865">read_type_class</a>,</li>
+                
+                <li><a href="#M005844">resolver</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>T</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006104">tag_class</a>,</li>
+                
+                <li><a href="#M006105">tagged_classes</a>,</li>
+                
+                <li><a href="#M005862">tagurize</a>,</li>
+                
+                <li><a href="#M005863">transfer</a>,</li>
+                
+                <li><a href="#M005864">try_implicit</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>U</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006055">unescape</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Classes and Modules</div>
+    <ul>
+        
+        <li><span class="type">MODULE</span> <a href="YAML/BaseEmitter.html">YAML::BaseEmitter</a></li>
+        
+        <li><span class="type">MODULE</span> <a href="YAML/BaseNode.html">YAML::BaseNode</a></li>
+        
+        <li><span class="type">MODULE</span> <a href="YAML/Syck.html">YAML::Syck</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="YAML/DBM.html">YAML::DBM</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="YAML/DomainType.html">YAML::DomainType</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="YAML/Error.html">YAML::Error</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="YAML/Loader.html">YAML::Loader</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="YAML/Mapping.html">YAML::Mapping</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="YAML/Object.html">YAML::Object</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="YAML/Omap.html">YAML::Omap</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="YAML/Pairs.html">YAML::Pairs</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="YAML/ParseError.html">YAML::ParseError</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="YAML/PrivateType.html">YAML::PrivateType</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="YAML/Sequence.html">YAML::Sequence</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="YAML/Set.html">YAML::Set</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="YAML/SpecialHash.html">YAML::SpecialHash</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="YAML/Store.html">YAML::Store</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="YAML/Stream.html">YAML::Stream</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="YAML/TypeError.html">YAML::TypeError</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="YAML/YPath.html">YAML::YPath</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="YAML/YamlNode.html">YAML::YamlNode</a></li>
+        
+    </ul>
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">Resolver</td>
+            <td>=</td>
+            <td class="attr-value">YAML::Syck::Resolver</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">DefaultResolver</td>
+            <td>=</td>
+            <td class="attr-value">YAML::Syck::DefaultResolver</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">GenericResolver</td>
+            <td>=</td>
+            <td class="attr-value">YAML::Syck::GenericResolver</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">Parser</td>
+            <td>=</td>
+            <td class="attr-value">YAML::Syck::Parser</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">Emitter</td>
+            <td>=</td>
+            <td class="attr-value">YAML::Syck::Emitter</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">VERSION</td>
+            <td>=</td>
+            <td class="attr-value">'0.60'</td>
+        </tr>
+        
+        <tr valign='top'>
+            <td>&nbsp;</td>
+            <td colspan="2" class="attr-desc"><p>
+Constants
+</p>
+</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">SUPPORTED_YAML_VERSIONS</td>
+            <td>=</td>
+            <td class="attr-value">['1.0']</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">WORD_CHAR</td>
+            <td>=</td>
+            <td class="attr-value">'A-Za-z0-9'</td>
+        </tr>
+        
+        <tr valign='top'>
+            <td>&nbsp;</td>
+            <td colspan="2" class="attr-desc"><p>
+<a href="YAML.html#Parser">Parser</a> tokens
+</p>
+</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">PRINTABLE_CHAR</td>
+            <td>=</td>
+            <td class="attr-value">'-_A-Za-z0-9!?/()$\'&quot;. '</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">NOT_PLAIN_CHAR</td>
+            <td>=</td>
+            <td class="attr-value">'\x7f\x0-\x1f\x80-\x9f'</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ESCAPE_CHAR</td>
+            <td>=</td>
+            <td class="attr-value">'[\\x00-\\x09\\x0b-\\x1f]'</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">INDICATOR_CHAR</td>
+            <td>=</td>
+            <td class="attr-value">'*&amp;!|\\\\^@%{}[]='</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">SPACE_INDICATORS</td>
+            <td>=</td>
+            <td class="attr-value">'-#:,?'</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">RESTRICTED_INDICATORS</td>
+            <td>=</td>
+            <td class="attr-value">'#:,}]'</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">DNS_COMP_RE</td>
+            <td>=</td>
+            <td class="attr-value">&quot;\\w(?:[-\\w]*\\w)?&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">DNS_NAME_RE</td>
+            <td>=</td>
+            <td class="attr-value">&quot;(?:(?:#{DNS_COMP_RE}\\.)+#{DNS_COMP_RE}|#{DNS_COMP_RE})&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ESCAPES</td>
+            <td>=</td>
+            <td class="attr-value">%w{\x00   \x01       \x02  \x03     \x04        \x05   \x06      \a                              \x08    \t         \n             \v         \f             \r         \x0e   \x0f                                  \x10       \x11  \x12     \x13        \x14   \x15      \x16 \x17                                  \x18       \x19  \x1a     \e          \x1c    \x1d       \x1e  \x1f                             }</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">UNESCAPES</td>
+            <td>=</td>
+            <td class="attr-value">{                                 'a' =&gt; &quot;\x07&quot;, 'b' =&gt; &quot;\x08&quot;, 't' =&gt; &quot;\x09&quot;,                                  'n' =&gt; &quot;\x0a&quot;, 'v' =&gt; &quot;\x0b&quot;, 'f' =&gt; &quot;\x0c&quot;,                                 'r' =&gt; &quot;\x0d&quot;, 'e' =&gt; &quot;\x1b&quot;, '\\' =&gt; '\\',                             }</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">DEFAULTS</td>
+            <td>=</td>
+            <td class="attr-value">{                 :Indent =&gt; 2, :UseHeader =&gt; false, :UseVersion =&gt; false, :Version =&gt; '1.0',                 :SortKeys =&gt; false, :AnchorFormat =&gt; 'id%03d', :ExplicitTypes =&gt; false,                 :WidthType =&gt; 'absolute', :BestWidth =&gt; 80,                 :UseBlock =&gt; false, :UseFold =&gt; false, :Encoding =&gt; :None         }</td>
+        </tr>
+        
+        <tr valign='top'>
+            <td>&nbsp;</td>
+            <td colspan="2" class="attr-desc"><p>
+Default settings
+</p>
+</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ERROR_NO_HEADER_NODE</td>
+            <td>=</td>
+            <td class="attr-value">&quot;With UseHeader=false, the node Array or Hash must have elements&quot;</td>
+        </tr>
+        
+        <tr valign='top'>
+            <td>&nbsp;</td>
+            <td colspan="2" class="attr-desc"><p>
+<a href="YAML/Error.html">Error</a> messages
+</p>
+</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ERROR_NEED_HEADER</td>
+            <td>=</td>
+            <td class="attr-value">&quot;With UseHeader=false, the node must be an Array or Hash&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ERROR_BAD_EXPLICIT</td>
+            <td>=</td>
+            <td class="attr-value">&quot;Unsupported explicit transfer: '%s'&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ERROR_MANY_EXPLICIT</td>
+            <td>=</td>
+            <td class="attr-value">&quot;More than one explicit transfer&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ERROR_MANY_IMPLICIT</td>
+            <td>=</td>
+            <td class="attr-value">&quot;More than one implicit request&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ERROR_NO_ANCHOR</td>
+            <td>=</td>
+            <td class="attr-value">&quot;No anchor for alias '%s'&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ERROR_BAD_ANCHOR</td>
+            <td>=</td>
+            <td class="attr-value">&quot;Invalid anchor: %s&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ERROR_MANY_ANCHOR</td>
+            <td>=</td>
+            <td class="attr-value">&quot;More than one anchor&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ERROR_ANCHOR_ALIAS</td>
+            <td>=</td>
+            <td class="attr-value">&quot;Can't define both an anchor and an alias&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ERROR_BAD_ALIAS</td>
+            <td>=</td>
+            <td class="attr-value">&quot;Invalid alias: %s&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ERROR_MANY_ALIAS</td>
+            <td>=</td>
+            <td class="attr-value">&quot;More than one alias&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ERROR_ZERO_INDENT</td>
+            <td>=</td>
+            <td class="attr-value">&quot;Can't use zero as an indentation width&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ERROR_UNSUPPORTED_VERSION</td>
+            <td>=</td>
+            <td class="attr-value">&quot;This release of YAML.rb does not support YAML version %s&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ERROR_UNSUPPORTED_ENCODING</td>
+            <td>=</td>
+            <td class="attr-value">&quot;Attempt to use unsupported encoding: %s&quot;</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005858">
+                    
+                    <a name="M005858"></a><b>add_builtin_type</b>( type_tag, &amp;transfer_proc )
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Add a transfer method for a builtin type
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005858_source')" id="l_M005858_source">show</a>
+                        
+                    </p>
+                    <div id="M005858_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/yaml.rb, line 306</span>
+306:         <span class="ruby-keyword kw">def</span> <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">add_builtin_type</span>( <span class="ruby-identifier">type_tag</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">transfer_proc</span> )
+307:             <span class="ruby-identifier">resolver</span>.<span class="ruby-identifier">add_type</span>( <span class="ruby-node">&quot;tag:yaml.org,2002:#{ type_tag }&quot;</span>, <span class="ruby-identifier">transfer_proc</span> )
+308:         <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005857">
+                    
+                    <a name="M005857"></a><b>add_domain_type</b>( domain, type_tag, &amp;transfer_proc )
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Add a global handler for a <a href="YAML.html">YAML</a> domain type.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005857_source')" id="l_M005857_source">show</a>
+                        
+                    </p>
+                    <div id="M005857_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/yaml.rb, line 299</span>
+299:         <span class="ruby-keyword kw">def</span> <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">add_domain_type</span>( <span class="ruby-identifier">domain</span>, <span class="ruby-identifier">type_tag</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">transfer_proc</span> )
+300:         <span class="ruby-identifier">resolver</span>.<span class="ruby-identifier">add_type</span>( <span class="ruby-node">&quot;tag:#{ domain }:#{ type_tag }&quot;</span>, <span class="ruby-identifier">transfer_proc</span> )
+301:         <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005860">
+                    
+                    <a name="M005860"></a><b>add_private_type</b>( type_re, &amp;transfer_proc )
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Add a private document type
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005860_source')" id="l_M005860_source">show</a>
+                        
+                    </p>
+                    <div id="M005860_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/yaml.rb, line 320</span>
+320:         <span class="ruby-keyword kw">def</span> <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">add_private_type</span>( <span class="ruby-identifier">type_re</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">transfer_proc</span> )
+321:             <span class="ruby-identifier">resolver</span>.<span class="ruby-identifier">add_type</span>( <span class="ruby-value str">&quot;x-private:&quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">type_re</span>, <span class="ruby-identifier">transfer_proc</span> )
+322:         <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005859">
+                    
+                    <a name="M005859"></a><b>add_ruby_type</b>( type_tag, &amp;transfer_proc )
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Add a transfer method for a builtin type
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005859_source')" id="l_M005859_source">show</a>
+                        
+                    </p>
+                    <div id="M005859_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/yaml.rb, line 313</span>
+313:         <span class="ruby-keyword kw">def</span> <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">add_ruby_type</span>( <span class="ruby-identifier">type_tag</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">transfer_proc</span> )
+314:             <span class="ruby-identifier">resolver</span>.<span class="ruby-identifier">add_type</span>( <span class="ruby-node">&quot;tag:ruby.yaml.org,2002:#{ type_tag }&quot;</span>, <span class="ruby-identifier">transfer_proc</span> )
+315:         <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005861">
+                    
+                    <a name="M005861"></a><b>detect_implicit</b>( val )
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Detect typing of a string
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005861_source')" id="l_M005861_source">show</a>
+                        
+                    </p>
+                    <div id="M005861_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/yaml.rb, line 327</span>
+327:     <span class="ruby-keyword kw">def</span> <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">detect_implicit</span>( <span class="ruby-identifier">val</span> )
+328:         <span class="ruby-identifier">resolver</span>.<span class="ruby-identifier">detect_implicit</span>( <span class="ruby-identifier">val</span> )
+329:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005846">
+                    
+                    <a name="M005846"></a><b>dump</b>( obj, io = nil )
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Converts <em>obj</em> to <a href="YAML.html">YAML</a> and writes the <a
+href="YAML.html">YAML</a> result to <em>io</em>.
+</p>
+<pre>
+  File.open( 'animals.yaml', 'w' ) do |out|
+    YAML.dump( ['badger', 'elephant', 'tiger'], out )
+  end
+</pre>
+<p>
+If no <em>io</em> is provided, a string containing the dumped <a
+href="YAML.html">YAML</a> is returned.
+</p>
+<pre>
+  YAML.dump( :locked )
+     #=&gt; &quot;--- :locked&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005846_source')" id="l_M005846_source">show</a>
+                        
+                    </p>
+                    <div id="M005846_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/yaml.rb, line 116</span>
+116:         <span class="ruby-keyword kw">def</span> <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">dump</span>( <span class="ruby-identifier">obj</span>, <span class="ruby-identifier">io</span> = <span class="ruby-keyword kw">nil</span> )
+117:         <span class="ruby-identifier">obj</span>.<span class="ruby-identifier">to_yaml</span>( <span class="ruby-identifier">io</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">io2</span> = <span class="ruby-constant">StringIO</span>.<span class="ruby-identifier">new</span> )
+118:         <span class="ruby-identifier">io</span> <span class="ruby-operator">||</span> ( <span class="ruby-identifier">io2</span>.<span class="ruby-identifier">rewind</span>; <span class="ruby-identifier">io2</span>.<span class="ruby-identifier">read</span> )
+119:         <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005856">
+                    
+                    <a name="M005856"></a><b>dump_stream</b>( *objs )
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns a <a href="YAML.html">YAML</a> stream containing each of the items
+in <tt>objs</tt>, each having their own document.
+</p>
+<pre>
+  YAML.dump_stream( 0, [], {} )
+    #=&gt; --- 0
+        --- []
+        --- {}
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005856_source')" id="l_M005856_source">show</a>
+                        
+                    </p>
+                    <div id="M005856_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/yaml.rb, line 288</span>
+288:         <span class="ruby-keyword kw">def</span> <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">dump_stream</span>( <span class="ruby-operator">*</span><span class="ruby-identifier">objs</span> )
+289:                 <span class="ruby-identifier">d</span> = <span class="ruby-constant">YAML</span><span class="ruby-operator">::</span><span class="ruby-constant">Stream</span>.<span class="ruby-identifier">new</span>
+290:         <span class="ruby-identifier">objs</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">doc</span><span class="ruby-operator">|</span>
+291:                         <span class="ruby-identifier">d</span>.<span class="ruby-identifier">add</span>( <span class="ruby-identifier">doc</span> ) 
+292:         <span class="ruby-keyword kw">end</span>
+293:         <span class="ruby-identifier">d</span>.<span class="ruby-identifier">emit</span>
+294:         <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005851">
+                    
+                    <a name="M005851"></a><b>each_document</b>( io, &amp;block )
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Calls <em>block</em> with each consecutive document in the <a
+href="YAML.html">YAML</a> stream contained in <em>io</em>.
+</p>
+<pre>
+  File.open( 'many-docs.yaml' ) do |yf|
+    YAML.each_document( yf ) do |ydoc|
+      ## ydoc contains the single object
+      ## from the YAML document
+    end
+  end
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005851_source')" id="l_M005851_source">show</a>
+                        
+                    </p>
+                    <div id="M005851_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/yaml.rb, line 216</span>
+216:         <span class="ruby-keyword kw">def</span> <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">each_document</span>( <span class="ruby-identifier">io</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span> )
+217:                 <span class="ruby-identifier">yp</span> = <span class="ruby-identifier">parser</span>.<span class="ruby-identifier">load_documents</span>( <span class="ruby-identifier">io</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span> )
+218:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005853">
+                    
+                    <a name="M005853"></a><b>each_node</b>( io, &amp;doc_proc )
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Calls <em>block</em> with a tree of +YAML::BaseNodes+, one tree for each
+consecutive document in the <a href="YAML.html">YAML</a> stream contained
+in <em>io</em>.
+</p>
+<pre>
+  File.open( 'many-docs.yaml' ) do |yf|
+    YAML.each_node( yf ) do |ydoc|
+      ## ydoc contains a tree of nodes
+      ## from the YAML document
+    end
+  end
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005853_source')" id="l_M005853_source">show</a>
+                        
+                    </p>
+                    <div id="M005853_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/yaml.rb, line 246</span>
+246:         <span class="ruby-keyword kw">def</span> <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">each_node</span>( <span class="ruby-identifier">io</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">doc_proc</span> )
+247:                 <span class="ruby-identifier">yp</span> = <span class="ruby-identifier">generic_parser</span>.<span class="ruby-identifier">load_documents</span>( <span class="ruby-identifier">io</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">doc_proc</span> )
+248:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005845">
+                    
+                    <a name="M005845"></a><b>emitter</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns a new default emitter
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005845_source')" id="l_M005845_source">show</a>
+                        
+                    </p>
+                    <div id="M005845_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/yaml.rb, line 101</span>
+101:     <span class="ruby-keyword kw">def</span> <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">emitter</span>; <span class="ruby-constant">Emitter</span>.<span class="ruby-identifier">new</span>.<span class="ruby-identifier">set_resolver</span>( <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">resolver</span> ); <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006054">
+                    
+                    <a name="M006054"></a><b>escape</b>( value, skip = &quot;&quot; )
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Escape the string, condensing common escapes
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006054_source')" id="l_M006054_source">show</a>
+                        
+                    </p>
+                    <div id="M006054_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/yaml/encoding.rb, line 10</span>
+10:         <span class="ruby-keyword kw">def</span> <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">escape</span>( <span class="ruby-identifier">value</span>, <span class="ruby-identifier">skip</span> = <span class="ruby-value str">&quot;&quot;</span> )
+11:                 <span class="ruby-identifier">value</span>.<span class="ruby-identifier">gsub</span>( <span class="ruby-regexp re">/\\/</span>, <span class="ruby-value str">&quot;\\\\\\&quot;</span> ).
+12:               <span class="ruby-identifier">gsub</span>( <span class="ruby-regexp re">/&quot;/</span>, <span class="ruby-value str">&quot;\\\&quot;&quot;</span> ).
+13:               <span class="ruby-identifier">gsub</span>( <span class="ruby-regexp re">/([\x00-\x1f])/</span> ) <span class="ruby-keyword kw">do</span>
+14:                  <span class="ruby-identifier">skip</span>[<span class="ruby-identifier">$&amp;</span>] <span class="ruby-operator">||</span> <span class="ruby-constant">ESCAPES</span>[ <span class="ruby-identifier">$&amp;</span>.<span class="ruby-identifier">unpack</span>(<span class="ruby-value str">&quot;C&quot;</span>)[<span class="ruby-value">0</span>] ]
+15:              <span class="ruby-keyword kw">end</span>
+16:         <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005843">
+                    
+                    <a name="M005843"></a><b>generic_parser</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns a new generic parser
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005843_source')" id="l_M005843_source">show</a>
+                        
+                    </p>
+                    <div id="M005843_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/yaml.rb, line 97</span>
+97:     <span class="ruby-keyword kw">def</span> <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">generic_parser</span>; <span class="ruby-constant">Parser</span>.<span class="ruby-identifier">new</span>.<span class="ruby-identifier">set_resolver</span>( <span class="ruby-constant">GenericResolver</span> ); <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005847">
+                    
+                    <a name="M005847"></a><b>load</b>( io )
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Load a document from the current <em>io</em> stream.
+</p>
+<pre>
+  File.open( 'animals.yaml' ) { |yf| YAML::load( yf ) }
+     #=&gt; ['badger', 'elephant', 'tiger']
+</pre>
+<p>
+Can also load from a string.
+</p>
+<pre>
+  YAML.load( &quot;--- :locked&quot; )
+     #=&gt; :locked
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005847_source')" id="l_M005847_source">show</a>
+                        
+                    </p>
+                    <div id="M005847_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/yaml.rb, line 132</span>
+132:         <span class="ruby-keyword kw">def</span> <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">load</span>( <span class="ruby-identifier">io</span> )
+133:                 <span class="ruby-identifier">yp</span> = <span class="ruby-identifier">parser</span>.<span class="ruby-identifier">load</span>( <span class="ruby-identifier">io</span> )
+134:         <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005852">
+                    
+                    <a name="M005852"></a><b>load_documents</b>( io, &amp;doc_proc )
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Calls <em>block</em> with each consecutive document in the <a
+href="YAML.html">YAML</a> stream contained in <em>io</em>.
+</p>
+<pre>
+  File.open( 'many-docs.yaml' ) do |yf|
+    YAML.load_documents( yf ) do |ydoc|
+      ## ydoc contains the single object
+      ## from the YAML document
+    end
+  end
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005852_source')" id="l_M005852_source">show</a>
+                        
+                    </p>
+                    <div id="M005852_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/yaml.rb, line 231</span>
+231:         <span class="ruby-keyword kw">def</span> <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">load_documents</span>( <span class="ruby-identifier">io</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">doc_proc</span> )
+232:                 <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">each_document</span>( <span class="ruby-identifier">io</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">doc_proc</span> )
+233:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005848">
+                    
+                    <a name="M005848"></a><b>load_file</b>( filepath )
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Load a document from the file located at <em>filepath</em>.
+</p>
+<pre>
+  YAML.load_file( 'animals.yaml' )
+     #=&gt; ['badger', 'elephant', 'tiger']
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005848_source')" id="l_M005848_source">show</a>
+                        
+                    </p>
+                    <div id="M005848_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/yaml.rb, line 142</span>
+142:     <span class="ruby-keyword kw">def</span> <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">load_file</span>( <span class="ruby-identifier">filepath</span> )
+143:         <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>( <span class="ruby-identifier">filepath</span> ) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">f</span><span class="ruby-operator">|</span>
+144:             <span class="ruby-identifier">load</span>( <span class="ruby-identifier">f</span> )
+145:         <span class="ruby-keyword kw">end</span>
+146:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005855">
+                    
+                    <a name="M005855"></a><b>load_stream</b>( io )
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Loads all documents from the current <em>io</em> stream, returning a
++YAML::Stream+ object containing all loaded documents.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005855_source')" id="l_M005855_source">show</a>
+                        
+                    </p>
+                    <div id="M005855_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/yaml.rb, line 270</span>
+270:         <span class="ruby-keyword kw">def</span> <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">load_stream</span>( <span class="ruby-identifier">io</span> )
+271:                 <span class="ruby-identifier">d</span> = <span class="ruby-keyword kw">nil</span>
+272:                 <span class="ruby-identifier">parser</span>.<span class="ruby-identifier">load_documents</span>( <span class="ruby-identifier">io</span> ) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">doc</span><span class="ruby-operator">|</span>
+273:                         <span class="ruby-identifier">d</span> = <span class="ruby-constant">YAML</span><span class="ruby-operator">::</span><span class="ruby-constant">Stream</span>.<span class="ruby-identifier">new</span> <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">not</span> <span class="ruby-identifier">d</span>
+274:                         <span class="ruby-identifier">d</span>.<span class="ruby-identifier">add</span>( <span class="ruby-identifier">doc</span> ) 
+275:         <span class="ruby-keyword kw">end</span>
+276:                 <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">d</span>
+277:         <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006103">
+                    
+                    <a name="M006103"></a><b>make_stream</b>( io )
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+<a href="Class.html">Class</a> method for creating streams
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006103_source')" id="l_M006103_source">show</a>
+                        
+                    </p>
+                    <div id="M006103_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/yaml/stringio.rb, line 55</span>
+55:         <span class="ruby-keyword kw">def</span> <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">make_stream</span>( <span class="ruby-identifier">io</span> )
+56:         <span class="ruby-keyword kw">if</span> <span class="ruby-constant">String</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">io</span>
+57:             <span class="ruby-identifier">io</span> = <span class="ruby-constant">StringIO</span>.<span class="ruby-identifier">new</span>( <span class="ruby-identifier">io</span> )
+58:         <span class="ruby-keyword kw">elsif</span> <span class="ruby-keyword kw">not</span> <span class="ruby-constant">IO</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">io</span>
+59:             <span class="ruby-identifier">raise</span> <span class="ruby-constant">YAML</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-value str">&quot;YAML stream must be an IO or String object.&quot;</span>
+60:         <span class="ruby-keyword kw">end</span>
+61:         <span class="ruby-keyword kw">if</span> <span class="ruby-constant">YAML</span><span class="ruby-operator">::</span><span class="ruby-identifier">unicode</span>
+62:             <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">io</span>.<span class="ruby-identifier">readline</span>
+63:                 <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">utf_to_internal</span>( <span class="ruby-identifier">readline</span>( <span class="ruby-ivar">@ln_sep</span> ), <span class="ruby-ivar">@utf_encoding</span> )
+64:             <span class="ruby-keyword kw">end</span>
+65:             <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">io</span>.<span class="ruby-identifier">check_unicode</span>
+66:                 <span class="ruby-ivar">@utf_encoding</span> = <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">sniff_encoding</span>( <span class="ruby-identifier">read</span>( <span class="ruby-value">4</span> ) )
+67:                 <span class="ruby-ivar">@ln_sep</span> = <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">enc_separator</span>( <span class="ruby-ivar">@utf_encoding</span> )
+68:                 <span class="ruby-identifier">seek</span>( <span class="ruby-value">-4</span>, <span class="ruby-constant">IO</span><span class="ruby-operator">::</span><span class="ruby-constant">SEEK_CUR</span> )
+69:             <span class="ruby-keyword kw">end</span>
+70:                     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">io</span>.<span class="ruby-identifier">utf_encoding</span>
+71:                       <span class="ruby-ivar">@utf_encoding</span>
+72:                     <span class="ruby-keyword kw">end</span>
+73:             <span class="ruby-identifier">io</span>.<span class="ruby-identifier">check_unicode</span>
+74:         <span class="ruby-keyword kw">else</span>
+75:             <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">io</span>.<span class="ruby-identifier">utf_encoding</span>
+76:                 <span class="ruby-identifier">:None</span>
+77:             <span class="ruby-keyword kw">end</span>
+78:         <span class="ruby-keyword kw">end</span>
+79:         <span class="ruby-identifier">io</span>
+80:         <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005866">
+                    
+                    <a name="M005866"></a><b>object_maker</b>( obj_class, val )
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Allocate blank object
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005866_source')" id="l_M005866_source">show</a>
+                        
+                    </p>
+                    <div id="M005866_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/yaml.rb, line 365</span>
+365:     <span class="ruby-keyword kw">def</span> <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">object_maker</span>( <span class="ruby-identifier">obj_class</span>, <span class="ruby-identifier">val</span> )
+366:         <span class="ruby-keyword kw">if</span> <span class="ruby-constant">Hash</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">val</span>
+367:             <span class="ruby-identifier">o</span> = <span class="ruby-identifier">obj_class</span>.<span class="ruby-identifier">allocate</span>
+368:             <span class="ruby-identifier">val</span>.<span class="ruby-identifier">each_pair</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">k</span>,<span class="ruby-identifier">v</span><span class="ruby-operator">|</span>
+369:                 <span class="ruby-identifier">o</span>.<span class="ruby-identifier">instance_variable_set</span>(<span class="ruby-node">&quot;@#{k}&quot;</span>, <span class="ruby-identifier">v</span>)
+370:             }
+371:             <span class="ruby-identifier">o</span>
+372:         <span class="ruby-keyword kw">else</span>
+373:             <span class="ruby-identifier">raise</span> <span class="ruby-constant">YAML</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-value str">&quot;Invalid object explicitly tagged !ruby/Object: &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">val</span>.<span class="ruby-identifier">inspect</span>
+374:         <span class="ruby-keyword kw">end</span>
+375:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005849">
+                    
+                    <a name="M005849"></a><b>parse</b>( io )
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Parse the first document from the current <em>io</em> stream
+</p>
+<pre>
+  File.open( 'animals.yaml' ) { |yf| YAML::load( yf ) }
+     #=&gt; #&lt;YAML::Syck::Node:0x82ccce0
+          @kind=:seq,
+          @value=
+           [#&lt;YAML::Syck::Node:0x82ccd94
+             @kind=:scalar,
+             @type_id=&quot;str&quot;,
+             @value=&quot;badger&quot;&gt;,
+            #&lt;YAML::Syck::Node:0x82ccd58
+             @kind=:scalar,
+             @type_id=&quot;str&quot;,
+             @value=&quot;elephant&quot;&gt;,
+            #&lt;YAML::Syck::Node:0x82ccd1c
+             @kind=:scalar,
+             @type_id=&quot;str&quot;,
+             @value=&quot;tiger&quot;&gt;]&gt;
+</pre>
+<p>
+Can also load from a string.
+</p>
+<pre>
+  YAML.parse( &quot;--- :locked&quot; )
+     #=&gt; #&lt;YAML::Syck::Node:0x82edddc
+           @type_id=&quot;tag:ruby.yaml.org,2002:sym&quot;,
+           @value=&quot;:locked&quot;, @kind=:scalar&gt;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005849_source')" id="l_M005849_source">show</a>
+                        
+                    </p>
+                    <div id="M005849_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/yaml.rb, line 175</span>
+175:         <span class="ruby-keyword kw">def</span> <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">parse</span>( <span class="ruby-identifier">io</span> )
+176:                 <span class="ruby-identifier">yp</span> = <span class="ruby-identifier">generic_parser</span>.<span class="ruby-identifier">load</span>( <span class="ruby-identifier">io</span> )
+177:         <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005854">
+                    
+                    <a name="M005854"></a><b>parse_documents</b>( io, &amp;doc_proc )
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Calls <em>block</em> with a tree of +YAML::BaseNodes+, one tree for each
+consecutive document in the <a href="YAML.html">YAML</a> stream contained
+in <em>io</em>.
+</p>
+<pre>
+  File.open( 'many-docs.yaml' ) do |yf|
+    YAML.parse_documents( yf ) do |ydoc|
+      ## ydoc contains a tree of nodes
+      ## from the YAML document
+    end
+  end
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005854_source')" id="l_M005854_source">show</a>
+                        
+                    </p>
+                    <div id="M005854_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/yaml.rb, line 261</span>
+261:         <span class="ruby-keyword kw">def</span> <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">parse_documents</span>( <span class="ruby-identifier">io</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">doc_proc</span> )
+262:                 <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">each_node</span>( <span class="ruby-identifier">io</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">doc_proc</span> )
+263:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005850">
+                    
+                    <a name="M005850"></a><b>parse_file</b>( filepath )
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Parse a document from the file located at <em>filepath</em>.
+</p>
+<pre>
+  YAML.parse_file( 'animals.yaml' )
+     #=&gt; #&lt;YAML::Syck::Node:0x82ccce0
+          @kind=:seq,
+          @value=
+           [#&lt;YAML::Syck::Node:0x82ccd94
+             @kind=:scalar,
+             @type_id=&quot;str&quot;,
+             @value=&quot;badger&quot;&gt;,
+            #&lt;YAML::Syck::Node:0x82ccd58
+             @kind=:scalar,
+             @type_id=&quot;str&quot;,
+             @value=&quot;elephant&quot;&gt;,
+            #&lt;YAML::Syck::Node:0x82ccd1c
+             @kind=:scalar,
+             @type_id=&quot;str&quot;,
+             @value=&quot;tiger&quot;&gt;]&gt;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005850_source')" id="l_M005850_source">show</a>
+                        
+                    </p>
+                    <div id="M005850_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/yaml.rb, line 199</span>
+199:     <span class="ruby-keyword kw">def</span> <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">parse_file</span>( <span class="ruby-identifier">filepath</span> )
+200:         <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>( <span class="ruby-identifier">filepath</span> ) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">f</span><span class="ruby-operator">|</span>
+201:             <span class="ruby-identifier">parse</span>( <span class="ruby-identifier">f</span> )
+202:         <span class="ruby-keyword kw">end</span>
+203:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005842">
+                    
+                    <a name="M005842"></a><b>parser</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns a new default parser
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005842_source')" id="l_M005842_source">show</a>
+                        
+                    </p>
+                    <div id="M005842_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/yaml.rb, line 95</span>
+95:     <span class="ruby-keyword kw">def</span> <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">parser</span>; <span class="ruby-constant">Parser</span>.<span class="ruby-identifier">new</span>.<span class="ruby-identifier">set_resolver</span>( <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">resolver</span> ); <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005867">
+                    
+                    <a name="M005867"></a><b>quick_emit</b>( oid, opts = {}, &amp;e )
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Allocate an <a href="YAML.html#Emitter">Emitter</a> if needed
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005867_source')" id="l_M005867_source">show</a>
+                        
+                    </p>
+                    <div id="M005867_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/yaml.rb, line 380</span>
+380:         <span class="ruby-keyword kw">def</span> <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">quick_emit</span>( <span class="ruby-identifier">oid</span>, <span class="ruby-identifier">opts</span> = {}, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">e</span> )
+381:         <span class="ruby-identifier">out</span> = 
+382:             <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">opts</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-constant">YAML</span><span class="ruby-operator">::</span><span class="ruby-constant">Emitter</span>
+383:                 <span class="ruby-identifier">opts</span>
+384:             <span class="ruby-keyword kw">else</span>
+385:                 <span class="ruby-identifier">emitter</span>.<span class="ruby-identifier">reset</span>( <span class="ruby-identifier">opts</span> )
+386:             <span class="ruby-keyword kw">end</span>
+387:         <span class="ruby-identifier">oid</span> =
+388:             <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">oid</span> <span class="ruby-keyword kw">when</span> <span class="ruby-constant">Fixnum</span>, <span class="ruby-constant">NilClass</span>; <span class="ruby-identifier">oid</span>
+389:             <span class="ruby-keyword kw">else</span> <span class="ruby-identifier">oid</span> = <span class="ruby-node">&quot;#{oid.object_id}-#{oid.hash}&quot;</span>
+390:             <span class="ruby-keyword kw">end</span>
+391:         <span class="ruby-identifier">out</span>.<span class="ruby-identifier">emit</span>( <span class="ruby-identifier">oid</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">e</span> )
+392:         <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005865">
+                    
+                    <a name="M005865"></a><b>read_type_class</b>( type, obj_class )
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+<a href="Method.html">Method</a> to extract colon-seperated type and class,
+returning the type and the constant of the class
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005865_source')" id="l_M005865_source">show</a>
+                        
+                    </p>
+                    <div id="M005865_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/yaml.rb, line 356</span>
+356:     <span class="ruby-keyword kw">def</span> <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">read_type_class</span>( <span class="ruby-identifier">type</span>, <span class="ruby-identifier">obj_class</span> )
+357:         <span class="ruby-identifier">scheme</span>, <span class="ruby-identifier">domain</span>, <span class="ruby-identifier">type</span>, <span class="ruby-identifier">tclass</span> = <span class="ruby-identifier">type</span>.<span class="ruby-identifier">split</span>( <span class="ruby-value str">':'</span>, <span class="ruby-value">4</span> )
+358:         <span class="ruby-identifier">tclass</span>.<span class="ruby-identifier">split</span>( <span class="ruby-value str">&quot;::&quot;</span> ).<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">c</span><span class="ruby-operator">|</span> <span class="ruby-identifier">obj_class</span> = <span class="ruby-identifier">obj_class</span>.<span class="ruby-identifier">const_get</span>( <span class="ruby-identifier">c</span> ) } <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">tclass</span>
+359:         <span class="ruby-keyword kw">return</span> [ <span class="ruby-identifier">type</span>, <span class="ruby-identifier">obj_class</span> ]
+360:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005844">
+                    
+                    <a name="M005844"></a><b>resolver</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the default resolver
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005844_source')" id="l_M005844_source">show</a>
+                        
+                    </p>
+                    <div id="M005844_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/yaml.rb, line 99</span>
+99:     <span class="ruby-keyword kw">def</span> <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">resolver</span>; <span class="ruby-constant">DefaultResolver</span>; <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006104">
+                    
+                    <a name="M006104"></a><b>tag_class</b>( tag, cls )
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Associates a taguri <em>tag</em> with a Ruby class <em>cls</em>. The taguri
+is used to give types to classes when loading <a href="YAML.html">YAML</a>.
+Taguris are of the form:
+</p>
+<pre>
+  tag:authorityName,date:specific
+</pre>
+<p>
+The <tt>authorityName</tt> is a domain name or email address. The
+<tt>date</tt> is the date the type was issued in YYYY or YYYY-MM or
+YYYY-MM-DD format. The <tt>specific</tt> is a name for the type being
+added.
+</p>
+<p>
+For example, built-in <a href="YAML.html">YAML</a> types have
+&#8216;yaml.org&#8217; as the <tt>authorityName</tt> and &#8216;2002&#8217;
+as the <tt>date</tt>. The <tt>specific</tt> is simply the name of the type:
+</p>
+<pre>
+ tag:yaml.org,2002:int
+ tag:yaml.org,2002:float
+ tag:yaml.org,2002:timestamp
+</pre>
+<p>
+The domain must be owned by you on the <tt>date</tt> declared. If you
+don&#8217;t own any domains on the date you declare the type, you can
+simply use an e-mail address.
+</p>
+<pre>
+ tag:why@ruby-lang.org,2004:notes/personal
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006104_source')" id="l_M006104_source">show</a>
+                        
+                    </p>
+                    <div id="M006104_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/yaml/tag.rb, line 35</span>
+35:     <span class="ruby-keyword kw">def</span> <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">tag_class</span>( <span class="ruby-identifier">tag</span>, <span class="ruby-identifier">cls</span> )
+36:         <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@@tagged_classes</span>.<span class="ruby-identifier">has_key?</span> <span class="ruby-identifier">tag</span>
+37:             <span class="ruby-identifier">warn</span> <span class="ruby-node">&quot;class #{ @@tagged_classes[tag] } held ownership of the #{ tag } tag&quot;</span>
+38:         <span class="ruby-keyword kw">end</span>
+39:         <span class="ruby-ivar">@@tagged_classes</span>[<span class="ruby-identifier">tag</span>] = <span class="ruby-identifier">cls</span>
+40:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006105">
+                    
+                    <a name="M006105"></a><b>tagged_classes</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the complete dictionary of taguris, paired with classes. The key
+for the dictionary is the full taguri. The value for each key is the class
+constant associated to that taguri.
+</p>
+<pre>
+ YAML.tagged_classes[&quot;tag:yaml.org,2002:int&quot;] =&gt; Integer
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006105_source')" id="l_M006105_source">show</a>
+                        
+                    </p>
+                    <div id="M006105_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/yaml/tag.rb, line 48</span>
+48:     <span class="ruby-keyword kw">def</span> <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">tagged_classes</span>
+49:         <span class="ruby-ivar">@@tagged_classes</span>
+50:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005862">
+                    
+                    <a name="M005862"></a><b>tagurize</b>( val )
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Convert a type_id to a taguri
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005862_source')" id="l_M005862_source">show</a>
+                        
+                    </p>
+                    <div id="M005862_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/yaml.rb, line 334</span>
+334:     <span class="ruby-keyword kw">def</span> <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">tagurize</span>( <span class="ruby-identifier">val</span> )
+335:         <span class="ruby-identifier">resolver</span>.<span class="ruby-identifier">tagurize</span>( <span class="ruby-identifier">val</span> )
+336:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005863">
+                    
+                    <a name="M005863"></a><b>transfer</b>( type_id, obj )
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Apply a transfer method to a Ruby object
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005863_source')" id="l_M005863_source">show</a>
+                        
+                    </p>
+                    <div id="M005863_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/yaml.rb, line 341</span>
+341:     <span class="ruby-keyword kw">def</span> <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">transfer</span>( <span class="ruby-identifier">type_id</span>, <span class="ruby-identifier">obj</span> )
+342:         <span class="ruby-identifier">resolver</span>.<span class="ruby-identifier">transfer</span>( <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">tagurize</span>( <span class="ruby-identifier">type_id</span> ), <span class="ruby-identifier">obj</span> )
+343:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005864">
+                    
+                    <a name="M005864"></a><b>try_implicit</b>( obj )
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Apply any implicit a node may qualify for
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005864_source')" id="l_M005864_source">show</a>
+                        
+                    </p>
+                    <div id="M005864_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/yaml.rb, line 348</span>
+348:         <span class="ruby-keyword kw">def</span> <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">try_implicit</span>( <span class="ruby-identifier">obj</span> )
+349:                 <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">transfer</span>( <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">detect_implicit</span>( <span class="ruby-identifier">obj</span> ), <span class="ruby-identifier">obj</span> )
+350:         <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006055">
+                    
+                    <a name="M006055"></a><b>unescape</b>( value )
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Unescape the condenses escapes
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006055_source')" id="l_M006055_source">show</a>
+                        
+                    </p>
+                    <div id="M006055_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/yaml/encoding.rb, line 21</span>
+21:         <span class="ruby-keyword kw">def</span> <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">unescape</span>( <span class="ruby-identifier">value</span> )
+22:                 <span class="ruby-identifier">value</span>.<span class="ruby-identifier">gsub</span>( <span class="ruby-regexp re">/\\(?:([nevfbart\\])|0?x([0-9a-fA-F]{2})|u([0-9a-fA-F]{4}))/</span> ) {
+23:                         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">$3</span>
+24:                                 [<span class="ruby-value str">&quot;#$3&quot;</span>.<span class="ruby-identifier">hex</span> ].<span class="ruby-identifier">pack</span>(<span class="ruby-value str">'U*'</span>)
+25:                         <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">$2</span>
+26:                                 [<span class="ruby-identifier">$2</span>].<span class="ruby-identifier">pack</span>( <span class="ruby-value str">&quot;H2&quot;</span> ) 
+27:                         <span class="ruby-keyword kw">else</span>
+28:                                 <span class="ruby-constant">UNESCAPES</span>[<span class="ruby-identifier">$1</span>] 
+29:                         <span class="ruby-keyword kw">end</span>
+30:                 }
+31:         <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>MonitorMixin::ConditionVariable</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            MonitorMixin::ConditionVariable 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../files/lib/monitor_rb.html">lib/monitor.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+FIXME: This isn&#8217;t documented in Nutshell.
+</p>
+<p>
+Since <a href="../MonitorMixin.html#M001295">MonitorMixin.new_cond</a>
+returns a <a href="ConditionVariable.html">ConditionVariable</a>, and the
+example above calls while_wait and signal, this class should be documented.
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>B</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001284">broadcast</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001285">count_waiters</a>,</li>
+                
+                <li><a href="#M001287">create_timer</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001286">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001283">signal</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>W</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001280">wait</a>,</li>
+                
+                <li><a href="#M001282">wait_until</a>,</li>
+                
+                <li><a href="#M001281">wait_while</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Classes and Modules</div>
+    <ul>
+        
+        <li><span class="type">CLASS</span> <a href="ConditionVariable/Timeout.html">MonitorMixin::ConditionVariable::Timeout</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M001286">
+                    
+                    <a name="M001286"></a><b>new</b>(monitor)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001286_source')" id="l_M001286_source">show</a>
+                        
+                    </p>
+                    <div id="M001286_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/monitor.rb, line 165</span>
+165:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">monitor</span>)
+166:       <span class="ruby-ivar">@monitor</span> = <span class="ruby-identifier">monitor</span>
+167:       <span class="ruby-ivar">@waiters</span> = []
+168:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M001284">
+                    
+                    <a name="M001284"></a><b>broadcast</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Wake up all the waiters.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001284_source')" id="l_M001284_source">show</a>
+                        
+                    </p>
+                    <div id="M001284_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/monitor.rb, line 148</span>
+148:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">broadcast</span>
+149:       <span class="ruby-ivar">@monitor</span>.<span class="ruby-identifier">instance_eval</span> {<span class="ruby-identifier">mon_check_owner</span>()}
+150:       <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">critical</span> = <span class="ruby-keyword kw">true</span>
+151:       <span class="ruby-keyword kw">for</span> <span class="ruby-identifier">t</span> <span class="ruby-keyword kw">in</span> <span class="ruby-ivar">@waiters</span>
+152:         <span class="ruby-identifier">t</span>.<span class="ruby-identifier">wakeup</span>
+153:       <span class="ruby-keyword kw">end</span>
+154:       <span class="ruby-ivar">@waiters</span>.<span class="ruby-identifier">clear</span>
+155:       <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">critical</span> = <span class="ruby-keyword kw">false</span>
+156:       <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">pass</span>
+157:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001285">
+                    
+                    <a name="M001285"></a><b>count_waiters</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001285_source')" id="l_M001285_source">show</a>
+                        
+                    </p>
+                    <div id="M001285_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/monitor.rb, line 159</span>
+159:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">count_waiters</span>
+160:       <span class="ruby-keyword kw">return</span> <span class="ruby-ivar">@waiters</span>.<span class="ruby-identifier">length</span>
+161:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001283">
+                    
+                    <a name="M001283"></a><b>signal</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Wake up and run the next waiter
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001283_source')" id="l_M001283_source">show</a>
+                        
+                    </p>
+                    <div id="M001283_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/monitor.rb, line 138</span>
+138:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">signal</span>
+139:       <span class="ruby-ivar">@monitor</span>.<span class="ruby-identifier">instance_eval</span> {<span class="ruby-identifier">mon_check_owner</span>()}
+140:       <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">critical</span> = <span class="ruby-keyword kw">true</span>
+141:       <span class="ruby-identifier">t</span> = <span class="ruby-ivar">@waiters</span>.<span class="ruby-identifier">shift</span>
+142:       <span class="ruby-identifier">t</span>.<span class="ruby-identifier">wakeup</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">t</span>
+143:       <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">critical</span> = <span class="ruby-keyword kw">false</span>
+144:       <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">pass</span>
+145:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001280">
+                    
+                    <a name="M001280"></a><b>wait</b>(timeout = nil)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Create a new timer with the argument timeout, and add the current thread to
+the list of waiters. Then the thread is stopped. It will be resumed when a
+corresponding <a href="ConditionVariable.html#M001283">signal</a> occurs.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001280_source')" id="l_M001280_source">show</a>
+                        
+                    </p>
+                    <div id="M001280_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/monitor.rb, line 93</span>
+ 93:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">wait</span>(<span class="ruby-identifier">timeout</span> = <span class="ruby-keyword kw">nil</span>)
+ 94:       <span class="ruby-ivar">@monitor</span>.<span class="ruby-identifier">instance_eval</span> {<span class="ruby-identifier">mon_check_owner</span>()}
+ 95:       <span class="ruby-identifier">timer</span> = <span class="ruby-identifier">create_timer</span>(<span class="ruby-identifier">timeout</span>)
+ 96:       
+ 97:       <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">critical</span> = <span class="ruby-keyword kw">true</span>
+ 98:       <span class="ruby-identifier">count</span> = <span class="ruby-ivar">@monitor</span>.<span class="ruby-identifier">instance_eval</span> {<span class="ruby-identifier">mon_exit_for_cond</span>()}
+ 99:       <span class="ruby-ivar">@waiters</span>.<span class="ruby-identifier">push</span>(<span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>)
+100: 
+101:       <span class="ruby-keyword kw">begin</span>
+102:         <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">stop</span>
+103:         <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">true</span>
+104:       <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Timeout</span>
+105:         <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">false</span>
+106:       <span class="ruby-keyword kw">ensure</span>
+107:         <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">critical</span> = <span class="ruby-keyword kw">true</span>
+108:         <span class="ruby-keyword kw">begin</span>
+109:           <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">timer</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">timer</span>.<span class="ruby-identifier">alive?</span>
+110:             <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">kill</span>(<span class="ruby-identifier">timer</span>)
+111:           <span class="ruby-keyword kw">end</span>
+112:           <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@waiters</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>)  <span class="ruby-comment cmt"># interrupted?</span>
+113:             <span class="ruby-ivar">@waiters</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>)
+114:           <span class="ruby-keyword kw">end</span>
+115:           <span class="ruby-ivar">@monitor</span>.<span class="ruby-identifier">instance_eval</span> {<span class="ruby-identifier">mon_enter_for_cond</span>(<span class="ruby-identifier">count</span>)}
+116:         <span class="ruby-keyword kw">ensure</span>
+117:           <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">critical</span> = <span class="ruby-keyword kw">false</span>
+118:         <span class="ruby-keyword kw">end</span>
+119:       <span class="ruby-keyword kw">end</span>
+120:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001282">
+                    
+                    <a name="M001282"></a><b>wait_until</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call <a href="ConditionVariable.html#M001280">wait</a> until the supplied
+block returns <tt>true</tt>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001282_source')" id="l_M001282_source">show</a>
+                        
+                    </p>
+                    <div id="M001282_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/monitor.rb, line 131</span>
+131:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">wait_until</span>
+132:       <span class="ruby-keyword kw">until</span> <span class="ruby-keyword kw">yield</span>
+133:         <span class="ruby-identifier">wait</span>
+134:       <span class="ruby-keyword kw">end</span>
+135:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001281">
+                    
+                    <a name="M001281"></a><b>wait_while</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call <a href="ConditionVariable.html#M001280">wait</a> while the supplied
+block returns <tt>true</tt>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001281_source')" id="l_M001281_source">show</a>
+                        
+                    </p>
+                    <div id="M001281_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/monitor.rb, line 124</span>
+124:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">wait_while</span>
+125:       <span class="ruby-keyword kw">while</span> <span class="ruby-keyword kw">yield</span>
+126:         <span class="ruby-identifier">wait</span>
+127:       <span class="ruby-keyword kw">end</span>
+128:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Private methods</div>
+            
+            <div class="method">
+                <div class="title" id="M001287">
+                    
+                    <a name="M001287"></a><b>create_timer</b>(timeout)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001287_source')" id="l_M001287_source">show</a>
+                        
+                    </p>
+                    <div id="M001287_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/monitor.rb, line 170</span>
+170:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">create_timer</span>(<span class="ruby-identifier">timeout</span>)
+171:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">timeout</span>
+172:         <span class="ruby-identifier">waiter</span> = <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>
+173:         <span class="ruby-keyword kw">return</span> <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">start</span> {
+174:           <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">pass</span>
+175:           <span class="ruby-identifier">sleep</span>(<span class="ruby-identifier">timeout</span>)
+176:           <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">critical</span> = <span class="ruby-keyword kw">true</span>
+177:           <span class="ruby-identifier">waiter</span>.<span class="ruby-identifier">raise</span>(<span class="ruby-constant">Timeout</span>.<span class="ruby-identifier">new</span>)
+178:         }
+179:       <span class="ruby-keyword kw">else</span>
+180:         <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">nil</span>
+181:       <span class="ruby-keyword kw">end</span>
+182:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

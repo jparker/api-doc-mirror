@@ -1,0 +1,59 @@
+  <div id="fileHeader">
+    <h1>compat.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionmailer/lib/action_mailer/vendor/tmail-1.2.3/tmail/compat.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>#:stopdoc:
+unless Enumerable.method_defined?(:map) 
+  module Enumerable #:nodoc:
+    alias map collect
+  end
+end
+
+unless Enumerable.method_defined?(:select)
+  module Enumerable #:nodoc:
+    alias select find_all
+  end
+end
+
+unless Enumerable.method_defined?(:reject)
+  module Enumerable #:nodoc:
+    def reject
+      result = []
+      each do |i|
+        result.push i unless yield(i)
+      end
+      result
+    end
+  end
+end
+
+unless Enumerable.method_defined?(:sort_by)
+  module Enumerable #:nodoc:
+    def sort_by
+      map {|i| [yield(i), i] }.sort.map {|val, i| i }
+    end
+  end
+end
+
+unless File.respond_to?(:read)
+  def File.read(fname) #:nodoc:
+    File.open(fname) {|f|
+      return f.read
+    }
+  end
+end
+#:startdoc:</pre>
+    </div>

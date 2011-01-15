@@ -1,0 +1,88 @@
+  <div id="fileHeader">
+    <h1>file_store.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activesupport/lib/active_support/cache/file_store.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>module ActiveSupport
+  module Cache
+    class FileStore &lt; Store
+      attr_reader :cache_path
+
+      def initialize(cache_path)
+        @cache_path = cache_path
+      end
+
+      def read(name, options = nil)
+        super
+        File.open(real_file_path(name), 'rb') { |f| f.read } rescue nil
+      end
+
+      def write(name, value, options = nil)
+        super
+        ensure_cache_path(File.dirname(real_file_path(name)))
+        File.open(real_file_path(name), &quot;wb+&quot;) { |f| f.write(value) }
+      rescue =&gt; e
+        RAILS_DEFAULT_LOGGER.error &quot;Couldn't create cache directory: #{name} (#{e.message})&quot; if RAILS_DEFAULT_LOGGER
+      end
+
+      def delete(name, options = nil)
+        super
+        File.delete(real_file_path(name))
+      rescue SystemCallError =&gt; e
+        # If there's no cache, then there's nothing to complain about
+      end
+
+      def delete_matched(matcher, options = nil)
+        super
+        search_dir(@cache_path) do |f|
+          if f =~ matcher
+            begin
+              File.delete(f)
+            rescue SystemCallError =&gt; e
+              # If there's no cache, then there's nothing to complain about
+            end
+          end
+        end
+      end
+
+      def exist?(name, options = nil)
+        super
+        File.exist?(real_file_path(name))
+      end
+
+      private
+        def real_file_path(name)
+          '%s/%s.cache' % [@cache_path, name.gsub('?', '.').gsub(':', '.')]
+        end
+
+        def ensure_cache_path(path)
+          FileUtils.makedirs(path) unless File.exist?(path)
+        end
+
+        def search_dir(dir, &amp;callback)
+          Dir.foreach(dir) do |d|
+            next if d == &quot;.&quot; || d == &quot;..&quot;
+            name = File.join(dir, d)
+            if File.directory?(name)
+              search_dir(name, &amp;callback)
+            else
+              callback.call name
+            end
+          end
+        end
+      end
+  end
+end</pre>
+    </div>

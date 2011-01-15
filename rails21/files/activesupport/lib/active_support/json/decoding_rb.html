@@ -1,0 +1,82 @@
+  <div id="fileHeader">
+    <h1>decoding.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activesupport/lib/active_support/json/decoding.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>require 'yaml'
+require 'strscan'
+
+module ActiveSupport
+  module JSON
+    class ParseError &lt; StandardError
+    end
+    
+    class &lt;&lt; self
+      # Converts a JSON string into a Ruby object.
+      def decode(json)
+        YAML.load(convert_json_to_yaml(json))
+      rescue ArgumentError =&gt; e
+        raise ParseError, &quot;Invalid JSON string&quot;
+      end
+      
+      protected
+        # matches YAML-formatted dates
+        DATE_REGEX = /^\d{4}-\d{2}-\d{2}|\d{4}-\d{1,2}-\d{1,2}[ \t]+\d{1,2}:\d{2}:\d{2}(\.[0-9]*)?(([ \t]*)Z|[-+]\d{2}?(:\d{2})?)?$/
+
+        # Ensure that &quot;:&quot; and &quot;,&quot; are always followed by a space
+        def convert_json_to_yaml(json) #:nodoc:
+          scanner, quoting, marks, pos, times = StringScanner.new(json), false, [], nil, []
+          while scanner.scan_until(/(\\['&quot;]|['&quot;:,\\]|\\.)/)
+            case char = scanner[1]
+            when '&quot;', &quot;'&quot;
+              if !quoting
+                quoting = char
+                pos = scanner.pos
+              elsif quoting == char
+                if json[pos..scanner.pos-2] =~ DATE_REGEX
+                  # found a date, track the exact positions of the quotes so we can remove them later.
+                  # oh, and increment them for each current mark, each one is an extra padded space that bumps
+                  # the position in the final YAML output
+                  total_marks = marks.size
+                  times &lt;&lt; pos+total_marks &lt;&lt; scanner.pos+total_marks
+                end
+                quoting = false
+              end
+            when &quot;:&quot;,&quot;,&quot;
+              marks &lt;&lt; scanner.pos - 1 unless quoting
+            end
+          end
+
+          if marks.empty?
+            json.gsub(/\\\//, '/')
+          else
+            left_pos  = [-1].push(*marks)
+            right_pos = marks &lt;&lt; json.length
+            output    = []
+            left_pos.each_with_index do |left, i|
+              output &lt;&lt; json[left.succ..right_pos[i]]
+            end
+            output = output * &quot; &quot;
+            
+            times.each { |i| output[i-1] = ' ' }
+            output.gsub!(/\\\//, '/')
+            output
+          end
+        end
+    end
+  end
+end
+</pre>
+    </div>

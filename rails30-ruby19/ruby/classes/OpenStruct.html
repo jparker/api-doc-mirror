@@ -1,0 +1,498 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>OpenStruct</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            OpenStruct 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/lib/ostruct_rb.html">lib/ostruct.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+<a href="OpenStruct.html">OpenStruct</a> allows you to create data objects
+and set arbitrary attributes. For example:
+</p>
+<pre>
+  require 'ostruct'
+
+  record = OpenStruct.new
+  record.name    = &quot;John Smith&quot;
+  record.age     = 70
+  record.pension = 300
+
+  puts record.name     # -&gt; &quot;John Smith&quot;
+  puts record.address  # -&gt; nil
+</pre>
+<p>
+It is like a hash with a different way to access the data. In fact, it is
+implemented with a hash, and you can initialize it with one.
+</p>
+<pre>
+  hash = { &quot;country&quot; =&gt; &quot;Australia&quot;, :population =&gt; 20_000_000 }
+  data = OpenStruct.new(hash)
+
+  p data        # -&gt; &lt;OpenStruct country=&quot;Australia&quot; population=20000000&gt;
+</pre>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>#</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004759">==</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>D</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004756">delete_field</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>I</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004750">initialize_copy</a>,</li>
+                
+                <li><a href="#M004757">inspect</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>M</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004751">marshal_dump</a>,</li>
+                
+                <li><a href="#M004752">marshal_load</a>,</li>
+                
+                <li><a href="#M004753">modifiable</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004749">new</a>,</li>
+                
+                <li><a href="#M004754">new_ostruct_member</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>T</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004758">to_s</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M004749">
+                    
+                    <a name="M004749"></a><b>new</b>(hash=nil)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Create a new <a href="OpenStruct.html">OpenStruct</a> object. The optional
+<tt>hash</tt>, if given, will generate attributes and values. For example.
+</p>
+<pre>
+  require 'ostruct'
+  hash = { &quot;country&quot; =&gt; &quot;Australia&quot;, :population =&gt; 20_000_000 }
+  data = OpenStruct.new(hash)
+
+  p data        # -&gt; &lt;OpenStruct country=&quot;Australia&quot; population=20000000&gt;
+</pre>
+<p>
+By default, the resulting <a href="OpenStruct.html">OpenStruct</a> object
+will have no attributes.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004749_source')" id="l_M004749_source">show</a>
+                        
+                    </p>
+                    <div id="M004749_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/ostruct.rb, line 46</span>
+46:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">hash</span>=<span class="ruby-keyword kw">nil</span>)
+47:     <span class="ruby-ivar">@table</span> = {}
+48:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">hash</span>
+49:       <span class="ruby-keyword kw">for</span> <span class="ruby-identifier">k</span>,<span class="ruby-identifier">v</span> <span class="ruby-keyword kw">in</span> <span class="ruby-identifier">hash</span>
+50:         <span class="ruby-ivar">@table</span>[<span class="ruby-identifier">k</span>.<span class="ruby-identifier">to_sym</span>] = <span class="ruby-identifier">v</span>
+51:         <span class="ruby-identifier">new_ostruct_member</span>(<span class="ruby-identifier">k</span>)
+52:       <span class="ruby-keyword kw">end</span>
+53:     <span class="ruby-keyword kw">end</span>
+54:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M004759">
+                    
+                    <a name="M004759"></a><b>==</b>(other)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Compare this object and <tt>other</tt> for equality.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004759_source')" id="l_M004759_source">show</a>
+                        
+                    </p>
+                    <div id="M004759_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/ostruct.rb, line 147</span>
+147:   <span class="ruby-keyword kw">def</span> <span class="ruby-operator">==</span>(<span class="ruby-identifier">other</span>)
+148:     <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">false</span> <span class="ruby-keyword kw">unless</span>(<span class="ruby-identifier">other</span>.<span class="ruby-identifier">kind_of?</span>(<span class="ruby-constant">OpenStruct</span>))
+149:     <span class="ruby-keyword kw">return</span> <span class="ruby-ivar">@table</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">other</span>.<span class="ruby-identifier">table</span>
+150:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004756">
+                    
+                    <a name="M004756"></a><b>delete_field</b>(name)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Remove the named field from the object.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004756_source')" id="l_M004756_source">show</a>
+                        
+                    </p>
+                    <div id="M004756_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/ostruct.rb, line 109</span>
+109:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">delete_field</span>(<span class="ruby-identifier">name</span>)
+110:     <span class="ruby-ivar">@table</span>.<span class="ruby-identifier">delete</span> <span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_sym</span>
+111:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004750">
+                    
+                    <a name="M004750"></a><b>initialize_copy</b>(orig)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Duplicate an <a href="OpenStruct.html">OpenStruct</a> object members.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004750_source')" id="l_M004750_source">show</a>
+                        
+                    </p>
+                    <div id="M004750_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/ostruct.rb, line 57</span>
+57:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize_copy</span>(<span class="ruby-identifier">orig</span>)
+58:     <span class="ruby-keyword kw">super</span>
+59:     <span class="ruby-ivar">@table</span> = <span class="ruby-ivar">@table</span>.<span class="ruby-identifier">dup</span>
+60:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004757">
+                    
+                    <a name="M004757"></a><b>inspect</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns a string containing a detailed summary of the keys and values.
+</p>
+
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="OpenStruct.html#M004758">to_s</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004757_source')" id="l_M004757_source">show</a>
+                        
+                    </p>
+                    <div id="M004757_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/ostruct.rb, line 118</span>
+118:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">inspect</span>
+119:     <span class="ruby-identifier">str</span> = <span class="ruby-node">&quot;#&lt;#{self.class}&quot;</span>
+120: 
+121:     <span class="ruby-identifier">ids</span> = (<span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>[<span class="ruby-constant">InspectKey</span>] <span class="ruby-operator">||=</span> [])
+122:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">ids</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">object_id</span>)
+123:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">str</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">' ...&gt;'</span>
+124:     <span class="ruby-keyword kw">end</span>
+125: 
+126:     <span class="ruby-identifier">ids</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">object_id</span>
+127:     <span class="ruby-keyword kw">begin</span>
+128:       <span class="ruby-identifier">first</span> = <span class="ruby-keyword kw">true</span>
+129:       <span class="ruby-keyword kw">for</span> <span class="ruby-identifier">k</span>,<span class="ruby-identifier">v</span> <span class="ruby-keyword kw">in</span> <span class="ruby-ivar">@table</span>
+130:         <span class="ruby-identifier">str</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;,&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">first</span>
+131:         <span class="ruby-identifier">first</span> = <span class="ruby-keyword kw">false</span>
+132:         <span class="ruby-identifier">str</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot; #{k}=#{v.inspect}&quot;</span>
+133:       <span class="ruby-keyword kw">end</span>
+134:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">str</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">'&gt;'</span>
+135:     <span class="ruby-keyword kw">ensure</span>
+136:       <span class="ruby-identifier">ids</span>.<span class="ruby-identifier">pop</span>
+137:     <span class="ruby-keyword kw">end</span>
+138:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004751">
+                    
+                    <a name="M004751"></a><b>marshal_dump</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004751_source')" id="l_M004751_source">show</a>
+                        
+                    </p>
+                    <div id="M004751_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/ostruct.rb, line 62</span>
+62:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">marshal_dump</span>
+63:     <span class="ruby-ivar">@table</span>
+64:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004752">
+                    
+                    <a name="M004752"></a><b>marshal_load</b>(x)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004752_source')" id="l_M004752_source">show</a>
+                        
+                    </p>
+                    <div id="M004752_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/ostruct.rb, line 65</span>
+65:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">marshal_load</span>(<span class="ruby-identifier">x</span>)
+66:     <span class="ruby-ivar">@table</span> = <span class="ruby-identifier">x</span>
+67:     <span class="ruby-ivar">@table</span>.<span class="ruby-identifier">each_key</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">key</span><span class="ruby-operator">|</span> <span class="ruby-identifier">new_ostruct_member</span>(<span class="ruby-identifier">key</span>)}
+68:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004754">
+                    
+                    <a name="M004754"></a><b>new_ostruct_member</b>(name)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004754_source')" id="l_M004754_source">show</a>
+                        
+                    </p>
+                    <div id="M004754_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/ostruct.rb, line 80</span>
+80:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">new_ostruct_member</span>(<span class="ruby-identifier">name</span>)
+81:     <span class="ruby-identifier">name</span> = <span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_sym</span>
+82:     <span class="ruby-keyword kw">unless</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">name</span>)
+83:       <span class="ruby-keyword kw">class</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-keyword kw">self</span>; <span class="ruby-keyword kw">self</span>; <span class="ruby-keyword kw">end</span>.<span class="ruby-identifier">class_eval</span> <span class="ruby-keyword kw">do</span>
+84:         <span class="ruby-identifier">define_method</span>(<span class="ruby-identifier">name</span>) { <span class="ruby-ivar">@table</span>[<span class="ruby-identifier">name</span>] }
+85:         <span class="ruby-identifier">define_method</span>(<span class="ruby-node">&quot;#{name}=&quot;</span>) { <span class="ruby-operator">|</span><span class="ruby-identifier">x</span><span class="ruby-operator">|</span> <span class="ruby-identifier">modifiable</span>[<span class="ruby-identifier">name</span>] = <span class="ruby-identifier">x</span> }
+86:       <span class="ruby-keyword kw">end</span>
+87:     <span class="ruby-keyword kw">end</span>
+88:     <span class="ruby-identifier">name</span>
+89:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004758">
+                    
+                    <a name="M004758"></a><b>to_s</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a href="OpenStruct.html#M004757">inspect</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Protected methods</div>
+            
+            <div class="method">
+                <div class="title" id="M004753">
+                    
+                    <a name="M004753"></a><b>modifiable</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004753_source')" id="l_M004753_source">show</a>
+                        
+                    </p>
+                    <div id="M004753_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/ostruct.rb, line 70</span>
+70:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">modifiable</span>
+71:     <span class="ruby-keyword kw">begin</span>
+72:       <span class="ruby-ivar">@modifiable</span> = <span class="ruby-keyword kw">true</span>
+73:     <span class="ruby-keyword kw">rescue</span>
+74:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">TypeError</span>, <span class="ruby-node">&quot;can't modify frozen #{self.class}&quot;</span>, <span class="ruby-identifier">caller</span>(<span class="ruby-value">3</span>)
+75:     <span class="ruby-keyword kw">end</span>
+76:     <span class="ruby-ivar">@table</span>
+77:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

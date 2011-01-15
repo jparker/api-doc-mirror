@@ -1,0 +1,51 @@
+  <div id="fileHeader">
+    <h1>benchmark_helper.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionpack/lib/action_view/helpers/benchmark_helper.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:04 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>require 'benchmark'
+
+module ActionView
+  module Helpers
+    # This helper offers a method to measure the execution time of a block 
+    # in a template.
+    module BenchmarkHelper
+      # Allows you to measure the execution time of a block 
+      # in a template and records the result to the log. Wrap this block around
+      # expensive operations or possible bottlenecks to get a time reading
+      # for the operation.  For example, let's say you thought your file 
+      # processing method was taking too long; you could wrap it in a benchmark block.
+      #
+      #  &lt;% benchmark &quot;Process data files&quot; do %&gt;
+      #    &lt;%= expensive_files_operation %&gt;
+      #  &lt;% end %&gt;
+      #
+      # That would add something like &quot;Process data files (0.34523)&quot; to the log,
+      # which you can then use to compare timings when optimizing your code.
+      #
+      # You may give an optional logger level as the second argument
+      # (:debug, :info, :warn, :error); the default value is :info.
+      def benchmark(message = &quot;Benchmarking&quot;, level = :info)
+        if controller.logger
+          real = Benchmark.realtime { yield }
+          controller.logger.send(level, &quot;#{message} (#{'%.5f' % real})&quot;)
+        else
+          yield
+        end
+      end
+    end
+  end
+end</pre>
+    </div>

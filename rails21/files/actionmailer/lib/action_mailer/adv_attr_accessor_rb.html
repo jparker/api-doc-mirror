@@ -1,0 +1,49 @@
+  <div id="fileHeader">
+    <h1>adv_attr_accessor.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionmailer/lib/action_mailer/adv_attr_accessor.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>module ActionMailer
+  module AdvAttrAccessor #:nodoc:
+    def self.included(base)
+      base.extend(ClassMethods)
+    end
+
+    module ClassMethods #:nodoc:
+      def adv_attr_accessor(*names)
+        names.each do |name|
+          ivar = &quot;@#{name}&quot;
+
+          define_method(&quot;#{name}=&quot;) do |value|
+            instance_variable_set(ivar, value)
+          end
+
+          define_method(name) do |*parameters|
+            raise ArgumentError, &quot;expected 0 or 1 parameters&quot; unless parameters.length &lt;= 1
+            if parameters.empty?
+              if instance_variable_names.include?(ivar)
+                instance_variable_get(ivar)
+              end
+            else
+              instance_variable_set(ivar, parameters.first)
+            end
+          end
+        end
+      end
+    end
+  end
+end
+</pre>
+    </div>

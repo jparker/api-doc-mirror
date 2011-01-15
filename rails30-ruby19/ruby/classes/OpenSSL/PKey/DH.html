@@ -1,0 +1,758 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>OpenSSL::PKey::DH</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            OpenSSL::PKey::DH 
+            
+                <span class="parent">&lt; 
+                    
+                    cPKey
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../../files/ext/openssl/ossl_pkey_rsa_c.html">ext/openssl/ossl_pkey_rsa.c</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+let rdoc know about mOSSL and m<a href="PKey.html">PKey</a>
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006322">compute_key</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006317">export</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>G</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006312">generate</a>,</li>
+                
+                <li><a href="#M006321">generate_key!</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006313">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>P</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006323">params</a>,</li>
+                
+                <li><a href="#M006320">params_ok?</a>,</li>
+                
+                <li><a href="#M006315">private?</a>,</li>
+                
+                <li><a href="#M006314">public?</a>,</li>
+                
+                <li><a href="#M006319">public_key</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>T</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006318">to_der</a>,</li>
+                
+                <li><a href="#M006324">to_pem</a>,</li>
+                
+                <li><a href="#M006325">to_s</a>,</li>
+                
+                <li><a href="#M006316">to_text</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M006312">
+                    
+                    <a name="M006312"></a><b>DH.generate(size [, generator]) &rarr; dh
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <h3>Parameters</h3>
+<ul>
+<li><tt>size</tt> is an integer representing the desired key size. Keys smaller
+than 1024 should be considered insecure.
+
+</li>
+<li><tt>generator</tt> is a small number > 1, typically 2 or 5.
+
+</li>
+</ul>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006312_source')" id="l_M006312_source">show</a>
+                        
+                    </p>
+                    <div id="M006312_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_dh_s_generate(int argc, VALUE *argv, VALUE klass)
+{
+    DH *dh ;
+    int g = 2;
+    VALUE size, gen, obj;
+
+    if (rb_scan_args(argc, argv, &quot;11&quot;, &amp;size, &amp;gen) == 2) {
+        g = NUM2INT(gen);
+    }
+    dh = dh_generate(NUM2INT(size), g);
+    obj = dh_instance(klass, dh);
+    if (obj == Qfalse) {
+        DH_free(dh);
+        ossl_raise(eDHError, NULL);
+    }
+
+    return obj;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006313">
+                    
+                    <a name="M006313"></a><b>DH.new([size [, generator] | string]) &rarr; dh
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <h3>Parameters</h3>
+<ul>
+<li><tt>size</tt> is an integer representing the desired key size. Keys smaller
+than 1024 should be considered insecure.
+
+</li>
+<li><tt>generator</tt> is a small number > 1, typically 2 or 5.
+
+</li>
+<li><tt>string</tt> contains the DER or PEM encoded key.
+
+</li>
+</ul>
+<h3>Examples</h3>
+<ul>
+<li><a href="DH.html#M006313">DH.new</a> -> dh
+
+</li>
+<li><a href="DH.html#M006313">DH.new(1024)</a> -> dh
+
+</li>
+<li><a href="DH.html#M006313">DH.new</a>(1024, 5) -> dh
+
+</li>
+<li><a href="DH.html#M006313">DH.new</a>(File.read(&#8216;key.pem&#8217;)) ->
+dh
+
+</li>
+</ul>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006313_source')" id="l_M006313_source">show</a>
+                        
+                    </p>
+                    <div id="M006313_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_dh_initialize(int argc, VALUE *argv, VALUE self)
+{
+    EVP_PKEY *pkey;
+    DH *dh;
+    int g = 2;
+    BIO *in;
+    VALUE arg, gen;
+
+    GetPKey(self, pkey);
+    if(rb_scan_args(argc, argv, &quot;02&quot;, &amp;arg, &amp;gen) == 0) {
+      dh = DH_new();
+    }
+    else if (FIXNUM_P(arg)) {
+        if (!NIL_P(gen)) {
+            g = NUM2INT(gen);
+        }
+        if (!(dh = dh_generate(FIX2INT(arg), g))) {
+            ossl_raise(eDHError, NULL);
+        }
+    }
+    else {
+        arg = ossl_to_der_if_possible(arg);
+        in = ossl_obj2bio(arg);
+        dh = PEM_read_bio_DHparams(in, NULL, NULL, NULL);
+        if (!dh){
+            (void)BIO_reset(in);
+            dh = d2i_DHparams_bio(in, NULL);
+        }
+        BIO_free(in);
+        if (!dh) ossl_raise(eDHError, NULL);
+    }
+    if (!EVP_PKEY_assign_DH(pkey, dh)) {
+        DH_free(dh);
+        ossl_raise(eDHError, NULL);
+    }
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M006322">
+                    
+                    <a name="M006322"></a><b>dh.compute_key(pub_bn) &rarr; aString
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <h3>Parameters</h3>
+<ul>
+<li><tt>pub_bn</tt> is a <a href="../BN.html">OpenSSL::BN</a>.
+
+</li>
+</ul>
+<p>
+Returns a<a href="../../String.html">String</a> containing a shared secret
+computed from the other parties public value.
+</p>
+<p>
+See DH_compute_key() for further information.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006322_source')" id="l_M006322_source">show</a>
+                        
+                    </p>
+                    <div id="M006322_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_dh_compute_key(VALUE self, VALUE pub)
+{
+    DH *dh;
+    EVP_PKEY *pkey;
+    BIGNUM *pub_key;
+    VALUE str;
+    int len;
+
+    GetPKeyDH(self, pkey);
+    dh = pkey-&gt;pkey.dh;
+    pub_key = GetBNPtr(pub);
+    len = DH_size(dh);
+    str = rb_str_new(0, len);
+    if ((len = DH_compute_key((unsigned char *)RSTRING_PTR(str), pub_key, dh)) &lt; 0) {
+        ossl_raise(eDHError, NULL);
+    }
+    rb_str_set_len(str, len);
+
+    return str;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006317">
+                    
+                    <a name="M006317"></a><b>dh.to_pem &rarr; aString
+</b>
+                    
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="DH.html#M006324">to_pem</a>
+                    
+                    <a href="DH.html#M006325">to_s</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006317_source')" id="l_M006317_source">show</a>
+                        
+                    </p>
+                    <div id="M006317_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_dh_export(VALUE self)
+{
+    EVP_PKEY *pkey;
+    BIO *out;
+    VALUE str;
+
+    GetPKeyDH(self, pkey);
+    if (!(out = BIO_new(BIO_s_mem()))) {
+        ossl_raise(eDHError, NULL);
+    }
+    if (!PEM_write_bio_DHparams(out, pkey-&gt;pkey.dh)) {
+        BIO_free(out);
+        ossl_raise(eDHError, NULL);
+    }
+    str = ossl_membio2str(out);
+
+    return str;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006321">
+                    
+                    <a name="M006321"></a><b>dh.generate_key &rarr; self
+</b>
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006321_source')" id="l_M006321_source">show</a>
+                        
+                    </p>
+                    <div id="M006321_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_dh_generate_key(VALUE self)
+{
+    DH *dh;
+    EVP_PKEY *pkey;
+
+    GetPKeyDH(self, pkey);
+    dh = pkey-&gt;pkey.dh;
+
+    if (!DH_generate_key(dh))
+        ossl_raise(eDHError, &quot;Failed to generate key&quot;);
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006323">
+                    
+                    <a name="M006323"></a><b>dh.params &rarr; hash
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Stores all parameters of key to the hash INSECURE: PRIVATE INFORMATIONS CAN
+LEAK OUT!!! Don&#8217;t use :-)) (I&#8217;s up to you)
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006323_source')" id="l_M006323_source">show</a>
+                        
+                    </p>
+                    <div id="M006323_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_dh_get_params(VALUE self)
+{
+    EVP_PKEY *pkey;
+    VALUE hash;
+
+    GetPKeyDH(self, pkey);
+
+    hash = rb_hash_new();
+
+    rb_hash_aset(hash, rb_str_new2(&quot;p&quot;), ossl_bn_new(pkey-&gt;pkey.dh-&gt;p));
+    rb_hash_aset(hash, rb_str_new2(&quot;g&quot;), ossl_bn_new(pkey-&gt;pkey.dh-&gt;g));
+    rb_hash_aset(hash, rb_str_new2(&quot;pub_key&quot;), ossl_bn_new(pkey-&gt;pkey.dh-&gt;pub_key));
+    rb_hash_aset(hash, rb_str_new2(&quot;priv_key&quot;), ossl_bn_new(pkey-&gt;pkey.dh-&gt;priv_key));
+
+    return hash;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006320">
+                    
+                    <a name="M006320"></a><b>dh.check_params &rarr; true | false
+</b>
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006320_source')" id="l_M006320_source">show</a>
+                        
+                    </p>
+                    <div id="M006320_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_dh_check_params(VALUE self)
+{
+    DH *dh;
+    EVP_PKEY *pkey;
+    int codes;
+
+    GetPKeyDH(self, pkey);
+    dh = pkey-&gt;pkey.dh;
+
+    if (!DH_check(dh, &amp;codes)) {
+        return Qfalse;
+    }
+
+    return codes == 0 ? Qtrue : Qfalse;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006315">
+                    
+                    <a name="M006315"></a><b>dh.private? &rarr; true | false
+</b>
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006315_source')" id="l_M006315_source">show</a>
+                        
+                    </p>
+                    <div id="M006315_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_dh_is_private(VALUE self)
+{
+    EVP_PKEY *pkey;
+
+    GetPKeyDH(self, pkey);
+
+    return (DH_PRIVATE(pkey-&gt;pkey.dh)) ? Qtrue : Qfalse;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006314">
+                    
+                    <a name="M006314"></a><b>dh.public? &rarr; true | false
+</b>
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006314_source')" id="l_M006314_source">show</a>
+                        
+                    </p>
+                    <div id="M006314_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_dh_is_public(VALUE self)
+{
+    EVP_PKEY *pkey;
+
+    GetPKeyDH(self, pkey);
+
+    return (pkey-&gt;pkey.dh-&gt;pub_key) ? Qtrue : Qfalse;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006319">
+                    
+                    <a name="M006319"></a><b>dh.public_key &rarr; aDH
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Makes new instance <a href="DH.html">DH</a> PUBLIC_KEY from PRIVATE_KEY
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006319_source')" id="l_M006319_source">show</a>
+                        
+                    </p>
+                    <div id="M006319_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_dh_to_public_key(VALUE self)
+{
+    EVP_PKEY *pkey;
+    DH *dh;
+    VALUE obj;
+
+    GetPKeyDH(self, pkey);
+    dh = DHparams_dup(pkey-&gt;pkey.dh); /* err check perfomed by dh_instance */
+    obj = dh_instance(CLASS_OF(self), dh);
+    if (obj == Qfalse) {
+        DH_free(dh);
+        ossl_raise(eDHError, NULL);
+    }
+
+    return obj;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006318">
+                    
+                    <a name="M006318"></a><b>dh.to_der &rarr; aString
+</b>
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006318_source')" id="l_M006318_source">show</a>
+                        
+                    </p>
+                    <div id="M006318_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_dh_to_der(VALUE self)
+{
+    EVP_PKEY *pkey;
+    unsigned char *p;
+    long len;
+    VALUE str;
+
+    GetPKeyDH(self, pkey);
+    if((len = i2d_DHparams(pkey-&gt;pkey.dh, NULL)) &lt;= 0)
+        ossl_raise(eDHError, NULL);
+    str = rb_str_new(0, len);
+    p = (unsigned char *)RSTRING_PTR(str);
+    if(i2d_DHparams(pkey-&gt;pkey.dh, &amp;p) &lt; 0)
+        ossl_raise(eDHError, NULL);
+    ossl_str_adjust(str, p);
+
+    return str;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006324">
+                    
+                    <a name="M006324"></a><b>to_pem</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a href="DH.html#M006317">export</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006325">
+                    
+                    <a name="M006325"></a><b>to_s</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a href="DH.html#M006317">export</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006316">
+                    
+                    <a name="M006316"></a><b>dh.to_text &rarr; aString
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Prints all parameters of key to buffer INSECURE: PRIVATE INFORMATIONS CAN
+LEAK OUT!!! Don&#8217;t use :-)) (I&#8217;s up to you)
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006316_source')" id="l_M006316_source">show</a>
+                        
+                    </p>
+                    <div id="M006316_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_dh_to_text(VALUE self)
+{
+    EVP_PKEY *pkey;
+    BIO *out;
+    VALUE str;
+
+    GetPKeyDH(self, pkey);
+    if (!(out = BIO_new(BIO_s_mem()))) {
+        ossl_raise(eDHError, NULL);
+    }
+    if (!DHparams_print(out, pkey-&gt;pkey.dh)) {
+        BIO_free(out);
+        ossl_raise(eDHError, NULL);
+    }
+    str = ossl_membio2str(out);
+
+    return str;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

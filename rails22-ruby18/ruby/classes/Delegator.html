@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Delegator</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            Delegator 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/lib/delegate_rb.html">lib/delegate.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+<a href="Delegator.html">Delegator</a> is an abstract class used to build
+delegator pattern objects from subclasses. Subclasses should redefine
+__getobj__. For a concrete implementation, see <a
+href="SimpleDelegator.html">SimpleDelegator</a>.
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>#</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006238">__getobj__</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>M</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006239">marshal_dump</a>,</li>
+                
+                <li><a href="#M006240">marshal_load</a>,</li>
+                
+                <li><a href="#M006236">method_missing</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006235">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>R</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006237">respond_to?</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">IgnoreBacktracePat</td>
+            <td>=</td>
+            <td class="attr-value">%r&quot;\A#{Regexp.quote(__FILE__)}:\d+:in `&quot;</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M006235">
+                    
+                    <a name="M006235"></a><b>new</b>(obj)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Pass in the <em>obj</em> to delegate method calls to. All methods supported
+by <em>obj</em> will be delegated to.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006235_source')" id="l_M006235_source">show</a>
+                        
+                    </p>
+                    <div id="M006235_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/delegate.rb, line 124</span>
+124:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">obj</span>)
+125:     <span class="ruby-identifier">preserved</span> = <span class="ruby-operator">::</span><span class="ruby-constant">Kernel</span>.<span class="ruby-identifier">public_instance_methods</span>(<span class="ruby-keyword kw">false</span>)
+126:     <span class="ruby-identifier">preserved</span> <span class="ruby-operator">-=</span> [<span class="ruby-value str">&quot;to_s&quot;</span>,<span class="ruby-value str">&quot;to_a&quot;</span>,<span class="ruby-value str">&quot;inspect&quot;</span>,<span class="ruby-value str">&quot;==&quot;</span>,<span class="ruby-value str">&quot;=~&quot;</span>,<span class="ruby-value str">&quot;===&quot;</span>]
+127:     <span class="ruby-keyword kw">for</span> <span class="ruby-identifier">t</span> <span class="ruby-keyword kw">in</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">ancestors</span>
+128:       <span class="ruby-identifier">preserved</span> <span class="ruby-operator">|=</span> <span class="ruby-identifier">t</span>.<span class="ruby-identifier">public_instance_methods</span>(<span class="ruby-keyword kw">false</span>)
+129:       <span class="ruby-identifier">preserved</span> <span class="ruby-operator">|=</span> <span class="ruby-identifier">t</span>.<span class="ruby-identifier">private_instance_methods</span>(<span class="ruby-keyword kw">false</span>)
+130:       <span class="ruby-identifier">preserved</span> <span class="ruby-operator">|=</span> <span class="ruby-identifier">t</span>.<span class="ruby-identifier">protected_instance_methods</span>(<span class="ruby-keyword kw">false</span>)
+131:       <span class="ruby-keyword kw">break</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">t</span> <span class="ruby-operator">==</span> <span class="ruby-constant">Delegator</span>
+132:     <span class="ruby-keyword kw">end</span>
+133:     <span class="ruby-identifier">preserved</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;singleton_method_added&quot;</span>
+134:     <span class="ruby-keyword kw">for</span> <span class="ruby-identifier">method</span> <span class="ruby-keyword kw">in</span> <span class="ruby-identifier">obj</span>.<span class="ruby-identifier">methods</span>
+135:       <span class="ruby-keyword kw">next</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">preserved</span>.<span class="ruby-identifier">include?</span> <span class="ruby-identifier">method</span>
+136:       <span class="ruby-keyword kw">begin</span>
+137:         <span class="ruby-identifier">eval</span> <span class="ruby-value str">&quot;def self.\#{method}(*args, &amp;block)\nbegin\n__getobj__.__send__(:\#{method}, *args, &amp;block)\nensure\n$@.delete_if{|s|IgnoreBacktracePat=~s} if $@\nend\nend\n&quot;</span>, <span class="ruby-keyword kw">nil</span>, <span class="ruby-keyword kw">__FILE__</span>, <span class="ruby-keyword kw">__LINE__</span><span class="ruby-operator">+</span><span class="ruby-value">1</span>
+138:       <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">SyntaxError</span>
+139:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">NameError</span>, <span class="ruby-value str">&quot;invalid identifier %s&quot;</span> <span class="ruby-operator">%</span> <span class="ruby-identifier">method</span>, <span class="ruby-identifier">caller</span>(<span class="ruby-value">4</span>)
+140:       <span class="ruby-keyword kw">end</span>
+141:     <span class="ruby-keyword kw">end</span>
+142:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M006238">
+                    
+                    <a name="M006238"></a><b>__getobj__</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+This method must be overridden by subclasses and should return the object
+method calls are being delegated to.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006238_source')" id="l_M006238_source">show</a>
+                        
+                    </p>
+                    <div id="M006238_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/delegate.rb, line 176</span>
+176:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">__getobj__</span>
+177:     <span class="ruby-identifier">raise</span> <span class="ruby-constant">NotImplementedError</span>, <span class="ruby-value str">&quot;need to define `__getobj__'&quot;</span>
+178:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006239">
+                    
+                    <a name="M006239"></a><b>marshal_dump</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Serialization support for the object returned by __getobj__.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006239_source')" id="l_M006239_source">show</a>
+                        
+                    </p>
+                    <div id="M006239_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/delegate.rb, line 181</span>
+181:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">marshal_dump</span>
+182:     <span class="ruby-identifier">__getobj__</span>
+183:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006240">
+                    
+                    <a name="M006240"></a><b>marshal_load</b>(obj)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Reinitializes delegation from a serialized object.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006240_source')" id="l_M006240_source">show</a>
+                        
+                    </p>
+                    <div id="M006240_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/delegate.rb, line 185</span>
+185:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">marshal_load</span>(<span class="ruby-identifier">obj</span>)
+186:     <span class="ruby-identifier">initialize_methods</span>(<span class="ruby-identifier">obj</span>)
+187:     <span class="ruby-identifier">__setobj__</span>(<span class="ruby-identifier">obj</span>)
+188:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006236">
+                    
+                    <a name="M006236"></a><b>method_missing</b>(m, *args)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Handles the magic of delegation through __getobj__.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006236_source')" id="l_M006236_source">show</a>
+                        
+                    </p>
+                    <div id="M006236_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/delegate.rb, line 155</span>
+155:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">method_missing</span>(<span class="ruby-identifier">m</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+156:     <span class="ruby-identifier">target</span> = <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__getobj__</span>
+157:     <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">target</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">m</span>)
+158:       <span class="ruby-keyword kw">super</span>(<span class="ruby-identifier">m</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+159:     <span class="ruby-keyword kw">end</span>
+160:     <span class="ruby-identifier">target</span>.<span class="ruby-identifier">__send__</span>(<span class="ruby-identifier">m</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+161:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006237">
+                    
+                    <a name="M006237"></a><b>respond_to?</b>(m, include_private = false)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Checks for a method provided by this the delegate object by fowarding the
+call through __getobj__.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006237_source')" id="l_M006237_source">show</a>
+                        
+                    </p>
+                    <div id="M006237_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/delegate.rb, line 167</span>
+167:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">m</span>, <span class="ruby-identifier">include_private</span> = <span class="ruby-keyword kw">false</span>)
+168:     <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">true</span> <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">super</span>
+169:     <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__getobj__</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">m</span>, <span class="ruby-identifier">include_private</span>)
+170:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

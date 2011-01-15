@@ -1,0 +1,960 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>OpenSSL::SSL::SSLSocket</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            OpenSSL::SSL::SSLSocket 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../../Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../../files/ext/openssl/ossl_ssl_session_c.html">ext/openssl/ossl_ssl_session.c</a></li>
+            
+            <li><a href="../../../files/ext/openssl/lib/openssl/ssl_rb.html">ext/openssl/lib/openssl/ssl.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+class <a href="SSLSocket.html">SSLSocket</a>
+</p>
+<pre>
+    The following attributes are available but don't show up in rdoc.
+    * io, context, sync_close
+</pre>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>A</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006736">accept</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006740">cert</a>,</li>
+                
+                <li><a href="#M006743">cipher</a>,</li>
+                
+                <li><a href="#M006735">connect</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006734">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>P</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006741">peer_cert</a>,</li>
+                
+                <li><a href="#M006742">peer_cert_chain</a>,</li>
+                
+                <li><a href="#M006745">pending</a>,</li>
+                
+                <li><a href="#M007533">post_connection_check</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007534">session</a>,</li>
+                
+                <li><a href="#M006747">session=</a>,</li>
+                
+                <li><a href="#M006746">session_reused?</a>,</li>
+                
+                <li><a href="#M006744">state</a>,</li>
+                
+                <li><a href="#M006739">sysclose</a>,</li>
+                
+                <li><a href="#M006737">sysread</a>,</li>
+                
+                <li><a href="#M006738">syswrite</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+    <div class="sectiontitle">Included Modules</div>
+    <ul>
+        
+        <li>
+            
+            <a href="../../Marshal.html">Marshal</a>
+            
+            START:includes
+        </li>
+        
+        <li>
+            
+            <a href="../SSL.html">OpenSSL::SSL</a>
+            
+            START:includes
+        </li>
+        
+        <li>
+            
+            <a href="../SSL.html">OpenSSL::SSL</a>
+            
+            START:includes
+        </li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M006734">
+                    
+                    <a name="M006734"></a><b>SSLSocket.new(io) => aSSLSocket
+SSLSocket.new(io, ctx) => aSSLSocket
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <h3>Parameters</h3>
+<ul>
+<li><tt>io</tt> is a real ruby <a href="../../IO.html">IO</a> object. Not an <a
+href="../../IO.html">IO</a> like object that responds to read/write.
+
+</li>
+<li><tt>ctx</tt> is an OpenSSLSSL::SSLContext.
+
+</li>
+</ul>
+<p>
+The <a href="../../Buffering.html">OpenSSL::Buffering</a> module provides
+additional <a href="../../IO.html">IO</a> methods.
+</p>
+<p>
+This method will freeze the <a href="SSLContext.html">SSLContext</a> if one
+is provided; however, session management is still allowed in the frozen <a
+href="SSLContext.html">SSLContext</a>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006734_source')" id="l_M006734_source">show</a>
+                        
+                    </p>
+                    <div id="M006734_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_ssl_initialize(int argc, VALUE *argv, VALUE self)
+{
+    VALUE io, ctx;
+
+    if (rb_scan_args(argc, argv, &quot;11&quot;, &amp;io, &amp;ctx) == 1) {
+        ctx = rb_funcall(cSSLContext, rb_intern(&quot;new&quot;), 0);
+    }
+    OSSL_Check_Kind(ctx, cSSLContext);
+    Check_Type(io, T_FILE);
+    ossl_ssl_set_io(self, io);
+    ossl_ssl_set_ctx(self, ctx);
+    ossl_ssl_set_sync_close(self, Qfalse);
+    ossl_sslctx_setup(ctx);
+    rb_call_super(0, 0);
+
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M006736">
+                    
+                    <a name="M006736"></a><b>accept</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call-seq:
+</p>
+<pre>
+   ssl.accept =&gt; self
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006736_source')" id="l_M006736_source">show</a>
+                        
+                    </p>
+                    <div id="M006736_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_ssl_accept(VALUE self)
+{
+    ossl_ssl_setup(self);
+    return ossl_start_ssl(self, SSL_accept, &quot;SSL_accept&quot;);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006740">
+                    
+                    <a name="M006740"></a><b>cert</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call-seq:
+</p>
+<pre>
+   ssl.cert =&gt; cert or nil
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006740_source')" id="l_M006740_source">show</a>
+                        
+                    </p>
+                    <div id="M006740_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_ssl_get_cert(VALUE self)
+{
+    SSL *ssl;
+    X509 *cert = NULL;
+
+    Data_Get_Struct(self, SSL, ssl);
+    if (ssl) {
+        rb_warning(&quot;SSL session is not started yet.&quot;);
+        return Qnil;
+    }
+
+    /*
+     * Is this OpenSSL bug? Should add a ref?
+     * TODO: Ask for.
+     */
+    cert = SSL_get_certificate(ssl); /* NO DUPs =&gt; DON'T FREE. */
+
+    if (!cert) {
+        return Qnil;
+    }
+    return ossl_x509_new(cert);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006743">
+                    
+                    <a name="M006743"></a><b>cipher</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call-seq:
+</p>
+<pre>
+   ssl.cipher =&gt; [name, version, bits, alg_bits]
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006743_source')" id="l_M006743_source">show</a>
+                        
+                    </p>
+                    <div id="M006743_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_ssl_get_cipher(VALUE self)
+{
+    SSL *ssl;
+    SSL_CIPHER *cipher;
+
+    Data_Get_Struct(self, SSL, ssl);
+    if (!ssl) {
+        rb_warning(&quot;SSL session is not started yet.&quot;);
+        return Qnil;
+    }
+    cipher = SSL_get_current_cipher(ssl);
+
+    return ossl_ssl_cipher_to_ary(cipher);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006735">
+                    
+                    <a name="M006735"></a><b>connect</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call-seq:
+</p>
+<pre>
+   ssl.connect =&gt; self
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006735_source')" id="l_M006735_source">show</a>
+                        
+                    </p>
+                    <div id="M006735_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_ssl_connect(VALUE self)
+{
+    ossl_ssl_setup(self);
+    return ossl_start_ssl(self, SSL_connect, &quot;SSL_connect&quot;);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006741">
+                    
+                    <a name="M006741"></a><b>peer_cert</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call-seq:
+</p>
+<pre>
+   ssl.peer_cert =&gt; cert or nil
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006741_source')" id="l_M006741_source">show</a>
+                        
+                    </p>
+                    <div id="M006741_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_ssl_get_peer_cert(VALUE self)
+{
+    SSL *ssl;
+    X509 *cert = NULL;
+    VALUE obj;
+
+    Data_Get_Struct(self, SSL, ssl);
+
+    if (!ssl){
+        rb_warning(&quot;SSL session is not started yet.&quot;);
+        return Qnil;
+    }
+
+    cert = SSL_get_peer_certificate(ssl); /* Adds a ref =&gt; Safe to FREE. */
+
+    if (!cert) {
+        return Qnil;
+    }
+    obj = ossl_x509_new(cert);
+    X509_free(cert);
+
+    return obj;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006742">
+                    
+                    <a name="M006742"></a><b>peer_cert_chain</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call-seq:
+</p>
+<pre>
+   ssl.peer_cert_chain =&gt; [cert, ...] or nil
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006742_source')" id="l_M006742_source">show</a>
+                        
+                    </p>
+                    <div id="M006742_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_ssl_get_peer_cert_chain(VALUE self)
+{
+    SSL *ssl;
+    STACK_OF(X509) *chain;
+    X509 *cert;
+    VALUE ary;
+    int i, num;
+
+    Data_Get_Struct(self, SSL, ssl);
+    if(!ssl){
+        rb_warning(&quot;SSL session is not started yet.&quot;);
+        return Qnil;
+    }
+    chain = SSL_get_peer_cert_chain(ssl);
+    if(!chain) return Qnil;
+    num = sk_num(chain);
+    ary = rb_ary_new2(num);
+    for (i = 0; i &lt; num; i++){
+        cert = (X509*)sk_value(chain, i);
+        rb_ary_push(ary, ossl_x509_new(cert));
+    }
+
+    return ary;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006745">
+                    
+                    <a name="M006745"></a><b>pending</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call-seq:
+</p>
+<pre>
+   ssl.pending =&gt; integer
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006745_source')" id="l_M006745_source">show</a>
+                        
+                    </p>
+                    <div id="M006745_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_ssl_pending(VALUE self)
+{
+    SSL *ssl;
+
+    Data_Get_Struct(self, SSL, ssl);
+    if (!ssl) {
+        rb_warning(&quot;SSL session is not started yet.&quot;);
+        return Qnil;
+    }
+
+    return INT2NUM(SSL_pending(ssl));
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007533">
+                    
+                    <a name="M007533"></a><b>post_connection_check</b>(hostname)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007533_source')" id="l_M007533_source">show</a>
+                        
+                    </p>
+                    <div id="M007533_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File ext/openssl/lib/openssl/ssl.rb, line 121</span>
+121:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">post_connection_check</span>(<span class="ruby-identifier">hostname</span>)
+122:         <span class="ruby-keyword kw">unless</span> <span class="ruby-constant">OpenSSL</span><span class="ruby-operator">::</span><span class="ruby-constant">SSL</span>.<span class="ruby-identifier">verify_certificate_identity</span>(<span class="ruby-identifier">peer_cert</span>, <span class="ruby-identifier">hostname</span>)
+123:           <span class="ruby-identifier">raise</span> <span class="ruby-constant">SSLError</span>, <span class="ruby-value str">&quot;hostname was not match with the server certificate&quot;</span>
+124:         <span class="ruby-keyword kw">end</span>
+125:         <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">true</span>
+126:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007534">
+                    
+                    <a name="M007534"></a><b>session</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007534_source')" id="l_M007534_source">show</a>
+                        
+                    </p>
+                    <div id="M007534_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File ext/openssl/lib/openssl/ssl.rb, line 128</span>
+128:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">session</span>
+129:         <span class="ruby-constant">SSL</span><span class="ruby-operator">::</span><span class="ruby-constant">Session</span>.<span class="ruby-identifier">new</span>(<span class="ruby-keyword kw">self</span>)
+130:       <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">SSL</span><span class="ruby-operator">::</span><span class="ruby-constant">Session</span><span class="ruby-operator">::</span><span class="ruby-constant">SessionError</span>
+131:         <span class="ruby-keyword kw">nil</span>
+132:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006747">
+                    
+                    <a name="M006747"></a><b>ssl.session = session &rarr; session
+</b>
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006747_source')" id="l_M006747_source">show</a>
+                        
+                    </p>
+                    <div id="M006747_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_ssl_set_session(VALUE self, VALUE arg1)
+{
+    SSL *ssl;
+    SSL_SESSION *sess;
+
+/* why is ossl_ssl_setup delayed? */
+    ossl_ssl_setup(self);
+
+    Data_Get_Struct(self, SSL, ssl);
+    if (!ssl) {
+        rb_warning(&quot;SSL session is not started yet.&quot;);
+        return Qnil;
+    }
+
+    SafeGetSSLSession(arg1, sess);
+
+    if (SSL_set_session(ssl, sess) != 1)
+        ossl_raise(eSSLError, &quot;SSL_set_session&quot;);
+
+    return arg1;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006746">
+                    
+                    <a name="M006746"></a><b>ssl.session_reused? &rarr; true | false
+</b>
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006746_source')" id="l_M006746_source">show</a>
+                        
+                    </p>
+                    <div id="M006746_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_ssl_session_reused(VALUE self)
+{
+    SSL *ssl;
+
+    Data_Get_Struct(self, SSL, ssl);
+    if (!ssl) {
+        rb_warning(&quot;SSL session is not started yet.&quot;);
+        return Qnil;
+    }
+
+    switch(SSL_session_reused(ssl)) {
+    case 1:     return Qtrue;
+    case 0:     return Qfalse;
+    default:    ossl_raise(eSSLError, &quot;SSL_session_reused&quot;);
+    }
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006744">
+                    
+                    <a name="M006744"></a><b>state</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call-seq:
+</p>
+<pre>
+   ssl.state =&gt; string
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006744_source')" id="l_M006744_source">show</a>
+                        
+                    </p>
+                    <div id="M006744_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_ssl_get_state(VALUE self)
+{
+    SSL *ssl;
+    VALUE ret;
+
+    Data_Get_Struct(self, SSL, ssl);
+    if (!ssl) {
+        rb_warning(&quot;SSL session is not started yet.&quot;);
+        return Qnil;
+    }
+    ret = rb_str_new2(SSL_state_string(ssl));
+    if (ruby_verbose) {
+        rb_str_cat2(ret, &quot;: &quot;);
+        rb_str_cat2(ret, SSL_state_string_long(ssl));
+    }
+    return ret;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006739">
+                    
+                    <a name="M006739"></a><b>sysclose</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call-seq:
+</p>
+<pre>
+   ssl.sysclose =&gt; nil
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006739_source')" id="l_M006739_source">show</a>
+                        
+                    </p>
+                    <div id="M006739_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_ssl_close(VALUE self)
+{
+    SSL *ssl;
+
+    Data_Get_Struct(self, SSL, ssl);
+    ossl_ssl_shutdown(ssl);
+    if (RTEST(ossl_ssl_get_sync_close(self)))
+        rb_funcall(ossl_ssl_get_io(self), rb_intern(&quot;close&quot;), 0);
+
+    return Qnil;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006737">
+                    
+                    <a name="M006737"></a><b>ssl.sysread(length) => string
+ssl.sysread(length, buffer) => buffer
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <h3>Parameters</h3>
+<ul>
+<li><tt>length</tt> is a positive integer.
+
+</li>
+<li><tt>buffer</tt> is a string used to store the result.
+
+</li>
+</ul>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006737_source')" id="l_M006737_source">show</a>
+                        
+                    </p>
+                    <div id="M006737_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_ssl_read(int argc, VALUE *argv, VALUE self)
+{
+    SSL *ssl;
+    int ilen, nread = 0;
+    VALUE len, str;
+    rb_io_t *fptr;
+
+    rb_scan_args(argc, argv, &quot;11&quot;, &amp;len, &amp;str);
+    ilen = NUM2INT(len);
+    if(NIL_P(str)) str = rb_str_new(0, ilen);
+    else{
+        StringValue(str);
+        rb_str_modify(str);
+        rb_str_resize(str, ilen);
+    }
+    if(ilen == 0) return str;
+
+    Data_Get_Struct(self, SSL, ssl);
+    GetOpenFile(ossl_ssl_get_io(self), fptr);
+    if (ssl) {
+        if(SSL_pending(ssl) &lt;= 0)
+            rb_thread_wait_fd(FPTR_TO_FD(fptr));
+        for (;;){
+            nread = SSL_read(ssl, RSTRING_PTR(str), RSTRING_LEN(str));
+            switch(ssl_get_error(ssl, nread)){
+            case SSL_ERROR_NONE:
+                goto end;
+            case SSL_ERROR_ZERO_RETURN:
+                rb_eof_error();
+            case SSL_ERROR_WANT_WRITE:
+                rb_io_wait_writable(FPTR_TO_FD(fptr));
+                continue;
+            case SSL_ERROR_WANT_READ:
+                rb_io_wait_readable(FPTR_TO_FD(fptr));
+                continue;
+            case SSL_ERROR_SYSCALL:
+                if(ERR_peek_error() == 0 &amp;&amp; nread == 0) rb_eof_error();
+                rb_sys_fail(0);
+            default:
+                ossl_raise(eSSLError, &quot;SSL_read:&quot;);
+            }
+        }
+    }
+    else {
+        ID id_sysread = rb_intern(&quot;sysread&quot;);
+        rb_warning(&quot;SSL session is not started yet.&quot;);
+        return rb_funcall(ossl_ssl_get_io(self), id_sysread, 2, len, str);
+    }
+
+  end:
+    rb_str_set_len(str, nread);
+    OBJ_TAINT(str);
+
+    return str;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006738">
+                    
+                    <a name="M006738"></a><b>syswrite</b>(p1)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call-seq:
+</p>
+<pre>
+   ssl.syswrite(string) =&gt; integer
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006738_source')" id="l_M006738_source">show</a>
+                        
+                    </p>
+                    <div id="M006738_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_ssl_write(VALUE self, VALUE str)
+{
+    SSL *ssl;
+    int nwrite = 0;
+    rb_io_t *fptr;
+
+    StringValue(str);
+    Data_Get_Struct(self, SSL, ssl);
+    GetOpenFile(ossl_ssl_get_io(self), fptr);
+
+    if (ssl) {
+        for (;;){
+            nwrite = SSL_write(ssl, RSTRING_PTR(str), RSTRING_LEN(str));
+            switch(ssl_get_error(ssl, nwrite)){
+            case SSL_ERROR_NONE:
+                goto end;
+            case SSL_ERROR_WANT_WRITE:
+                rb_io_wait_writable(FPTR_TO_FD(fptr));
+                continue;
+            case SSL_ERROR_WANT_READ:
+                rb_io_wait_readable(FPTR_TO_FD(fptr));
+                continue;
+            case SSL_ERROR_SYSCALL:
+                if (errno) rb_sys_fail(0);
+            default:
+                ossl_raise(eSSLError, &quot;SSL_write:&quot;);
+            }
+        }
+    }
+    else {
+        ID id_syswrite = rb_intern(&quot;syswrite&quot;);
+        rb_warning(&quot;SSL session is not started yet.&quot;);
+        return rb_funcall(ossl_ssl_get_io(self), id_syswrite, 1, str);
+    }
+
+  end:
+    return INT2NUM(nwrite);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

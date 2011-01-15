@@ -1,0 +1,54 @@
+  <div id="fileHeader">
+    <h1>drb_store.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionpack/lib/action_controller/session/drb_store.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:04 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>require 'cgi'
+require 'cgi/session'
+require 'drb'
+ 
+class CGI #:nodoc:all
+  class Session
+    class DRbStore
+      @@session_data = DRbObject.new(nil, 'druby://localhost:9192')
+ 
+      def initialize(session, option=nil)
+        @session_id = session.session_id
+      end
+ 
+      def restore
+        @h = @@session_data[@session_id] || {}
+      end
+ 
+      def update
+        @@session_data[@session_id] = @h
+      end
+ 
+      def close
+        update
+      end
+ 
+      def delete
+        @@session_data.delete(@session_id)
+      end
+      
+      def data
+        @@session_data[@session_id]
+      end
+    end
+  end
+end
+</pre>
+    </div>

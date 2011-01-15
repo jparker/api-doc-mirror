@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>DL::Importable::Internal::Memory</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            DL::Importable::Internal::Memory 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../../../Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../../../files/ext/dl/lib/dl/struct_rb.html">ext/dl/lib/dl/struct.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007702">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007704">size</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>T</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007703">to_ptr</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M007702">
+                    
+                    <a name="M007702"></a><b>new</b>(ptr, names, ty, len, enc, dec)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007702_source')" id="l_M007702_source">show</a>
+                        
+                    </p>
+                    <div id="M007702_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File ext/dl/lib/dl/struct.rb, line 22</span>
+22:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">ptr</span>, <span class="ruby-identifier">names</span>, <span class="ruby-identifier">ty</span>, <span class="ruby-identifier">len</span>, <span class="ruby-identifier">enc</span>, <span class="ruby-identifier">dec</span>)
+23:           <span class="ruby-ivar">@ptr</span> = <span class="ruby-identifier">ptr</span>
+24:           <span class="ruby-ivar">@names</span> = <span class="ruby-identifier">names</span>
+25:           <span class="ruby-ivar">@ty</span>    = <span class="ruby-identifier">ty</span>
+26:           <span class="ruby-ivar">@len</span>   = <span class="ruby-identifier">len</span>
+27:           <span class="ruby-ivar">@enc</span>   = <span class="ruby-identifier">enc</span>
+28:           <span class="ruby-ivar">@dec</span>   = <span class="ruby-identifier">dec</span>
+29: 
+30:           <span class="ruby-comment cmt"># define methods</span>
+31:           <span class="ruby-ivar">@names</span>.<span class="ruby-identifier">each</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">name</span><span class="ruby-operator">|</span>
+32:             <span class="ruby-identifier">instance_eval</span> [
+33:               <span class="ruby-node">&quot;def #{name}&quot;</span>,
+34:               <span class="ruby-node">&quot;  v = @ptr[\&quot;#{name}\&quot;]&quot;</span>,
+35:               <span class="ruby-node">&quot;  if( @len[\&quot;#{name}\&quot;] )&quot;</span>,
+36:               <span class="ruby-node">&quot;    v = v.collect{|x| @dec[\&quot;#{name}\&quot;] ? @dec[\&quot;#{name}\&quot;].call(x) : x }&quot;</span>,
+37:               <span class="ruby-value str">&quot;  else&quot;</span>,
+38:               <span class="ruby-node">&quot;    v = @dec[\&quot;#{name}\&quot;].call(v) if @dec[\&quot;#{name}\&quot;]&quot;</span>,
+39:               <span class="ruby-value str">&quot;  end&quot;</span>,
+40:               <span class="ruby-value str">&quot;  return v&quot;</span>,
+41:               <span class="ruby-value str">&quot;end&quot;</span>,
+42:               <span class="ruby-node">&quot;def #{name}=(v)&quot;</span>,
+43:               <span class="ruby-node">&quot;  if( @len[\&quot;#{name}\&quot;] )&quot;</span>,
+44:               <span class="ruby-node">&quot;    v = v.collect{|x| @enc[\&quot;#{name}\&quot;] ? @enc[\&quot;#{name}\&quot;].call(x) : x }&quot;</span>,
+45:               <span class="ruby-value str">&quot;  else&quot;</span>,
+46:               <span class="ruby-node">&quot;    v = @enc[\&quot;#{name}\&quot;].call(v) if @enc[\&quot;#{name}\&quot;]&quot;</span>,
+47:               <span class="ruby-value str">&quot;  end&quot;</span>,
+48:               <span class="ruby-node">&quot;  @ptr[\&quot;#{name}\&quot;] = v&quot;</span>,
+49:               <span class="ruby-value str">&quot;  return v&quot;</span>,
+50:               <span class="ruby-value str">&quot;end&quot;</span>,
+51:             ].<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;\n&quot;</span>)
+52:           }
+53:         <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M007704">
+                    
+                    <a name="M007704"></a><b>size</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007704_source')" id="l_M007704_source">show</a>
+                        
+                    </p>
+                    <div id="M007704_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File ext/dl/lib/dl/struct.rb, line 59</span>
+59:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">size</span>
+60:           <span class="ruby-keyword kw">return</span> <span class="ruby-ivar">@ptr</span>.<span class="ruby-identifier">size</span>
+61:         <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007703">
+                    
+                    <a name="M007703"></a><b>to_ptr</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007703_source')" id="l_M007703_source">show</a>
+                        
+                    </p>
+                    <div id="M007703_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File ext/dl/lib/dl/struct.rb, line 55</span>
+55:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">to_ptr</span>
+56:           <span class="ruby-keyword kw">return</span> <span class="ruby-ivar">@ptr</span>
+57:         <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

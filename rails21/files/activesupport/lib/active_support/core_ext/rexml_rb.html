@@ -1,0 +1,54 @@
+  <div id="fileHeader">
+    <h1>rexml.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activesupport/lib/active_support/core_ext/rexml.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>require 'rexml/document'
+require 'rexml/entity'
+
+# Fixes the rexml vulnerability disclosed at:
+# http://www.ruby-lang.org/en/news/2008/08/23/dos-vulnerability-in-rexml/
+# This fix is identical to rexml-expansion-fix version 1.0.1
+
+# Earlier versions of rexml defined REXML::Version, newer ones REXML::VERSION
+unless (defined?(REXML::VERSION) ? REXML::VERSION : REXML::Version) &gt; &quot;3.1.7.2&quot;
+  module REXML
+    class Entity &lt; Child
+      undef_method :unnormalized
+      def unnormalized
+        document.record_entity_expansion! if document
+        v = value()
+        return nil if v.nil?
+        @unnormalized = Text::unnormalize(v, parent)
+        @unnormalized
+      end
+    end
+    class Document &lt; Element
+      @@entity_expansion_limit = 10_000
+      def self.entity_expansion_limit= val
+        @@entity_expansion_limit = val
+      end
+
+      def record_entity_expansion!
+        @number_of_expansions ||= 0
+        @number_of_expansions += 1
+        if @number_of_expansions &gt; @@entity_expansion_limit
+          raise &quot;Number of entity expansions exceeded, processing aborted.&quot;
+        end
+      end
+    end
+  end
+end</pre>
+    </div>

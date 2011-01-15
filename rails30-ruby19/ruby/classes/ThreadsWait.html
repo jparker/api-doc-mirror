@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>ThreadsWait</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            ThreadsWait 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/lib/thwait_rb.html">lib/thwait.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+This class watches for termination of multiple threads. Basic functionality
+(wait until specified threads have terminated) can be accessed through the
+class method ThreadsWait::all_waits. Finer control can be gained using
+instance methods.
+</p>
+<p>
+Example:
+</p>
+<pre>
+  ThreadsWait.all_wait(thr1, thr2, ...) do |t|
+    STDERR.puts &quot;Thread #{t} has terminated.&quot;
+  end
+
+  th = ThreadsWait.new(thread1,...)
+  th.next_wait # next one to be done
+</pre>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>A</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002079">all_waits</a>,</li>
+                
+                <li><a href="#M002086">all_waits</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002081">empty?</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>F</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002082">finished?</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>J</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002083">join</a>,</li>
+                
+                <li><a href="#M002084">join_nowait</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002080">new</a>,</li>
+                
+                <li><a href="#M002085">next_wait</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">RCS_ID</td>
+            <td>=</td>
+            <td class="attr-value">'-$Id: thwait.rb,v 1.3 1998/06/26 03:19:34 keiju Exp keiju $-'</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+    <div class="sectiontitle">Attributes</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>threads</td>
+            <td class='attr-desc'><p>
+Returns the array of threads that have not terminated yet.
+</p></td>
+        </tr>
+        
+    </table>
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M002079">
+                    
+                    <a name="M002079"></a><b>all_waits</b>(*threads)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Waits until all specified threads have terminated. If a block is provided,
+it is executed for each thread as they terminate.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002079_source')" id="l_M002079_source">show</a>
+                        
+                    </p>
+                    <div id="M002079_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/thwait.rb, line 38</span>
+38:   <span class="ruby-keyword kw">def</span> <span class="ruby-constant">ThreadsWait</span>.<span class="ruby-identifier">all_waits</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">threads</span>) <span class="ruby-comment cmt"># :yield: thread</span>
+39:     <span class="ruby-identifier">tw</span> = <span class="ruby-constant">ThreadsWait</span>.<span class="ruby-identifier">new</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">threads</span>)
+40:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">block_given?</span>
+41:       <span class="ruby-identifier">tw</span>.<span class="ruby-identifier">all_waits</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">th</span><span class="ruby-operator">|</span>
+42:         <span class="ruby-keyword kw">yield</span> <span class="ruby-identifier">th</span>
+43:       <span class="ruby-keyword kw">end</span>
+44:     <span class="ruby-keyword kw">else</span>
+45:       <span class="ruby-identifier">tw</span>.<span class="ruby-identifier">all_waits</span>
+46:     <span class="ruby-keyword kw">end</span>
+47:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002080">
+                    
+                    <a name="M002080"></a><b>new</b>(*threads)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Creates a <a href="ThreadsWait.html">ThreadsWait</a> object, specifying the
+threads to wait on. Non-blocking.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002080_source')" id="l_M002080_source">show</a>
+                        
+                    </p>
+                    <div id="M002080_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/thwait.rb, line 53</span>
+53:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">threads</span>)
+54:     <span class="ruby-ivar">@threads</span> = []
+55:     <span class="ruby-ivar">@wait_queue</span> = <span class="ruby-constant">Queue</span>.<span class="ruby-identifier">new</span>
+56:     <span class="ruby-identifier">join_nowait</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">threads</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">threads</span>.<span class="ruby-identifier">empty?</span>
+57:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M002086">
+                    
+                    <a name="M002086"></a><b>all_waits</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Waits until all of the specified threads are terminated. If a block is
+supplied for the method, it is executed for each thread termination.
+</p>
+<p>
+Raises exceptions in the same manner as <tt><a
+href="ThreadsWait.html#M002085">next_wait</a></tt>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002086_source')" id="l_M002086_source">show</a>
+                        
+                    </p>
+                    <div id="M002086_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/thwait.rb, line 126</span>
+126:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">all_waits</span>
+127:     <span class="ruby-keyword kw">until</span> <span class="ruby-ivar">@threads</span>.<span class="ruby-identifier">empty?</span>
+128:       <span class="ruby-identifier">th</span> = <span class="ruby-identifier">next_wait</span>
+129:       <span class="ruby-keyword kw">yield</span> <span class="ruby-identifier">th</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">block_given?</span>
+130:     <span class="ruby-keyword kw">end</span>
+131:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002081">
+                    
+                    <a name="M002081"></a><b>empty?</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns <tt>true</tt> if there are no threads in the pool still running.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002081_source')" id="l_M002081_source">show</a>
+                        
+                    </p>
+                    <div id="M002081_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/thwait.rb, line 65</span>
+65:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">empty?</span>
+66:     <span class="ruby-ivar">@threads</span>.<span class="ruby-identifier">empty?</span>
+67:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002082">
+                    
+                    <a name="M002082"></a><b>finished?</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns <tt>true</tt> if any thread has terminated and is ready to be
+collected.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002082_source')" id="l_M002082_source">show</a>
+                        
+                    </p>
+                    <div id="M002082_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/thwait.rb, line 72</span>
+72:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">finished?</span>
+73:     <span class="ruby-operator">!</span><span class="ruby-ivar">@wait_queue</span>.<span class="ruby-identifier">empty?</span>
+74:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002083">
+                    
+                    <a name="M002083"></a><b>join</b>(*threads)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Waits for specified threads to terminate, and returns when one of the
+threads terminated.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002083_source')" id="l_M002083_source">show</a>
+                        
+                    </p>
+                    <div id="M002083_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/thwait.rb, line 80</span>
+80:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">join</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">threads</span>)
+81:     <span class="ruby-identifier">join_nowait</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">threads</span>)
+82:     <span class="ruby-identifier">next_wait</span>
+83:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002084">
+                    
+                    <a name="M002084"></a><b>join_nowait</b>(*threads)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Specifies the threads that this object will wait for, but does not actually
+wait.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002084_source')" id="l_M002084_source">show</a>
+                        
+                    </p>
+                    <div id="M002084_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/thwait.rb, line 89</span>
+ 89:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">join_nowait</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">threads</span>)
+ 90:     <span class="ruby-identifier">threads</span>.<span class="ruby-identifier">flatten!</span>
+ 91:     <span class="ruby-ivar">@threads</span>.<span class="ruby-identifier">concat</span> <span class="ruby-identifier">threads</span>
+ 92:     <span class="ruby-keyword kw">for</span> <span class="ruby-identifier">th</span> <span class="ruby-keyword kw">in</span> <span class="ruby-identifier">threads</span>
+ 93:       <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">start</span>(<span class="ruby-identifier">th</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">t</span><span class="ruby-operator">|</span>
+ 94:         <span class="ruby-keyword kw">begin</span>
+ 95:           <span class="ruby-identifier">t</span>.<span class="ruby-identifier">join</span>
+ 96:         <span class="ruby-keyword kw">ensure</span>
+ 97:           <span class="ruby-ivar">@wait_queue</span>.<span class="ruby-identifier">push</span> <span class="ruby-identifier">t</span>
+ 98:         <span class="ruby-keyword kw">end</span>
+ 99:       <span class="ruby-keyword kw">end</span>
+100:     <span class="ruby-keyword kw">end</span>
+101:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002085">
+                    
+                    <a name="M002085"></a><b>next_wait</b>(nonblock = nil)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Waits until any of the specified threads has terminated, and returns the
+one that does.
+</p>
+<p>
+If there is no thread to wait, raises <tt>ErrNoWaitingThread</tt>. If
+<tt>nonblock</tt> is true, and there is no terminated thread, raises
+<tt>ErrNoFinishedThread</tt>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002085_source')" id="l_M002085_source">show</a>
+                        
+                    </p>
+                    <div id="M002085_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/thwait.rb, line 110</span>
+110:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">next_wait</span>(<span class="ruby-identifier">nonblock</span> = <span class="ruby-keyword kw">nil</span>)
+111:     <span class="ruby-constant">ThreadsWait</span>.<span class="ruby-identifier">fail</span> <span class="ruby-constant">ErrNoWaitingThread</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@threads</span>.<span class="ruby-identifier">empty?</span>
+112:     <span class="ruby-keyword kw">begin</span>
+113:       <span class="ruby-ivar">@threads</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">th</span> = <span class="ruby-ivar">@wait_queue</span>.<span class="ruby-identifier">pop</span>(<span class="ruby-identifier">nonblock</span>))
+114:       <span class="ruby-identifier">th</span>
+115:     <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">ThreadError</span>
+116:       <span class="ruby-constant">ThreadsWait</span>.<span class="ruby-identifier">fail</span> <span class="ruby-constant">ErrNoFinishedThread</span>
+117:     <span class="ruby-keyword kw">end</span>
+118:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

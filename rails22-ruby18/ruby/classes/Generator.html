@@ -1,0 +1,565 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Generator</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            Generator 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/lib/generator_rb.html">lib/generator.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+<a href="Generator.html">Generator</a> converts an internal iterator (i.e.
+an <a href="Enumerable.html">Enumerable</a> object) to an external
+iterator.
+</p>
+<p>
+Note that it is not very fast since it is implemented using continuations,
+which are currently slow.
+</p>
+<h2>Example</h2>
+<pre>
+  require 'generator'
+
+  # Generator from an Enumerable object
+  g = Generator.new(['A', 'B', 'C', 'Z'])
+
+  while g.next?
+    puts g.next
+  end
+
+  # Generator from a block
+  g = Generator.new { |g|
+    for i in 'A'..'C'
+      g.yield i
+    end
+
+    g.yield 'Z'
+  }
+
+  # The same result as above
+  while g.next?
+    puts g.next
+  end
+</pre>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005823">current</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005825">each</a>,</li>
+                
+                <li><a href="#M005818">end?</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>I</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005820">index</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005816">new</a>,</li>
+                
+                <li><a href="#M005822">next</a>,</li>
+                
+                <li><a href="#M005819">next?</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>P</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005821">pos</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>R</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005824">rewind</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>Y</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005817">yield</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+    <div class="sectiontitle">Included Modules</div>
+    <ul>
+        
+        <li>
+            
+            <a href="Marshal.html">Marshal</a>
+            
+            START:includes
+        </li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005816">
+                    
+                    <a name="M005816"></a><b>new</b>(enum = nil, &amp;block)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Creates a new generator either from an <a
+href="Enumerable.html">Enumerable</a> object or from a block.
+</p>
+<p>
+In the former, block is ignored even if given.
+</p>
+<p>
+In the latter, the given block is called with the generator itself, and
+expected to call the <tt>yield</tt> method for each element.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005816_source')" id="l_M005816_source">show</a>
+                        
+                    </p>
+                    <div id="M005816_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/generator.rb, line 69</span>
+69:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">enum</span> = <span class="ruby-keyword kw">nil</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+70:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">enum</span>
+71:       <span class="ruby-ivar">@block</span> = <span class="ruby-identifier">proc</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">g</span><span class="ruby-operator">|</span>
+72:         <span class="ruby-identifier">enum</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">x</span><span class="ruby-operator">|</span> <span class="ruby-identifier">g</span>.<span class="ruby-identifier">yield</span> <span class="ruby-identifier">x</span> }
+73:       }
+74:     <span class="ruby-keyword kw">else</span>
+75:       <span class="ruby-ivar">@block</span> = <span class="ruby-identifier">block</span>
+76:     <span class="ruby-keyword kw">end</span>
+77: 
+78:     <span class="ruby-ivar">@index</span> = <span class="ruby-value">0</span>
+79:     <span class="ruby-ivar">@queue</span> = []
+80:     <span class="ruby-ivar">@cont_next</span> = <span class="ruby-ivar">@cont_yield</span> = <span class="ruby-ivar">@cont_endp</span> = <span class="ruby-keyword kw">nil</span>
+81: 
+82:     <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@cont_next</span> = <span class="ruby-identifier">callcc</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">c</span><span class="ruby-operator">|</span> <span class="ruby-identifier">c</span> }
+83:       <span class="ruby-ivar">@block</span>.<span class="ruby-identifier">call</span>(<span class="ruby-keyword kw">self</span>)
+84: 
+85:       <span class="ruby-ivar">@cont_endp</span>.<span class="ruby-identifier">call</span>(<span class="ruby-keyword kw">nil</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@cont_endp</span>
+86:     <span class="ruby-keyword kw">end</span>
+87: 
+88:     <span class="ruby-keyword kw">self</span>
+89:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005823">
+                    
+                    <a name="M005823"></a><b>current</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the element at the current position.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005823_source')" id="l_M005823_source">show</a>
+                        
+                    </p>
+                    <div id="M005823_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/generator.rb, line 141</span>
+141:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">current</span>()
+142:     <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@queue</span>.<span class="ruby-identifier">empty?</span>
+143:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">EOFError</span>, <span class="ruby-value str">&quot;no more elements available&quot;</span>
+144:     <span class="ruby-keyword kw">end</span>
+145: 
+146:     <span class="ruby-ivar">@queue</span>.<span class="ruby-identifier">first</span>
+147:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005825">
+                    
+                    <a name="M005825"></a><b>each</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Rewinds the generator and enumerates the elements.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005825_source')" id="l_M005825_source">show</a>
+                        
+                    </p>
+                    <div id="M005825_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/generator.rb, line 157</span>
+157:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">each</span>
+158:     <span class="ruby-identifier">rewind</span>
+159: 
+160:     <span class="ruby-keyword kw">until</span> <span class="ruby-identifier">end?</span>
+161:       <span class="ruby-keyword kw">yield</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">next</span>
+162:     <span class="ruby-keyword kw">end</span>
+163: 
+164:     <span class="ruby-keyword kw">self</span>
+165:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005818">
+                    
+                    <a name="M005818"></a><b>end?</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns true if the generator has reached the end.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005818_source')" id="l_M005818_source">show</a>
+                        
+                    </p>
+                    <div id="M005818_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/generator.rb, line 102</span>
+102:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">end?</span>()
+103:     <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@cont_endp</span> = <span class="ruby-identifier">callcc</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">c</span><span class="ruby-operator">|</span> <span class="ruby-identifier">c</span> }
+104:       <span class="ruby-ivar">@cont_yield</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-ivar">@queue</span>.<span class="ruby-identifier">empty?</span>
+105:     <span class="ruby-keyword kw">else</span>
+106:       <span class="ruby-ivar">@queue</span>.<span class="ruby-identifier">empty?</span>
+107:     <span class="ruby-keyword kw">end</span>
+108:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005820">
+                    
+                    <a name="M005820"></a><b>index</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the current index (position) counting from zero.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005820_source')" id="l_M005820_source">show</a>
+                        
+                    </p>
+                    <div id="M005820_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/generator.rb, line 116</span>
+116:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">index</span>()
+117:     <span class="ruby-ivar">@index</span>
+118:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005822">
+                    
+                    <a name="M005822"></a><b>next</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the element at the current position and moves forward.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005822_source')" id="l_M005822_source">show</a>
+                        
+                    </p>
+                    <div id="M005822_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/generator.rb, line 126</span>
+126:   <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">next</span>()
+127:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">end?</span>
+128:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">EOFError</span>, <span class="ruby-value str">&quot;no more elements available&quot;</span>
+129:     <span class="ruby-keyword kw">end</span>
+130: 
+131:     <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@cont_next</span> = <span class="ruby-identifier">callcc</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">c</span><span class="ruby-operator">|</span> <span class="ruby-identifier">c</span> }
+132:       <span class="ruby-ivar">@cont_yield</span>.<span class="ruby-identifier">call</span>(<span class="ruby-keyword kw">nil</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@cont_yield</span>
+133:     <span class="ruby-keyword kw">end</span>
+134: 
+135:     <span class="ruby-ivar">@index</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
+136: 
+137:     <span class="ruby-ivar">@queue</span>.<span class="ruby-identifier">shift</span>
+138:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005819">
+                    
+                    <a name="M005819"></a><b>next?</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns true if the generator has not reached the end yet.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005819_source')" id="l_M005819_source">show</a>
+                        
+                    </p>
+                    <div id="M005819_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/generator.rb, line 111</span>
+111:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">next?</span>()
+112:     <span class="ruby-operator">!</span><span class="ruby-identifier">end?</span>
+113:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005821">
+                    
+                    <a name="M005821"></a><b>pos</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the current index (position) counting from zero.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005821_source')" id="l_M005821_source">show</a>
+                        
+                    </p>
+                    <div id="M005821_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/generator.rb, line 121</span>
+121:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">pos</span>()
+122:     <span class="ruby-ivar">@index</span>
+123:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005824">
+                    
+                    <a name="M005824"></a><b>rewind</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Rewinds the generator.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005824_source')" id="l_M005824_source">show</a>
+                        
+                    </p>
+                    <div id="M005824_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/generator.rb, line 150</span>
+150:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">rewind</span>()
+151:     <span class="ruby-identifier">initialize</span>(<span class="ruby-keyword kw">nil</span>, <span class="ruby-operator">&amp;</span><span class="ruby-ivar">@block</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@index</span>.<span class="ruby-identifier">nonzero?</span>
+152: 
+153:     <span class="ruby-keyword kw">self</span>
+154:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005817">
+                    
+                    <a name="M005817"></a><b>yield</b>(value)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Yields an element to the generator.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005817_source')" id="l_M005817_source">show</a>
+                        
+                    </p>
+                    <div id="M005817_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/generator.rb, line 92</span>
+92:   <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">yield</span>(<span class="ruby-identifier">value</span>)
+93:     <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@cont_yield</span> = <span class="ruby-identifier">callcc</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">c</span><span class="ruby-operator">|</span> <span class="ruby-identifier">c</span> }
+94:       <span class="ruby-ivar">@queue</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">value</span>
+95:       <span class="ruby-ivar">@cont_next</span>.<span class="ruby-identifier">call</span>(<span class="ruby-keyword kw">nil</span>)
+96:     <span class="ruby-keyword kw">end</span>
+97: 
+98:     <span class="ruby-keyword kw">self</span>
+99:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

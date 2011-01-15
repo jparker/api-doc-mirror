@@ -1,0 +1,71 @@
+  <div id="fileHeader">
+    <h1>keys.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activesupport/lib/active_support/core_ext/hash/keys.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>module ActiveSupport #:nodoc:
+  module CoreExtensions #:nodoc:
+    module Hash #:nodoc:
+      module Keys
+        # Return a new hash with all keys converted to strings.
+        def stringify_keys
+          inject({}) do |options, (key, value)|
+            options[key.to_s] = value
+            options
+          end
+        end
+
+        # Destructively convert all keys to strings.
+        def stringify_keys!
+          keys.each do |key|
+            self[key.to_s] = delete(key)
+          end
+          self
+        end
+
+        # Return a new hash with all keys converted to symbols.
+        def symbolize_keys
+          inject({}) do |options, (key, value)|
+            options[(key.to_sym rescue key) || key] = value
+            options
+          end
+        end
+
+        # Destructively convert all keys to symbols.
+        def symbolize_keys!
+          self.replace(self.symbolize_keys)
+        end
+
+        alias_method :to_options,  :symbolize_keys
+        alias_method :to_options!, :symbolize_keys!
+
+        # Validate all keys in a hash match *valid keys, raising ArgumentError on a mismatch.
+        # Note that keys are NOT treated indifferently, meaning if you use strings for keys but assert symbols
+        # as keys, this will fail.
+        #
+        # ==== Examples:
+        #   { :name =&gt; &quot;Rob&quot;, :years =&gt; &quot;28&quot; }.assert_valid_keys(:name, :age) # =&gt; raises &quot;ArgumentError: Unknown key(s): years&quot;
+        #   { :name =&gt; &quot;Rob&quot;, :age =&gt; &quot;28&quot; }.assert_valid_keys(&quot;name&quot;, &quot;age&quot;) # =&gt; raises &quot;ArgumentError: Unknown key(s): name, age&quot;
+        #   { :name =&gt; &quot;Rob&quot;, :age =&gt; &quot;28&quot; }.assert_valid_keys(:name, :age) # =&gt; passes, raises nothing
+        def assert_valid_keys(*valid_keys)
+          unknown_keys = keys - [valid_keys].flatten
+          raise(ArgumentError, &quot;Unknown key(s): #{unknown_keys.join(&quot;, &quot;)}&quot;) unless unknown_keys.empty?
+        end
+      end
+    end
+  end
+end
+</pre>
+    </div>

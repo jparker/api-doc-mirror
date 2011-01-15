@@ -1,0 +1,94 @@
+  <div id="fileHeader">
+    <h1>response.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionpack/lib/action_controller/response.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:04 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>require 'digest/md5'
+
+module ActionController
+  class AbstractResponse #:nodoc:
+    DEFAULT_HEADERS = { &quot;Cache-Control&quot; =&gt; &quot;no-cache&quot; }
+    attr_accessor :request
+    attr_accessor :body, :headers, :session, :cookies, :assigns, :template, :redirected_to, :redirected_to_method_params, :layout
+
+    def initialize
+      @body, @headers, @session, @assigns = &quot;&quot;, DEFAULT_HEADERS.merge(&quot;cookie&quot; =&gt; []), [], []
+    end
+
+    def content_type=(mime_type)
+      self.headers[&quot;Content-Type&quot;] = charset ? &quot;#{mime_type}; charset=#{charset}&quot; : mime_type
+    end
+    
+    def content_type
+      content_type = String(headers[&quot;Content-Type&quot;] || headers[&quot;type&quot;]).split(&quot;;&quot;)[0]
+      content_type.blank? ? nil : content_type
+    end
+    
+    def charset=(encoding)
+      self.headers[&quot;Content-Type&quot;] = &quot;#{content_type || Mime::HTML}; charset=#{encoding}&quot;
+    end
+    
+    def charset
+      charset = String(headers[&quot;Content-Type&quot;] || headers[&quot;type&quot;]).split(&quot;;&quot;)[1]
+      charset.blank? ? nil : charset.strip.split(&quot;=&quot;)[1]
+    end
+
+    def redirect(to_url, response_status)
+      self.headers[&quot;Status&quot;] = response_status
+      self.headers[&quot;Location&quot;] = to_url.gsub(/[\r\n]/, '')
+
+      self.body = &quot;&lt;html&gt;&lt;body&gt;You are being &lt;a href=\&quot;#{CGI.escapeHTML(to_url)}\&quot;&gt;redirected&lt;/a&gt;.&lt;/body&gt;&lt;/html&gt;&quot;
+    end
+
+    def prepare!
+      handle_conditional_get!
+      convert_content_type!
+      set_content_length!
+    end
+
+
+    private
+      def handle_conditional_get!
+        if body.is_a?(String) &amp;&amp; (headers['Status'] ? headers['Status'][0..2] == '200' : true)  &amp;&amp; !body.empty?
+          self.headers['ETag'] ||= %(&quot;#{Digest::MD5.hexdigest(body)}&quot;)
+          self.headers['Cache-Control'] = 'private, max-age=0, must-revalidate' if headers['Cache-Control'] == DEFAULT_HEADERS['Cache-Control']
+
+          if request.headers['HTTP_IF_NONE_MATCH'] == headers['ETag']
+            self.headers['Status'] = '304 Not Modified'
+            self.body = ''
+          end
+        end
+      end
+
+      def convert_content_type!
+        if content_type = headers.delete(&quot;Content-Type&quot;)
+          self.headers[&quot;type&quot;] = content_type
+        end
+        if content_type = headers.delete(&quot;Content-type&quot;)
+          self.headers[&quot;type&quot;] = content_type
+        end
+        if content_type = headers.delete(&quot;content-type&quot;)
+          self.headers[&quot;type&quot;] = content_type
+        end
+      end
+    
+      # Don't set the Content-Length for block-based bodies as that would mean reading it all into memory. Not nice
+      # for, say, a 2GB streaming file.
+      def set_content_length!
+        self.headers[&quot;Content-Length&quot;] = body.size unless body.respond_to?(:call)
+      end
+  end
+end</pre>
+    </div>

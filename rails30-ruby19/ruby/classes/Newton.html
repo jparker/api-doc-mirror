@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Newton</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Module</span> 
+            Newton 
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/ext/bigdecimal/lib/bigdecimal/newton_rb.html">ext/bigdecimal/lib/bigdecimal/newton.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+newton.rb
+</p>
+<p>
+Solves the nonlinear algebraic equation system f = 0 by Newton&#8217;s
+method. This program is not dependent on <a
+href="BigDecimal.html">BigDecimal</a>.
+</p>
+<p>
+To call:
+</p>
+<pre>
+   n = nlsolve(f,x)
+ where n is the number of iterations required,
+       x is the initial value vector
+       f is an Object which is used to compute the values of the equations to be solved.
+</pre>
+<p>
+It must provide the following methods:
+</p>
+<table>
+<tr><td valign="top">f.values(x):</td><td>returns the values of all functions at x
+
+</td></tr>
+<tr><td valign="top">f.zero:</td><td>returns 0.0
+
+</td></tr>
+<tr><td valign="top">f.one:</td><td>returns 1.0
+
+</td></tr>
+<tr><td valign="top">f.two:</td><td>returns 1.0
+
+</td></tr>
+<tr><td valign="top">f.ten:</td><td>returns 10.0
+
+</td></tr>
+<tr><td valign="top">f.eps:</td><td>returns the convergence criterion (epsilon value) used to determine whether
+two values are considered equal. If |a-b| < epsilon, the two values are
+considered equal.
+
+</td></tr>
+</table>
+<p>
+On exit, x is the solution vector.
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M008005">nlsolve</a>,</li>
+                
+                <li><a href="#M008004">norm</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+    <div class="sectiontitle">Included Modules</div>
+    <ul>
+        
+        <li>
+            
+            <a href="Kernel.html">Kernel</a>
+            
+            START:includes
+        </li>
+        
+        <li>
+            
+            <a href="Kernel.html">Kernel</a>
+            
+            START:includes
+        </li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M008005">
+                    
+                    <a name="M008005"></a><b>nlsolve</b>(f,x)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M008005_source')" id="l_M008005_source">show</a>
+                        
+                    </p>
+                    <div id="M008005_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File ext/bigdecimal/lib/bigdecimal/newton.rb, line 42</span>
+42:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">nlsolve</span>(<span class="ruby-identifier">f</span>,<span class="ruby-identifier">x</span>)
+43:     <span class="ruby-identifier">nRetry</span> = <span class="ruby-value">0</span>
+44:     <span class="ruby-identifier">n</span> = <span class="ruby-identifier">x</span>.<span class="ruby-identifier">size</span>
+45: 
+46:     <span class="ruby-identifier">f0</span> = <span class="ruby-identifier">f</span>.<span class="ruby-identifier">values</span>(<span class="ruby-identifier">x</span>)
+47:     <span class="ruby-identifier">zero</span> = <span class="ruby-identifier">f</span>.<span class="ruby-identifier">zero</span>
+48:     <span class="ruby-identifier">one</span>  = <span class="ruby-identifier">f</span>.<span class="ruby-identifier">one</span>
+49:     <span class="ruby-identifier">two</span>  = <span class="ruby-identifier">f</span>.<span class="ruby-identifier">two</span>
+50:     <span class="ruby-identifier">p5</span> = <span class="ruby-identifier">one</span><span class="ruby-operator">/</span><span class="ruby-identifier">two</span>
+51:     <span class="ruby-identifier">d</span>  = <span class="ruby-identifier">norm</span>(<span class="ruby-identifier">f0</span>,<span class="ruby-identifier">zero</span>)
+52:     <span class="ruby-identifier">minfact</span> = <span class="ruby-identifier">f</span>.<span class="ruby-identifier">ten</span><span class="ruby-operator">*</span><span class="ruby-identifier">f</span>.<span class="ruby-identifier">ten</span><span class="ruby-operator">*</span><span class="ruby-identifier">f</span>.<span class="ruby-identifier">ten</span>
+53:     <span class="ruby-identifier">minfact</span> = <span class="ruby-identifier">one</span><span class="ruby-operator">/</span><span class="ruby-identifier">minfact</span>
+54:     <span class="ruby-identifier">e</span> = <span class="ruby-identifier">f</span>.<span class="ruby-identifier">eps</span>
+55:     <span class="ruby-keyword kw">while</span> <span class="ruby-identifier">d</span> <span class="ruby-operator">&gt;=</span> <span class="ruby-identifier">e</span> <span class="ruby-keyword kw">do</span>
+56:       <span class="ruby-identifier">nRetry</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
+57:       <span class="ruby-comment cmt"># Not yet converged. =&gt; Compute Jacobian matrix</span>
+58:       <span class="ruby-identifier">dfdx</span> = <span class="ruby-identifier">jacobian</span>(<span class="ruby-identifier">f</span>,<span class="ruby-identifier">f0</span>,<span class="ruby-identifier">x</span>)
+59:       <span class="ruby-comment cmt"># Solve dfdx*dx = -f0 to estimate dx</span>
+60:       <span class="ruby-identifier">dx</span> = <span class="ruby-identifier">lusolve</span>(<span class="ruby-identifier">dfdx</span>,<span class="ruby-identifier">f0</span>,<span class="ruby-identifier">ludecomp</span>(<span class="ruby-identifier">dfdx</span>,<span class="ruby-identifier">n</span>,<span class="ruby-identifier">zero</span>,<span class="ruby-identifier">one</span>),<span class="ruby-identifier">zero</span>)
+61:       <span class="ruby-identifier">fact</span> = <span class="ruby-identifier">two</span>
+62:       <span class="ruby-identifier">xs</span> = <span class="ruby-identifier">x</span>.<span class="ruby-identifier">dup</span>
+63:       <span class="ruby-keyword kw">begin</span>
+64:         <span class="ruby-identifier">fact</span> <span class="ruby-operator">*=</span> <span class="ruby-identifier">p5</span>
+65:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">fact</span> <span class="ruby-operator">&lt;</span> <span class="ruby-identifier">minfact</span> <span class="ruby-keyword kw">then</span>
+66:           <span class="ruby-identifier">raise</span> <span class="ruby-value str">&quot;Failed to reduce function values.&quot;</span>
+67:         <span class="ruby-keyword kw">end</span>
+68:         <span class="ruby-keyword kw">for</span> <span class="ruby-identifier">i</span> <span class="ruby-keyword kw">in</span> <span class="ruby-value">0</span><span class="ruby-operator">...</span><span class="ruby-identifier">n</span> <span class="ruby-keyword kw">do</span>
+69:           <span class="ruby-identifier">x</span>[<span class="ruby-identifier">i</span>] = <span class="ruby-identifier">xs</span>[<span class="ruby-identifier">i</span>] <span class="ruby-operator">-</span> <span class="ruby-identifier">dx</span>[<span class="ruby-identifier">i</span>]<span class="ruby-operator">*</span><span class="ruby-identifier">fact</span>
+70:         <span class="ruby-keyword kw">end</span>
+71:         <span class="ruby-identifier">f0</span> = <span class="ruby-identifier">f</span>.<span class="ruby-identifier">values</span>(<span class="ruby-identifier">x</span>)
+72:         <span class="ruby-identifier">dn</span> = <span class="ruby-identifier">norm</span>(<span class="ruby-identifier">f0</span>,<span class="ruby-identifier">zero</span>)
+73:       <span class="ruby-keyword kw">end</span> <span class="ruby-keyword kw">while</span>(<span class="ruby-identifier">dn</span><span class="ruby-operator">&gt;=</span><span class="ruby-identifier">d</span>)
+74:       <span class="ruby-identifier">d</span> = <span class="ruby-identifier">dn</span>
+75:     <span class="ruby-keyword kw">end</span>
+76:     <span class="ruby-identifier">nRetry</span>
+77:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M008004">
+                    
+                    <a name="M008004"></a><b>norm</b>(fv,zero=0.0)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M008004_source')" id="l_M008004_source">show</a>
+                        
+                    </p>
+                    <div id="M008004_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File ext/bigdecimal/lib/bigdecimal/newton.rb, line 33</span>
+33:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">norm</span>(<span class="ruby-identifier">fv</span>,<span class="ruby-identifier">zero</span>=<span class="ruby-value">0</span><span class="ruby-value">.0</span>)
+34:     <span class="ruby-identifier">s</span> = <span class="ruby-identifier">zero</span>
+35:     <span class="ruby-identifier">n</span> = <span class="ruby-identifier">fv</span>.<span class="ruby-identifier">size</span>
+36:     <span class="ruby-keyword kw">for</span> <span class="ruby-identifier">i</span> <span class="ruby-keyword kw">in</span> <span class="ruby-value">0</span><span class="ruby-operator">...</span><span class="ruby-identifier">n</span> <span class="ruby-keyword kw">do</span>
+37:       <span class="ruby-identifier">s</span> <span class="ruby-operator">+=</span> <span class="ruby-identifier">fv</span>[<span class="ruby-identifier">i</span>]<span class="ruby-operator">*</span><span class="ruby-identifier">fv</span>[<span class="ruby-identifier">i</span>]
+38:     <span class="ruby-keyword kw">end</span>
+39:     <span class="ruby-identifier">s</span>
+40:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

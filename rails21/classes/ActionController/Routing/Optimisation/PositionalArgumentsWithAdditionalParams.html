@@ -1,0 +1,101 @@
+  <div id="C00000152">
+<div class='banner'>
+  <span class="file-title-prefix">Class</span><br />PositionalArgumentsWithAdditionalParams<br/>
+  In:
+<a href="#" onclick="jsHref('files/actionpack/lib/action_controller/routing/optimisations_rb.html');">actionpack/lib/action_controller/routing/optimisations.rb</a>
+
+Parent:&nbsp;
+        <a href="#" onclick="jsHref('classes/ActionController/Routing/Optimisation/PositionalArguments.html');">
+PositionalArguments
+         </a>
+</div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+      <div id="content">
+
+  <div class="description"><p>
+This case is mostly the same as the positional arguments case above, but it
+supports additional query parameters as the last argument
+</p>
+</div>
+
+
+
+  <div class="sectiontitle">Methods</div>
+  <ul>
+  <li><a href="index.html?a=M000344&name=applicable?" >applicable?</a></li>
+  <li><a href="index.html?a=M000343&name=generation_code" >generation_code</a></li>
+  <li><a href="index.html?a=M000342&name=guard_condition" >guard_condition</a></li>
+  </ul>
+
+
+
+
+
+
+<div class="sectiontitle">Public Instance methods</div>
+<div id="M000344" class="method">
+  <div id="M000344_title" class="title">
+    <b>applicable?</b>()
+  </div>
+  <div class="description">
+  <p>
+To avoid generating &quot;<a href="http://localhost/?host=foo.example.com"
+target="_blank">http://localhost/?host=foo.example.com</a>&quot; we
+can&#8217;t use this optimisation on routes without any segments
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000344_source')" id="l_M000344_source">show source</a> ]</p>
+  <div id="M000344_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File actionpack/lib/action_controller/routing/optimisations.rb, line 112</span>
+112:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">applicable?</span>
+113:           <span class="ruby-keyword kw">super</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">route</span>.<span class="ruby-identifier">segment_keys</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span> 
+114:         <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000343" class="method">
+  <div id="M000343_title" class="title">
+    <b>generation_code</b>()
+  </div>
+  <div class="description">
+  <p>
+This case uses almost the same code as positional arguments, but add an
+args.last.to_query on the end
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000343_source')" id="l_M000343_source">show source</a> ]</p>
+  <div id="M000343_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File actionpack/lib/action_controller/routing/optimisations.rb, line 106</span>
+106:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">generation_code</span>
+107:           <span class="ruby-keyword kw">super</span>.<span class="ruby-identifier">insert</span>(<span class="ruby-value">-2</span>, <span class="ruby-value str">'?#{args.last.to_query}'</span>)
+108:         <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000342" class="method">
+  <div id="M000342_title" class="title">
+    <b>guard_condition</b>()
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000342_source')" id="l_M000342_source">show source</a> ]</p>
+  <div id="M000342_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File actionpack/lib/action_controller/routing/optimisations.rb, line 100</span>
+100:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">guard_condition</span>
+101:           <span class="ruby-node">&quot;(!defined?(default_url_options) || default_url_options.blank?) &amp;&amp; defined?(request) &amp;&amp; request &amp;&amp; args.size == #{route.segment_keys.size + 1} &amp;&amp; !args.last.has_key?(:anchor) &amp;&amp; !args.last.has_key?(:port) &amp;&amp; !args.last.has_key?(:host)&quot;</span>
+102:         <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+</div>
+
+  </div>

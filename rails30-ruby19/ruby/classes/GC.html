@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>GC</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Module</span> 
+            GC 
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/gc_c.html">gc.c</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+The <tt>GC</tt> module provides an interface to Ruby&#8217;s mark and sweep
+garbage collection mechanism. Some of the underlying methods are also
+available via the <tt>ObjectSpace</tt> module.
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000819">count</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>D</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000816">disable</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000815">enable</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>G</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000820">garbage_collect</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>M</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000836">malloc_allocated_size</a>,</li>
+                
+                <li><a href="#M000837">malloc_allocations</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000814">start</a>,</li>
+                
+                <li><a href="#M000817">stress</a>,</li>
+                
+                <li><a href="#M000818">stress=</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Classes and Modules</div>
+    <ul>
+        
+        <li><span class="type">MODULE</span> <a href="GC/Profiler.html">GC::Profiler</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M000819">
+                    
+                    <a name="M000819"></a><b>GC.count &rarr; Integer
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+The number of times <a href="GC.html">GC</a> occurred.
+</p>
+<p>
+It returns the number of times <a href="GC.html">GC</a> occurred since the
+process started.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000819_source')" id="l_M000819_source">show</a>
+                        
+                    </p>
+                    <div id="M000819_source" class="dyn-source">
+                        <pre>static VALUE
+gc_count(VALUE self)
+{
+    return UINT2NUM((&amp;rb_objspace)-&gt;count);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000816">
+                    
+                    <a name="M000816"></a><b>GC.disable    &rarr; true or false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Disables garbage collection, returning <tt>true</tt> if garbage collection
+was already disabled.
+</p>
+<pre>
+   GC.disable   #=&gt; false
+   GC.disable   #=&gt; true
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000816_source')" id="l_M000816_source">show</a>
+                        
+                    </p>
+                    <div id="M000816_source" class="dyn-source">
+                        <pre>VALUE
+rb_gc_disable(void)
+{
+    rb_objspace_t *objspace = &amp;rb_objspace;
+    int old = dont_gc;
+
+    dont_gc = TRUE;
+    return old ? Qtrue : Qfalse;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000815">
+                    
+                    <a name="M000815"></a><b>GC.enable    &rarr; true or false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Enables garbage collection, returning <tt>true</tt> if garbage collection
+was previously disabled.
+</p>
+<pre>
+   GC.disable   #=&gt; false
+   GC.enable    #=&gt; true
+   GC.enable    #=&gt; false
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000815_source')" id="l_M000815_source">show</a>
+                        
+                    </p>
+                    <div id="M000815_source" class="dyn-source">
+                        <pre>VALUE
+rb_gc_enable(void)
+{
+    rb_objspace_t *objspace = &amp;rb_objspace;
+    int old = dont_gc;
+
+    dont_gc = FALSE;
+    return old ? Qtrue : Qfalse;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000836">
+                    
+                    <a name="M000836"></a><b>GC.malloc_allocated_size &rarr; Integer
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+The allocated size by malloc().
+</p>
+<p>
+It returns the allocated size by malloc().
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000836_source')" id="l_M000836_source">show</a>
+                        
+                    </p>
+                    <div id="M000836_source" class="dyn-source">
+                        <pre>static VALUE
+gc_malloc_allocated_size(VALUE self)
+{
+    return UINT2NUM((&amp;rb_objspace)-&gt;malloc_params.allocated_size);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000837">
+                    
+                    <a name="M000837"></a><b>GC.malloc_allocations &rarr; Integer
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+The number of allocated memory object by malloc().
+</p>
+<p>
+It returns the number of allocated memory object by malloc().
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000837_source')" id="l_M000837_source">show</a>
+                        
+                    </p>
+                    <div id="M000837_source" class="dyn-source">
+                        <pre>static VALUE
+gc_malloc_allocations(VALUE self)
+{
+    return UINT2NUM((&amp;rb_objspace)-&gt;malloc_params.allocations);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000814">
+                    
+                    <a name="M000814"></a><b>GC.start                     &rarr; nil
+gc.garbage_collect           &rarr; nil
+ObjectSpace.garbage_collect  &rarr; nil
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Initiates garbage collection, unless manually disabled.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000814_source')" id="l_M000814_source">show</a>
+                        
+                    </p>
+                    <div id="M000814_source" class="dyn-source">
+                        <pre>VALUE
+rb_gc_start(void)
+{
+    rb_gc();
+    return Qnil;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000817">
+                    
+                    <a name="M000817"></a><b>GC.stress                 &rarr; true or false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+returns current status of <a href="GC.html">GC</a> stress mode.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000817_source')" id="l_M000817_source">show</a>
+                        
+                    </p>
+                    <div id="M000817_source" class="dyn-source">
+                        <pre>static VALUE
+gc_stress_get(VALUE self)
+{
+    rb_objspace_t *objspace = &amp;rb_objspace;
+    return ruby_gc_stress ? Qtrue : Qfalse;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000818">
+                    
+                    <a name="M000818"></a><b>GC.stress = bool          &rarr; bool
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+updates <a href="GC.html">GC</a> stress mode.
+</p>
+<p>
+When <a href="GC.html#M000817">GC.stress</a> = true, <a
+href="GC.html">GC</a> is invoked for all <a href="GC.html">GC</a>
+opportunity: all memory and object allocation.
+</p>
+<p>
+Since it makes Ruby very slow, it is only for debugging.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000818_source')" id="l_M000818_source">show</a>
+                        
+                    </p>
+                    <div id="M000818_source" class="dyn-source">
+                        <pre>static VALUE
+gc_stress_set(VALUE self, VALUE flag)
+{
+    rb_objspace_t *objspace = &amp;rb_objspace;
+    rb_secure(2);
+    ruby_gc_stress = RTEST(flag);
+    return flag;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M000820">
+                    
+                    <a name="M000820"></a><b>GC.start                     &rarr; nil
+gc.garbage_collect           &rarr; nil
+ObjectSpace.garbage_collect  &rarr; nil
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Initiates garbage collection, unless manually disabled.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000820_source')" id="l_M000820_source">show</a>
+                        
+                    </p>
+                    <div id="M000820_source" class="dyn-source">
+                        <pre>VALUE
+rb_gc_start(void)
+{
+    rb_gc();
+    return Qnil;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

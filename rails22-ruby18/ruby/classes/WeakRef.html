@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>WeakRef</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            WeakRef 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="Delegator.html">Delegator</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/lib/weakref_rb.html">lib/weakref.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+<a href="WeakRef.html">WeakRef</a> is a class to represent a reference to
+an object that is not seen by the tracing phase of the garbage collector.
+This allows the referenced object to be garbage collected as if nothing is
+referring to it. Because <a href="WeakRef.html">WeakRef</a> delegates
+method calls to the referenced object, it may be used in place of that
+object, i.e. it is of the same duck type.
+</p>
+<p>
+Usage:
+</p>
+<pre>
+  foo = Object.new
+  foo = Object.new
+  p foo.to_s                  # original's class
+  foo = WeakRef.new(foo)
+  p foo.to_s                  # should be same class
+  ObjectSpace.garbage_collect
+  p foo.to_s                  # should raise exception (recycled)
+</pre>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>#</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005452">__getobj__</a>,</li>
+                
+                <li><a href="#M005453">__setobj__</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005451">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>W</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005454">weakref_alive?</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Classes and Modules</div>
+    <ul>
+        
+        <li><span class="type">CLASS</span> <a href="WeakRef/RefError.html">WeakRef::RefError</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005451">
+                    
+                    <a name="M005451"></a><b>new</b>(orig)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Create a new <a href="WeakRef.html">WeakRef</a> from <tt>orig</tt>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005451_source')" id="l_M005451_source">show</a>
+                        
+                    </p>
+                    <div id="M005451_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/weakref.rb, line 49</span>
+49:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">orig</span>)
+50:     <span class="ruby-keyword kw">super</span>
+51:     <span class="ruby-identifier">__setobj__</span>(<span class="ruby-identifier">orig</span>)
+52:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005452">
+                    
+                    <a name="M005452"></a><b>__getobj__</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Return the object this <a href="WeakRef.html">WeakRef</a> references.
+Raises <a href="WeakRef/RefError.html">RefError</a> if the object has been
+garbage collected. The object returned is the object to which method calls
+are delegated (see <a href="Delegator.html">Delegator</a>).
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005452_source')" id="l_M005452_source">show</a>
+                        
+                    </p>
+                    <div id="M005452_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/weakref.rb, line 57</span>
+57:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">__getobj__</span>
+58:     <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@@id_rev_map</span>[<span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__id__</span>] <span class="ruby-operator">==</span> <span class="ruby-ivar">@__id</span>
+59:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">RefError</span>, <span class="ruby-value str">&quot;Illegal Reference - probably recycled&quot;</span>, <span class="ruby-identifier">caller</span>(<span class="ruby-value">2</span>)
+60:     <span class="ruby-keyword kw">end</span>
+61:     <span class="ruby-keyword kw">begin</span>
+62:       <span class="ruby-constant">ObjectSpace</span>.<span class="ruby-identifier">_id2ref</span>(<span class="ruby-ivar">@__id</span>)
+63:     <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">RangeError</span>
+64:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">RefError</span>, <span class="ruby-value str">&quot;Illegal Reference - probably recycled&quot;</span>, <span class="ruby-identifier">caller</span>(<span class="ruby-value">2</span>)
+65:     <span class="ruby-keyword kw">end</span>
+66:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005453">
+                    
+                    <a name="M005453"></a><b>__setobj__</b>(obj)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005453_source')" id="l_M005453_source">show</a>
+                        
+                    </p>
+                    <div id="M005453_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/weakref.rb, line 68</span>
+68:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">__setobj__</span>(<span class="ruby-identifier">obj</span>)
+69:     <span class="ruby-ivar">@__id</span> = <span class="ruby-identifier">obj</span>.<span class="ruby-identifier">__id__</span>
+70:     <span class="ruby-identifier">__old_status</span> = <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">critical</span>
+71:     <span class="ruby-keyword kw">begin</span>
+72:       <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">critical</span> = <span class="ruby-keyword kw">true</span>
+73:       <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@@id_rev_map</span>.<span class="ruby-identifier">key?</span>(<span class="ruby-keyword kw">self</span>)
+74:         <span class="ruby-constant">ObjectSpace</span>.<span class="ruby-identifier">define_finalizer</span> <span class="ruby-identifier">obj</span>, <span class="ruby-ivar">@@final</span>
+75:         <span class="ruby-constant">ObjectSpace</span>.<span class="ruby-identifier">define_finalizer</span> <span class="ruby-keyword kw">self</span>, <span class="ruby-ivar">@@final</span>
+76:       <span class="ruby-keyword kw">end</span>
+77:       <span class="ruby-ivar">@@id_map</span>[<span class="ruby-ivar">@__id</span>] = [] <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@@id_map</span>[<span class="ruby-ivar">@__id</span>]
+78:     <span class="ruby-keyword kw">ensure</span>
+79:       <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">critical</span> = <span class="ruby-identifier">__old_status</span>
+80:     <span class="ruby-keyword kw">end</span>
+81:     <span class="ruby-ivar">@@id_map</span>[<span class="ruby-ivar">@__id</span>].<span class="ruby-identifier">push</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__id__</span>
+82:     <span class="ruby-ivar">@@id_rev_map</span>[<span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__id__</span>] = <span class="ruby-ivar">@__id</span>
+83:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005454">
+                    
+                    <a name="M005454"></a><b>weakref_alive?</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns true if the referenced object still exists, and false if it has
+been garbage collected.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005454_source')" id="l_M005454_source">show</a>
+                        
+                    </p>
+                    <div id="M005454_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/weakref.rb, line 87</span>
+87:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">weakref_alive?</span>
+88:     <span class="ruby-ivar">@@id_rev_map</span>[<span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">__id__</span>] <span class="ruby-operator">==</span> <span class="ruby-ivar">@__id</span>
+89:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

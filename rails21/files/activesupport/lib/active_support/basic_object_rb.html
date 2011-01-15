@@ -1,0 +1,43 @@
+  <div id="fileHeader">
+    <h1>basic_object.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activesupport/lib/active_support/basic_object.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre># A base class with no predefined methods that tries to behave like Builder's
+# BlankSlate in Ruby 1.9. In Ruby pre-1.9, this is actually the
+# Builder::BlankSlate class.
+#
+# Ruby 1.9 introduces BasicObject which differs slightly from Builder's
+# BlankSlate that has been used so far. ActiveSupport::BasicObject provides a
+# barebones base class that emulates Builder::BlankSlate while still relying on
+# Ruby 1.9's BasicObject in Ruby 1.9.
+module ActiveSupport
+  if RUBY_VERSION &gt;= '1.9'
+    class BasicObject &lt; ::BasicObject
+      undef_method :==
+      undef_method :equal?
+
+      # Let ActiveSupport::BasicObject at least raise exceptions.
+      def raise(*args)
+        ::Object.send(:raise, *args)
+      end
+    end
+  else
+    require 'blankslate'
+    BasicObject = BlankSlate
+  end
+end
+</pre>
+    </div>

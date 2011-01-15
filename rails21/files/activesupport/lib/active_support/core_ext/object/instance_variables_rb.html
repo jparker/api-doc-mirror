@@ -1,0 +1,93 @@
+  <div id="fileHeader">
+    <h1>instance_variables.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activesupport/lib/active_support/core_ext/object/instance_variables.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>class Object
+  # Available in 1.8.6 and later.
+  unless respond_to?(:instance_variable_defined?)
+    def instance_variable_defined?(variable)
+      instance_variables.include?(variable.to_s)
+    end
+  end
+
+  # Returns a hash that maps instance variable names without &quot;@&quot; to their
+  # corresponding values. Keys are strings both in Ruby 1.8 and 1.9.
+  #
+  #   class C
+  #     def initialize(x, y)
+  #       @x, @y = x, y
+  #     end
+  #   end
+  #   
+  #   C.new(0, 1).instance_values # =&gt; {&quot;x&quot; =&gt; 0, &quot;y&quot; =&gt; 1}
+  def instance_values #:nodoc:
+    instance_variables.inject({}) do |values, name|
+      values[name.to_s[1..-1]] = instance_variable_get(name)
+      values
+    end
+  end
+
+  # Returns an array of instance variable names including &quot;@&quot;. They are strings
+  # both in Ruby 1.8 and 1.9.
+  #
+  #   class C
+  #     def initialize(x, y)
+  #       @x, @y = x, y
+  #     end
+  #   end
+  #   
+  #   C.new(0, 1).instance_variable_names # =&gt; [&quot;@y&quot;, &quot;@x&quot;]
+  if RUBY_VERSION &gt;= '1.9'
+    def instance_variable_names
+      instance_variables.map(&amp;:to_s)
+    end
+  else
+    alias_method :instance_variable_names, :instance_variables
+  end
+
+  # Copies the instance variables of +object+ into +self+.
+  #
+  # Instance variable names in the +exclude+ array are ignored. If +object+
+  # responds to &lt;tt&gt;protected_instance_variables&lt;/tt&gt; the ones returned are
+  # also ignored. For example, Rails controllers implement that method.
+  #
+  # In both cases strings and symbols are understood, and they have to include
+  # the at sign.
+  #
+  #   class C
+  #     def initialize(x, y, z)
+  #       @x, @y, @z = x, y, z
+  #     end
+  #   
+  #     def protected_instance_variables
+  #       %w(@z)
+  #     end
+  #   end
+  #   
+  #   a = C.new(0, 1, 2)
+  #   b = C.new(3, 4, 5)
+  #   
+  #   a.copy_instance_variables_from(b, [:@y])
+  #   # a is now: @x = 3, @y = 1, @z = 2
+  def copy_instance_variables_from(object, exclude = []) #:nodoc:
+    exclude += object.protected_instance_variables if object.respond_to? :protected_instance_variables
+
+    vars = object.instance_variables.map(&amp;:to_s) - exclude.map(&amp;:to_s)
+    vars.each { |name| instance_variable_set(name, object.instance_variable_get(name)) }
+  end
+end
+</pre>
+    </div>

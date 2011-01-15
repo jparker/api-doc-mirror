@@ -1,0 +1,795 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>SizedQueue</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            SizedQueue 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="Queue.html">Queue</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/lib/thread_rb.html">lib/thread.rb</a></li>
+            
+            <li><a href="../files/ext/thread/thread_c.html">ext/thread/thread.c</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+This class represents queues of specified size capacity. The push operation
+may be blocked if the capacity is full.
+</p>
+<p>
+See <a href="Queue.html">Queue</a> for an example of how a <a
+href="SizedQueue.html">SizedQueue</a> works.
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>#</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001816"><<</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>D</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001822">deq</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001817">enq</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>M</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006865">max</a>,</li>
+                
+                <li><a href="#M001813">max</a>,</li>
+                
+                <li><a href="#M001814">max=</a>,</li>
+                
+                <li><a href="#M006866">max=</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001812">new</a>,</li>
+                
+                <li><a href="#M006861">new</a>,</li>
+                
+                <li><a href="#M001823">num_waiting</a>,</li>
+                
+                <li><a href="#M006862">num_waiting</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>P</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001818">pop</a>,</li>
+                
+                <li><a href="#M006863">pop</a>,</li>
+                
+                <li><a href="#M001815">push</a>,</li>
+                
+                <li><a href="#M006864">push</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001821">shift</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M001812">
+                    
+                    <a name="M001812"></a><b>new</b>(max)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Creates a fixed-length queue with a maximum size of <tt>max</tt>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001812_source')" id="l_M001812_source">show</a>
+                        
+                    </p>
+                    <div id="M001812_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/thread.rb, line 374</span>
+374:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">max</span>)
+375:     <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-value str">&quot;queue size must be positive&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">max</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>
+376:     <span class="ruby-ivar">@max</span> = <span class="ruby-identifier">max</span>
+377:     <span class="ruby-ivar">@queue_wait</span> = []
+378:     <span class="ruby-ivar">@queue_wait</span>.<span class="ruby-identifier">taint</span>           <span class="ruby-comment cmt"># enable tainted comunication</span>
+379:     <span class="ruby-keyword kw">super</span>()
+380:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006861">
+                    
+                    <a name="M006861"></a><b> Mutex.new
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Creates a new <a href="Mutex.html">Mutex</a>
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006861_source')" id="l_M006861_source">show</a>
+                        
+                    </p>
+                    <div id="M006861_source" class="dyn-source">
+                        <pre>static VALUE
+rb_sized_queue_max_set(VALUE self, VALUE value)
+{
+    Queue *queue;
+    unsigned long new_capacity;
+    unsigned long difference;
+    Data_Get_Struct(self, Queue, queue);
+
+    new_capacity = NUM2ULONG(value);
+
+    if (new_capacity &lt; 1) {
+        rb_raise(rb_eArgError, &quot;value must be positive&quot;);
+    }
+
+    lock_mutex(&amp;queue-&gt;mutex);
+    if (queue-&gt;capacity &amp;&amp; new_capacity &gt; queue-&gt;capacity) {
+        difference = new_capacity - queue-&gt;capacity;
+    } else {
+        difference = 0;
+    }
+    queue-&gt;capacity = new_capacity;
+    for (; difference &gt; 0; --difference) {
+        signal_condvar(&amp;queue-&gt;space_available);
+    }
+    unlock_mutex(&amp;queue-&gt;mutex);
+
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M001816">
+                    
+                    <a name="M001816"></a><b>&lt;&lt;</b>(obj)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a href="SizedQueue.html#M001815">push</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001822">
+                    
+                    <a name="M001822"></a><b>deq</b>(*args)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a href="SizedQueue.html#M001818">pop</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001817">
+                    
+                    <a name="M001817"></a><b>enq</b>(obj)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a href="SizedQueue.html#M001815">push</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001813">
+                    
+                    <a name="M001813"></a><b>max</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the maximum size of the queue.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001813_source')" id="l_M001813_source">show</a>
+                        
+                    </p>
+                    <div id="M001813_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/thread.rb, line 385</span>
+385:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">max</span>
+386:     <span class="ruby-ivar">@max</span>
+387:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006865">
+                    
+                    <a name="M006865"></a><b> max
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the maximum size of the queue.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006865_source')" id="l_M006865_source">show</a>
+                        
+                    </p>
+                    <div id="M006865_source" class="dyn-source">
+                        <pre>static VALUE
+rb_sized_queue_max(VALUE self)
+{
+    Queue *queue;
+    VALUE result;
+    Data_Get_Struct(self, Queue, queue);
+
+    lock_mutex(&amp;queue-&gt;mutex);
+    result = ULONG2NUM(queue-&gt;capacity);
+    unlock_mutex(&amp;queue-&gt;mutex);
+
+    return result;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001814">
+                    
+                    <a name="M001814"></a><b>max=</b>(max)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Sets the maximum size of the queue.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001814_source')" id="l_M001814_source">show</a>
+                        
+                    </p>
+                    <div id="M001814_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/thread.rb, line 392</span>
+392:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">max=</span>(<span class="ruby-identifier">max</span>)
+393:     <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">critical</span> = <span class="ruby-keyword kw">true</span>
+394:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">max</span> <span class="ruby-operator">&lt;=</span> <span class="ruby-ivar">@max</span>
+395:       <span class="ruby-ivar">@max</span> = <span class="ruby-identifier">max</span>
+396:       <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">critical</span> = <span class="ruby-keyword kw">false</span>
+397:     <span class="ruby-keyword kw">else</span>
+398:       <span class="ruby-identifier">diff</span> = <span class="ruby-identifier">max</span> <span class="ruby-operator">-</span> <span class="ruby-ivar">@max</span>
+399:       <span class="ruby-ivar">@max</span> = <span class="ruby-identifier">max</span>
+400:       <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">critical</span> = <span class="ruby-keyword kw">false</span>
+401:       <span class="ruby-identifier">diff</span>.<span class="ruby-identifier">times</span> <span class="ruby-keyword kw">do</span>
+402:         <span class="ruby-keyword kw">begin</span>
+403:           <span class="ruby-identifier">t</span> = <span class="ruby-ivar">@queue_wait</span>.<span class="ruby-identifier">shift</span>
+404:           <span class="ruby-identifier">t</span>.<span class="ruby-identifier">run</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">t</span>
+405:         <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">ThreadError</span>
+406:           <span class="ruby-keyword kw">retry</span>
+407:         <span class="ruby-keyword kw">end</span>
+408:       <span class="ruby-keyword kw">end</span>
+409:     <span class="ruby-keyword kw">end</span>
+410:     <span class="ruby-identifier">max</span>
+411:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006866">
+                    
+                    <a name="M006866"></a><b> max=(size)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Sets the maximum size of the queue.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006866_source')" id="l_M006866_source">show</a>
+                        
+                    </p>
+                    <div id="M006866_source" class="dyn-source">
+                        <pre>static VALUE
+rb_sized_queue_max_set(VALUE self, VALUE value)
+{
+    Queue *queue;
+    unsigned long new_capacity;
+    unsigned long difference;
+    Data_Get_Struct(self, Queue, queue);
+
+    new_capacity = NUM2ULONG(value);
+
+    if (new_capacity &lt; 1) {
+        rb_raise(rb_eArgError, &quot;value must be positive&quot;);
+    }
+
+    lock_mutex(&amp;queue-&gt;mutex);
+    if (queue-&gt;capacity &amp;&amp; new_capacity &gt; queue-&gt;capacity) {
+        difference = new_capacity - queue-&gt;capacity;
+    } else {
+        difference = 0;
+    }
+    queue-&gt;capacity = new_capacity;
+    for (; difference &gt; 0; --difference) {
+        signal_condvar(&amp;queue-&gt;space_available);
+    }
+    unlock_mutex(&amp;queue-&gt;mutex);
+
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001823">
+                    
+                    <a name="M001823"></a><b>num_waiting</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the number of threads waiting on the queue.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001823_source')" id="l_M001823_source">show</a>
+                        
+                    </p>
+                    <div id="M001823_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/thread.rb, line 473</span>
+473:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">num_waiting</span>
+474:     <span class="ruby-ivar">@waiting</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">+</span> <span class="ruby-ivar">@queue_wait</span>.<span class="ruby-identifier">size</span>
+475:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006862">
+                    
+                    <a name="M006862"></a><b> num_waiting
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the number of threads waiting on the queue.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006862_source')" id="l_M006862_source">show</a>
+                        
+                    </p>
+                    <div id="M006862_source" class="dyn-source">
+                        <pre>static VALUE
+rb_queue_num_waiting(VALUE self)
+{
+    Queue *queue;
+    VALUE result;
+    Data_Get_Struct(self, Queue, queue);
+
+    lock_mutex(&amp;queue-&gt;mutex);
+    result = ULONG2NUM(queue-&gt;value_available.waiting.size +
+      queue-&gt;space_available.waiting.size);
+    unlock_mutex(&amp;queue-&gt;mutex);
+
+    return result;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001818">
+                    
+                    <a name="M001818"></a><b>pop</b>(*args)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Retrieves data from the queue and runs a waiting thread, if any.
+</p>
+
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="SizedQueue.html#M001821">shift</a>
+                    
+                    <a href="SizedQueue.html#M001822">deq</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001818_source')" id="l_M001818_source">show</a>
+                        
+                    </p>
+                    <div id="M001818_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/thread.rb, line 440</span>
+440:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">pop</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+441:     <span class="ruby-identifier">retval</span> = <span class="ruby-keyword kw">super</span>
+442:     <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">critical</span> = <span class="ruby-keyword kw">true</span>
+443:     <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@que</span>.<span class="ruby-identifier">length</span> <span class="ruby-operator">&lt;</span> <span class="ruby-ivar">@max</span>
+444:       <span class="ruby-keyword kw">begin</span>
+445:         <span class="ruby-identifier">t</span> = <span class="ruby-ivar">@queue_wait</span>.<span class="ruby-identifier">shift</span>
+446:         <span class="ruby-identifier">t</span>.<span class="ruby-identifier">wakeup</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">t</span>
+447:       <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">ThreadError</span>
+448:         <span class="ruby-keyword kw">retry</span>
+449:       <span class="ruby-keyword kw">ensure</span>
+450:         <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">critical</span> = <span class="ruby-keyword kw">false</span>
+451:       <span class="ruby-keyword kw">end</span>
+452:       <span class="ruby-keyword kw">begin</span>
+453:         <span class="ruby-identifier">t</span>.<span class="ruby-identifier">run</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">t</span>
+454:       <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">ThreadError</span>
+455:       <span class="ruby-keyword kw">end</span>
+456:     <span class="ruby-keyword kw">end</span>
+457:     <span class="ruby-identifier">retval</span>
+458:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006863">
+                    
+                    <a name="M006863"></a><b>pop</b>(...)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call_seq: pop(non_block=false)
+</p>
+<p>
+Retrieves data from the queue. If the queue is empty, the calling thread is
+suspended until data is pushed onto the queue. If <tt>non_block</tt> is
+true, the thread isn&#8217;t suspended, and an exception is raised.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006863_source')" id="l_M006863_source">show</a>
+                        
+                    </p>
+                    <div id="M006863_source" class="dyn-source">
+                        <pre>static VALUE
+rb_queue_pop(int argc, VALUE *argv, VALUE self)
+{
+    Queue *queue;
+    int should_block;
+    Data_Get_Struct(self, Queue, queue);
+
+    if (argc == 0) {
+        should_block = 1;
+    } else if (argc == 1) {
+        should_block = !RTEST(argv[0]);
+    } else {
+        rb_raise(rb_eArgError, &quot;wrong number of arguments (%d for 1)&quot;, argc);
+    }
+
+    lock_mutex(&amp;queue-&gt;mutex);
+    if (!queue-&gt;values.entries &amp;&amp; !should_block) {
+        unlock_mutex(&amp;queue-&gt;mutex);
+        rb_raise(rb_eThreadError, &quot;queue empty&quot;);
+    }
+
+    while (!queue-&gt;values.entries) {
+        wait_queue(&amp;queue-&gt;value_available, &amp;queue-&gt;mutex);
+    }
+
+    return rb_ensure(queue_pop_inner, (VALUE)queue,
+                     unlock_mutex_call, (VALUE)&amp;queue-&gt;mutex);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006864">
+                    
+                    <a name="M006864"></a><b> push(obj)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Pushes <tt>obj</tt> to the queue.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006864_source')" id="l_M006864_source">show</a>
+                        
+                    </p>
+                    <div id="M006864_source" class="dyn-source">
+                        <pre>static VALUE
+rb_queue_push(VALUE self, VALUE value)
+{
+    Queue *queue;
+    Data_Get_Struct(self, Queue, queue);
+
+    lock_mutex(&amp;queue-&gt;mutex);
+    while (queue-&gt;capacity &amp;&amp; queue-&gt;values.size &gt;= queue-&gt;capacity) {
+        wait_queue(&amp;queue-&gt;space_available, &amp;queue-&gt;mutex);
+    }
+    push_list(&amp;queue-&gt;values, value);
+    rb_ensure(signal_condvar_call, (VALUE)&amp;queue-&gt;value_available,
+              unlock_mutex_call, (VALUE)&amp;queue-&gt;mutex);
+
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001815">
+                    
+                    <a name="M001815"></a><b>push</b>(obj)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Pushes <tt>obj</tt> to the queue. If there is no space left in the queue,
+waits until space becomes available.
+</p>
+
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="SizedQueue.html#M001816">&lt;&lt;</a>
+                    
+                    <a href="SizedQueue.html#M001817">enq</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001815_source')" id="l_M001815_source">show</a>
+                        
+                    </p>
+                    <div id="M001815_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/thread.rb, line 417</span>
+417:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">push</span>(<span class="ruby-identifier">obj</span>)
+418:     <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">critical</span> = <span class="ruby-keyword kw">true</span>
+419:     <span class="ruby-keyword kw">while</span> <span class="ruby-ivar">@que</span>.<span class="ruby-identifier">length</span> <span class="ruby-operator">&gt;=</span> <span class="ruby-ivar">@max</span>
+420:       <span class="ruby-ivar">@queue_wait</span>.<span class="ruby-identifier">push</span> <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>
+421:       <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">stop</span>
+422:       <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">critical</span> = <span class="ruby-keyword kw">true</span>
+423:     <span class="ruby-keyword kw">end</span>
+424:     <span class="ruby-keyword kw">super</span>
+425:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001821">
+                    
+                    <a name="M001821"></a><b>shift</b>(*args)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a href="SizedQueue.html#M001818">pop</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

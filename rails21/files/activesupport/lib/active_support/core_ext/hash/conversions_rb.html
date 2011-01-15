@@ -1,0 +1,278 @@
+  <div id="fileHeader">
+    <h1>conversions.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activesupport/lib/active_support/core_ext/hash/conversions.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>require 'date'
+require 'cgi'
+require 'builder'
+require 'xmlsimple'
+
+# Locked down XmlSimple#xml_in_string
+class XmlSimple
+  # Same as xml_in but doesn't try to smartly shoot itself in the foot.
+  def xml_in_string(string, options = nil)
+    handle_options('in', options)
+
+    @doc = parse(string)
+    result = collapse(@doc.root)
+
+    if @options['keeproot']
+      merge({}, @doc.root.name, result)
+    else
+      result
+    end
+  end
+
+  def self.xml_in_string(string, options = nil)
+    new.xml_in_string(string, options)
+  end
+end
+
+# This module exists to decorate files deserialized using Hash.from_xml with
+# the &lt;tt&gt;original_filename&lt;/tt&gt; and &lt;tt&gt;content_type&lt;/tt&gt; methods.
+module FileLike #:nodoc:
+  attr_writer :original_filename, :content_type
+
+  def original_filename
+    @original_filename || 'untitled'
+  end
+
+  def content_type
+    @content_type || 'application/octet-stream'
+  end
+end
+
+module ActiveSupport #:nodoc:
+  module CoreExtensions #:nodoc:
+    module Hash #:nodoc:
+      module Conversions
+
+        XML_TYPE_NAMES = {
+          &quot;Symbol&quot;     =&gt; &quot;symbol&quot;,
+          &quot;Fixnum&quot;     =&gt; &quot;integer&quot;,
+          &quot;Bignum&quot;     =&gt; &quot;integer&quot;,
+          &quot;BigDecimal&quot; =&gt; &quot;decimal&quot;,
+          &quot;Float&quot;      =&gt; &quot;float&quot;,
+          &quot;Date&quot;       =&gt; &quot;date&quot;,
+          &quot;DateTime&quot;   =&gt; &quot;datetime&quot;,
+          &quot;Time&quot;       =&gt; &quot;datetime&quot;,
+          &quot;TrueClass&quot;  =&gt; &quot;boolean&quot;,
+          &quot;FalseClass&quot; =&gt; &quot;boolean&quot;
+        } unless defined?(XML_TYPE_NAMES)
+
+        XML_FORMATTING = {
+          &quot;symbol&quot;   =&gt; Proc.new { |symbol| symbol.to_s },
+          &quot;date&quot;     =&gt; Proc.new { |date| date.to_s(:db) },
+          &quot;datetime&quot; =&gt; Proc.new { |time| time.xmlschema },
+          &quot;binary&quot;   =&gt; Proc.new { |binary| ActiveSupport::Base64.encode64(binary) },
+          &quot;yaml&quot;     =&gt; Proc.new { |yaml| yaml.to_yaml }
+        } unless defined?(XML_FORMATTING)
+
+        # TODO: use Time.xmlschema instead of Time.parse;
+        #       use regexp instead of Date.parse
+        unless defined?(XML_PARSING)
+          XML_PARSING = {
+            &quot;symbol&quot;       =&gt; Proc.new  { |symbol|  symbol.to_sym },
+            &quot;date&quot;         =&gt; Proc.new  { |date|    ::Date.parse(date) },
+            &quot;datetime&quot;     =&gt; Proc.new  { |time|    ::Time.parse(time).utc rescue ::DateTime.parse(time).utc },
+            &quot;integer&quot;      =&gt; Proc.new  { |integer| integer.to_i },
+            &quot;float&quot;        =&gt; Proc.new  { |float|   float.to_f },
+            &quot;decimal&quot;      =&gt; Proc.new  { |number|  BigDecimal(number) },
+            &quot;boolean&quot;      =&gt; Proc.new  { |boolean| %w(1 true).include?(boolean.strip) },
+            &quot;string&quot;       =&gt; Proc.new  { |string|  string.to_s },
+            &quot;yaml&quot;         =&gt; Proc.new  { |yaml|    YAML::load(yaml) rescue yaml },
+            &quot;base64Binary&quot; =&gt; Proc.new  { |bin|     ActiveSupport::Base64.decode64(bin) },
+            &quot;file&quot;         =&gt; Proc.new do |file, entity|
+              f = StringIO.new(ActiveSupport::Base64.decode64(file))
+              f.extend(FileLike)
+              f.original_filename = entity['name']
+              f.content_type = entity['content_type']
+              f
+            end
+          }
+
+          XML_PARSING.update(
+            &quot;double&quot;   =&gt; XML_PARSING[&quot;float&quot;],
+            &quot;dateTime&quot; =&gt; XML_PARSING[&quot;datetime&quot;]
+          )
+        end
+
+        def self.included(klass)
+          klass.extend(ClassMethods)
+        end
+
+        # Converts a hash into a string suitable for use as a URL query string. An optional &lt;tt&gt;namespace&lt;/tt&gt; can be
+        # passed to enclose the param names (see example below).
+        #
+        # ==== Example:
+        #   { :name =&gt; 'David', :nationality =&gt; 'Danish' }.to_query # =&gt; &quot;name=David&amp;nationality=Danish&quot;
+        #
+        #   { :name =&gt; 'David', :nationality =&gt; 'Danish' }.to_query('user') # =&gt; &quot;user%5Bname%5D=David&amp;user%5Bnationality%5D=Danish&quot;
+        def to_query(namespace = nil)
+          collect do |key, value|
+            value.to_query(namespace ? &quot;#{namespace}[#{key}]&quot; : key)
+          end.sort * '&amp;'
+        end
+        
+        alias_method :to_param, :to_query
+
+        def to_xml(options = {})
+          options[:indent] ||= 2
+          options.reverse_merge!({ :builder =&gt; Builder::XmlMarkup.new(:indent =&gt; options[:indent]),
+                                   :root =&gt; &quot;hash&quot; })
+          options[:builder].instruct! unless options.delete(:skip_instruct)
+          dasherize = !options.has_key?(:dasherize) || options[:dasherize]
+          root = dasherize ? options[:root].to_s.dasherize : options[:root].to_s
+
+          options[:builder].__send__(:method_missing, root) do
+            each do |key, value|
+              case value
+                when ::Hash
+                  value.to_xml(options.merge({ :root =&gt; key, :skip_instruct =&gt; true }))
+                when ::Array
+                  value.to_xml(options.merge({ :root =&gt; key, :children =&gt; key.to_s.singularize, :skip_instruct =&gt; true}))
+                when ::Method, ::Proc
+                  # If the Method or Proc takes two arguments, then
+                  # pass the suggested child element name.  This is
+                  # used if the Method or Proc will be operating over
+                  # multiple records and needs to create an containing
+                  # element that will contain the objects being
+                  # serialized.
+                  if 1 == value.arity
+                    value.call(options.merge({ :root =&gt; key, :skip_instruct =&gt; true }))
+                  else
+                    value.call(options.merge({ :root =&gt; key, :skip_instruct =&gt; true }), key.to_s.singularize)
+                  end
+                else
+                  if value.respond_to?(:to_xml)
+                    value.to_xml(options.merge({ :root =&gt; key, :skip_instruct =&gt; true }))
+                  else
+                    type_name = XML_TYPE_NAMES[value.class.name]
+
+                    key = dasherize ? key.to_s.dasherize : key.to_s
+
+                    attributes = options[:skip_types] || value.nil? || type_name.nil? ? { } : { :type =&gt; type_name }
+                    if value.nil?
+                      attributes[:nil] = true
+                    end
+
+                    options[:builder].tag!(key,
+                      XML_FORMATTING[type_name] ? XML_FORMATTING[type_name].call(value) : value,
+                      attributes
+                    )
+                end
+              end
+            end
+            
+            yield options[:builder] if block_given?
+          end
+
+        end
+
+        module ClassMethods
+          def from_xml(xml)
+            # TODO: Refactor this into something much cleaner that doesn't rely on XmlSimple
+            typecast_xml_value(undasherize_keys(XmlSimple.xml_in_string(xml,
+              'forcearray'   =&gt; false,
+              'forcecontent' =&gt; true,
+              'keeproot'     =&gt; true,
+              'contentkey'   =&gt; '__content__')
+            ))
+          end
+
+          private
+            def typecast_xml_value(value)
+              case value.class.to_s
+                when 'Hash'
+                  if value['type'] == 'array'
+                    child_key, entries = value.detect { |k,v| k != 'type' }   # child_key is throwaway
+                    if entries.nil? || (c = value['__content__'] &amp;&amp; c.blank?)
+                      []
+                    else
+                      case entries.class.to_s   # something weird with classes not matching here.  maybe singleton methods breaking is_a?
+                      when &quot;Array&quot;
+                        entries.collect { |v| typecast_xml_value(v) }
+                      when &quot;Hash&quot;
+                        [typecast_xml_value(entries)]
+                      else
+                        raise &quot;can't typecast #{entries.inspect}&quot;
+                      end
+                    end
+                  elsif value.has_key?(&quot;__content__&quot;)
+                    content = value[&quot;__content__&quot;]
+                    if parser = XML_PARSING[value[&quot;type&quot;]]
+                      if parser.arity == 2
+                        XML_PARSING[value[&quot;type&quot;]].call(content, value)
+                      else
+                        XML_PARSING[value[&quot;type&quot;]].call(content)
+                      end
+                    else
+                      content
+                    end
+                  elsif value['type'] == 'string' &amp;&amp; value['nil'] != 'true'
+                    &quot;&quot;
+                  # blank or nil parsed values are represented by nil
+                  elsif value.blank? || value['nil'] == 'true'
+                    nil
+                  # If the type is the only element which makes it then 
+                  # this still makes the value nil, except if type is
+                  # a XML node(where type['value'] is a Hash)
+                  elsif value['type'] &amp;&amp; value.size == 1 &amp;&amp; !value['type'].is_a?(::Hash)
+                    nil
+                  else
+                    xml_value = value.inject({}) do |h,(k,v)|
+                      h[k] = typecast_xml_value(v)
+                      h
+                    end
+                    
+                    # Turn { :files =&gt; { :file =&gt; #&lt;StringIO&gt; } into { :files =&gt; #&lt;StringIO&gt; } so it is compatible with
+                    # how multipart uploaded files from HTML appear
+                    xml_value[&quot;file&quot;].is_a?(StringIO) ? xml_value[&quot;file&quot;] : xml_value
+                  end
+                when 'Array'
+                  value.map! { |i| typecast_xml_value(i) }
+                  case value.length
+                    when 0 then nil
+                    when 1 then value.first
+                    else value
+                  end
+                when 'String'
+                  value
+                else
+                  raise &quot;can't typecast #{value.class.name} - #{value.inspect}&quot;
+              end
+            end
+
+            def undasherize_keys(params)
+              case params.class.to_s
+                when &quot;Hash&quot;
+                  params.inject({}) do |h,(k,v)|
+                    h[k.to_s.tr(&quot;-&quot;, &quot;_&quot;)] = undasherize_keys(v)
+                    h
+                  end
+                when &quot;Array&quot;
+                  params.map { |v| undasherize_keys(v) }
+                else
+                  params
+              end
+            end
+        end
+      end
+    end
+  end
+end
+</pre>
+    </div>

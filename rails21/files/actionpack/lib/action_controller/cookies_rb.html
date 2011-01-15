@@ -1,0 +1,115 @@
+  <div id="fileHeader">
+    <h1>cookies.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionpack/lib/action_controller/cookies.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:04 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>module ActionController #:nodoc:
+  # Cookies are read and written through ActionController#cookies.
+  #
+  # The cookies being read are the ones received along with the request, the cookies
+  # being written will be sent out with the response. Reading a cookie does not get
+  # the cookie object itself back, just the value it holds.
+  #
+  # Examples for writing:
+  #
+  #   # Sets a simple session cookie.
+  #   cookies[:user_name] = &quot;david&quot;
+  #
+  #   # Sets a cookie that expires in 1 hour.
+  #   cookies[:login] = { :value =&gt; &quot;XJ-122&quot;, :expires =&gt; 1.hour.from_now }
+  #
+  # Examples for reading:
+  #
+  #   cookies[:user_name] # =&gt; &quot;david&quot;
+  #   cookies.size        # =&gt; 2
+  #
+  # Example for deleting:
+  #
+  #   cookies.delete :user_name
+  #
+  # The option symbols for setting cookies are:
+  #
+  # * &lt;tt&gt;:value&lt;/tt&gt; - The cookie's value or list of values (as an array).
+  # * &lt;tt&gt;:path&lt;/tt&gt; - The path for which this cookie applies.  Defaults to the root
+  #   of the application.
+  # * &lt;tt&gt;:domain&lt;/tt&gt; - The domain for which this cookie applies.
+  # * &lt;tt&gt;:expires&lt;/tt&gt; - The time at which this cookie expires, as a Time object.
+  # * &lt;tt&gt;:secure&lt;/tt&gt; - Whether this cookie is a only transmitted to HTTPS servers.
+  #   Default is +false+.
+  # * &lt;tt&gt;:http_only&lt;/tt&gt; - Whether this cookie is accessible via scripting or
+  #   only HTTP. Defaults to +false+.
+  module Cookies
+    def self.included(base)
+      base.helper_method :cookies
+    end
+
+    protected
+      # Returns the cookie container, which operates as described above.
+      def cookies
+        CookieJar.new(self)
+      end
+  end
+
+  class CookieJar &lt; Hash #:nodoc:
+    def initialize(controller)
+      @controller, @cookies = controller, controller.request.cookies
+      super()
+      update(@cookies)
+    end
+
+    # Returns the value of the cookie by +name+, or +nil+ if no such cookie exists.
+    def [](name)
+      cookie = @cookies[name.to_s]
+      if cookie &amp;&amp; cookie.respond_to?(:value)
+        cookie.size &gt; 1 ? cookie.value : cookie.value[0]
+      end
+    end
+
+    # Sets the cookie named +name+. The second argument may be the very cookie
+    # value, or a hash of options as documented above.
+    def []=(name, options)
+      if options.is_a?(Hash)
+        options = options.inject({}) { |options, pair| options[pair.first.to_s] = pair.last; options }
+        options[&quot;name&quot;] = name.to_s
+      else
+        options = { &quot;name&quot; =&gt; name.to_s, &quot;value&quot; =&gt; options }
+      end
+
+      set_cookie(options)
+    end
+
+    # Removes the cookie on the client machine by setting the value to an empty string
+    # and setting its expiration date into the past. Like &lt;tt&gt;[]=&lt;/tt&gt;, you can pass in
+    # an options hash to delete cookies with extra data such as a &lt;tt&gt;:path&lt;/tt&gt;.
+    def delete(name, options = {})
+      options.stringify_keys!
+      set_cookie(options.merge(&quot;name&quot; =&gt; name.to_s, &quot;value&quot; =&gt; &quot;&quot;, &quot;expires&quot; =&gt; Time.at(0)))
+    end
+
+    private
+      # Builds a CGI::Cookie object and adds the cookie to the response headers.
+      #
+      # The path of the cookie defaults to &quot;/&quot; if there's none in +options+, and
+      # everything is passed to the CGI::Cookie constructor.
+      def set_cookie(options) #:doc:
+        options[&quot;path&quot;] = &quot;/&quot; unless options[&quot;path&quot;]
+        cookie = CGI::Cookie.new(options)
+        @controller.logger.info &quot;Cookie set: #{cookie}&quot; unless @controller.logger.nil?
+        @controller.response.headers[&quot;cookie&quot;] &lt;&lt; cookie
+      end
+  end
+end
+</pre>
+    </div>

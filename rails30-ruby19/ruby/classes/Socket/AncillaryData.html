@@ -1,0 +1,1343 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Socket::AncillaryData</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            Socket::AncillaryData 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../files/ext/socket/socket_c.html">ext/socket/socket.c</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+Document-class: <a href="AncillaryData.html">::Socket::AncillaryData</a>
+</p>
+<p>
+<a href="AncillaryData.html">Socket::AncillaryData</a> represents the
+ancillary data (control information) used by sendmsg and recvmsg system
+call. It contains socket family, cmsg level, cmsg type and cmsg data.
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006796">cmsg_is?</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>D</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006795">data</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>F</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006792">family</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>I</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006791">inspect</a>,</li>
+                
+                <li><a href="#M006798">int</a>,</li>
+                
+                <li><a href="#M006797">int</a>,</li>
+                
+                <li><a href="#M006803">ip_pktinfo</a>,</li>
+                
+                <li><a href="#M006802">ip_pktinfo</a>,</li>
+                
+                <li><a href="#M006805">ipv6_pktinfo</a>,</li>
+                
+                <li><a href="#M006804">ipv6_pktinfo</a>,</li>
+                
+                <li><a href="#M006806">ipv6_pktinfo_addr</a>,</li>
+                
+                <li><a href="#M006807">ipv6_pktinfo_ifindex</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>L</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006793">level</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006790">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>T</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006801">timestamp</a>,</li>
+                
+                <li><a href="#M006794">type</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>U</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006800">unix_rights</a>,</li>
+                
+                <li><a href="#M006799">unix_rights</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M006797">
+                    
+                    <a name="M006797"></a><b>Socket::AncillaryData.int(family, cmsg_level, cmsg_type, integer) => ancillarydata
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Creates a new <a href="AncillaryData.html">Socket::AncillaryData</a> object
+which contains a int as data.
+</p>
+<p>
+The size and endian is dependent on the host.
+</p>
+<pre>
+  p Socket::AncillaryData.int(:UNIX, :SOCKET, :RIGHTS, STDERR.fileno)
+  #=&gt; #&lt;Socket::AncillaryData: UNIX SOCKET RIGHTS 2&gt;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006797_source')" id="l_M006797_source">show</a>
+                        
+                    </p>
+                    <div id="M006797_source" class="dyn-source">
+                        <pre>static VALUE
+ancillary_s_int(VALUE klass, VALUE vfamily, VALUE vlevel, VALUE vtype, VALUE integer)
+{
+    int family = rsock_family_arg(vfamily);
+    int level = rsock_level_arg(family, vlevel);
+    int type = rsock_cmsg_type_arg(family, level, vtype);
+    int i = NUM2INT(integer);
+    return ancdata_new(family, level, type, rb_str_new((char*)&amp;i, sizeof(i)));
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006802">
+                    
+                    <a name="M006802"></a><b>Socket::AncillaryData.ip_pktinfo(addr, ifindex) => ancdata
+Socket::AncillaryData.ip_pktinfo(addr, ifindex, spec_dst) => ancdata
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns new ancillary data for IP_PKTINFO.
+</p>
+<p>
+If spec_dst is not given, addr is used.
+</p>
+<p>
+IP_PKTINFO is not standard.
+</p>
+<p>
+Supported platform: GNU/Linux
+</p>
+<pre>
+  addr = Addrinfo.ip(&quot;127.0.0.1&quot;)
+  ifindex = 0
+  spec_dst = Addrinfo.ip(&quot;127.0.0.1&quot;)
+  p Socket::AncillaryData.ip_pktinfo(addr, ifindex, spec_dst)
+  #=&gt; #&lt;Socket::AncillaryData: INET IP PKTINFO 127.0.0.1 ifindex:0 spec_dst:127.0.0.1&gt;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006802_source')" id="l_M006802_source">show</a>
+                        
+                    </p>
+                    <div id="M006802_source" class="dyn-source">
+                        <pre>static VALUE
+ancillary_s_ip_pktinfo(int argc, VALUE *argv, VALUE self)
+{
+    VALUE v_addr, v_ifindex, v_spec_dst;
+    unsigned int ifindex;
+    struct sockaddr_in sa;
+    struct in_pktinfo pktinfo;
+
+    rb_scan_args(argc, argv, &quot;21&quot;, &amp;v_addr, &amp;v_ifindex, &amp;v_spec_dst);
+
+    SockAddrStringValue(v_addr);
+    ifindex = NUM2UINT(v_ifindex);
+    if (NIL_P(v_spec_dst))
+        v_spec_dst = v_addr;
+    else
+        SockAddrStringValue(v_spec_dst);
+
+    memset(&amp;pktinfo, 0, sizeof(pktinfo));
+
+    memset(&amp;sa, 0, sizeof(sa));
+    if (RSTRING_LEN(v_addr) != sizeof(sa))
+        rb_raise(rb_eArgError, &quot;addr size different to AF_INET sockaddr&quot;);
+    memcpy(&amp;sa, RSTRING_PTR(v_addr), sizeof(sa));
+    if (sa.sin_family != AF_INET)
+        rb_raise(rb_eArgError, &quot;addr is not AF_INET sockaddr&quot;);
+    memcpy(&amp;pktinfo.ipi_addr, &amp;sa.sin_addr, sizeof(pktinfo.ipi_addr));
+
+    pktinfo.ipi_ifindex = ifindex;
+
+    memset(&amp;sa, 0, sizeof(sa));
+    if (RSTRING_LEN(v_spec_dst) != sizeof(sa))
+        rb_raise(rb_eArgError, &quot;spec_dat size different to AF_INET sockaddr&quot;);
+    memcpy(&amp;sa, RSTRING_PTR(v_spec_dst), sizeof(sa));
+    if (sa.sin_family != AF_INET)
+        rb_raise(rb_eArgError, &quot;spec_dst is not AF_INET sockaddr&quot;);
+    memcpy(&amp;pktinfo.ipi_spec_dst, &amp;sa.sin_addr, sizeof(pktinfo.ipi_spec_dst));
+
+    return ancdata_new(AF_INET, IPPROTO_IP, IP_PKTINFO, rb_str_new((char *)&amp;pktinfo, sizeof(pktinfo)));
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006804">
+                    
+                    <a name="M006804"></a><b>Socket::AncillaryData.ipv6_pktinfo(addr, ifindex) => ancdata
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns new ancillary data for IPV6_PKTINFO.
+</p>
+<p>
+IPV6_PKTINFO is defined by RFC 3542.
+</p>
+<pre>
+  addr = Addrinfo.ip(&quot;::1&quot;)
+  ifindex = 0
+  p Socket::AncillaryData.ipv6_pktinfo(addr, ifindex)
+  #=&gt; #&lt;Socket::AncillaryData: INET6 IPV6 PKTINFO ::1 ifindex:0&gt;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006804_source')" id="l_M006804_source">show</a>
+                        
+                    </p>
+                    <div id="M006804_source" class="dyn-source">
+                        <pre>static VALUE
+ancillary_s_ipv6_pktinfo(VALUE self, VALUE v_addr, VALUE v_ifindex)
+{
+    unsigned int ifindex;
+    struct sockaddr_in6 sa;
+    struct in6_pktinfo pktinfo;
+
+    SockAddrStringValue(v_addr);
+    ifindex = NUM2UINT(v_ifindex);
+
+    memset(&amp;pktinfo, 0, sizeof(pktinfo));
+
+    memset(&amp;sa, 0, sizeof(sa));
+    if (RSTRING_LEN(v_addr) != sizeof(sa))
+        rb_raise(rb_eArgError, &quot;addr size different to AF_INET6 sockaddr&quot;);
+    memcpy(&amp;sa, RSTRING_PTR(v_addr), sizeof(sa));
+    if (sa.sin6_family != AF_INET6)
+        rb_raise(rb_eArgError, &quot;addr is not AF_INET6 sockaddr&quot;);
+    memcpy(&amp;pktinfo.ipi6_addr, &amp;sa.sin6_addr, sizeof(pktinfo.ipi6_addr));
+
+    pktinfo.ipi6_ifindex = ifindex;
+
+    return ancdata_new(AF_INET6, IPPROTO_IPV6, IPV6_PKTINFO, rb_str_new((char *)&amp;pktinfo, sizeof(pktinfo)));
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006790">
+                    
+                    <a name="M006790"></a><b>Socket::AncillaryData.new(family, cmsg_level, cmsg_type, cmsg_data) &rarr; ancillarydata
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+<em>family</em> should be an integer, a string or a symbol.
+</p>
+<ul>
+<li>Socket::AF_INET, &#8220;AF_INET&#8220;, &#8220;INET&#8221;, :AF_INET, :INET
+
+</li>
+<li>Socket::AF_UNIX, &#8220;AF_UNIX&#8220;, &#8220;UNIX&#8221;, :AF_UNIX, :UNIX
+
+</li>
+<li>etc.
+
+</li>
+</ul>
+<p>
+<em>cmsg_level</em> should be an integer, a string or a symbol.
+</p>
+<ul>
+<li>Socket::SOL_SOCKET, &#8220;SOL_SOCKET&#8220;, &#8220;SOCKET&#8221;,
+:SOL_SOCKET and :SOCKET
+
+</li>
+<li>Socket::IPPROTO_IP, &#8220;IP&#8221; and :IP
+
+</li>
+<li>Socket::IPPROTO_IPV6, &#8220;IPV6&#8221; and :IPV6
+
+</li>
+<li>Socket::IPPROTO_TCP, &#8220;TCP&#8221; and :TCP
+
+</li>
+<li>etc.
+
+</li>
+</ul>
+<p>
+<em>cmsg_type</em> should be an integer, a string or a symbol. If a
+string/symbol is specified, it is interpreted depend on
+<em>cmsg_level</em>.
+</p>
+<ul>
+<li>Socket::SCM_RIGHTS, &#8220;SCM_RIGHTS&#8220;, &#8220;RIGHTS&#8221;,
+:SCM_RIGHTS, :RIGHTS for SOL_SOCKET
+
+</li>
+<li>Socket::IP_RECVTTL, &#8220;RECVTTL&#8221; and :RECVTTL for IPPROTO_IP
+
+</li>
+<li>Socket::IPV6_PKTINFO, &#8220;PKTINFO&#8221; and :PKTINFO for IPPROTO_IPV6
+
+</li>
+<li>etc.
+
+</li>
+</ul>
+<p>
+<em>cmsg_data</em> should be a string.
+</p>
+<pre>
+  p Socket::AncillaryData.new(:INET, :TCP, :NODELAY, &quot;&quot;)
+  #=&gt; #&lt;Socket::AncillaryData: INET TCP NODELAY &quot;&quot;&gt;
+
+  p Socket::AncillaryData.new(:INET6, :IPV6, :PKTINFO, &quot;&quot;)
+  #=&gt; #&lt;Socket::AncillaryData: INET6 IPV6 PKTINFO &quot;&quot;&gt;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006790_source')" id="l_M006790_source">show</a>
+                        
+                    </p>
+                    <div id="M006790_source" class="dyn-source">
+                        <pre>static VALUE
+ancillary_initialize(VALUE self, VALUE vfamily, VALUE vlevel, VALUE vtype, VALUE data)
+{
+    int family = rsock_family_arg(vfamily);
+    int level = rsock_level_arg(family, vlevel);
+    int type = rsock_cmsg_type_arg(family, level, vtype);
+    StringValue(data);
+    rb_ivar_set(self, rb_intern(&quot;family&quot;), INT2NUM(family));
+    rb_ivar_set(self, rb_intern(&quot;level&quot;), INT2NUM(level));
+    rb_ivar_set(self, rb_intern(&quot;type&quot;), INT2NUM(type));
+    rb_ivar_set(self, rb_intern(&quot;data&quot;), data);
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006799">
+                    
+                    <a name="M006799"></a><b>Socket::AncillaryData.unix_rights(io1, io2, ...) => ancillarydata
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Creates a new <a href="AncillaryData.html">Socket::AncillaryData</a> object
+which contains file descriptors as data.
+</p>
+<pre>
+  p Socket::AncillaryData.unix_rights(STDERR)
+  #=&gt; #&lt;Socket::AncillaryData: UNIX SOCKET RIGHTS 2&gt;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006799_source')" id="l_M006799_source">show</a>
+                        
+                    </p>
+                    <div id="M006799_source" class="dyn-source">
+                        <pre>static VALUE
+ancillary_s_unix_rights(int argc, VALUE *argv, VALUE klass)
+{
+    VALUE result, str, ary;
+    int i;
+
+    ary = rb_ary_new();
+
+    for (i = 0 ; i &lt; argc; i++) {
+        VALUE obj = argv[i];
+        if (TYPE(obj) != T_FILE) {
+            rb_raise(rb_eTypeError, &quot;IO expected&quot;);
+        }
+        rb_ary_push(ary, obj);
+    }
+
+    str = rb_str_buf_new(sizeof(int) * argc);
+
+    for (i = 0 ; i &lt; argc; i++) {
+        VALUE obj = RARRAY_PTR(ary)[i];
+        rb_io_t *fptr;
+        int fd;
+        GetOpenFile(obj, fptr);
+        fd = fptr-&gt;fd;
+        rb_str_buf_cat(str, (char *)&amp;fd, sizeof(int));
+    }
+
+    result = ancdata_new(AF_UNIX, SOL_SOCKET, SCM_RIGHTS, str);
+    rb_ivar_set(result, rb_intern(&quot;unix_rights&quot;), ary);
+    return result;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M006796">
+                    
+                    <a name="M006796"></a><b>ancillarydata.cmsg_is?(level, type) => true or false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+tests the level and type of <em>ancillarydata</em>.
+</p>
+<pre>
+  ancdata = Socket::AncillaryData.new(:INET6, :IPV6, :PKTINFO, &quot;&quot;)
+  ancdata.cmsg_is?(Socket::IPPROTO_IPV6, Socket::IPV6_PKTINFO) #=&gt; true
+  ancdata.cmsg_is?(:IPV6, :PKTINFO)       #=&gt; true
+  ancdata.cmsg_is?(:IP, :PKTINFO)         #=&gt; false
+  ancdata.cmsg_is?(:SOCKET, :RIGHTS)      #=&gt; false
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006796_source')" id="l_M006796_source">show</a>
+                        
+                    </p>
+                    <div id="M006796_source" class="dyn-source">
+                        <pre>static VALUE
+ancillary_cmsg_is_p(VALUE self, VALUE vlevel, VALUE vtype)
+{
+    int family = ancillary_family(self);
+    int level = rsock_level_arg(family, vlevel);
+    int type = rsock_cmsg_type_arg(family, level, vtype);
+
+    if (ancillary_level(self) == level &amp;&amp;
+        ancillary_type(self) == type)
+        return Qtrue;
+    else
+        return Qfalse;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006795">
+                    
+                    <a name="M006795"></a><b>ancillarydata.data => string
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+returns the cmsg data as a string.
+</p>
+<pre>
+  p Socket::AncillaryData.new(:INET6, :IPV6, :PKTINFO, &quot;&quot;).data
+  #=&gt; &quot;&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006795_source')" id="l_M006795_source">show</a>
+                        
+                    </p>
+                    <div id="M006795_source" class="dyn-source">
+                        <pre>static VALUE
+ancillary_data(VALUE self)
+{
+    VALUE v = rb_attr_get(self, rb_intern(&quot;data&quot;));
+    StringValue(v);
+    return v;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006792">
+                    
+                    <a name="M006792"></a><b>ancillarydata.family => integer
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+returns the socket family as an integer.
+</p>
+<pre>
+  p Socket::AncillaryData.new(:INET6, :IPV6, :PKTINFO, &quot;&quot;).family
+  #=&gt; 10
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006792_source')" id="l_M006792_source">show</a>
+                        
+                    </p>
+                    <div id="M006792_source" class="dyn-source">
+                        <pre>static VALUE
+ancillary_family_m(VALUE self)
+{
+    return INT2NUM(ancillary_family(self));
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006791">
+                    
+                    <a name="M006791"></a><b>ancillarydata.inspect => string
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+returns a string which shows ancillarydata in human-readable form.
+</p>
+<pre>
+  p Socket::AncillaryData.new(:INET6, :IPV6, :PKTINFO, &quot;&quot;).inspect
+  #=&gt; &quot;#&lt;Socket::AncillaryData: INET6 IPV6 PKTINFO \&quot;\&quot;&gt;&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006791_source')" id="l_M006791_source">show</a>
+                        
+                    </p>
+                    <div id="M006791_source" class="dyn-source">
+                        <pre>static VALUE
+ancillary_inspect(VALUE self)
+{
+    VALUE ret;
+    int family, level, type;
+    VALUE data;
+    ID family_id, level_id, type_id;
+    VALUE vtype;
+    int inspected;
+
+    family = ancillary_family(self);
+    level = ancillary_level(self);
+    type = ancillary_type(self);
+    data = ancillary_data(self);
+
+    ret = rb_sprintf(&quot;#&lt;%s:&quot;, rb_obj_classname(self));
+
+    family_id = rsock_intern_family_noprefix(family);
+    if (family_id)
+        rb_str_catf(ret, &quot; %s&quot;, rb_id2name(family_id));
+    else
+        rb_str_catf(ret, &quot; family:%d&quot;, family);
+
+    if (level == SOL_SOCKET) {
+        rb_str_cat2(ret, &quot; SOCKET&quot;);
+
+        type_id = rsock_intern_scm_optname(type);
+        if (type_id)
+            rb_str_catf(ret, &quot; %s&quot;, rb_id2name(type_id));
+        else
+            rb_str_catf(ret, &quot; cmsg_type:%d&quot;, type);
+    }
+    else if (IS_IP_FAMILY(family)) {
+        level_id = rsock_intern_iplevel(level);
+        if (level_id)
+            rb_str_catf(ret, &quot; %s&quot;, rb_id2name(level_id));
+        else
+            rb_str_catf(ret, &quot; cmsg_level:%d&quot;, level);
+
+        vtype = ip_cmsg_type_to_sym(level, type);
+        if (SYMBOL_P(vtype))
+            rb_str_catf(ret, &quot; %s&quot;, rb_id2name(SYM2ID(vtype)));
+        else
+            rb_str_catf(ret, &quot; cmsg_type:%d&quot;, type);
+    }
+    else {
+        rb_str_catf(ret, &quot; cmsg_level:%d&quot;, level);
+        rb_str_catf(ret, &quot; cmsg_type:%d&quot;, type);
+    }
+
+    inspected = 0;
+
+    if (level == SOL_SOCKET)
+        family = AF_UNSPEC;
+
+    switch (family) {
+      case AF_UNSPEC:
+        switch (level) {
+#        if defined(SOL_SOCKET)
+          case SOL_SOCKET:
+            switch (type) {
+#            if defined(SCM_TIMESTAMP) /* GNU/Linux, FreeBSD, NetBSD, OpenBSD, MacOS X, Solaris */
+              case SCM_TIMESTAMP: inspected = inspect_timeval_as_abstime(level, type, data, ret); break;
+#            endif
+#            if defined(SCM_TIMESTAMPNS) /* GNU/Linux */
+              case SCM_TIMESTAMPNS: inspected = inspect_timespec_as_abstime(level, type, data, ret); break;
+#            endif
+#            if defined(SCM_BINTIME) /* FreeBSD */
+              case SCM_BINTIME: inspected = inspect_bintime_as_abstime(level, type, data, ret); break;
+#            endif
+#            if defined(SCM_RIGHTS) /* 4.4BSD */
+              case SCM_RIGHTS: inspected = anc_inspect_socket_rights(level, type, data, ret); break;
+#            endif
+#            if defined(SCM_CREDENTIALS) /* GNU/Linux */
+              case SCM_CREDENTIALS: inspected = anc_inspect_passcred_credentials(level, type, data, ret); break;
+#            endif
+#            if defined(INSPECT_SCM_CREDS) /* NetBSD */
+              case SCM_CREDS: inspected = anc_inspect_socket_creds(level, type, data, ret); break;
+#            endif
+            }
+            break;
+#        endif
+        }
+        break;
+
+      case AF_INET:
+#ifdef INET6
+      case AF_INET6:
+#endif
+        switch (level) {
+#        if defined(IPPROTO_IP)
+          case IPPROTO_IP:
+            switch (type) {
+#            if defined(IP_RECVDSTADDR) /* 4.4BSD */
+              case IP_RECVDSTADDR: inspected = anc_inspect_ip_recvdstaddr(level, type, data, ret); break;
+#            endif
+#            if defined(IP_PKTINFO) &amp;&amp; defined(HAVE_STRUCT_IN_PKTINFO_IPI_SPEC_DST) /* GNU/Linux */
+              case IP_PKTINFO: inspected = anc_inspect_ip_pktinfo(level, type, data, ret); break;
+#            endif
+            }
+            break;
+#        endif
+
+#        if defined(IPPROTO_IPV6)
+          case IPPROTO_IPV6:
+            switch (type) {
+#            if defined(IPV6_PKTINFO) /* RFC 3542 */
+              case IPV6_PKTINFO: inspected = anc_inspect_ipv6_pktinfo(level, type, data, ret); break;
+#            endif
+            }
+            break;
+#        endif
+        }
+        break;
+    }
+
+    if (!inspected) {
+        rb_str_cat2(ret, &quot; &quot;);
+        rb_str_append(ret, rb_str_dump(data));
+    }
+
+    rb_str_cat2(ret, &quot;&gt;&quot;);
+
+    return ret;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006798">
+                    
+                    <a name="M006798"></a><b>ancillarydata.int => integer
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the data in <em>ancillarydata</em> as an int.
+</p>
+<p>
+The size and endian is dependent on the host.
+</p>
+<pre>
+  ancdata = Socket::AncillaryData.int(:UNIX, :SOCKET, :RIGHTS, STDERR.fileno)
+  p ancdata.int #=&gt; 2
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006798_source')" id="l_M006798_source">show</a>
+                        
+                    </p>
+                    <div id="M006798_source" class="dyn-source">
+                        <pre>static VALUE
+ancillary_int(VALUE self)
+{
+    VALUE data;
+    int i;
+    data = ancillary_data(self);
+    if (RSTRING_LEN(data) != sizeof(int))
+        rb_raise(rb_eTypeError, &quot;size differ.  expected as sizeof(int)=%d but %ld&quot;, (int)sizeof(int), (long)RSTRING_LEN(data));
+    memcpy((char*)&amp;i, RSTRING_PTR(data), sizeof(int));
+    return INT2NUM(i);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006803">
+                    
+                    <a name="M006803"></a><b>ancdata.ip_pktinfo => [addr, ifindex, spec_dst]
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Extracts addr, ifindex and spec_dst from IP_PKTINFO ancillary data.
+</p>
+<p>
+IP_PKTINFO is not standard.
+</p>
+<p>
+Supported platform: GNU/Linux
+</p>
+<pre>
+  addr = Addrinfo.ip(&quot;127.0.0.1&quot;)
+  ifindex = 0
+  spec_dest = Addrinfo.ip(&quot;127.0.0.1&quot;)
+  ancdata = Socket::AncillaryData.ip_pktinfo(addr, ifindex, spec_dest)
+  p ancdata.ip_pktinfo
+  #=&gt; [#&lt;Addrinfo: 127.0.0.1&gt;, 0, #&lt;Addrinfo: 127.0.0.1&gt;]
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006803_source')" id="l_M006803_source">show</a>
+                        
+                    </p>
+                    <div id="M006803_source" class="dyn-source">
+                        <pre>static VALUE
+ancillary_ip_pktinfo(VALUE self)
+{
+    int level, type;
+    VALUE data;
+    struct in_pktinfo pktinfo;
+    struct sockaddr_in sa;
+    VALUE v_spec_dst, v_addr;
+
+    level = ancillary_level(self);
+    type = ancillary_type(self);
+    data = ancillary_data(self);
+
+    if (level != IPPROTO_IP || type != IP_PKTINFO ||
+        RSTRING_LEN(data) != sizeof(struct in_pktinfo)) {
+        rb_raise(rb_eTypeError, &quot;IP_PKTINFO ancillary data expected&quot;);
+    }
+
+    memcpy(&amp;pktinfo, RSTRING_PTR(data), sizeof(struct in_pktinfo));
+    memset(&amp;sa, 0, sizeof(sa));
+
+    sa.sin_family = AF_INET;
+    memcpy(&amp;sa.sin_addr, &amp;pktinfo.ipi_addr, sizeof(sa.sin_addr));
+    v_addr = rsock_addrinfo_new((struct sockaddr *)&amp;sa, sizeof(sa), PF_INET, 0, 0, Qnil, Qnil);
+
+    sa.sin_family = AF_INET;
+    memcpy(&amp;sa.sin_addr, &amp;pktinfo.ipi_spec_dst, sizeof(sa.sin_addr));
+    v_spec_dst = rsock_addrinfo_new((struct sockaddr *)&amp;sa, sizeof(sa), PF_INET, 0, 0, Qnil, Qnil);
+
+    return rb_ary_new3(3, v_addr, UINT2NUM(pktinfo.ipi_ifindex), v_spec_dst);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006805">
+                    
+                    <a name="M006805"></a><b>ancdata.ipv6_pktinfo => [addr, ifindex]
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Extracts addr and ifindex from IPV6_PKTINFO ancillary data.
+</p>
+<p>
+IPV6_PKTINFO is defined by RFC 3542.
+</p>
+<pre>
+  addr = Addrinfo.ip(&quot;::1&quot;)
+  ifindex = 0
+  ancdata = Socket::AncillaryData.ipv6_pktinfo(addr, ifindex)
+  p ancdata.ipv6_pktinfo #=&gt; [#&lt;Addrinfo: ::1&gt;, 0]
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006805_source')" id="l_M006805_source">show</a>
+                        
+                    </p>
+                    <div id="M006805_source" class="dyn-source">
+                        <pre>static VALUE
+ancillary_ipv6_pktinfo(VALUE self)
+{
+    struct in6_pktinfo pktinfo;
+    struct sockaddr_in6 sa;
+    VALUE v_addr;
+
+    extract_ipv6_pktinfo(self, &amp;pktinfo, &amp;sa);
+    v_addr = rsock_addrinfo_new((struct sockaddr *)&amp;sa, (socklen_t)sizeof(sa), PF_INET6, 0, 0, Qnil, Qnil);
+    return rb_ary_new3(2, v_addr, UINT2NUM(pktinfo.ipi6_ifindex));
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006806">
+                    
+                    <a name="M006806"></a><b>ancdata.ipv6_pktinfo_addr => addr
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Extracts addr from IPV6_PKTINFO ancillary data.
+</p>
+<p>
+IPV6_PKTINFO is defined by RFC 3542.
+</p>
+<pre>
+  addr = Addrinfo.ip(&quot;::1&quot;)
+  ifindex = 0
+  ancdata = Socket::AncillaryData.ipv6_pktinfo(addr, ifindex)
+  p ancdata.ipv6_pktinfo_addr #=&gt; #&lt;Addrinfo: ::1&gt;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006806_source')" id="l_M006806_source">show</a>
+                        
+                    </p>
+                    <div id="M006806_source" class="dyn-source">
+                        <pre>static VALUE
+ancillary_ipv6_pktinfo_addr(VALUE self)
+{
+    struct in6_pktinfo pktinfo;
+    struct sockaddr_in6 sa;
+    extract_ipv6_pktinfo(self, &amp;pktinfo, &amp;sa);
+    return rsock_addrinfo_new((struct sockaddr *)&amp;sa, (socklen_t)sizeof(sa), PF_INET6, 0, 0, Qnil, Qnil);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006807">
+                    
+                    <a name="M006807"></a><b>ancdata.ipv6_pktinfo_ifindex => addr
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Extracts ifindex from IPV6_PKTINFO ancillary data.
+</p>
+<p>
+IPV6_PKTINFO is defined by RFC 3542.
+</p>
+<pre>
+  addr = Addrinfo.ip(&quot;::1&quot;)
+  ifindex = 0
+  ancdata = Socket::AncillaryData.ipv6_pktinfo(addr, ifindex)
+  p ancdata.ipv6_pktinfo_ifindex #=&gt; 0
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006807_source')" id="l_M006807_source">show</a>
+                        
+                    </p>
+                    <div id="M006807_source" class="dyn-source">
+                        <pre>static VALUE
+ancillary_ipv6_pktinfo_ifindex(VALUE self)
+{
+    struct in6_pktinfo pktinfo;
+    struct sockaddr_in6 sa;
+    extract_ipv6_pktinfo(self, &amp;pktinfo, &amp;sa);
+    return UINT2NUM(pktinfo.ipi6_ifindex);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006793">
+                    
+                    <a name="M006793"></a><b>ancillarydata.level => integer
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+returns the cmsg level as an integer.
+</p>
+<pre>
+  p Socket::AncillaryData.new(:INET6, :IPV6, :PKTINFO, &quot;&quot;).level
+  #=&gt; 41
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006793_source')" id="l_M006793_source">show</a>
+                        
+                    </p>
+                    <div id="M006793_source" class="dyn-source">
+                        <pre>static VALUE
+ancillary_level_m(VALUE self)
+{
+    return INT2NUM(ancillary_level(self));
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006801">
+                    
+                    <a name="M006801"></a><b>ancillarydata.timestamp => time
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+returns the timestamp as a time object.
+</p>
+<p>
+<em>ancillarydata</em> should be one of following type:
+</p>
+<ul>
+<li>SOL_SOCKET/SCM_TIMESTAMP (micro second) GNU/Linux, FreeBSD, NetBSD,
+OpenBSD, Solaris, MacOS X
+
+</li>
+<li>SOL_SOCKET/SCM_TIMESTAMPNS (nano second) GNU/Linux
+
+</li>
+<li>SOL_SOCKET/SCM_BINTIME (2**(-64) second) FreeBSD
+
+<p>
+<a
+href="../Addrinfo.html#M006691">Addrinfo.udp</a>(&#8220;127.0.0.1&#8220;,
+0).bind {|s1|
+</p>
+<pre>
+  Addrinfo.udp(&quot;127.0.0.1&quot;, 0).bind {|s2|
+    s1.setsockopt(:SOCKET, :TIMESTAMP, true)
+    s2.send &quot;a&quot;, 0, s1.local_address
+    ctl = s1.recvmsg.last
+    p ctl    #=&gt; #&lt;Socket::AncillaryData: INET SOCKET TIMESTAMP 2009-02-24 17:35:46.775581&gt;
+    t = ctl.timestamp
+    p t      #=&gt; 2009-02-24 17:35:46 +0900
+    p t.usec #=&gt; 775581
+    p t.nsec #=&gt; 775581000
+  }
+</pre>
+<p>
+}
+</p>
+</li>
+</ul>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006801_source')" id="l_M006801_source">show</a>
+                        
+                    </p>
+                    <div id="M006801_source" class="dyn-source">
+                        <pre>static VALUE
+ancillary_timestamp(VALUE self)
+{
+    int level, type;
+    VALUE data;
+    VALUE result = Qnil;
+
+    level = ancillary_level(self);
+    type = ancillary_type(self);
+    data = ancillary_data(self);
+
+# ifdef SCM_TIMESTAMP
+    if (level == SOL_SOCKET &amp;&amp; type == SCM_TIMESTAMP &amp;&amp;
+        RSTRING_LEN(data) == sizeof(struct timeval)) {
+        struct timeval tv;
+        memcpy((char*)&amp;tv, RSTRING_PTR(data), sizeof(tv));
+        result = rb_time_new(tv.tv_sec, tv.tv_usec);
+    }
+# endif
+
+# ifdef SCM_TIMESTAMPNS
+    if (level == SOL_SOCKET &amp;&amp; type == SCM_TIMESTAMPNS &amp;&amp;
+        RSTRING_LEN(data) == sizeof(struct timespec)) {
+        struct timespec ts;
+        memcpy((char*)&amp;ts, RSTRING_PTR(data), sizeof(ts));
+        result = rb_time_nano_new(ts.tv_sec, ts.tv_nsec);
+    }
+# endif
+
+#define add(x,y) (rb_funcall((x), '+', 1, (y)))
+#define mul(x,y) (rb_funcall((x), '*', 1, (y)))
+#define quo(x,y) (rb_funcall((x), rb_intern(&quot;quo&quot;), 1, (y)))
+
+# ifdef SCM_BINTIME
+    if (level == SOL_SOCKET &amp;&amp; type == SCM_BINTIME &amp;&amp;
+        RSTRING_LEN(data) == sizeof(struct bintime)) {
+        struct bintime bt;
+        VALUE d, timev;
+        memcpy((char*)&amp;bt, RSTRING_PTR(data), sizeof(bt));
+        d = ULL2NUM(0x100000000UL);
+        d = mul(d,d);
+        timev = add(TIMET2NUM(bt.sec), quo(ULL2NUM(bt.frac), d));
+        result = rb_time_num_new(timev, Qnil);
+    }
+# endif
+
+    if (result == Qnil)
+        rb_raise(rb_eTypeError, &quot;timestamp ancillary data expected&quot;);
+
+    return result;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006794">
+                    
+                    <a name="M006794"></a><b>ancillarydata.type => integer
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+returns the cmsg type as an integer.
+</p>
+<pre>
+  p Socket::AncillaryData.new(:INET6, :IPV6, :PKTINFO, &quot;&quot;).type
+  #=&gt; 2
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006794_source')" id="l_M006794_source">show</a>
+                        
+                    </p>
+                    <div id="M006794_source" class="dyn-source">
+                        <pre>static VALUE
+ancillary_type_m(VALUE self)
+{
+    return INT2NUM(ancillary_type(self));
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006800">
+                    
+                    <a name="M006800"></a><b>ancillarydata.unix_rights => array-of-IOs or nil
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+returns the array of <a href="../IO.html">IO</a> objects for SCM_RIGHTS
+control message in UNIX domain socket.
+</p>
+<p>
+The class of the <a href="../IO.html">IO</a> objects in the array is <a
+href="../IO.html">IO</a> or <a href="../Socket.html">Socket</a>.
+</p>
+<p>
+The array is attached to <em>ancillarydata</em> when it is instantiated.
+For example, <a href="../BasicSocket.html#M006809">BasicSocket#recvmsg</a>
+attach the array when receives a SCM_RIGHTS control message and
+:scm_rights=>true option is given.
+</p>
+<pre>
+  # recvmsg needs :scm_rights=&gt;true for unix_rights
+  s1, s2 = UNIXSocket.pair
+  p s1                                         #=&gt; #&lt;UNIXSocket:fd 3&gt;
+  s1.sendmsg &quot;stdin and a socket&quot;, 0, nil, [:SOCKET, :RIGHTS, [0,s1.fileno].pack(&quot;ii&quot;)]
+  _, _, _, ctl = s2.recvmsg(:scm_rights=&gt;true)
+  p ctl.unix_rights                            #=&gt; [#&lt;IO:fd 6&gt;, #&lt;Socket:fd 7&gt;]
+  p File.identical?(STDIN, ctl.unix_rights[0]) #=&gt; true
+  p File.identical?(s1, ctl.unix_rights[1])    #=&gt; true
+
+  # If :scm_rights=&gt;true is not given, unix_rights returns nil
+  s1, s2 = UNIXSocket.pair
+  s1.sendmsg &quot;stdin and a socket&quot;, 0, nil, [:SOCKET, :RIGHTS, [0,s1.fileno].pack(&quot;ii&quot;)]
+  _, _, _, ctl = s2.recvmsg
+  p ctl #=&gt; #&lt;Socket::AncillaryData: UNIX SOCKET RIGHTS 6 7&gt;
+  p ctl.unix_rights #=&gt; nil
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006800_source')" id="l_M006800_source">show</a>
+                        
+                    </p>
+                    <div id="M006800_source" class="dyn-source">
+                        <pre>static VALUE
+ancillary_unix_rights(VALUE self)
+{
+    int level, type;
+
+    level = ancillary_level(self);
+    type = ancillary_type(self);
+
+    if (level != SOL_SOCKET || type != SCM_RIGHTS)
+        rb_raise(rb_eTypeError, &quot;SCM_RIGHTS ancillary data expected&quot;);
+
+    return rb_attr_get(self, rb_intern(&quot;unix_rights&quot;));
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

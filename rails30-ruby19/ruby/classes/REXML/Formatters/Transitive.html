@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>REXML::Formatters::Transitive</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            REXML::Formatters::Transitive 
+            
+                <span class="parent">&lt; 
+                    
+                    Default
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../../files/lib/rexml/formatters/transitive_rb.html">lib/rexml/formatters/transitive.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+The <a href="Transitive.html">Transitive</a> formatter writes an XML
+document that parses to an identical document as the source document. This
+means that no extra whitespace nodes are inserted, and whitespace within
+text nodes is preserved. Within these constraints, the document is
+pretty-printed, with whitespace inserted into the metadata to introduce
+formatting.
+</p>
+<p>
+Note that this is only useful if the original XML is not already formatted.
+Since this formatter does not alter whitespace nodes, the results of
+formatting already formatted XML will be odd.
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002807">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>W</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002808">write_element</a>,</li>
+                
+                <li><a href="#M002809">write_text</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M002807">
+                    
+                    <a name="M002807"></a><b>new</b>( indentation=2, ie_hack=false )
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002807_source')" id="l_M002807_source">show</a>
+                        
+                    </p>
+                    <div id="M002807_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/rexml/formatters/transitive.rb, line 15</span>
+15:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>( <span class="ruby-identifier">indentation</span>=<span class="ruby-value">2</span>, <span class="ruby-identifier">ie_hack</span>=<span class="ruby-keyword kw">false</span> )
+16:         <span class="ruby-ivar">@indentation</span> = <span class="ruby-identifier">indentation</span>
+17:         <span class="ruby-ivar">@level</span> = <span class="ruby-value">0</span>
+18:         <span class="ruby-ivar">@ie_hack</span> = <span class="ruby-identifier">ie_hack</span>
+19:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Protected methods</div>
+            
+            <div class="method">
+                <div class="title" id="M002808">
+                    
+                    <a name="M002808"></a><b>write_element</b>( node, output )
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002808_source')" id="l_M002808_source">show</a>
+                        
+                    </p>
+                    <div id="M002808_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/rexml/formatters/transitive.rb, line 22</span>
+22:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">write_element</span>( <span class="ruby-identifier">node</span>, <span class="ruby-identifier">output</span> )
+23:         <span class="ruby-identifier">output</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot;&lt;#{node.expanded_name}&quot;</span>
+24: 
+25:         <span class="ruby-identifier">node</span>.<span class="ruby-identifier">attributes</span>.<span class="ruby-identifier">each_attribute</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">attr</span><span class="ruby-operator">|</span>
+26:           <span class="ruby-identifier">output</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot; &quot;</span>
+27:           <span class="ruby-identifier">attr</span>.<span class="ruby-identifier">write</span>( <span class="ruby-identifier">output</span> )
+28:         <span class="ruby-keyword kw">end</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">node</span>.<span class="ruby-identifier">attributes</span>.<span class="ruby-identifier">empty?</span>
+29: 
+30:         <span class="ruby-identifier">output</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;\n&quot;</span>
+31:         <span class="ruby-identifier">output</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">' '</span><span class="ruby-operator">*</span><span class="ruby-ivar">@level</span>
+32:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">node</span>.<span class="ruby-identifier">children</span>.<span class="ruby-identifier">empty?</span>
+33:           <span class="ruby-identifier">output</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot; &quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@ie_hack</span>
+34:           <span class="ruby-identifier">output</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;/&quot;</span>
+35:         <span class="ruby-keyword kw">else</span>
+36:           <span class="ruby-identifier">output</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;&gt;&quot;</span>
+37:           <span class="ruby-comment cmt"># If compact and all children are text, and if the formatted output</span>
+38:           <span class="ruby-comment cmt"># is less than the specified width, then try to print everything on</span>
+39:           <span class="ruby-comment cmt"># one line</span>
+40:           <span class="ruby-identifier">skip</span> = <span class="ruby-keyword kw">false</span>
+41:           <span class="ruby-ivar">@level</span> <span class="ruby-operator">+=</span> <span class="ruby-ivar">@indentation</span>
+42:           <span class="ruby-identifier">node</span>.<span class="ruby-identifier">children</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">child</span><span class="ruby-operator">|</span>
+43:             <span class="ruby-identifier">write</span>( <span class="ruby-identifier">child</span>, <span class="ruby-identifier">output</span> )
+44:           }
+45:           <span class="ruby-ivar">@level</span> <span class="ruby-operator">-=</span> <span class="ruby-ivar">@indentation</span>
+46:           <span class="ruby-identifier">output</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot;&lt;/#{node.expanded_name}&quot;</span>
+47:           <span class="ruby-identifier">output</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;\n&quot;</span>
+48:           <span class="ruby-identifier">output</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">' '</span><span class="ruby-operator">*</span><span class="ruby-ivar">@level</span>
+49:         <span class="ruby-keyword kw">end</span>
+50:         <span class="ruby-identifier">output</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;&gt;&quot;</span>
+51:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002809">
+                    
+                    <a name="M002809"></a><b>write_text</b>( node, output )
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002809_source')" id="l_M002809_source">show</a>
+                        
+                    </p>
+                    <div id="M002809_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/rexml/formatters/transitive.rb, line 53</span>
+53:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">write_text</span>( <span class="ruby-identifier">node</span>, <span class="ruby-identifier">output</span> )
+54:         <span class="ruby-identifier">output</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">node</span>.<span class="ruby-identifier">to_s</span>()
+55:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

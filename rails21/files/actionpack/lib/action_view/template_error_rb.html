@@ -1,0 +1,129 @@
+  <div id="fileHeader">
+    <h1>template_error.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionpack/lib/action_view/template_error.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:04 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>module ActionView
+  # The TemplateError exception is raised when the compilation of the template fails. This exception then gathers a
+  # bunch of intimate details and uses it to report a very precise exception message.
+  class TemplateError &lt; ActionViewError #:nodoc:
+    SOURCE_CODE_RADIUS = 3
+
+    attr_reader :original_exception
+
+    def initialize(template, assigns, original_exception)
+      @base_path = template.base_path_for_exception
+      @assigns, @source, @original_exception = assigns.dup, template.source, original_exception
+      @file_path = template.filename
+      @backtrace = compute_backtrace
+    end
+
+    def message
+      ActiveSupport::Deprecation.silence { original_exception.message }
+    end
+
+    def clean_backtrace
+      original_exception.clean_backtrace
+    end
+
+    def sub_template_message
+      if @sub_templates
+        &quot;Trace of template inclusion: &quot; +
+        @sub_templates.collect { |template| strip_base_path(template) }.join(&quot;, &quot;)
+      else
+        &quot;&quot;
+      end
+    end
+
+    def source_extract(indentation = 0)
+      return unless num = line_number
+      num = num.to_i
+
+      source_code = IO.readlines(@file_path)
+
+      start_on_line = [ num - SOURCE_CODE_RADIUS - 1, 0 ].max
+      end_on_line   = [ num + SOURCE_CODE_RADIUS - 1, source_code.length].min
+
+      indent = ' ' * indentation
+      line_counter = start_on_line
+      return unless source_code = source_code[start_on_line..end_on_line] 
+      
+      source_code.sum do |line|
+        line_counter += 1
+        &quot;#{indent}#{line_counter}: #{line}&quot;
+      end
+    end
+
+    def sub_template_of(template_path)
+      @sub_templates ||= []
+      @sub_templates &lt;&lt; template_path
+    end
+
+    def line_number
+      @line_number ||=
+        if file_name
+          regexp = /#{Regexp.escape File.basename(file_name)}:(\d+)/
+
+          $1 if message =~ regexp or clean_backtrace.find { |line| line =~ regexp }
+        end
+    end
+
+    def file_name
+      stripped = strip_base_path(@file_path)
+      stripped.slice!(0,1) if stripped[0] == ?/
+      stripped
+    end
+
+    def to_s
+      &quot;\n\n#{self.class} (#{message}) #{source_location}:\n&quot; +
+        &quot;#{source_extract}\n    #{clean_backtrace.join(&quot;\n    &quot;)}\n\n&quot;
+    end
+
+    # don't do anything nontrivial here. Any raised exception from here becomes fatal 
+    # (and can't be rescued).
+    def backtrace
+      @backtrace
+    end
+
+    private
+      def compute_backtrace
+        [
+          &quot;#{source_location.capitalize}\n\n#{source_extract(4)}\n    &quot; +
+          clean_backtrace.join(&quot;\n    &quot;)
+        ]
+      end
+
+      def strip_base_path(path)
+        stripped_path = File.expand_path(path).gsub(@base_path, &quot;&quot;)
+        stripped_path.gsub!(/^#{Regexp.escape File.expand_path(RAILS_ROOT)}/, '') if defined?(RAILS_ROOT)
+        stripped_path
+      end
+
+      def source_location
+        if line_number
+          &quot;on line ##{line_number} of &quot;
+        else
+          'in '
+        end + file_name
+      end
+  end
+end
+
+if defined?(Exception::TraceSubstitutions)
+  Exception::TraceSubstitutions &lt;&lt; [/:in\s+`_run_(html|xml).*'\s*$/, '']
+  Exception::TraceSubstitutions &lt;&lt; [%r{^\s*#{Regexp.escape RAILS_ROOT}/}, ''] if defined?(RAILS_ROOT)
+end
+</pre>
+    </div>

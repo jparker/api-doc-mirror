@@ -1,0 +1,485 @@
+  <div id="C00000519">
+<div class='banner'>
+  <span class="file-title-prefix">Class</span><br />Errors<br/>
+  In:
+<a href="#" onclick="jsHref('files/activeresource/lib/active_resource/validations_rb.html');">activeresource/lib/active_resource/validations.rb</a>
+
+Parent:&nbsp;
+        <a href="#" onclick="jsHref('classes/Object.html');">
+Object
+         </a>
+</div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+      <div id="content">
+
+  <div class="description"><p>
+Active Resource validation is reported to and from this object, which is
+used by <a href="index.html?a=M001368&name=Base#save">Base#save</a> to
+determine whether the object in a valid state to be saved. See usage
+example in <a
+href="index.html?a=C00000518&name=Validations">Validations</a>.
+</p>
+</div>
+
+
+
+  <div class="sectiontitle">Methods</div>
+  <ul>
+  <li><a href="index.html?a=M001319&name=[]" >[]</a></li>
+  <li><a href="index.html?a=M001316&name=add" >add</a></li>
+  <li><a href="index.html?a=M001315&name=add_to_base" >add_to_base</a></li>
+  <li><a href="index.html?a=M001324&name=clear" >clear</a></li>
+  <li><a href="index.html?a=M001326&name=count" >count</a></li>
+  <li><a href="index.html?a=M001321&name=each" >each</a></li>
+  <li><a href="index.html?a=M001322&name=each_full" >each_full</a></li>
+  <li><a href="index.html?a=M001328&name=from_xml" >from_xml</a></li>
+  <li><a href="index.html?a=M001323&name=full_messages" >full_messages</a></li>
+  <li><a href="index.html?a=M001317&name=invalid?" >invalid?</a></li>
+  <li><a href="index.html?a=M001327&name=length" >length</a></li>
+  <li><a href="index.html?a=M001318&name=on" >on</a></li>
+  <li><a href="index.html?a=M001320&name=on_base" >on_base</a></li>
+  <li><a href="index.html?a=M001325&name=size" >size</a></li>
+  </ul>
+
+<div class="sectiontitle">Included Modules</div>
+<ul>
+  <li><a href="#" onclick="jsHref('');">Enumerable</a></li>
+</ul>
+
+
+
+
+  <div class="sectiontitle">Attributes</div>
+  <table border='0' cellpadding='5'>
+  <tr valign='top'>
+    <td class='attr-rw'>
+[R]
+    </td>
+    <td class='attr-name'>errors</td>
+    <td class='attr-desc'></td>
+  </tr>
+  </table>
+
+<div class="sectiontitle">Public Instance methods</div>
+<div id="M001319" class="method">
+  <div id="M001319_title" class="title">
+    <b>[]</b>(attribute)
+  </div>
+  <div class="description">
+  <p>
+Alias for <a href="index.html?a=M001318&name=on">on</a>
+</p>
+  </div>
+</div>
+<div id="M001316" class="method">
+  <div id="M001316_title" class="title">
+    <b>add</b>(attribute, msg)
+  </div>
+  <div class="description">
+  <p>
+Adds an error to an Active Resource object&#8217;s attribute (named for the
+<tt>attribute</tt> parameter) with the error message in <tt>msg</tt>.
+</p>
+<h4>Examples</h4>
+<pre>
+  my_resource = Node.find(1)
+  my_resource.errors.add('name', 'can not be &quot;base&quot;') if my_resource.name == 'base'
+  my_resource.errors.on('name')
+  # =&gt; 'can not be &quot;base&quot;!'
+
+  my_resource.errors.add('desc', 'can not be blank') if my_resource.desc == ''
+  my_resource.valid?
+  # =&gt; false
+  my_resource.errors.on('desc')
+  # =&gt; 'can not be blank!'
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001316_source')" id="l_M001316_source">show source</a> ]</p>
+  <div id="M001316_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activeresource/lib/active_resource/validations.rb, line 50</span>
+50:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">add</span>(<span class="ruby-identifier">attribute</span>, <span class="ruby-identifier">msg</span>)
+51:       <span class="ruby-ivar">@errors</span>[<span class="ruby-identifier">attribute</span>.<span class="ruby-identifier">to_s</span>] = [] <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@errors</span>[<span class="ruby-identifier">attribute</span>.<span class="ruby-identifier">to_s</span>].<span class="ruby-identifier">nil?</span>
+52:       <span class="ruby-ivar">@errors</span>[<span class="ruby-identifier">attribute</span>.<span class="ruby-identifier">to_s</span>] <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">msg</span>
+53:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M001315" class="method">
+  <div id="M001315_title" class="title">
+    <b>add_to_base</b>(msg)
+  </div>
+  <div class="description">
+  <p>
+Add an error to the base Active Resource object rather than an attribute.
+</p>
+<h4>Examples</h4>
+<pre>
+  my_folder = Folder.find(1)
+  my_folder.errors.add_to_base(&quot;You can't edit an existing folder&quot;)
+  my_folder.errors.on_base
+  # =&gt; &quot;You can't edit an existing folder&quot;
+
+  my_folder.errors.add_to_base(&quot;This folder has been tagged as frozen&quot;)
+  my_folder.valid?
+  # =&gt; false
+  my_folder.errors.on_base
+  # =&gt; [&quot;You can't edit an existing folder&quot;, &quot;This folder has been tagged as frozen&quot;]
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001315_source')" id="l_M001315_source">show source</a> ]</p>
+  <div id="M001315_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activeresource/lib/active_resource/validations.rb, line 31</span>
+31:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">add_to_base</span>(<span class="ruby-identifier">msg</span>)
+32:       <span class="ruby-identifier">add</span>(<span class="ruby-identifier">:base</span>, <span class="ruby-identifier">msg</span>)
+33:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M001324" class="method">
+  <div id="M001324_title" class="title">
+    <b>clear</b>()
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001324_source')" id="l_M001324_source">show source</a> ]</p>
+  <div id="M001324_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activeresource/lib/active_resource/validations.rb, line 178</span>
+178:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">clear</span>
+179:       <span class="ruby-ivar">@errors</span> = {}
+180:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M001326" class="method">
+  <div id="M001326_title" class="title">
+    <b>count</b>()
+  </div>
+  <div class="description">
+  <p>
+Alias for <a href="index.html?a=M001325&name=size">size</a>
+</p>
+  </div>
+</div>
+<div id="M001321" class="method">
+  <div id="M001321_title" class="title">
+    <b>each</b>() {|attr, msg| ...}
+  </div>
+  <div class="description">
+  <p>
+Yields each attribute and associated message per error added.
+</p>
+<h4>Examples</h4>
+<pre>
+  my_person = Person.new(params[:person])
+
+  my_person.errors.add('login', 'can not be empty') if my_person.login == ''
+  my_person.errors.add('password', 'can not be empty') if my_person.password == ''
+  messages = ''
+  my_person.errors.each {|attr, msg| messages += attr.humanize + &quot; &quot; + msg + &quot;&lt;br /&gt;&quot;}
+  messages
+  # =&gt; &quot;Login can not be empty&lt;br /&gt;Password can not be empty&lt;br /&gt;&quot;
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001321_source')" id="l_M001321_source">show source</a> ]</p>
+  <div id="M001321_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activeresource/lib/active_resource/validations.rb, line 128</span>
+128:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">each</span>
+129:       <span class="ruby-ivar">@errors</span>.<span class="ruby-identifier">each_key</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">attr</span><span class="ruby-operator">|</span> <span class="ruby-ivar">@errors</span>[<span class="ruby-identifier">attr</span>].<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">msg</span><span class="ruby-operator">|</span> <span class="ruby-keyword kw">yield</span> <span class="ruby-identifier">attr</span>, <span class="ruby-identifier">msg</span> } }
+130:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M001322" class="method">
+  <div id="M001322_title" class="title">
+    <b>each_full</b>() {|msg| ...}
+  </div>
+  <div class="description">
+  <p>
+Yields each full error message added. So
+Person.errors.add(&quot;first_name&quot;, &quot;can&#8217;t be empty&quot;)
+will be returned through iteration as &quot;First name can&#8217;t be
+empty&quot;.
+</p>
+<h4>Examples</h4>
+<pre>
+  my_person = Person.new(params[:person])
+
+  my_person.errors.add('login', 'can not be empty') if my_person.login == ''
+  my_person.errors.add('password', 'can not be empty') if my_person.password == ''
+  messages = ''
+  my_person.errors.each_full {|msg| messages += msg + &quot;&lt;br/&gt;&quot;}
+  messages
+  # =&gt; &quot;Login can not be empty&lt;br /&gt;Password can not be empty&lt;br /&gt;&quot;
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001322_source')" id="l_M001322_source">show source</a> ]</p>
+  <div id="M001322_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activeresource/lib/active_resource/validations.rb, line 145</span>
+145:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">each_full</span>
+146:       <span class="ruby-identifier">full_messages</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">msg</span><span class="ruby-operator">|</span> <span class="ruby-keyword kw">yield</span> <span class="ruby-identifier">msg</span> }
+147:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M001328" class="method">
+  <div id="M001328_title" class="title">
+    <b>from_xml</b>(xml)
+  </div>
+  <div class="description">
+  <p>
+Grabs errors from the XML response.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001328_source')" id="l_M001328_source">show source</a> ]</p>
+  <div id="M001328_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activeresource/lib/active_resource/validations.rb, line 203</span>
+203:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">from_xml</span>(<span class="ruby-identifier">xml</span>)
+204:       <span class="ruby-identifier">clear</span>
+205:       <span class="ruby-identifier">humanized_attributes</span> = <span class="ruby-ivar">@base</span>.<span class="ruby-identifier">attributes</span>.<span class="ruby-identifier">keys</span>.<span class="ruby-identifier">inject</span>({}) { <span class="ruby-operator">|</span><span class="ruby-identifier">h</span>, <span class="ruby-identifier">attr_name</span><span class="ruby-operator">|</span> <span class="ruby-identifier">h</span>.<span class="ruby-identifier">update</span>(<span class="ruby-identifier">attr_name</span>.<span class="ruby-identifier">humanize</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">attr_name</span>) }
+206:       <span class="ruby-identifier">messages</span> = <span class="ruby-constant">Hash</span>.<span class="ruby-identifier">from_xml</span>(<span class="ruby-identifier">xml</span>)[<span class="ruby-value str">'errors'</span>][<span class="ruby-value str">'error'</span>] <span class="ruby-keyword kw">rescue</span> []
+207:       <span class="ruby-identifier">messages</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">message</span><span class="ruby-operator">|</span>
+208:         <span class="ruby-identifier">attr_message</span> = <span class="ruby-identifier">humanized_attributes</span>.<span class="ruby-identifier">keys</span>.<span class="ruby-identifier">detect</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">attr_name</span><span class="ruby-operator">|</span>
+209:           <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">message</span>[<span class="ruby-value">0</span>, <span class="ruby-identifier">attr_name</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">+</span> <span class="ruby-value">1</span>] <span class="ruby-operator">==</span> <span class="ruby-node">&quot;#{attr_name} &quot;</span>
+210:             <span class="ruby-identifier">add</span> <span class="ruby-identifier">humanized_attributes</span>[<span class="ruby-identifier">attr_name</span>], <span class="ruby-identifier">message</span>[(<span class="ruby-identifier">attr_name</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">+</span> <span class="ruby-value">1</span>)<span class="ruby-operator">..</span><span class="ruby-value">-1</span>]
+211:           <span class="ruby-keyword kw">end</span>
+212:         <span class="ruby-keyword kw">end</span>
+213:         
+214:         <span class="ruby-identifier">add_to_base</span> <span class="ruby-identifier">message</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">attr_message</span>.<span class="ruby-identifier">nil?</span>
+215:       <span class="ruby-keyword kw">end</span>
+216:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M001323" class="method">
+  <div id="M001323_title" class="title">
+    <b>full_messages</b>()
+  </div>
+  <div class="description">
+  <p>
+Returns all the full error messages in an array.
+</p>
+<h4>Examples</h4>
+<pre>
+  my_person = Person.new(params[:person])
+
+  my_person.errors.add('login', 'can not be empty') if my_person.login == ''
+  my_person.errors.add('password', 'can not be empty') if my_person.password == ''
+  messages = ''
+  my_person.errors.full_messages.each {|msg| messages += msg + &quot;&lt;br/&gt;&quot;}
+  messages
+  # =&gt; &quot;Login can not be empty&lt;br /&gt;Password can not be empty&lt;br /&gt;&quot;
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001323_source')" id="l_M001323_source">show source</a> ]</p>
+  <div id="M001323_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activeresource/lib/active_resource/validations.rb, line 161</span>
+161:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">full_messages</span>
+162:       <span class="ruby-identifier">full_messages</span> = []
+163: 
+164:       <span class="ruby-ivar">@errors</span>.<span class="ruby-identifier">each_key</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">attr</span><span class="ruby-operator">|</span>
+165:         <span class="ruby-ivar">@errors</span>[<span class="ruby-identifier">attr</span>].<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">msg</span><span class="ruby-operator">|</span>
+166:           <span class="ruby-keyword kw">next</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">msg</span>.<span class="ruby-identifier">nil?</span>
+167: 
+168:           <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">attr</span> <span class="ruby-operator">==</span> <span class="ruby-value str">&quot;base&quot;</span>
+169:             <span class="ruby-identifier">full_messages</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">msg</span>
+170:           <span class="ruby-keyword kw">else</span>
+171:             <span class="ruby-identifier">full_messages</span> <span class="ruby-operator">&lt;&lt;</span> [<span class="ruby-identifier">attr</span>.<span class="ruby-identifier">humanize</span>, <span class="ruby-identifier">msg</span>].<span class="ruby-identifier">join</span>(<span class="ruby-value str">' '</span>)
+172:           <span class="ruby-keyword kw">end</span>
+173:         <span class="ruby-keyword kw">end</span>
+174:       <span class="ruby-keyword kw">end</span>
+175:       <span class="ruby-identifier">full_messages</span>
+176:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M001317" class="method">
+  <div id="M001317_title" class="title">
+    <b>invalid?</b>(attribute)
+  </div>
+  <div class="description">
+  <p>
+Returns true if the specified <tt>attribute</tt> has errors associated with
+it.
+</p>
+<h4>Examples</h4>
+<pre>
+  my_resource = Disk.find(1)
+  my_resource.errors.add('location', 'must be Main') unless my_resource.location == 'Main'
+  my_resource.errors.on('location')
+  # =&gt; 'must be Main!'
+
+  my_resource.errors.invalid?('location')
+  # =&gt; true
+  my_resource.errors.invalid?('name')
+  # =&gt; false
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001317_source')" id="l_M001317_source">show source</a> ]</p>
+  <div id="M001317_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activeresource/lib/active_resource/validations.rb, line 67</span>
+67:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">invalid?</span>(<span class="ruby-identifier">attribute</span>)
+68:       <span class="ruby-operator">!</span><span class="ruby-ivar">@errors</span>[<span class="ruby-identifier">attribute</span>.<span class="ruby-identifier">to_s</span>].<span class="ruby-identifier">nil?</span>
+69:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M001327" class="method">
+  <div id="M001327_title" class="title">
+    <b>length</b>()
+  </div>
+  <div class="description">
+  <p>
+Alias for <a href="index.html?a=M001325&name=size">size</a>
+</p>
+  </div>
+</div>
+<div id="M001318" class="method">
+  <div id="M001318_title" class="title">
+    <b>on</b>(attribute)
+  </div>
+  <div class="description">
+  <p>
+A method to return the errors associated with <tt>attribute</tt>, which
+returns nil, if no errors are associated with the specified
+<tt>attribute</tt>, the error message if one error is associated with the
+specified <tt>attribute</tt>, or an array of error messages if more than
+one error is associated with the specified <tt>attribute</tt>.
+</p>
+<h4>Examples</h4>
+<pre>
+  my_person = Person.new(params[:person])
+  my_person.errors.on('login')
+  # =&gt; nil
+
+  my_person.errors.add('login', 'can not be empty') if my_person.login == ''
+  my_person.errors.on('login')
+  # =&gt; 'can not be empty'
+
+  my_person.errors.add('login', 'can not be longer than 10 characters') if my_person.login.length &gt; 10
+  my_person.errors.on('login')
+  # =&gt; ['can not be empty', 'can not be longer than 10 characters']
+</pre>
+  </div>
+<div class="aka">
+  This method is also aliased as
+  <a href="index.html?a=M001319&name=[]">[]</a>
+</div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001318_source')" id="l_M001318_source">show source</a> ]</p>
+  <div id="M001318_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activeresource/lib/active_resource/validations.rb, line 87</span>
+87:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">on</span>(<span class="ruby-identifier">attribute</span>)
+88:       <span class="ruby-identifier">errors</span> = <span class="ruby-ivar">@errors</span>[<span class="ruby-identifier">attribute</span>.<span class="ruby-identifier">to_s</span>]
+89:       <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">nil</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">errors</span>.<span class="ruby-identifier">nil?</span>
+90:       <span class="ruby-identifier">errors</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-value">1</span> <span class="ruby-operator">?</span> <span class="ruby-identifier">errors</span>.<span class="ruby-identifier">first</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">errors</span>
+91:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M001320" class="method">
+  <div id="M001320_title" class="title">
+    <b>on_base</b>()
+  </div>
+  <div class="description">
+  <p>
+A method to return errors assigned to <tt>base</tt> object through <a
+href="index.html?a=M001315&name=add_to_base">add_to_base</a>, which returns
+nil, if no errors are associated with the specified <tt>attribute</tt>, the
+error message if one error is associated with the specified
+<tt>attribute</tt>, or an array of error messages if more than one error is
+associated with the specified <tt>attribute</tt>.
+</p>
+<h4>Examples</h4>
+<pre>
+  my_account = Account.find(1)
+  my_account.errors.on_base
+  # =&gt; nil
+
+  my_account.errors.add_to_base(&quot;This account is frozen&quot;)
+  my_account.errors.on_base
+  # =&gt; &quot;This account is frozen&quot;
+
+  my_account.errors.add_to_base(&quot;This account has been closed&quot;)
+  my_account.errors.on_base
+  # =&gt; [&quot;This account is frozen&quot;, &quot;This account has been closed&quot;]
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001320_source')" id="l_M001320_source">show source</a> ]</p>
+  <div id="M001320_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activeresource/lib/active_resource/validations.rb, line 112</span>
+112:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">on_base</span>
+113:       <span class="ruby-identifier">on</span>(<span class="ruby-identifier">:base</span>)
+114:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M001325" class="method">
+  <div id="M001325_title" class="title">
+    <b>size</b>()
+  </div>
+  <div class="description">
+  <p>
+Returns the total number of errors added. Two errors added to the same
+attribute will be counted as such with this as well.
+</p>
+<h4>Examples</h4>
+<pre>
+  my_person = Person.new(params[:person])
+  my_person.errors.size
+  # =&gt; 0
+
+  my_person.errors.add('login', 'can not be empty') if my_person.login == ''
+  my_person.errors.add('password', 'can not be empty') if my_person.password == ''
+  my_person.error.size
+  # =&gt; 2
+</pre>
+  </div>
+<div class="aka">
+  This method is also aliased as
+  <a href="index.html?a=M001326&name=count">count</a>
+  <a href="index.html?a=M001327&name=length">length</a>
+</div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001325_source')" id="l_M001325_source">show source</a> ]</p>
+  <div id="M001325_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activeresource/lib/active_resource/validations.rb, line 195</span>
+195:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">size</span>
+196:       <span class="ruby-ivar">@errors</span>.<span class="ruby-identifier">values</span>.<span class="ruby-identifier">inject</span>(<span class="ruby-value">0</span>) { <span class="ruby-operator">|</span><span class="ruby-identifier">error_count</span>, <span class="ruby-identifier">attribute</span><span class="ruby-operator">|</span> <span class="ruby-identifier">error_count</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">attribute</span>.<span class="ruby-identifier">size</span> }
+197:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+</div>
+
+  </div>

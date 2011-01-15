@@ -1,0 +1,158 @@
+  <div id="fileHeader">
+    <h1>xmlbase.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activesupport/lib/active_support/vendor/builder-2.1.2/builder/xmlbase.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>#!/usr/bin/env ruby
+
+require 'builder/blankslate'
+
+module Builder
+
+  # Generic error for builder
+  class IllegalBlockError &lt; RuntimeError; end
+
+  # XmlBase is a base class for building XML builders.  See
+  # Builder::XmlMarkup and Builder::XmlEvents for examples.
+  class XmlBase &lt; BlankSlate
+
+    # Create an XML markup builder.
+    #
+    # out::     Object receiving the markup.  +out+ must respond to
+    #           &lt;tt&gt;&lt;&lt;&lt;/tt&gt;.
+    # indent::  Number of spaces used for indentation (0 implies no
+    #           indentation and no line breaks).
+    # initial:: Level of initial indentation.
+    #
+    def initialize(indent=0, initial=0)
+      @indent = indent
+      @level  = initial
+    end
+
+    # Create a tag named +sym+.  Other than the first argument which
+    # is the tag name, the arguments are the same as the tags
+    # implemented via &lt;tt&gt;method_missing&lt;/tt&gt;.
+    def tag!(sym, *args, &amp;block)
+      method_missing(sym.to_sym, *args, &amp;block)
+    end
+
+    # Create XML markup based on the name of the method.  This method
+    # is never invoked directly, but is called for each markup method
+    # in the markup block.
+    def method_missing(sym, *args, &amp;block)
+      text = nil
+      attrs = nil
+      sym = &quot;#{sym}:#{args.shift}&quot; if args.first.kind_of?(Symbol)
+      args.each do |arg|
+        case arg
+        when Hash
+          attrs ||= {}
+          attrs.merge!(arg)
+        else
+          text ||= ''
+          text &lt;&lt; arg.to_s
+        end
+      end
+      if block
+        unless text.nil?
+          raise ArgumentError, &quot;XmlMarkup cannot mix a text argument with a block&quot;
+        end
+        _indent
+        _start_tag(sym, attrs)
+        _newline
+        _nested_structures(block)
+        _indent
+        _end_tag(sym)
+        _newline
+      elsif text.nil?
+        _indent
+        _start_tag(sym, attrs, true)
+        _newline
+      else
+        _indent
+        _start_tag(sym, attrs)
+        text! text
+        _end_tag(sym)
+        _newline
+      end
+      @target
+    end
+
+    # Append text to the output target.  Escape any markup.  May be
+    # used within the markup brackets as:
+    #
+    #   builder.p { |b| b.br; b.text! &quot;HI&quot; }   #=&gt;  &lt;p&gt;&lt;br/&gt;HI&lt;/p&gt;
+    def text!(text)
+      _text(_escape(text))
+    end
+
+    # Append text to the output target without escaping any markup.
+    # May be used within the markup brackets as:
+    #
+    #   builder.p { |x| x &lt;&lt; &quot;&lt;br/&gt;HI&quot; }   #=&gt;  &lt;p&gt;&lt;br/&gt;HI&lt;/p&gt;
+    #
+    # This is useful when using non-builder enabled software that
+    # generates strings.  Just insert the string directly into the
+    # builder without changing the inserted markup.
+    #
+    # It is also useful for stacking builder objects.  Builders only
+    # use &lt;tt&gt;&lt;&lt;&lt;/tt&gt; to append to the target, so by supporting this
+    # method/operation builders can use other builders as their
+    # targets.
+    def &lt;&lt;(text)
+      _text(text)
+    end
+
+    # For some reason, nil? is sent to the XmlMarkup object.  If nil?
+    # is not defined and method_missing is invoked, some strange kind
+    # of recursion happens.  Since nil? won't ever be an XML tag, it
+    # is pretty safe to define it here. (Note: this is an example of
+    # cargo cult programming,
+    # cf. http://fishbowl.pastiche.org/2004/10/13/cargo_cult_programming).
+    def nil?
+      false
+    end
+
+    private
+
+    require 'builder/xchar'
+    def _escape(text)
+      text.to_xs
+    end
+
+    def _escape_quote(text)
+      _escape(text).gsub(%r{&quot;}, '&amp;quot;')  # &quot; WART
+    end
+
+    def _newline
+      return if @indent == 0
+      text! &quot;\n&quot;
+    end
+
+    def _indent
+      return if @indent == 0 || @level == 0
+      text!(&quot; &quot; * (@level * @indent))
+    end
+
+    def _nested_structures(block)
+      @level += 1
+      block.call(self)
+    ensure
+      @level -= 1
+    end
+  end
+end
+</pre>
+    </div>

@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>ActionView::Helpers::AssetTagHelper::AssetTag</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            ActionView::Helpers::AssetTagHelper::AssetTag 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../../../Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../../../files/actionpack/lib/action_view/helpers/asset_tag_helper_rb.html">actionpack/lib/action_view/helpers/asset_tag_helper.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>A</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002192">asset_file_path</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002193">contents</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>M</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002194">mtime</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002190">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>P</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002191">public_path</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">Cache</td>
+            <td>=</td>
+            <td class="attr-value">{}</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">CacheGuard</td>
+            <td>=</td>
+            <td class="attr-value">Mutex.new</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">ProtocolRegexp</td>
+            <td>=</td>
+            <td class="attr-value">%r{^[-a-z]+://}.freeze</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M002190">
+                    
+                    <a name="M002190"></a><b>new</b>(template, controller, source, include_host = true)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002190_source')" id="l_M002190_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/085ebf0368594907fb4b5839834f879295693dce/actionpack/lib/action_view/helpers/asset_tag_helper.rb#L532" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M002190_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File actionpack/lib/action_view/helpers/asset_tag_helper.rb, line 532</span>
+532:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">template</span>, <span class="ruby-identifier">controller</span>, <span class="ruby-identifier">source</span>, <span class="ruby-identifier">include_host</span> = <span class="ruby-keyword kw">true</span>)
+533:             <span class="ruby-comment cmt"># NOTE: The template arg is temporarily needed for a legacy plugin</span>
+534:             <span class="ruby-comment cmt"># hook that is expected to call rewrite_asset_path on the</span>
+535:             <span class="ruby-comment cmt"># template. This should eventually be removed.</span>
+536:             <span class="ruby-ivar">@template</span> = <span class="ruby-identifier">template</span>
+537:             <span class="ruby-ivar">@controller</span> = <span class="ruby-identifier">controller</span>
+538:             <span class="ruby-ivar">@source</span> = <span class="ruby-identifier">source</span>
+539:             <span class="ruby-ivar">@include_host</span> = <span class="ruby-identifier">include_host</span>
+540:             <span class="ruby-ivar">@cache_key</span> = <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">controller</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">:request</span>)
+541:               [<span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">name</span>,<span class="ruby-identifier">controller</span>.<span class="ruby-identifier">request</span>.<span class="ruby-identifier">protocol</span>,
+542:                <span class="ruby-constant">ActionController</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">asset_host</span>,
+543:                <span class="ruby-constant">ActionController</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">relative_url_root</span>,
+544:                <span class="ruby-identifier">source</span>, <span class="ruby-identifier">include_host</span>]
+545:             <span class="ruby-keyword kw">else</span>
+546:               [<span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">name</span>,<span class="ruby-constant">ActionController</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">asset_host</span>, <span class="ruby-identifier">source</span>, <span class="ruby-identifier">include_host</span>]
+547:             <span class="ruby-keyword kw">end</span>
+548:           <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M002192">
+                    
+                    <a name="M002192"></a><b>asset_file_path</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002192_source')" id="l_M002192_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/085ebf0368594907fb4b5839834f879295693dce/actionpack/lib/action_view/helpers/asset_tag_helper.rb#L555" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M002192_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File actionpack/lib/action_view/helpers/asset_tag_helper.rb, line 555</span>
+555:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">asset_file_path</span>
+556:             <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-constant">ASSETS_DIR</span>, <span class="ruby-identifier">public_path</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">'?'</span>).<span class="ruby-identifier">first</span>)
+557:           <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002193">
+                    
+                    <a name="M002193"></a><b>contents</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002193_source')" id="l_M002193_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/085ebf0368594907fb4b5839834f879295693dce/actionpack/lib/action_view/helpers/asset_tag_helper.rb#L560" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M002193_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File actionpack/lib/action_view/helpers/asset_tag_helper.rb, line 560</span>
+560:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">contents</span>
+561:             <span class="ruby-constant">File</span>.<span class="ruby-identifier">read</span>(<span class="ruby-identifier">asset_file_path</span>)
+562:           <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002194">
+                    
+                    <a name="M002194"></a><b>mtime</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002194_source')" id="l_M002194_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/085ebf0368594907fb4b5839834f879295693dce/actionpack/lib/action_view/helpers/asset_tag_helper.rb#L564" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M002194_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File actionpack/lib/action_view/helpers/asset_tag_helper.rb, line 564</span>
+564:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">mtime</span>
+565:             <span class="ruby-constant">File</span>.<span class="ruby-identifier">mtime</span>(<span class="ruby-identifier">asset_file_path</span>)
+566:           <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002191">
+                    
+                    <a name="M002191"></a><b>public_path</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002191_source')" id="l_M002191_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/085ebf0368594907fb4b5839834f879295693dce/actionpack/lib/action_view/helpers/asset_tag_helper.rb#L550" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M002191_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File actionpack/lib/action_view/helpers/asset_tag_helper.rb, line 550</span>
+550:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">public_path</span>
+551:             <span class="ruby-identifier">compute_public_path</span>(<span class="ruby-ivar">@source</span>)
+552:           <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

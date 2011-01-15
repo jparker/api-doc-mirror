@@ -1,0 +1,295 @@
+  <div id="fileHeader">
+    <h1>active_record_helper.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionpack/lib/action_view/helpers/active_record_helper.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:04 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>require 'cgi'
+require 'action_view/helpers/form_helper'
+
+module ActionView
+  class Base
+    @@field_error_proc = Proc.new{ |html_tag, instance| &quot;&lt;div class=\&quot;fieldWithErrors\&quot;&gt;#{html_tag}&lt;/div&gt;&quot; }
+    cattr_accessor :field_error_proc
+  end
+
+  module Helpers
+    # The Active Record Helper makes it easier to create forms for records kept in instance variables. The most far-reaching is the +form+
+    # method that creates a complete form for all the basic content types of the record (not associations or aggregations, though). This
+    # is a great way of making the record quickly available for editing, but likely to prove lackluster for a complicated real-world form.
+    # In that case, it's better to use the +input+ method and the specialized +form+ methods in link:classes/ActionView/Helpers/FormHelper.html
+    module ActiveRecordHelper
+      # Returns a default input tag for the type of object returned by the method. For example, if &lt;tt&gt;@post&lt;/tt&gt;
+      # has an attribute +title+ mapped to a +VARCHAR+ column that holds &quot;Hello World&quot;:
+      #
+      #   input(&quot;post&quot;, &quot;title&quot;)
+      #   # =&gt; &lt;input id=&quot;post_title&quot; name=&quot;post[title]&quot; size=&quot;30&quot; type=&quot;text&quot; value=&quot;Hello World&quot; /&gt;
+      def input(record_name, method, options = {})
+        InstanceTag.new(record_name, method, self).to_tag(options)
+      end
+
+      # Returns an entire form with all needed input tags for a specified Active Record object. For example, if &lt;tt&gt;@post&lt;/tt&gt;
+      # has attributes named +title+ of type +VARCHAR+ and +body+ of type +TEXT+ then
+      #
+      #   form(&quot;post&quot;) 
+      #
+      # would yield a form like the following (modulus formatting):
+      #
+      #   &lt;form action='/posts/create' method='post'&gt;
+      #     &lt;p&gt;
+      #       &lt;label for=&quot;post_title&quot;&gt;Title&lt;/label&gt;&lt;br /&gt;
+      #       &lt;input id=&quot;post_title&quot; name=&quot;post[title]&quot; size=&quot;30&quot; type=&quot;text&quot; value=&quot;Hello World&quot; /&gt;
+      #     &lt;/p&gt;
+      #     &lt;p&gt;
+      #       &lt;label for=&quot;post_body&quot;&gt;Body&lt;/label&gt;&lt;br /&gt;
+      #       &lt;textarea cols=&quot;40&quot; id=&quot;post_body&quot; name=&quot;post[body]&quot; rows=&quot;20&quot;&gt;&lt;/textarea&gt;
+      #     &lt;/p&gt;
+      #     &lt;input name=&quot;commit&quot; type=&quot;submit&quot; value=&quot;Create&quot; /&gt;
+      #   &lt;/form&gt;
+      #
+      # It's possible to specialize the form builder by using a different action name and by supplying another
+      # block renderer. For example, if &lt;tt&gt;@entry&lt;/tt&gt; has an attribute +message+ of type +VARCHAR+ then
+      #
+      #   form(&quot;entry&quot;,
+      #     :action =&gt; &quot;sign&quot;,
+      #     :input_block =&gt; Proc.new { |record, column|
+      #       &quot;#{column.human_name}: #{input(record, column.name)}&lt;br /&gt;&quot;
+      #   })
+      #
+      # would yield a form like the following (modulus formatting):
+      #
+      #   &lt;form action=&quot;/entries/sign&quot; method=&quot;post&quot;&gt;
+      #     Message:
+      #     &lt;input id=&quot;entry_message&quot; name=&quot;entry[message]&quot; size=&quot;30&quot; type=&quot;text&quot; /&gt;&lt;br /&gt;
+      #     &lt;input name=&quot;commit&quot; type=&quot;submit&quot; value=&quot;Sign&quot; /&gt;
+      #   &lt;/form&gt;
+      #
+      # It's also possible to add additional content to the form by giving it a block, such as:
+      #
+      #   form(&quot;entry&quot;, :action =&gt; &quot;sign&quot;) do |form|
+      #     form &lt;&lt; content_tag(&quot;b&quot;, &quot;Department&quot;)
+      #     form &lt;&lt; collection_select(&quot;department&quot;, &quot;id&quot;, @departments, &quot;id&quot;, &quot;name&quot;)
+      #   end
+      #
+      # The following options are available:
+      #
+      # * &lt;tt&gt;:action&lt;/tt&gt; - The action used when submitting the form (default: +create+ if a new record, otherwise +update+).
+      # * &lt;tt&gt;:input_block&lt;/tt&gt; - Specialize the output using a different block, see above.
+      # * &lt;tt&gt;:method&lt;/tt&gt; - The method used when submitting the form (default: +post+).
+      # * &lt;tt&gt;:multipart&lt;/tt&gt; - Whether to change the enctype of the form to &quot;multipart/form-data&quot;, used when uploading a file (default: +false+).
+      # * &lt;tt&gt;:submit_value&lt;/tt&gt; - The text of the submit button (default: &quot;Create&quot; if a new record, otherwise &quot;Update&quot;).
+      def form(record_name, options = {})
+        record = instance_variable_get(&quot;@#{record_name}&quot;)
+
+        options = options.symbolize_keys
+        options[:action] ||= record.new_record? ? &quot;create&quot; : &quot;update&quot;
+        action = url_for(:action =&gt; options[:action], :id =&gt; record)
+
+        submit_value = options[:submit_value] || options[:action].gsub(/[^\w]/, '').capitalize
+
+        contents = form_tag({:action =&gt; action}, :method =&gt;(options[:method] || 'post'), :enctype =&gt; options[:multipart] ? 'multipart/form-data': nil)
+        contents &lt;&lt; hidden_field(record_name, :id) unless record.new_record?
+        contents &lt;&lt; all_input_tags(record, record_name, options)
+        yield contents if block_given?
+        contents &lt;&lt; submit_tag(submit_value)
+        contents &lt;&lt; '&lt;/form&gt;'
+      end
+
+      # Returns a string containing the error message attached to the +method+ on the +object+ if one exists.
+      # This error message is wrapped in a &lt;tt&gt;DIV&lt;/tt&gt; tag, which can be extended to include a +prepend_text+ and/or +append_text+
+      # (to properly explain the error), and a +css_class+ to style it accordingly. +object+ should either be the name of an instance variable or
+      # the actual object. As an example, let's say you have a model &lt;tt&gt;@post&lt;/tt&gt; that has an error message on the +title+ attribute:
+      #
+      #   &lt;%= error_message_on &quot;post&quot;, &quot;title&quot; %&gt;
+      #   # =&gt; &lt;div class=&quot;formError&quot;&gt;can't be empty&lt;/div&gt;
+      #
+      #   &lt;%= error_message_on @post, &quot;title&quot; %&gt;
+      #   # =&gt; &lt;div class=&quot;formError&quot;&gt;can't be empty&lt;/div&gt;
+      #
+      #   &lt;%= error_message_on &quot;post&quot;, &quot;title&quot;, &quot;Title simply &quot;, &quot; (or it won't work).&quot;, &quot;inputError&quot; %&gt;
+      #   # =&gt; &lt;div class=&quot;inputError&quot;&gt;Title simply can't be empty (or it won't work).&lt;/div&gt;
+      def error_message_on(object, method, prepend_text = &quot;&quot;, append_text = &quot;&quot;, css_class = &quot;formError&quot;)
+        if (obj = (object.respond_to?(:errors) ? object : instance_variable_get(&quot;@#{object}&quot;))) &amp;&amp;
+          (errors = obj.errors.on(method))
+          content_tag(&quot;div&quot;, &quot;#{prepend_text}#{errors.is_a?(Array) ? errors.first : errors}#{append_text}&quot;, :class =&gt; css_class)
+        else 
+          ''
+        end
+      end
+
+      # Returns a string with a &lt;tt&gt;DIV&lt;/tt&gt; containing all of the error messages for the objects located as instance variables by the names
+      # given.  If more than one object is specified, the errors for the objects are displayed in the order that the object names are
+      # provided.
+      #
+      # This &lt;tt&gt;DIV&lt;/tt&gt; can be tailored by the following options:
+      #
+      # * &lt;tt&gt;:header_tag&lt;/tt&gt; - Used for the header of the error div (default: &quot;h2&quot;).
+      # * &lt;tt&gt;:id&lt;/tt&gt; - The id of the error div (default: &quot;errorExplanation&quot;).
+      # * &lt;tt&gt;:class&lt;/tt&gt; - The class of the error div (default: &quot;errorExplanation&quot;).
+      # * &lt;tt&gt;:object&lt;/tt&gt; - The object (or array of objects) for which to display errors,
+      #   if you need to escape the instance variable convention.
+      # * &lt;tt&gt;:object_name&lt;/tt&gt; - The object name to use in the header, or any text that you prefer.
+      #   If &lt;tt&gt;:object_name&lt;/tt&gt; is not set, the name of the first object will be used.
+      # * &lt;tt&gt;:header_message&lt;/tt&gt; - The message in the header of the error div.  Pass +nil+
+      #   or an empty string to avoid the header message altogether. (Default: &quot;X errors
+      #   prohibited this object from being saved&quot;).
+      # * &lt;tt&gt;:message&lt;/tt&gt; - The explanation message after the header message and before
+      #   the error list.  Pass +nil+ or an empty string to avoid the explanation message
+      #   altogether. (Default: &quot;There were problems with the following fields:&quot;).
+      #
+      # To specify the display for one object, you simply provide its name as a parameter.
+      # For example, for the &lt;tt&gt;@user&lt;/tt&gt; model:
+      # 
+      #   error_messages_for 'user'
+      #
+      # To specify more than one object, you simply list them; optionally, you can add an extra &lt;tt&gt;:object_name&lt;/tt&gt; parameter, which
+      # will be the name used in the header message:
+      #
+      #   error_messages_for 'user_common', 'user', :object_name =&gt; 'user'
+      #
+      # If the objects cannot be located as instance variables, you can add an extra &lt;tt&gt;:object&lt;/tt&gt; paremeter which gives the actual
+      # object (or array of objects to use):
+      #
+      #   error_messages_for 'user', :object =&gt; @question.user
+      #
+      # NOTE: This is a pre-packaged presentation of the errors with embedded strings and a certain HTML structure. If what
+      # you need is significantly different from the default presentation, it makes plenty of sense to access the &lt;tt&gt;object.errors&lt;/tt&gt;
+      # instance yourself and set it up. View the source of this method to see how easy it is.
+      def error_messages_for(*params)
+        options = params.extract_options!.symbolize_keys
+        if object = options.delete(:object)
+          objects = [object].flatten
+        else
+          objects = params.collect {|object_name| instance_variable_get(&quot;@#{object_name}&quot;) }.compact
+        end
+        count   = objects.inject(0) {|sum, object| sum + object.errors.count }
+        unless count.zero?
+          html = {}
+          [:id, :class].each do |key|
+            if options.include?(key)
+              value = options[key]
+              html[key] = value unless value.blank?
+            else
+              html[key] = 'errorExplanation'
+            end
+          end
+          options[:object_name] ||= params.first
+          options[:header_message] = &quot;#{pluralize(count, 'error')} prohibited this #{options[:object_name].to_s.gsub('_', ' ')} from being saved&quot; unless options.include?(:header_message)
+          options[:message] ||= 'There were problems with the following fields:' unless options.include?(:message)
+          error_messages = objects.sum {|object| object.errors.full_messages.map {|msg| content_tag(:li, msg) } }.join
+
+          contents = ''
+          contents &lt;&lt; content_tag(options[:header_tag] || :h2, options[:header_message]) unless options[:header_message].blank?
+          contents &lt;&lt; content_tag(:p, options[:message]) unless options[:message].blank?
+          contents &lt;&lt; content_tag(:ul, error_messages)
+
+          content_tag(:div, contents, html)
+        else
+          ''
+        end
+      end
+
+      private
+        def all_input_tags(record, record_name, options)
+          input_block = options[:input_block] || default_input_block
+          record.class.content_columns.collect{ |column| input_block.call(record_name, column) }.join(&quot;\n&quot;)
+        end
+
+        def default_input_block
+          Proc.new { |record, column| %(&lt;p&gt;&lt;label for=&quot;#{record}_#{column.name}&quot;&gt;#{column.human_name}&lt;/label&gt;&lt;br /&gt;#{input(record, column.name)}&lt;/p&gt;) }
+        end
+    end
+
+    class InstanceTag #:nodoc:
+      def to_tag(options = {})
+        case column_type
+          when :string
+            field_type = @method_name.include?(&quot;password&quot;) ? &quot;password&quot; : &quot;text&quot;
+            to_input_field_tag(field_type, options)
+          when :text
+            to_text_area_tag(options)
+          when :integer, :float, :decimal
+            to_input_field_tag(&quot;text&quot;, options)
+          when :date
+            to_date_select_tag(options)
+          when :datetime, :timestamp
+            to_datetime_select_tag(options)
+          when :time
+            to_time_select_tag(options)
+          when :boolean
+            to_boolean_select_tag(options)
+        end
+      end
+
+      alias_method :tag_without_error_wrapping, :tag
+      def tag(name, options)
+        if object.respond_to?(&quot;errors&quot;) &amp;&amp; object.errors.respond_to?(&quot;on&quot;)
+          error_wrapping(tag_without_error_wrapping(name, options), object.errors.on(@method_name))
+        else
+          tag_without_error_wrapping(name, options)
+        end
+      end
+
+      alias_method :content_tag_without_error_wrapping, :content_tag
+      def content_tag(name, value, options)
+        if object.respond_to?(&quot;errors&quot;) &amp;&amp; object.errors.respond_to?(&quot;on&quot;)
+          error_wrapping(content_tag_without_error_wrapping(name, value, options), object.errors.on(@method_name))
+        else
+          content_tag_without_error_wrapping(name, value, options)
+        end
+      end
+
+      alias_method :to_date_select_tag_without_error_wrapping, :to_date_select_tag
+      def to_date_select_tag(options = {}, html_options = {})
+        if object.respond_to?(&quot;errors&quot;) &amp;&amp; object.errors.respond_to?(&quot;on&quot;)
+          error_wrapping(to_date_select_tag_without_error_wrapping(options, html_options), object.errors.on(@method_name))
+        else
+          to_date_select_tag_without_error_wrapping(options, html_options)
+        end
+      end
+
+      alias_method :to_datetime_select_tag_without_error_wrapping, :to_datetime_select_tag
+      def to_datetime_select_tag(options = {}, html_options = {})
+        if object.respond_to?(&quot;errors&quot;) &amp;&amp; object.errors.respond_to?(&quot;on&quot;)
+            error_wrapping(to_datetime_select_tag_without_error_wrapping(options, html_options), object.errors.on(@method_name))
+          else
+            to_datetime_select_tag_without_error_wrapping(options, html_options)
+        end
+      end
+
+      alias_method :to_time_select_tag_without_error_wrapping, :to_time_select_tag
+      def to_time_select_tag(options = {}, html_options = {})
+        if object.respond_to?(&quot;errors&quot;) &amp;&amp; object.errors.respond_to?(&quot;on&quot;)
+          error_wrapping(to_time_select_tag_without_error_wrapping(options, html_options), object.errors.on(@method_name))
+        else
+          to_time_select_tag_without_error_wrapping(options, html_options)
+        end
+      end
+
+      def error_wrapping(html_tag, has_error)
+        has_error ? Base.field_error_proc.call(html_tag, self) : html_tag
+      end
+
+      def error_message
+        object.errors.on(@method_name)
+      end
+
+      def column_type
+        object.send(&quot;column_for_attribute&quot;, @method_name).type
+      end
+    end
+  end
+end
+</pre>
+    </div>

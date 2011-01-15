@@ -1,0 +1,43 @@
+  <div id="fileHeader">
+    <h1>gzip.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activesupport/lib/active_support/gzip.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>require 'zlib'
+require 'stringio'
+
+module ActiveSupport
+  # A convenient wrapper for the zlib standard library that allows compression/decompression of strings with gzip.
+  module Gzip
+    class Stream &lt; StringIO
+      def close; rewind; end
+    end
+
+    # Decompresses a gzipped string.
+    def self.decompress(source)
+      Zlib::GzipReader.new(StringIO.new(source)).read
+    end
+
+    # Compresses a string using gzip.
+    def self.compress(source)
+      output = Stream.new
+      gz = Zlib::GzipWriter.new(output)
+      gz.write(source)
+      gz.close
+      output.string
+    end
+  end
+end</pre>
+    </div>

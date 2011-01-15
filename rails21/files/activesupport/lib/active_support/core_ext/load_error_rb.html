@@ -1,0 +1,57 @@
+  <div id="fileHeader">
+    <h1>load_error.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activesupport/lib/active_support/core_ext/load_error.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>class MissingSourceFile &lt; LoadError #:nodoc:
+  attr_reader :path
+  def initialize(message, path)
+    super(message)
+    @path = path
+  end
+
+  def is_missing?(path)
+    path.gsub(/\.rb$/, '') == self.path.gsub(/\.rb$/, '')
+  end
+
+  def self.from_message(message)
+    REGEXPS.each do |regexp, capture|
+      match = regexp.match(message)
+      return MissingSourceFile.new(message, match[capture]) unless match.nil?
+    end
+    nil
+  end
+
+  REGEXPS = [
+    [/^no such file to load -- (.+)$/i, 1],
+    [/^Missing \w+ (file\s*)?([^\s]+.rb)$/i, 2],
+    [/^Missing API definition file in (.+)$/i, 1]
+  ] unless defined?(REGEXPS)
+end
+
+module ActiveSupport #:nodoc:
+  module CoreExtensions #:nodoc:
+    module LoadErrorExtensions #:nodoc:
+      module LoadErrorClassMethods #:nodoc:
+        def new(*args)
+          (self == LoadError &amp;&amp; MissingSourceFile.from_message(args.first)) || super
+        end
+      end
+      ::LoadError.extend(LoadErrorClassMethods)
+    end
+  end
+end
+</pre>
+    </div>

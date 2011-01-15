@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>OpenSSL::X509::Store</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            OpenSSL::X509::Store 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../../Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../../files/ext/openssl/ossl_hmac_c.html">ext/openssl/ossl_hmac.c</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+INIT
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006711">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>V</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006712">verify_callback=</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M006711">
+                    
+                    <a name="M006711"></a><b>X509::Store.new => store
+</b>
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006711_source')" id="l_M006711_source">show</a>
+                        
+                    </p>
+                    <div id="M006711_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_x509store_initialize(int argc, VALUE *argv, VALUE self)
+{
+    X509_STORE *store;
+
+/* BUG: This method takes any number of arguments but appears to ignore them. */
+    GetX509Store(self, store);
+    X509_STORE_set_verify_cb_func(store, ossl_verify_cb);
+    ossl_x509store_set_vfy_cb(self, Qnil);
+
+#if (OPENSSL_VERSION_NUMBER &lt; 0x00907000L)
+    rb_iv_set(self, &quot;@flags&quot;, INT2NUM(0));
+    rb_iv_set(self, &quot;@purpose&quot;, INT2NUM(0));
+    rb_iv_set(self, &quot;@trust&quot;, INT2NUM(0));
+#endif
+
+    /* last verification status */
+    rb_iv_set(self, &quot;@error&quot;, Qnil);
+    rb_iv_set(self, &quot;@error_string&quot;, Qnil);
+    rb_iv_set(self, &quot;@chain&quot;, Qnil);
+    rb_iv_set(self, &quot;@time&quot;, Qnil);
+
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M006712">
+                    
+                    <a name="M006712"></a><b>verify_callback=</b>(p1)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+General callback for <a href="../../OpenSSL.html">OpenSSL</a> verify
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006712_source')" id="l_M006712_source">show</a>
+                        
+                    </p>
+                    <div id="M006712_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_x509store_set_vfy_cb(VALUE self, VALUE cb)
+{
+    X509_STORE *store;
+
+    GetX509Store(self, store);
+    X509_STORE_set_ex_data(store, ossl_verify_cb_idx, (void*)cb);
+    rb_iv_set(self, &quot;@verify_callback&quot;, cb);
+
+    return cb;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

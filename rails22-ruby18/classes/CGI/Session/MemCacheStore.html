@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>CGI::Session::MemCacheStore</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            CGI::Session::MemCacheStore 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../../Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../../files/actionpack/lib/action_controller/session/mem_cache_store_rb.html">actionpack/lib/action_controller/session/mem_cache_store.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+MemCache-based session storage class.
+</p>
+<p>
+This builds upon the top-level MemCache class provided by the library file
+memcache.rb. <a href="../Session.html">Session</a> data is marshalled and
+stored in a memcached cache.
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001527">close</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>D</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001529">data</a>,</li>
+                
+                <li><a href="#M001528">delete</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001524">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>R</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001525">restore</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>U</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001526">update</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M001524">
+                    
+                    <a name="M001524"></a><b>new</b>(session, options = {})
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Create a new CGI::Session::MemCache instance
+</p>
+<p>
+This constructor is used internally by CGI::Session. The user does not
+generally need to call it directly.
+</p>
+<p>
+<tt>session</tt> is the session for which this instance is being created.
+The session id must only contain alphanumeric characters; automatically
+generated session ids observe this requirement.
+</p>
+<p>
+<tt>options</tt> is a hash of options for the initializer. The following
+options are recognized:
+</p>
+<table>
+<tr><td valign="top">cache:</td><td>an instance of a MemCache client to use as the
+
+</td></tr>
+</table>
+<pre>
+     session cache.
+</pre>
+<table>
+<tr><td valign="top">expires:</td><td>an expiry time value to use for session entries in
+
+</td></tr>
+</table>
+<pre>
+    the session cache. +expires+ is interpreted in seconds
+    relative to the current time if it’s less than 60*60*24*30
+    (30 days), or as an absolute Unix time (e.g., Time#to_i) if
+    greater. If +expires+ is +0+, or not passed on +options+,
+    the entry will never expire.
+</pre>
+<p>
+This session&#8217;s memcache entry will be created if it does not exist,
+or retrieved if it does.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001524_source')" id="l_M001524_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/d0df7f2b12b201edbef0d59360224e68f9a0a447/actionpack/lib/action_controller/session/mem_cache_store.rb#L51" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M001524_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File actionpack/lib/action_controller/session/mem_cache_store.rb, line 51</span>
+51:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">session</span>, <span class="ruby-identifier">options</span> = {})
+52:           <span class="ruby-identifier">id</span> = <span class="ruby-identifier">session</span>.<span class="ruby-identifier">session_id</span>
+53:           <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">check_id</span>(<span class="ruby-identifier">id</span>)
+54:             <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-value str">&quot;session_id '%s' is invalid&quot;</span> <span class="ruby-operator">%</span> <span class="ruby-identifier">id</span>
+55:           <span class="ruby-keyword kw">end</span>
+56:           <span class="ruby-ivar">@cache</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value str">'cache'</span>] <span class="ruby-operator">||</span> <span class="ruby-constant">MemCache</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value str">'localhost'</span>)
+57:           <span class="ruby-ivar">@expires</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value str">'expires'</span>] <span class="ruby-operator">||</span> <span class="ruby-value">0</span>
+58:           <span class="ruby-ivar">@session_key</span> = <span class="ruby-node">&quot;session:#{id}&quot;</span>
+59:           <span class="ruby-ivar">@session_data</span> = {}
+60:           <span class="ruby-comment cmt"># Add this key to the store if haven't done so yet</span>
+61:           <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@cache</span>.<span class="ruby-identifier">get</span>(<span class="ruby-ivar">@session_key</span>)
+62:             <span class="ruby-ivar">@cache</span>.<span class="ruby-identifier">add</span>(<span class="ruby-ivar">@session_key</span>, <span class="ruby-ivar">@session_data</span>, <span class="ruby-ivar">@expires</span>)
+63:           <span class="ruby-keyword kw">end</span>
+64:         <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M001527">
+                    
+                    <a name="M001527"></a><b>close</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Update and close the session&#8217;s memcache entry.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001527_source')" id="l_M001527_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/d0df7f2b12b201edbef0d59360224e68f9a0a447/actionpack/lib/action_controller/session/mem_cache_store.rb#L79" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M001527_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File actionpack/lib/action_controller/session/mem_cache_store.rb, line 79</span>
+79:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">close</span>
+80:           <span class="ruby-identifier">update</span>
+81:         <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001529">
+                    
+                    <a name="M001529"></a><b>data</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001529_source')" id="l_M001529_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/d0df7f2b12b201edbef0d59360224e68f9a0a447/actionpack/lib/action_controller/session/mem_cache_store.rb#L89" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M001529_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File actionpack/lib/action_controller/session/mem_cache_store.rb, line 89</span>
+89:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">data</span>
+90:           <span class="ruby-ivar">@session_data</span>
+91:         <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001528">
+                    
+                    <a name="M001528"></a><b>delete</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Delete the session&#8217;s memcache entry.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001528_source')" id="l_M001528_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/d0df7f2b12b201edbef0d59360224e68f9a0a447/actionpack/lib/action_controller/session/mem_cache_store.rb#L84" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M001528_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File actionpack/lib/action_controller/session/mem_cache_store.rb, line 84</span>
+84:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">delete</span>
+85:           <span class="ruby-ivar">@cache</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-ivar">@session_key</span>)
+86:           <span class="ruby-ivar">@session_data</span> = {}
+87:         <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001525">
+                    
+                    <a name="M001525"></a><b>restore</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Restore session state from the session&#8217;s memcache entry.
+</p>
+<p>
+Returns the session state as a hash.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001525_source')" id="l_M001525_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/d0df7f2b12b201edbef0d59360224e68f9a0a447/actionpack/lib/action_controller/session/mem_cache_store.rb#L69" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M001525_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File actionpack/lib/action_controller/session/mem_cache_store.rb, line 69</span>
+69:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">restore</span>
+70:           <span class="ruby-ivar">@session_data</span> = <span class="ruby-ivar">@cache</span>[<span class="ruby-ivar">@session_key</span>] <span class="ruby-operator">||</span> {}
+71:         <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001526">
+                    
+                    <a name="M001526"></a><b>update</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Save session state to the session&#8217;s memcache entry.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001526_source')" id="l_M001526_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/d0df7f2b12b201edbef0d59360224e68f9a0a447/actionpack/lib/action_controller/session/mem_cache_store.rb#L74" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M001526_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File actionpack/lib/action_controller/session/mem_cache_store.rb, line 74</span>
+74:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">update</span>
+75:           <span class="ruby-ivar">@cache</span>.<span class="ruby-identifier">set</span>(<span class="ruby-ivar">@session_key</span>, <span class="ruby-ivar">@session_data</span>, <span class="ruby-ivar">@expires</span>)
+76:         <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

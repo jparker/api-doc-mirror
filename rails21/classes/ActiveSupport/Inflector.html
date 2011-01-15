@@ -1,0 +1,556 @@
+  <div id="C00000423">
+<div class='banner'>
+  <span class="file-title-prefix">Module</span><br />Inflector<br/>
+  In:
+<a href="#" onclick="jsHref('files/activesupport/lib/active_support/inflector_rb.html');">activesupport/lib/active_support/inflector.rb</a>
+
+</div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+      <div id="content">
+
+  <div class="description"><p>
+The <a href="index.html?a=C00000423&name=Inflector">Inflector</a>
+transforms words from singular to plural, class names to table names,
+modularized class names to ones without, and class names to foreign keys.
+The default inflections for pluralization, singularization, and uncountable
+words are kept in inflections.rb.
+</p>
+<p>
+The Rails core team has stated patches for the inflections library will not
+be accepted in order to avoid breaking legacy applications which may be
+relying on errant inflections. If you discover an incorrect inflection and
+require it for your application, you&#8217;ll need to correct it yourself
+(explained below).
+</p>
+</div>
+
+
+
+  <div class="sectiontitle">Methods</div>
+  <ul>
+  <li><a href="index.html?a=M000936&name=camelize" >camelize</a></li>
+  <li><a href="index.html?a=M000943&name=classify" >classify</a></li>
+  <li><a href="index.html?a=M000945&name=constantize" >constantize</a></li>
+  <li><a href="index.html?a=M000939&name=dasherize" >dasherize</a></li>
+  <li><a href="index.html?a=M000941&name=demodulize" >demodulize</a></li>
+  <li><a href="index.html?a=M000944&name=foreign_key" >foreign_key</a></li>
+  <li><a href="index.html?a=M000940&name=humanize" >humanize</a></li>
+  <li><a href="index.html?a=M000933&name=inflections" >inflections</a></li>
+  <li><a href="index.html?a=M000946&name=ordinalize" >ordinalize</a></li>
+  <li><a href="index.html?a=M000934&name=pluralize" >pluralize</a></li>
+  <li><a href="index.html?a=M000935&name=singularize" >singularize</a></li>
+  <li><a href="index.html?a=M000942&name=tableize" >tableize</a></li>
+  <li><a href="index.html?a=M000937&name=titleize" >titleize</a></li>
+  <li><a href="index.html?a=M000938&name=underscore" >underscore</a></li>
+  </ul>
+
+
+
+  <div class="sectiontitle">Classes and Modules</div>
+  Class "<a href="#" onclick="jsHref('classes/ActiveSupport/Inflector/Inflections.html');" class="link">ActiveSupport::Inflector::Inflections</a>"<br />
+
+
+
+
+<div class="sectiontitle">Public Instance methods</div>
+<div id="M000936" class="method">
+  <div id="M000936_title" class="title">
+    <b>camelize</b>(lower_case_and_underscored_word, first_letter_in_uppercase = true)
+  </div>
+  <div class="description">
+  <p>
+By default, <tt>camelize</tt> converts strings to UpperCamelCase. If the
+argument to <tt>camelize</tt> is set to <tt>:lower</tt> then
+<tt>camelize</tt> produces lowerCamelCase.
+</p>
+<p>
+<tt>camelize</tt> will also convert &#8217;/&#8217; to &#8217;::&#8217;
+which is useful for converting paths to namespaces.
+</p>
+<p>
+Examples:
+</p>
+<pre>
+  &quot;active_record&quot;.camelize                # =&gt; &quot;ActiveRecord&quot;
+  &quot;active_record&quot;.camelize(:lower)        # =&gt; &quot;activeRecord&quot;
+  &quot;active_record/errors&quot;.camelize         # =&gt; &quot;ActiveRecord::Errors&quot;
+  &quot;active_record/errors&quot;.camelize(:lower) # =&gt; &quot;activeRecord::Errors&quot;
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000936_source')" id="l_M000936_source">show source</a> ]</p>
+  <div id="M000936_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activesupport/lib/active_support/inflector.rb, line 161</span>
+161:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">camelize</span>(<span class="ruby-identifier">lower_case_and_underscored_word</span>, <span class="ruby-identifier">first_letter_in_uppercase</span> = <span class="ruby-keyword kw">true</span>)
+162:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">first_letter_in_uppercase</span>
+163:         <span class="ruby-identifier">lower_case_and_underscored_word</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/\/(.?)/</span>) { <span class="ruby-node">&quot;::#{$1.upcase}&quot;</span> }.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/(?:^|_)(.)/</span>) { <span class="ruby-identifier">$1</span>.<span class="ruby-identifier">upcase</span> }
+164:       <span class="ruby-keyword kw">else</span>
+165:         <span class="ruby-identifier">lower_case_and_underscored_word</span>.<span class="ruby-identifier">first</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">camelize</span>(<span class="ruby-identifier">lower_case_and_underscored_word</span>)[<span class="ruby-value">1</span><span class="ruby-operator">..</span><span class="ruby-value">-1</span>]
+166:       <span class="ruby-keyword kw">end</span>
+167:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000943" class="method">
+  <div id="M000943_title" class="title">
+    <b>classify</b>(table_name)
+  </div>
+  <div class="description">
+  <p>
+Create a class name from a plural table name like Rails does for table
+names to models. Note that this returns a string and not a Class. (To
+convert to an actual class follow <tt>classify</tt> with
+<tt>constantize</tt>.)
+</p>
+<p>
+Examples:
+</p>
+<pre>
+  &quot;egg_and_hams&quot;.classify # =&gt; &quot;EggAndHam&quot;
+  &quot;posts&quot;.classify        # =&gt; &quot;Post&quot;
+</pre>
+<p>
+Singular names are not handled correctly:
+</p>
+<pre>
+  &quot;business&quot;.classify     # =&gt; &quot;Busines&quot;
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000943_source')" id="l_M000943_source">show source</a> ]</p>
+  <div id="M000943_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activesupport/lib/active_support/inflector.rb, line 245</span>
+245:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">classify</span>(<span class="ruby-identifier">table_name</span>)
+246:       <span class="ruby-comment cmt"># strip out any leading schema name</span>
+247:       <span class="ruby-identifier">camelize</span>(<span class="ruby-identifier">singularize</span>(<span class="ruby-identifier">table_name</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">sub</span>(<span class="ruby-regexp re">/.*\./</span>, <span class="ruby-value str">''</span>)))
+248:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000945" class="method">
+  <div id="M000945_title" class="title">
+    <b>constantize</b>(camel_cased_word)
+  </div>
+  <div class="description">
+  <p>
+Tries to find a constant with the name specified in the argument string:
+</p>
+<pre>
+  &quot;Module&quot;.constantize     # =&gt; Module
+  &quot;Test::Unit&quot;.constantize # =&gt; Test::Unit
+</pre>
+<p>
+The name is assumed to be the one of a top-level constant, no matter
+whether it starts with &quot;::&quot; or not. No lexical context is taken
+into account:
+</p>
+<pre>
+  C = 'outside'
+  module M
+    C = 'inside'
+    C               # =&gt; 'inside'
+    &quot;C&quot;.constantize # =&gt; 'outside', same as ::C
+  end
+</pre>
+<p>
+NameError is raised when the name is not in CamelCase or the constant is
+unknown.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000945_source')" id="l_M000945_source">show source</a> ]</p>
+  <div id="M000945_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activesupport/lib/active_support/inflector.rb, line 279</span>
+279:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">constantize</span>(<span class="ruby-identifier">camel_cased_word</span>)
+280:       <span class="ruby-identifier">names</span> = <span class="ruby-identifier">camel_cased_word</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">'::'</span>)
+281:       <span class="ruby-identifier">names</span>.<span class="ruby-identifier">shift</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">names</span>.<span class="ruby-identifier">empty?</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">names</span>.<span class="ruby-identifier">first</span>.<span class="ruby-identifier">empty?</span>
+282: 
+283:       <span class="ruby-identifier">constant</span> = <span class="ruby-constant">Object</span>
+284:       <span class="ruby-identifier">names</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">name</span><span class="ruby-operator">|</span>
+285:         <span class="ruby-identifier">constant</span> = <span class="ruby-identifier">constant</span>.<span class="ruby-identifier">const_defined?</span>(<span class="ruby-identifier">name</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">constant</span>.<span class="ruby-identifier">const_get</span>(<span class="ruby-identifier">name</span>) <span class="ruby-operator">:</span> <span class="ruby-identifier">constant</span>.<span class="ruby-identifier">const_missing</span>(<span class="ruby-identifier">name</span>)
+286:       <span class="ruby-keyword kw">end</span>
+287:       <span class="ruby-identifier">constant</span>
+288:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000939" class="method">
+  <div id="M000939_title" class="title">
+    <b>dasherize</b>(underscored_word)
+  </div>
+  <div class="description">
+  <p>
+Replaces underscores with dashes in the string.
+</p>
+<p>
+Example:
+</p>
+<pre>
+  &quot;puni_puni&quot; # =&gt; &quot;puni-puni&quot;
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000939_source')" id="l_M000939_source">show source</a> ]</p>
+  <div id="M000939_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activesupport/lib/active_support/inflector.rb, line 201</span>
+201:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">dasherize</span>(<span class="ruby-identifier">underscored_word</span>)
+202:       <span class="ruby-identifier">underscored_word</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/_/</span>, <span class="ruby-value str">'-'</span>)
+203:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000941" class="method">
+  <div id="M000941_title" class="title">
+    <b>demodulize</b>(class_name_in_module)
+  </div>
+  <div class="description">
+  <p>
+Removes the module part from the expression in the string.
+</p>
+<p>
+Examples:
+</p>
+<pre>
+  &quot;ActiveRecord::CoreExtensions::String::Inflections&quot;.demodulize # =&gt; &quot;Inflections&quot;
+  &quot;Inflections&quot;.demodulize                                       # =&gt; &quot;Inflections&quot;
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000941_source')" id="l_M000941_source">show source</a> ]</p>
+  <div id="M000941_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activesupport/lib/active_support/inflector.rb, line 220</span>
+220:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">demodulize</span>(<span class="ruby-identifier">class_name_in_module</span>)
+221:       <span class="ruby-identifier">class_name_in_module</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/^.*::/</span>, <span class="ruby-value str">''</span>)
+222:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000944" class="method">
+  <div id="M000944_title" class="title">
+    <b>foreign_key</b>(class_name, separate_class_name_and_id_with_underscore = true)
+  </div>
+  <div class="description">
+  <p>
+Creates a foreign key name from a class name.
+<tt>separate_class_name_and_id_with_underscore</tt> sets whether the method
+should put &#8216;_&#8217; between the name and &#8216;id&#8217;.
+</p>
+<p>
+Examples:
+</p>
+<pre>
+  &quot;Message&quot;.foreign_key        # =&gt; &quot;message_id&quot;
+  &quot;Message&quot;.foreign_key(false) # =&gt; &quot;messageid&quot;
+  &quot;Admin::Post&quot;.foreign_key    # =&gt; &quot;post_id&quot;
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000944_source')" id="l_M000944_source">show source</a> ]</p>
+  <div id="M000944_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activesupport/lib/active_support/inflector.rb, line 258</span>
+258:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">foreign_key</span>(<span class="ruby-identifier">class_name</span>, <span class="ruby-identifier">separate_class_name_and_id_with_underscore</span> = <span class="ruby-keyword kw">true</span>)
+259:       <span class="ruby-identifier">underscore</span>(<span class="ruby-identifier">demodulize</span>(<span class="ruby-identifier">class_name</span>)) <span class="ruby-operator">+</span> (<span class="ruby-identifier">separate_class_name_and_id_with_underscore</span> <span class="ruby-value">? </span><span class="ruby-value str">&quot;_id&quot;</span> <span class="ruby-operator">:</span> <span class="ruby-value str">&quot;id&quot;</span>)
+260:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000940" class="method">
+  <div id="M000940_title" class="title">
+    <b>humanize</b>(lower_case_and_underscored_word)
+  </div>
+  <div class="description">
+  <p>
+Capitalizes the first word and turns underscores into spaces and strips a
+trailing &quot;_id&quot;, if any. Like <tt>titleize</tt>, this is meant for
+creating pretty output.
+</p>
+<p>
+Examples:
+</p>
+<pre>
+  &quot;employee_salary&quot; # =&gt; &quot;Employee salary&quot;
+  &quot;author_id&quot;       # =&gt; &quot;Author&quot;
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000940_source')" id="l_M000940_source">show source</a> ]</p>
+  <div id="M000940_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activesupport/lib/active_support/inflector.rb, line 211</span>
+211:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">humanize</span>(<span class="ruby-identifier">lower_case_and_underscored_word</span>)
+212:       <span class="ruby-identifier">lower_case_and_underscored_word</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/_id$/</span>, <span class="ruby-value str">&quot;&quot;</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/_/</span>, <span class="ruby-value str">&quot; &quot;</span>).<span class="ruby-identifier">capitalize</span>
+213:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000933" class="method">
+  <div id="M000933_title" class="title">
+    <b>inflections</b>() {|Inflections.instance| ...}
+  </div>
+  <div class="description">
+  <p>
+Yields a singleton instance of <a
+href="index.html?a=C00000424&name=Inflector::Inflections">Inflector::Inflections</a>
+so you can specify additional inflector rules.
+</p>
+<p>
+Example:
+</p>
+<pre>
+  Inflector.inflections do |inflect|
+    inflect.uncountable &quot;rails&quot;
+  end
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000933_source')" id="l_M000933_source">show source</a> ]</p>
+  <div id="M000933_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activesupport/lib/active_support/inflector.rb, line 103</span>
+103:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">inflections</span>
+104:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">block_given?</span>
+105:         <span class="ruby-keyword kw">yield</span> <span class="ruby-constant">Inflections</span>.<span class="ruby-identifier">instance</span>
+106:       <span class="ruby-keyword kw">else</span>
+107:         <span class="ruby-constant">Inflections</span>.<span class="ruby-identifier">instance</span>
+108:       <span class="ruby-keyword kw">end</span>
+109:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000946" class="method">
+  <div id="M000946_title" class="title">
+    <b>ordinalize</b>(number)
+  </div>
+  <div class="description">
+  <p>
+Turns a number into an ordinal string used to denote the position in an
+ordered sequence such as 1st, 2nd, 3rd, 4th.
+</p>
+<p>
+Examples:
+</p>
+<pre>
+  ordinalize(1)     # =&gt; &quot;1st&quot;
+  ordinalize(2)     # =&gt; &quot;2nd&quot;
+  ordinalize(1002)  # =&gt; &quot;1002nd&quot;
+  ordinalize(1003)  # =&gt; &quot;1003rd&quot;
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000946_source')" id="l_M000946_source">show source</a> ]</p>
+  <div id="M000946_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activesupport/lib/active_support/inflector.rb, line 298</span>
+298:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">ordinalize</span>(<span class="ruby-identifier">number</span>)
+299:       <span class="ruby-keyword kw">if</span> (<span class="ruby-value">11</span><span class="ruby-operator">..</span><span class="ruby-value">13</span>).<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">number</span>.<span class="ruby-identifier">to_i</span> <span class="ruby-operator">%</span> <span class="ruby-value">100</span>)
+300:         <span class="ruby-node">&quot;#{number}th&quot;</span>
+301:       <span class="ruby-keyword kw">else</span>
+302:         <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">number</span>.<span class="ruby-identifier">to_i</span> <span class="ruby-operator">%</span> <span class="ruby-value">10</span>
+303:           <span class="ruby-keyword kw">when</span> <span class="ruby-value">1</span>; <span class="ruby-node">&quot;#{number}st&quot;</span>
+304:           <span class="ruby-keyword kw">when</span> <span class="ruby-value">2</span>; <span class="ruby-node">&quot;#{number}nd&quot;</span>
+305:           <span class="ruby-keyword kw">when</span> <span class="ruby-value">3</span>; <span class="ruby-node">&quot;#{number}rd&quot;</span>
+306:           <span class="ruby-keyword kw">else</span>    <span class="ruby-node">&quot;#{number}th&quot;</span>
+307:         <span class="ruby-keyword kw">end</span>
+308:       <span class="ruby-keyword kw">end</span>
+309:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000934" class="method">
+  <div id="M000934_title" class="title">
+    <b>pluralize</b>(word)
+  </div>
+  <div class="description">
+  <p>
+Returns the plural form of the word in the string.
+</p>
+<p>
+Examples:
+</p>
+<pre>
+  &quot;post&quot;.pluralize             # =&gt; &quot;posts&quot;
+  &quot;octopus&quot;.pluralize          # =&gt; &quot;octopi&quot;
+  &quot;sheep&quot;.pluralize            # =&gt; &quot;sheep&quot;
+  &quot;words&quot;.pluralize            # =&gt; &quot;words&quot;
+  &quot;the blue mailman&quot;.pluralize # =&gt; &quot;the blue mailmen&quot;
+  &quot;CamelOctopus&quot;.pluralize     # =&gt; &quot;CamelOctopi&quot;
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000934_source')" id="l_M000934_source">show source</a> ]</p>
+  <div id="M000934_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activesupport/lib/active_support/inflector.rb, line 120</span>
+120:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">pluralize</span>(<span class="ruby-identifier">word</span>)
+121:       <span class="ruby-identifier">result</span> = <span class="ruby-identifier">word</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">dup</span>
+122: 
+123:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">word</span>.<span class="ruby-identifier">empty?</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">inflections</span>.<span class="ruby-identifier">uncountables</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">result</span>.<span class="ruby-identifier">downcase</span>)
+124:         <span class="ruby-identifier">result</span>
+125:       <span class="ruby-keyword kw">else</span>
+126:         <span class="ruby-identifier">inflections</span>.<span class="ruby-identifier">plurals</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span>(<span class="ruby-identifier">rule</span>, <span class="ruby-identifier">replacement</span>)<span class="ruby-operator">|</span> <span class="ruby-keyword kw">break</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">result</span>.<span class="ruby-identifier">gsub!</span>(<span class="ruby-identifier">rule</span>, <span class="ruby-identifier">replacement</span>) }
+127:         <span class="ruby-identifier">result</span>
+128:       <span class="ruby-keyword kw">end</span>
+129:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000935" class="method">
+  <div id="M000935_title" class="title">
+    <b>singularize</b>(word)
+  </div>
+  <div class="description">
+  <p>
+The reverse of <tt>pluralize</tt>, returns the singular form of a word in a
+string.
+</p>
+<p>
+Examples:
+</p>
+<pre>
+  &quot;posts&quot;.singularize            # =&gt; &quot;post&quot;
+  &quot;octopi&quot;.singularize           # =&gt; &quot;octopus&quot;
+  &quot;sheep&quot;.singluarize            # =&gt; &quot;sheep&quot;
+  &quot;word&quot;.singluarize             # =&gt; &quot;word&quot;
+  &quot;the blue mailmen&quot;.singularize # =&gt; &quot;the blue mailman&quot;
+  &quot;CamelOctopi&quot;.singularize      # =&gt; &quot;CamelOctopus&quot;
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000935_source')" id="l_M000935_source">show source</a> ]</p>
+  <div id="M000935_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activesupport/lib/active_support/inflector.rb, line 140</span>
+140:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">singularize</span>(<span class="ruby-identifier">word</span>)
+141:       <span class="ruby-identifier">result</span> = <span class="ruby-identifier">word</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">dup</span>
+142: 
+143:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">inflections</span>.<span class="ruby-identifier">uncountables</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">result</span>.<span class="ruby-identifier">downcase</span>)
+144:         <span class="ruby-identifier">result</span>
+145:       <span class="ruby-keyword kw">else</span>
+146:         <span class="ruby-identifier">inflections</span>.<span class="ruby-identifier">singulars</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span>(<span class="ruby-identifier">rule</span>, <span class="ruby-identifier">replacement</span>)<span class="ruby-operator">|</span> <span class="ruby-keyword kw">break</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">result</span>.<span class="ruby-identifier">gsub!</span>(<span class="ruby-identifier">rule</span>, <span class="ruby-identifier">replacement</span>) }
+147:         <span class="ruby-identifier">result</span>
+148:       <span class="ruby-keyword kw">end</span>
+149:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000942" class="method">
+  <div id="M000942_title" class="title">
+    <b>tableize</b>(class_name)
+  </div>
+  <div class="description">
+  <p>
+Create the name of a table like Rails does for models to table names. This
+method uses the <tt>pluralize</tt> method on the last word in the string.
+</p>
+<p>
+Examples
+</p>
+<pre>
+  &quot;RawScaledScorer&quot;.tableize # =&gt; &quot;raw_scaled_scorers&quot;
+  &quot;egg_and_ham&quot;.tableize     # =&gt; &quot;egg_and_hams&quot;
+  &quot;fancyCategory&quot;.tableize   # =&gt; &quot;fancy_categories&quot;
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000942_source')" id="l_M000942_source">show source</a> ]</p>
+  <div id="M000942_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activesupport/lib/active_support/inflector.rb, line 231</span>
+231:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">tableize</span>(<span class="ruby-identifier">class_name</span>)
+232:       <span class="ruby-identifier">pluralize</span>(<span class="ruby-identifier">underscore</span>(<span class="ruby-identifier">class_name</span>))
+233:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000937" class="method">
+  <div id="M000937_title" class="title">
+    <b>titleize</b>(word)
+  </div>
+  <div class="description">
+  <p>
+Capitalizes all the words and replaces some characters in the string to
+create a nicer looking title. <tt>titleize</tt> is meant for creating
+pretty output. It is not used in the Rails internals.
+</p>
+<p>
+<tt>titleize</tt> is also aliased as as <tt>titlecase</tt>.
+</p>
+<p>
+Examples:
+</p>
+<pre>
+  &quot;man from the boondocks&quot;.titleize # =&gt; &quot;Man From The Boondocks&quot;
+  &quot;x-men: the last stand&quot;.titleize  # =&gt; &quot;X Men: The Last Stand&quot;
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000937_source')" id="l_M000937_source">show source</a> ]</p>
+  <div id="M000937_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activesupport/lib/active_support/inflector.rb, line 178</span>
+178:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">titleize</span>(<span class="ruby-identifier">word</span>)
+179:       <span class="ruby-identifier">humanize</span>(<span class="ruby-identifier">underscore</span>(<span class="ruby-identifier">word</span>)).<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/\b('?[a-z])/</span>) { <span class="ruby-identifier">$1</span>.<span class="ruby-identifier">capitalize</span> }
+180:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000938" class="method">
+  <div id="M000938_title" class="title">
+    <b>underscore</b>(camel_cased_word)
+  </div>
+  <div class="description">
+  <p>
+The reverse of <tt>camelize</tt>. Makes an underscored, lowercase form from
+the expression in the string.
+</p>
+<p>
+Changes &#8217;::&#8217; to &#8217;/&#8217; to convert namespaces to paths.
+</p>
+<p>
+Examples:
+</p>
+<pre>
+  &quot;ActiveRecord&quot;.underscore         # =&gt; &quot;active_record&quot;
+  &quot;ActiveRecord::Errors&quot;.underscore # =&gt; active_record/errors
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000938_source')" id="l_M000938_source">show source</a> ]</p>
+  <div id="M000938_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activesupport/lib/active_support/inflector.rb, line 189</span>
+189:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">underscore</span>(<span class="ruby-identifier">camel_cased_word</span>)
+190:       <span class="ruby-identifier">camel_cased_word</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/::/</span>, <span class="ruby-value str">'/'</span>).
+191:         <span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/([A-Z]+)([A-Z][a-z])/</span>,<span class="ruby-value str">'\1_\2'</span>).
+192:         <span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/([a-z\d])([A-Z])/</span>,<span class="ruby-value str">'\1_\2'</span>).
+193:         <span class="ruby-identifier">tr</span>(<span class="ruby-value str">&quot;-&quot;</span>, <span class="ruby-value str">&quot;_&quot;</span>).
+194:         <span class="ruby-identifier">downcase</span>
+195:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+</div>
+
+  </div>

@@ -1,0 +1,77 @@
+  <div id="fileHeader">
+    <h1>extending.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activesupport/lib/active_support/core_ext/object/extending.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>class Object
+  def remove_subclasses_of(*superclasses) #:nodoc:
+    Class.remove_class(*subclasses_of(*superclasses))
+  end
+
+  def subclasses_of(*superclasses) #:nodoc:
+    subclasses = []
+
+    # Exclude this class unless it's a subclass of our supers and is defined.
+    # We check defined? in case we find a removed class that has yet to be
+    # garbage collected. This also fails for anonymous classes -- please
+    # submit a patch if you have a workaround.
+    ObjectSpace.each_object(Class) do |k|
+      if superclasses.any? { |superclass| k &lt; superclass } &amp;&amp;
+        (k.name.blank? || eval(&quot;defined?(::#{k}) &amp;&amp; ::#{k}.object_id == k.object_id&quot;))
+        subclasses &lt;&lt; k
+      end
+    end
+
+    subclasses
+  end
+
+  def extended_by #:nodoc:
+    ancestors = class &lt;&lt; self; ancestors end
+    ancestors.select { |mod| mod.class == Module } - [ Object, Kernel ]
+  end
+
+  def extend_with_included_modules_from(object) #:nodoc:
+    object.extended_by.each { |mod| extend mod }
+  end
+
+  unless defined? instance_exec # 1.9
+    module InstanceExecMethods #:nodoc:
+    end
+    include InstanceExecMethods
+
+    # Evaluate the block with the given arguments within the context of
+    # this object, so self is set to the method receiver.
+    #
+    # From Mauricio's http://eigenclass.org/hiki/bounded+space+instance_exec
+    def instance_exec(*args, &amp;block)
+      begin
+        old_critical, Thread.critical = Thread.critical, true
+        n = 0
+        n += 1 while respond_to?(method_name = &quot;__instance_exec#{n}&quot;)
+        InstanceExecMethods.module_eval { define_method(method_name, &amp;block) }
+      ensure
+        Thread.critical = old_critical
+      end
+
+      begin
+        send(method_name, *args)
+      ensure
+        InstanceExecMethods.module_eval { remove_method(method_name) } rescue nil
+      end
+    end
+  end
+end
+</pre>
+    </div>

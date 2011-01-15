@@ -1,0 +1,193 @@
+  <div id="C00000606">
+<div class='banner'>
+  <span class="file-title-prefix">Module</span><br />QueryCache<br/>
+  In:
+<a href="#" onclick="jsHref('files/activerecord/lib/active_record/connection_adapters/abstract/query_cache_rb.html');">activerecord/lib/active_record/connection_adapters/abstract/query_cache.rb</a>
+
+</div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+      <div id="content">
+
+
+
+
+  <div class="sectiontitle">Methods</div>
+  <ul>
+  <li><a href="index.html?a=M001520&name=cache" >cache</a></li>
+  <li><a href="index.html?a=M001522&name=clear_query_cache" >clear_query_cache</a></li>
+  <li><a href="index.html?a=M001524&name=columns_with_query_cache" >columns_with_query_cache</a></li>
+  <li><a href="index.html?a=M001519&name=dirties_query_cache" >dirties_query_cache</a></li>
+  <li><a href="index.html?a=M001518&name=included" >included</a></li>
+  <li><a href="index.html?a=M001523&name=select_all_with_query_cache" >select_all_with_query_cache</a></li>
+  <li><a href="index.html?a=M001521&name=uncached" >uncached</a></li>
+  </ul>
+
+
+
+
+
+
+<div class="sectiontitle">Public Class methods</div>
+<div id="M001519" class="method">
+  <div id="M001519_title" class="title">
+    <b>dirties_query_cache</b>(base, *method_names)
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001519_source')" id="l_M001519_source">show source</a> ]</p>
+  <div id="M001519_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activerecord/lib/active_record/connection_adapters/abstract/query_cache.rb, line 15</span>
+15:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">dirties_query_cache</span>(<span class="ruby-identifier">base</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">method_names</span>)
+16:           <span class="ruby-identifier">method_names</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">method_name</span><span class="ruby-operator">|</span>
+17:             <span class="ruby-identifier">base</span>.<span class="ruby-identifier">class_eval</span> <span class="ruby-value str">&quot;def \#{method_name}_with_query_dirty(*args)\nclear_query_cache if @query_cache_enabled\n\#{method_name}_without_query_dirty(*args)\nend\n\nalias_method_chain :\#{method_name}, :query_dirty\n&quot;</span>, <span class="ruby-keyword kw">__FILE__</span>, <span class="ruby-keyword kw">__LINE__</span>
+18:           <span class="ruby-keyword kw">end</span>
+19:         <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M001518" class="method">
+  <div id="M001518_title" class="title">
+    <b>included</b>(base)
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001518_source')" id="l_M001518_source">show source</a> ]</p>
+  <div id="M001518_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activerecord/lib/active_record/connection_adapters/abstract/query_cache.rb, line 5</span>
+ 5:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">included</span>(<span class="ruby-identifier">base</span>)
+ 6:           <span class="ruby-identifier">base</span>.<span class="ruby-identifier">class_eval</span> <span class="ruby-keyword kw">do</span>
+ 7:             <span class="ruby-identifier">attr_accessor</span> <span class="ruby-identifier">:query_cache_enabled</span>
+ 8:             <span class="ruby-identifier">alias_method_chain</span> <span class="ruby-identifier">:columns</span>, <span class="ruby-identifier">:query_cache</span>
+ 9:             <span class="ruby-identifier">alias_method_chain</span> <span class="ruby-identifier">:select_all</span>, <span class="ruby-identifier">:query_cache</span>
+10:           <span class="ruby-keyword kw">end</span>
+11: 
+12:           <span class="ruby-identifier">dirties_query_cache</span> <span class="ruby-identifier">base</span>, <span class="ruby-identifier">:insert</span>, <span class="ruby-identifier">:update</span>, <span class="ruby-identifier">:delete</span>
+13:         <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div class="sectiontitle">Public Instance methods</div>
+<div id="M001520" class="method">
+  <div id="M001520_title" class="title">
+    <b>cache</b>() {|| ...}
+  </div>
+  <div class="description">
+  <p>
+Enable the query cache within the block.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001520_source')" id="l_M001520_source">show source</a> ]</p>
+  <div id="M001520_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activerecord/lib/active_record/connection_adapters/abstract/query_cache.rb, line 31</span>
+31:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">cache</span>
+32:         <span class="ruby-identifier">old</span>, <span class="ruby-ivar">@query_cache_enabled</span> = <span class="ruby-ivar">@query_cache_enabled</span>, <span class="ruby-keyword kw">true</span>
+33:         <span class="ruby-ivar">@query_cache</span> <span class="ruby-operator">||=</span> {}
+34:         <span class="ruby-keyword kw">yield</span>
+35:       <span class="ruby-keyword kw">ensure</span>
+36:         <span class="ruby-identifier">clear_query_cache</span>
+37:         <span class="ruby-ivar">@query_cache_enabled</span> = <span class="ruby-identifier">old</span>
+38:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M001522" class="method">
+  <div id="M001522_title" class="title">
+    <b>clear_query_cache</b>()
+  </div>
+  <div class="description">
+  <p>
+Clears the query cache.
+</p>
+<p>
+One reason you may wish to call this method explicitly is between queries
+that ask the database to randomize results. Otherwise the cache would see
+the same SQL query and repeatedly return the same result each time,
+silently undermining the randomness you were expecting.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001522_source')" id="l_M001522_source">show source</a> ]</p>
+  <div id="M001522_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activerecord/lib/active_record/connection_adapters/abstract/query_cache.rb, line 54</span>
+54:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">clear_query_cache</span>
+55:         <span class="ruby-ivar">@query_cache</span>.<span class="ruby-identifier">clear</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@query_cache</span>
+56:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M001524" class="method">
+  <div id="M001524_title" class="title">
+    <b>columns_with_query_cache</b>(*args)
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001524_source')" id="l_M001524_source">show source</a> ]</p>
+  <div id="M001524_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activerecord/lib/active_record/connection_adapters/abstract/query_cache.rb, line 66</span>
+66:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">columns_with_query_cache</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+67:         <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@query_cache_enabled</span>
+68:           <span class="ruby-ivar">@query_cache</span>[<span class="ruby-node">&quot;SHOW FIELDS FROM #{args.first}&quot;</span>] <span class="ruby-operator">||=</span> <span class="ruby-identifier">columns_without_query_cache</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+69:         <span class="ruby-keyword kw">else</span>
+70:           <span class="ruby-identifier">columns_without_query_cache</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+71:         <span class="ruby-keyword kw">end</span>
+72:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M001523" class="method">
+  <div id="M001523_title" class="title">
+    <b>select_all_with_query_cache</b>(*args)
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001523_source')" id="l_M001523_source">show source</a> ]</p>
+  <div id="M001523_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activerecord/lib/active_record/connection_adapters/abstract/query_cache.rb, line 58</span>
+58:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">select_all_with_query_cache</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+59:         <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@query_cache_enabled</span>
+60:           <span class="ruby-identifier">cache_sql</span>(<span class="ruby-identifier">args</span>.<span class="ruby-identifier">first</span>) { <span class="ruby-identifier">select_all_without_query_cache</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>) }
+61:         <span class="ruby-keyword kw">else</span>
+62:           <span class="ruby-identifier">select_all_without_query_cache</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+63:         <span class="ruby-keyword kw">end</span>
+64:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M001521" class="method">
+  <div id="M001521_title" class="title">
+    <b>uncached</b>() {|| ...}
+  </div>
+  <div class="description">
+  <p>
+Disable the query cache within the block.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001521_source')" id="l_M001521_source">show source</a> ]</p>
+  <div id="M001521_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activerecord/lib/active_record/connection_adapters/abstract/query_cache.rb, line 41</span>
+41:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">uncached</span>
+42:         <span class="ruby-identifier">old</span>, <span class="ruby-ivar">@query_cache_enabled</span> = <span class="ruby-ivar">@query_cache_enabled</span>, <span class="ruby-keyword kw">false</span>
+43:         <span class="ruby-keyword kw">yield</span>
+44:       <span class="ruby-keyword kw">ensure</span>
+45:         <span class="ruby-ivar">@query_cache_enabled</span> = <span class="ruby-identifier">old</span>
+46:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+</div>
+
+  </div>

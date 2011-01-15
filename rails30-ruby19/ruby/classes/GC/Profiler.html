@@ -1,0 +1,433 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>GC::Profiler</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Module</span> 
+            GC::Profiler 
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../files/gc_c.html">gc.c</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+The <tt>GC</tt> module provides an interface to Ruby&#8217;s mark and sweep
+garbage collection mechanism. Some of the underlying methods are also
+available via the <tt>ObjectSpace</tt> module.
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000824">clear</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>D</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000823">disable</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000822">enable</a>,</li>
+                
+                <li><a href="#M000821">enabled?</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>R</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000826">report</a>,</li>
+                
+                <li><a href="#M000825">result</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>T</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000827">total_time</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M000824">
+                    
+                    <a name="M000824"></a><b>GC::Profiler.clear          &rarr; nil
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+clear before profile data.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000824_source')" id="l_M000824_source">show</a>
+                        
+                    </p>
+                    <div id="M000824_source" class="dyn-source">
+                        <pre>static VALUE
+gc_profile_clear(void)
+{
+    rb_objspace_t *objspace = &amp;rb_objspace;
+    MEMZERO(objspace-&gt;profile.record, gc_profile_record, objspace-&gt;profile.size);
+    objspace-&gt;profile.count = 0;
+    return Qnil;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000823">
+                    
+                    <a name="M000823"></a><b>GC::Profiler.disable          &rarr; nil
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+updates <a href="../GC.html">GC</a> profile mode. stop profiler for <a
+href="../GC.html">GC</a>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000823_source')" id="l_M000823_source">show</a>
+                        
+                    </p>
+                    <div id="M000823_source" class="dyn-source">
+                        <pre>static VALUE
+gc_profile_disable(void)
+{
+    rb_objspace_t *objspace = &amp;rb_objspace;
+
+    objspace-&gt;profile.run = FALSE;
+    return Qnil;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000822">
+                    
+                    <a name="M000822"></a><b>GC::Profiler.enable          &rarr; nil
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+updates <a href="../GC.html">GC</a> profile mode. start profiler for <a
+href="../GC.html">GC</a>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000822_source')" id="l_M000822_source">show</a>
+                        
+                    </p>
+                    <div id="M000822_source" class="dyn-source">
+                        <pre>static VALUE
+gc_profile_enable(void)
+{
+    rb_objspace_t *objspace = &amp;rb_objspace;
+
+    objspace-&gt;profile.run = TRUE;
+    return Qnil;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000821">
+                    
+                    <a name="M000821"></a><b>GC::Profiler.enable?                 &rarr; true or false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+returns current status of <a href="../GC.html">GC</a> profile mode.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000821_source')" id="l_M000821_source">show</a>
+                        
+                    </p>
+                    <div id="M000821_source" class="dyn-source">
+                        <pre>static VALUE
+gc_profile_enable_get(VALUE self)
+{
+    rb_objspace_t *objspace = &amp;rb_objspace;
+    return objspace-&gt;profile.run;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000826">
+                    
+                    <a name="M000826"></a><b>GC::Profiler.report
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+<a href="Profiler.html#M000825">GC::Profiler.result</a> display
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000826_source')" id="l_M000826_source">show</a>
+                        
+                    </p>
+                    <div id="M000826_source" class="dyn-source">
+                        <pre>static VALUE
+gc_profile_report(int argc, VALUE *argv, VALUE self)
+{
+    VALUE out;
+
+    if (argc == 0) {
+        out = rb_stdout;
+    }
+    else {
+        rb_scan_args(argc, argv, &quot;01&quot;, &amp;out);
+    }
+    rb_io_write(out, gc_profile_result());
+
+    return Qnil;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000825">
+                    
+                    <a name="M000825"></a><b>GC::Profiler.result &rarr; string
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Report profile data to string.
+</p>
+<p>
+It returns a string as:
+</p>
+<pre>
+ GC 1 invokes.
+ Index    Invoke Time(sec)       Use Size(byte)     Total Size(byte)         Total Object                    GC time(ms)
+     1               0.012               159240               212940                10647         0.00000000000001530000
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000825_source')" id="l_M000825_source">show</a>
+                        
+                    </p>
+                    <div id="M000825_source" class="dyn-source">
+                        <pre>static VALUE
+gc_profile_result(void)
+{
+    rb_objspace_t *objspace = &amp;rb_objspace;
+    VALUE record;
+    VALUE result;
+    int i;
+
+    record = gc_profile_record_get();
+    if (objspace-&gt;profile.run &amp;&amp; objspace-&gt;profile.count) {
+        result = rb_sprintf(&quot;GC %d invokes.\n&quot;, NUM2INT(gc_count(0)));
+        rb_str_cat2(result, &quot;Index    Invoke Time(sec)       Use Size(byte)     Total Size(byte)         Total Object                    GC Time(ms)\n&quot;);
+        for (i = 0; i &lt; (int)RARRAY_LEN(record); i++) {
+            VALUE r = RARRAY_PTR(record)[i];
+            rb_str_catf(result, &quot;%5d %19.3f %20d %20d %20d %30.20f\n&quot;,
+                        i+1, NUM2DBL(rb_hash_aref(r, ID2SYM(rb_intern(&quot;GC_INVOKE_TIME&quot;)))),
+                        NUM2INT(rb_hash_aref(r, ID2SYM(rb_intern(&quot;HEAP_USE_SIZE&quot;)))),
+                        NUM2INT(rb_hash_aref(r, ID2SYM(rb_intern(&quot;HEAP_TOTAL_SIZE&quot;)))),
+                        NUM2INT(rb_hash_aref(r, ID2SYM(rb_intern(&quot;HEAP_TOTAL_OBJECTS&quot;)))),
+                        NUM2DBL(rb_hash_aref(r, ID2SYM(rb_intern(&quot;GC_TIME&quot;))))*1000);
+        }
+#if GC_PROFILE_MORE_DETAIL
+        rb_str_cat2(result, &quot;\n\n&quot;);
+        rb_str_cat2(result, &quot;More detail.\n&quot;);
+        rb_str_cat2(result, &quot;Index Allocate Increase    Allocate Limit  Use Slot  Have Finalize             Mark Time(ms)            Sweep Time(ms)\n&quot;);
+        for (i = 0; i &lt; (int)RARRAY_LEN(record); i++) {
+            VALUE r = RARRAY_PTR(record)[i];
+            rb_str_catf(result, &quot;%5d %17d %17d %9d %14s %25.20f %25.20f\n&quot;,
+                        i+1, NUM2INT(rb_hash_aref(r, ID2SYM(rb_intern(&quot;ALLOCATE_INCREASE&quot;)))),
+                        NUM2INT(rb_hash_aref(r, ID2SYM(rb_intern(&quot;ALLOCATE_LIMIT&quot;)))),
+                        NUM2INT(rb_hash_aref(r, ID2SYM(rb_intern(&quot;HEAP_USE_SLOTS&quot;)))),
+                        rb_hash_aref(r, ID2SYM(rb_intern(&quot;HAVE_FINALIZE&quot;)))? &quot;true&quot; : &quot;false&quot;,
+                        NUM2DBL(rb_hash_aref(r, ID2SYM(rb_intern(&quot;GC_MARK_TIME&quot;))))*1000,
+                        NUM2DBL(rb_hash_aref(r, ID2SYM(rb_intern(&quot;GC_SWEEP_TIME&quot;))))*1000);
+        }
+#endif
+    }
+    else {
+        result = rb_str_new2(&quot;&quot;);
+    }
+    return result;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000827">
+                    
+                    <a name="M000827"></a><b>GC::Profiler.total_time &rarr; float
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+return total time that <a href="../GC.html">GC</a> used. (msec)
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000827_source')" id="l_M000827_source">show</a>
+                        
+                    </p>
+                    <div id="M000827_source" class="dyn-source">
+                        <pre>static VALUE
+gc_profile_total_time(VALUE self)
+{
+    double time = 0;
+    rb_objspace_t *objspace = &amp;rb_objspace;
+    size_t i;
+
+    if (objspace-&gt;profile.run &amp;&amp; objspace-&gt;profile.count) {
+        for (i = 0; i &lt; objspace-&gt;profile.count; i++) {
+            time += objspace-&gt;profile.record[i].gc_time;
+        }
+    }
+    return DBL2NUM(time);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

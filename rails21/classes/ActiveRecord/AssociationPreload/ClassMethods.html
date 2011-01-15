@@ -1,0 +1,67 @@
+  <div id="C00000631">
+<div class='banner'>
+  <span class="file-title-prefix">Module</span><br />ClassMethods<br/>
+  In:
+<a href="#" onclick="jsHref('files/activerecord/lib/active_record/association_preload_rb.html');">activerecord/lib/active_record/association_preload.rb</a>
+
+</div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+      <div id="content">
+
+
+
+
+  <div class="sectiontitle">Methods</div>
+  <ul>
+  <li><a href="index.html?a=M001741&name=preload_associations" >preload_associations</a></li>
+  </ul>
+
+
+
+
+
+
+<div class="sectiontitle">Protected Instance methods</div>
+<div id="M001741" class="method">
+  <div id="M001741_title" class="title">
+    <b>preload_associations</b>(records, associations, preload_options={})
+  </div>
+  <div class="description">
+  <p>
+Loads the named associations for the activerecord record (or records) given
+preload_options is passed only one level deep: don&#8217;t pass to the
+child associations when associations is a Hash
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001741_source')" id="l_M001741_source">show source</a> ]</p>
+  <div id="M001741_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activerecord/lib/active_record/association_preload.rb, line 12</span>
+12:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">preload_associations</span>(<span class="ruby-identifier">records</span>, <span class="ruby-identifier">associations</span>, <span class="ruby-identifier">preload_options</span>={})
+13:         <span class="ruby-identifier">records</span> = [<span class="ruby-identifier">records</span>].<span class="ruby-identifier">flatten</span>.<span class="ruby-identifier">compact</span>.<span class="ruby-identifier">uniq</span>
+14:         <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">records</span>.<span class="ruby-identifier">empty?</span>
+15:         <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">associations</span>
+16:         <span class="ruby-keyword kw">when</span> <span class="ruby-constant">Array</span> <span class="ruby-keyword kw">then</span> <span class="ruby-identifier">associations</span>.<span class="ruby-identifier">each</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">association</span><span class="ruby-operator">|</span> <span class="ruby-identifier">preload_associations</span>(<span class="ruby-identifier">records</span>, <span class="ruby-identifier">association</span>, <span class="ruby-identifier">preload_options</span>)}
+17:         <span class="ruby-keyword kw">when</span> <span class="ruby-constant">Symbol</span>, <span class="ruby-constant">String</span> <span class="ruby-keyword kw">then</span> <span class="ruby-identifier">preload_one_association</span>(<span class="ruby-identifier">records</span>, <span class="ruby-identifier">associations</span>.<span class="ruby-identifier">to_sym</span>, <span class="ruby-identifier">preload_options</span>)
+18:         <span class="ruby-keyword kw">when</span> <span class="ruby-constant">Hash</span> <span class="ruby-keyword kw">then</span>
+19:           <span class="ruby-identifier">associations</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">parent</span>, <span class="ruby-identifier">child</span><span class="ruby-operator">|</span>
+20:             <span class="ruby-identifier">raise</span> <span class="ruby-value str">&quot;parent must be an association name&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">parent</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">String</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">parent</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Symbol</span>)
+21:             <span class="ruby-identifier">preload_associations</span>(<span class="ruby-identifier">records</span>, <span class="ruby-identifier">parent</span>, <span class="ruby-identifier">preload_options</span>)
+22:             <span class="ruby-identifier">reflection</span> = <span class="ruby-identifier">reflections</span>[<span class="ruby-identifier">parent</span>]
+23:             <span class="ruby-identifier">parents</span> = <span class="ruby-identifier">records</span>.<span class="ruby-identifier">map</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">record</span><span class="ruby-operator">|</span> <span class="ruby-identifier">record</span>.<span class="ruby-identifier">send</span>(<span class="ruby-identifier">reflection</span>.<span class="ruby-identifier">name</span>)}.<span class="ruby-identifier">flatten</span>
+24:             <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">parents</span>.<span class="ruby-identifier">empty?</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">parents</span>.<span class="ruby-identifier">first</span>.<span class="ruby-identifier">nil?</span>
+25:               <span class="ruby-identifier">parents</span>.<span class="ruby-identifier">first</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">preload_associations</span>(<span class="ruby-identifier">parents</span>, <span class="ruby-identifier">child</span>)
+26:             <span class="ruby-keyword kw">end</span>
+27:           <span class="ruby-keyword kw">end</span>
+28:         <span class="ruby-keyword kw">end</span>
+29:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+</div>
+
+  </div>

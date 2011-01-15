@@ -1,0 +1,51 @@
+  <div id="fileHeader">
+    <h1>has_one_through_association.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activerecord/lib/active_record/associations/has_one_through_association.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>module ActiveRecord
+  module Associations
+    class HasOneThroughAssociation &lt; HasManyThroughAssociation
+      
+      def create_through_record(new_value) #nodoc:
+        klass = @reflection.through_reflection.klass
+
+        current_object = @owner.send(@reflection.through_reflection.name)
+        
+        if current_object
+          klass.destroy(current_object)
+          @owner.clear_association_cache
+        end
+        
+        @owner.send(@reflection.through_reflection.name,  klass.send(:create, construct_join_attributes(new_value)))
+      end
+      
+    private
+      def find(*args)
+        super(args.merge(:limit =&gt; 1))
+      end
+    
+      def find_target
+        super.first
+      end
+
+      def reset_target!
+        @target = nil
+      end        
+    end        
+  end
+end
+</pre>
+    </div>

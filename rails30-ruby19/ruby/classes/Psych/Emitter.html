@@ -1,0 +1,819 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Psych::Emitter</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            Psych::Emitter 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="Handler.html">Psych::Handler</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../files/ext/psych/to_ruby_c.html">ext/psych/to_ruby.c</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+call-seq: emitter.indentation
+</p>
+<p>
+Get the indentation level.
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>A</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006939">alias</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006940">canonical</a>,</li>
+                
+                <li><a href="#M006941">canonical=</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006933">end_document</a>,</li>
+                
+                <li><a href="#M006938">end_mapping</a>,</li>
+                
+                <li><a href="#M006936">end_sequence</a>,</li>
+                
+                <li><a href="#M006931">end_stream</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>I</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006942">indentation</a>,</li>
+                
+                <li><a href="#M006943">indentation=</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006929">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006934">scalar</a>,</li>
+                
+                <li><a href="#M006932">start_document</a>,</li>
+                
+                <li><a href="#M006937">start_mapping</a>,</li>
+                
+                <li><a href="#M006935">start_sequence</a>,</li>
+                
+                <li><a href="#M006930">start_stream</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M006929">
+                    
+                    <a name="M006929"></a><b> Psych::Emitter.new(io)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Create a new <a href="Emitter.html">Psych::Emitter</a> that writes to
+<tt>io</tt>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006929_source')" id="l_M006929_source">show</a>
+                        
+                    </p>
+                    <div id="M006929_source" class="dyn-source">
+                        <pre>static VALUE initialize(VALUE self, VALUE io)
+{
+    yaml_emitter_t * emitter;
+    Data_Get_Struct(self, yaml_emitter_t, emitter);
+
+    yaml_emitter_set_output(emitter, writer, (void *)io);
+
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M006939">
+                    
+                    <a name="M006939"></a><b> emitter.alias(anchor)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Emit an alias with <tt>anchor</tt>.
+</p>
+<p>
+See <a href="Handler.html#M007561">Psych::Handler#alias</a>
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006939_source')" id="l_M006939_source">show</a>
+                        
+                    </p>
+                    <div id="M006939_source" class="dyn-source">
+                        <pre>static VALUE alias(VALUE self, VALUE anchor)
+{
+    yaml_emitter_t * emitter;
+    yaml_event_t event;
+    Data_Get_Struct(self, yaml_emitter_t, emitter);
+
+    yaml_alias_event_initialize(
+            &amp;event,
+            (yaml_char_t *)(NIL_P(anchor) ? NULL : StringValuePtr(anchor))
+            );
+
+    emit(emitter, &amp;event);
+
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006940">
+                    
+                    <a name="M006940"></a><b> emitter.canonical
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Get the output style, canonical or not.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006940_source')" id="l_M006940_source">show</a>
+                        
+                    </p>
+                    <div id="M006940_source" class="dyn-source">
+                        <pre>static VALUE canonical(VALUE self)
+{
+    yaml_emitter_t * emitter;
+    Data_Get_Struct(self, yaml_emitter_t, emitter);
+
+    return (emitter-&gt;canonical == 0) ? Qfalse : Qtrue;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006941">
+                    
+                    <a name="M006941"></a><b> emitter.canonical = true
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+<a href="Set.html">Set</a> the output style to canonical, or not.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006941_source')" id="l_M006941_source">show</a>
+                        
+                    </p>
+                    <div id="M006941_source" class="dyn-source">
+                        <pre>static VALUE set_canonical(VALUE self, VALUE style)
+{
+    yaml_emitter_t * emitter;
+    Data_Get_Struct(self, yaml_emitter_t, emitter);
+
+    yaml_emitter_set_canonical(emitter, Qtrue == style ? 1 : 0);
+
+    return style;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006933">
+                    
+                    <a name="M006933"></a><b> emitter.end_document(implicit)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+End a document emission with an <tt>implicit</tt> ending.
+</p>
+<p>
+See <a href="Handler.html#M007560">Psych::Handler#end_document</a>
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006933_source')" id="l_M006933_source">show</a>
+                        
+                    </p>
+                    <div id="M006933_source" class="dyn-source">
+                        <pre>static VALUE end_document(VALUE self, VALUE imp)
+{
+    yaml_emitter_t * emitter;
+    yaml_event_t event;
+    Data_Get_Struct(self, yaml_emitter_t, emitter);
+
+    yaml_document_end_event_initialize(&amp;event, imp ? 1 : 0);
+
+    emit(emitter, &amp;event);
+
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006938">
+                    
+                    <a name="M006938"></a><b> emitter.end_mapping
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Emit the end of a mapping.
+</p>
+<p>
+See <a href="Handler.html#M007566">Psych::Handler#end_mapping</a>
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006938_source')" id="l_M006938_source">show</a>
+                        
+                    </p>
+                    <div id="M006938_source" class="dyn-source">
+                        <pre>static VALUE end_mapping(VALUE self)
+{
+    yaml_emitter_t * emitter;
+    yaml_event_t event;
+    Data_Get_Struct(self, yaml_emitter_t, emitter);
+
+    yaml_mapping_end_event_initialize(&amp;event);
+
+    emit(emitter, &amp;event);
+
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006936">
+                    
+                    <a name="M006936"></a><b> emitter.end_sequence
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+End sequence emission.
+</p>
+<p>
+See <a href="Handler.html#M007564">Psych::Handler#end_sequence</a>
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006936_source')" id="l_M006936_source">show</a>
+                        
+                    </p>
+                    <div id="M006936_source" class="dyn-source">
+                        <pre>static VALUE end_sequence(VALUE self)
+{
+    yaml_emitter_t * emitter;
+    yaml_event_t event;
+    Data_Get_Struct(self, yaml_emitter_t, emitter);
+
+    yaml_sequence_end_event_initialize(&amp;event);
+
+    emit(emitter, &amp;event);
+
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006931">
+                    
+                    <a name="M006931"></a><b> emitter.end_stream
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+End a stream emission
+</p>
+<p>
+See <a href="Handler.html#M007568">Psych::Handler#end_stream</a>
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006931_source')" id="l_M006931_source">show</a>
+                        
+                    </p>
+                    <div id="M006931_source" class="dyn-source">
+                        <pre>static VALUE end_stream(VALUE self)
+{
+    yaml_emitter_t * emitter;
+    yaml_event_t event;
+    Data_Get_Struct(self, yaml_emitter_t, emitter);
+
+    yaml_stream_end_event_initialize(&amp;event);
+
+    emit(emitter, &amp;event);
+
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006942">
+                    
+                    <a name="M006942"></a><b> emitter.indentation
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Get the indentation level.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006942_source')" id="l_M006942_source">show</a>
+                        
+                    </p>
+                    <div id="M006942_source" class="dyn-source">
+                        <pre>static VALUE indentation(VALUE self)
+{
+    yaml_emitter_t * emitter;
+    Data_Get_Struct(self, yaml_emitter_t, emitter);
+
+    return INT2NUM(emitter-&gt;best_indent);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006943">
+                    
+                    <a name="M006943"></a><b> emitter.indentation = level
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+<a href="Set.html">Set</a> the indentation level to <tt>level</tt>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006943_source')" id="l_M006943_source">show</a>
+                        
+                    </p>
+                    <div id="M006943_source" class="dyn-source">
+                        <pre>static VALUE set_indentation(VALUE self, VALUE level)
+{
+    yaml_emitter_t * emitter;
+    Data_Get_Struct(self, yaml_emitter_t, emitter);
+
+    yaml_emitter_set_indent(emitter, NUM2INT(level));
+
+    return level;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006934">
+                    
+                    <a name="M006934"></a><b> emitter.scalar(value, anchor, tag, plain, quoted, style)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Emit a scalar with <tt>value</tt>, <tt>anchor</tt>, <tt>tag</tt>, and a
+<tt>plain</tt> or <tt>quoted</tt> string type with <tt>style</tt>.
+</p>
+<p>
+See <a href="Handler.html#M007562">Psych::Handler#scalar</a>
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006934_source')" id="l_M006934_source">show</a>
+                        
+                    </p>
+                    <div id="M006934_source" class="dyn-source">
+                        <pre>static VALUE scalar(
+        VALUE self,
+        VALUE value,
+        VALUE anchor,
+        VALUE tag,
+        VALUE plain,
+        VALUE quoted,
+        VALUE style
+        ) </pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006932">
+                    
+                    <a name="M006932"></a><b> emitter.start_document(version, tags, implicit)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Start a document emission with <a href="../YAML.html">YAML</a>
+<tt>version</tt>, <tt>tags</tt>, and an <tt>implicit</tt> start.
+</p>
+<p>
+See <a href="Handler.html#M007559">Psych::Handler#start_document</a>
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006932_source')" id="l_M006932_source">show</a>
+                        
+                    </p>
+                    <div id="M006932_source" class="dyn-source">
+                        <pre>static VALUE start_document(VALUE self, VALUE version, VALUE tags, VALUE imp)
+{
+    yaml_emitter_t * emitter;
+    yaml_tag_directive_t * head = NULL;
+    yaml_tag_directive_t * tail = NULL;
+    yaml_event_t event;
+    yaml_version_directive_t version_directive;
+    Data_Get_Struct(self, yaml_emitter_t, emitter);
+
+
+    Check_Type(version, T_ARRAY);
+
+    if(RARRAY_LEN(version) &gt; 0) {
+        VALUE major = rb_ary_entry(version, (long)0);
+        VALUE minor = rb_ary_entry(version, (long)1);
+
+        version_directive.major = NUM2INT(major);
+        version_directive.minor = NUM2INT(minor);
+    }
+
+    if(RTEST(tags)) {
+        int i = 0;
+
+        Check_Type(tags, T_ARRAY);
+
+        head  = xcalloc((size_t)RARRAY_LEN(tags), sizeof(yaml_tag_directive_t));
+        tail  = head;
+
+        for(i = 0; i &lt; RARRAY_LEN(tags); i++) {
+            VALUE tuple = RARRAY_PTR(tags)[i];
+            Check_Type(tuple, T_ARRAY);
+
+            if(RARRAY_LEN(tuple) &lt; 2) {
+                xfree(head);
+                rb_raise(rb_eRuntimeError, &quot;tag tuple must be of length 2&quot;);
+            }
+
+            tail-&gt;handle = (yaml_char_t *)StringValuePtr(RARRAY_PTR(tuple)[0]);
+            tail-&gt;prefix = (yaml_char_t *)StringValuePtr(RARRAY_PTR(tuple)[1]);
+
+            tail++;
+        }
+    }
+
+    yaml_document_start_event_initialize(
+            &amp;event,
+            (RARRAY_LEN(version) &gt; 0) ? &amp;version_directive : NULL,
+            head,
+            tail,
+            imp ? 1 : 0
+            );
+
+    emit(emitter, &amp;event);
+
+    if(head) xfree(head);
+
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006937">
+                    
+                    <a name="M006937"></a><b> emitter.start_mapping(anchor, tag, implicit, style)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Start emitting a <a href="../YAML.html">YAML</a> map with <tt>anchor</tt>,
+<tt>tag</tt>, an <tt>implicit</tt> start and end, and <tt>style</tt>.
+</p>
+<p>
+See <a href="Handler.html#M007565">Psych::Handler#start_mapping</a>
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006937_source')" id="l_M006937_source">show</a>
+                        
+                    </p>
+                    <div id="M006937_source" class="dyn-source">
+                        <pre>static VALUE start_mapping(
+        VALUE self,
+        VALUE anchor,
+        VALUE tag,
+        VALUE implicit,
+        VALUE style
+        ) </pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006935">
+                    
+                    <a name="M006935"></a><b> emitter.start_sequence(anchor, tag, implicit, style)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Start emitting a sequence with <tt>anchor</tt>, a <tt>tag</tt>,
+<tt>implicit</tt> sequence start and end, along with <tt>style</tt>.
+</p>
+<p>
+See <a href="Handler.html#M007563">Psych::Handler#start_sequence</a>
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006935_source')" id="l_M006935_source">show</a>
+                        
+                    </p>
+                    <div id="M006935_source" class="dyn-source">
+                        <pre>static VALUE start_sequence(
+        VALUE self,
+        VALUE anchor,
+        VALUE tag,
+        VALUE implicit,
+        VALUE style
+        ) </pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006930">
+                    
+                    <a name="M006930"></a><b> emitter.start_stream(encoding)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Start a stream emission with <tt>encoding</tt>
+</p>
+<p>
+See <a href="Handler.html#M007558">Psych::Handler#start_stream</a>
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006930_source')" id="l_M006930_source">show</a>
+                        
+                    </p>
+                    <div id="M006930_source" class="dyn-source">
+                        <pre>static VALUE start_stream(VALUE self, VALUE encoding)
+{
+    yaml_emitter_t * emitter;
+    yaml_event_t event;
+    Data_Get_Struct(self, yaml_emitter_t, emitter);
+    Check_Type(encoding, T_FIXNUM);
+
+    yaml_stream_start_event_initialize(&amp;event, (yaml_encoding_t)NUM2INT(encoding));
+
+    emit(emitter, &amp;event);
+
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

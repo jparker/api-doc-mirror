@@ -1,0 +1,347 @@
+  <div id="fileHeader">
+    <h1>xmlmarkup.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activesupport/lib/active_support/vendor/builder-2.1.2/builder/xmlmarkup.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>#!/usr/bin/env ruby
+#--
+# Copyright 2004, 2005 by Jim Weirich (jim@weirichhouse.org).
+# All rights reserved.
+
+# Permission is granted for use, copying, modification, distribution,
+# and distribution of modified versions of this work as long as the
+# above copyright notice is included.
+#++
+
+# Provide a flexible and easy to use Builder for creating XML markup.
+# See XmlBuilder for usage details.
+
+require 'builder/xmlbase'
+
+module Builder
+
+  # Create XML markup easily.  All (well, almost all) methods sent to
+  # an XmlMarkup object will be translated to the equivalent XML
+  # markup.  Any method with a block will be treated as an XML markup
+  # tag with nested markup in the block.
+  #
+  # Examples will demonstrate this easier than words.  In the
+  # following, +xm+ is an +XmlMarkup+ object.
+  #
+  #   xm.em(&quot;emphasized&quot;)             # =&gt; &lt;em&gt;emphasized&lt;/em&gt;
+  #   xm.em { xmm.b(&quot;emp &amp; bold&quot;) }   # =&gt; &lt;em&gt;&lt;b&gt;emph &amp;amp; bold&lt;/b&gt;&lt;/em&gt;
+  #   xm.a(&quot;A Link&quot;, &quot;href&quot;=&gt;&quot;http://onestepback.org&quot;)
+  #                                   # =&gt; &lt;a href=&quot;http://onestepback.org&quot;&gt;A Link&lt;/a&gt;
+  #   xm.div { br }                    # =&gt; &lt;div&gt;&lt;br/&gt;&lt;/div&gt;
+  #   xm.target(&quot;name&quot;=&gt;&quot;compile&quot;, &quot;option&quot;=&gt;&quot;fast&quot;)
+  #                                   # =&gt; &lt;target option=&quot;fast&quot; name=&quot;compile&quot;\&gt;
+  #                                   # NOTE: order of attributes is not specified.
+  #
+  #   xm.instruct!                   # &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+  #   xm.html {                      # &lt;html&gt;
+  #     xm.head {                    #   &lt;head&gt;
+  #       xm.title(&quot;History&quot;)        #     &lt;title&gt;History&lt;/title&gt;
+  #     }                            #   &lt;/head&gt;
+  #     xm.body {                    #   &lt;body&gt;
+  #       xm.comment! &quot;HI&quot;           #     &lt;! -- HI --&gt;
+  #       xm.h1(&quot;Header&quot;)            #     &lt;h1&gt;Header&lt;/h1&gt;
+  #       xm.p(&quot;paragraph&quot;)          #     &lt;p&gt;paragraph&lt;/p&gt;
+  #     }                            #   &lt;/body&gt;
+  #   }                              # &lt;/html&gt;
+  #
+  # == Notes:
+  #
+  # * The order that attributes are inserted in markup tags is
+  #   undefined.
+  #
+  # * Sometimes you wish to insert text without enclosing tags.  Use
+  #   the &lt;tt&gt;text!&lt;/tt&gt; method to accomplish this.
+  #
+  #   Example:
+  #
+  #     xm.div {                          # &lt;div&gt;
+  #       xm.text! &quot;line&quot;; xm.br          #   line&lt;br/&gt;
+  #       xm.text! &quot;another line&quot;; xmbr   #    another line&lt;br/&gt;
+  #     }                                 # &lt;/div&gt;
+  #
+  # * The special XML characters &lt;, &gt;, and &amp; are converted to &amp;lt;,
+  #   &amp;gt; and &amp;amp; automatically.  Use the &lt;tt&gt;&lt;&lt;&lt;/tt&gt; operation to
+  #   insert text without modification.
+  #
+  # * Sometimes tags use special characters not allowed in ruby
+  #   identifiers.  Use the &lt;tt&gt;tag!&lt;/tt&gt; method to handle these
+  #   cases.
+  #
+  #   Example:
+  #
+  #     xml.tag!(&quot;SOAP:Envelope&quot;) { ... }
+  #
+  #   will produce ...
+  #
+  #     &lt;SOAP:Envelope&gt; ... &lt;/SOAP:Envelope&gt;&quot;
+  #
+  #   &lt;tt&gt;tag!&lt;/tt&gt; will also take text and attribute arguments (after
+  #   the tag name) like normal markup methods.  (But see the next
+  #   bullet item for a better way to handle XML namespaces).
+  #
+  # * Direct support for XML namespaces is now available.  If the
+  #   first argument to a tag call is a symbol, it will be joined to
+  #   the tag to produce a namespace:tag combination.  It is easier to
+  #   show this than describe it.
+  #
+  #     xml.SOAP :Envelope do ... end
+  #
+  #   Just put a space before the colon in a namespace to produce the
+  #   right form for builder (e.g. &quot;&lt;tt&gt;SOAP:Envelope&lt;/tt&gt;&quot; =&gt;
+  #   &quot;&lt;tt&gt;xml.SOAP :Envelope&lt;/tt&gt;&quot;)
+  #
+  # * XmlMarkup builds the markup in any object (called a _target_)
+  #   that accepts the &lt;tt&gt;&lt;&lt;&lt;/tt&gt; method.  If no target is given,
+  #   then XmlMarkup defaults to a string target.
+  #
+  #   Examples:
+  #
+  #     xm = Builder::XmlMarkup.new
+  #     result = xm.title(&quot;yada&quot;)
+  #     # result is a string containing the markup.
+  #
+  #     buffer = &quot;&quot;
+  #     xm = Builder::XmlMarkup.new(buffer)
+  #     # The markup is appended to buffer (using &lt;&lt;)
+  #
+  #     xm = Builder::XmlMarkup.new(STDOUT)
+  #     # The markup is written to STDOUT (using &lt;&lt;)
+  #
+  #     xm = Builder::XmlMarkup.new
+  #     x2 = Builder::XmlMarkup.new(:target=&gt;xm)
+  #     # Markup written to +x2+ will be send to +xm+.
+  #
+  # * Indentation is enabled by providing the number of spaces to
+  #   indent for each level as a second argument to XmlBuilder.new.
+  #   Initial indentation may be specified using a third parameter.
+  #
+  #   Example:
+  #
+  #     xm = Builder.new(:indent=&gt;2)
+  #     # xm will produce nicely formatted and indented XML.
+  #
+  #     xm = Builder.new(:indent=&gt;2, :margin=&gt;4)
+  #     # xm will produce nicely formatted and indented XML with 2
+  #     # spaces per indent and an over all indentation level of 4.
+  #
+  #     builder = Builder::XmlMarkup.new(:target=&gt;$stdout, :indent=&gt;2)
+  #     builder.name { |b| b.first(&quot;Jim&quot;); b.last(&quot;Weirich) }
+  #     # prints:
+  #     #     &lt;name&gt;
+  #     #       &lt;first&gt;Jim&lt;/first&gt;
+  #     #       &lt;last&gt;Weirich&lt;/last&gt;
+  #     #     &lt;/name&gt;
+  #
+  # * The instance_eval implementation which forces self to refer to
+  #   the message receiver as self is now obsolete.  We now use normal
+  #   block calls to execute the markup block.  This means that all
+  #   markup methods must now be explicitly send to the xml builder.
+  #   For instance, instead of
+  #
+  #      xml.div { strong(&quot;text&quot;) }
+  #
+  #   you need to write:
+  #
+  #      xml.div { xml.strong(&quot;text&quot;) }
+  #
+  #   Although more verbose, the subtle change in semantics within the
+  #   block was found to be prone to error.  To make this change a
+  #   little less cumbersome, the markup block now gets the markup
+  #   object sent as an argument, allowing you to use a shorter alias
+  #   within the block.
+  #
+  #   For example:
+  #
+  #     xml_builder = Builder::XmlMarkup.new
+  #     xml_builder.div { |xml|
+  #       xml.stong(&quot;text&quot;)
+  #     }
+  #
+  class XmlMarkup &lt; XmlBase
+
+    # Create an XML markup builder.  Parameters are specified by an
+    # option hash.
+    #
+    # :target=&gt;&lt;em&gt;target_object&lt;/em&gt;::
+    #    Object receiving the markup.  +out+ must respond to the
+    #    &lt;tt&gt;&lt;&lt;&lt;/tt&gt; operator.  The default is a plain string target.
+    #
+    # :indent=&gt;&lt;em&gt;indentation&lt;/em&gt;::
+    #    Number of spaces used for indentation.  The default is no
+    #    indentation and no line breaks.
+    #
+    # :margin=&gt;&lt;em&gt;initial_indentation_level&lt;/em&gt;::
+    #    Amount of initial indentation (specified in levels, not
+    #    spaces).
+    #
+    # :escape_attrs=&gt;&lt;b&gt;OBSOLETE&lt;/em&gt;::
+    #    The :escape_attrs option is no longer supported by builder
+    #    (and will be quietly ignored).  String attribute values are
+    #    now automatically escaped.  If you need unescaped attribute
+    #    values (perhaps you are using entities in the attribute
+    #    values), then give the value as a Symbol.  This allows much
+    #    finer control over escaping attribute values.
+    #
+    def initialize(options={})
+      indent = options[:indent] || 0
+      margin = options[:margin] || 0
+      super(indent, margin)
+      @target = options[:target] || &quot;&quot;
+    end
+
+    # Return the target of the builder.
+    def target!
+      @target
+    end
+
+    def comment!(comment_text)
+      _ensure_no_block block_given?
+      _special(&quot;&lt;!-- &quot;, &quot; --&gt;&quot;, comment_text, nil)
+    end
+
+    # Insert an XML declaration into the XML markup.
+    #
+    # For example:
+    #
+    #   xml.declare! :ELEMENT, :blah, &quot;yada&quot;
+    #       # =&gt; &lt;!ELEMENT blah &quot;yada&quot;&gt;
+    def declare!(inst, *args, &amp;block)
+      _indent
+      @target &lt;&lt; &quot;&lt;!#{inst}&quot;
+      args.each do |arg|
+        case arg
+        when String
+          @target &lt;&lt; %{ &quot;#{arg}&quot;} # &quot; WART
+        when Symbol
+          @target &lt;&lt; &quot; #{arg}&quot;
+        end
+      end
+      if block_given?
+        @target &lt;&lt; &quot; [&quot;
+        _newline
+        _nested_structures(block)
+        @target &lt;&lt; &quot;]&quot;
+      end
+      @target &lt;&lt; &quot;&gt;&quot;
+      _newline
+    end
+
+    # Insert a processing instruction into the XML markup.  E.g.
+    #
+    # For example:
+    #
+    #    xml.instruct!
+    #        #=&gt; &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+    #    xml.instruct! :aaa, :bbb=&gt;&quot;ccc&quot;
+    #        #=&gt; &lt;?aaa bbb=&quot;ccc&quot;?&gt;
+    #
+    def instruct!(directive_tag=:xml, attrs={})
+      _ensure_no_block block_given?
+      if directive_tag == :xml
+        a = { :version=&gt;&quot;1.0&quot;, :encoding=&gt;&quot;UTF-8&quot; }
+        attrs = a.merge attrs
+      end
+      _special(
+      &quot;&lt;?#{directive_tag}&quot;,
+      &quot;?&gt;&quot;,
+      nil,
+      attrs,
+      [:version, :encoding, :standalone])
+    end
+
+    # Insert a CDATA section into the XML markup.
+    #
+    # For example:
+    #
+    #    xml.cdata!(&quot;text to be included in cdata&quot;)
+    #        #=&gt; &lt;![CDATA[text to be included in cdata]]&gt;
+    #
+    def cdata!(text)
+      _ensure_no_block block_given?
+      _special(&quot;&lt;![CDATA[&quot;, &quot;]]&gt;&quot;, text, nil)
+    end
+
+    private
+
+    # NOTE: All private methods of a builder object are prefixed when
+    # a &quot;_&quot; character to avoid possible conflict with XML tag names.
+
+    # Insert text directly in to the builder's target.
+    def _text(text)
+      @target &lt;&lt; text
+    end
+
+    # Insert special instruction.
+    def _special(open, close, data=nil, attrs=nil, order=[])
+      _indent
+      @target &lt;&lt; open
+      @target &lt;&lt; data if data
+      _insert_attributes(attrs, order) if attrs
+      @target &lt;&lt; close
+      _newline
+    end
+
+    # Start an XML tag.  If &lt;tt&gt;end_too&lt;/tt&gt; is true, then the start
+    # tag is also the end tag (e.g.  &lt;br/&gt;
+    def _start_tag(sym, attrs, end_too=false)
+      @target &lt;&lt; &quot;&lt;#{sym}&quot;
+      _insert_attributes(attrs)
+      @target &lt;&lt; &quot;/&quot; if end_too
+      @target &lt;&lt; &quot;&gt;&quot;
+    end
+
+    # Insert an ending tag.
+    def _end_tag(sym)
+      @target &lt;&lt; &quot;&lt;/#{sym}&gt;&quot;
+    end
+
+    # Insert the attributes (given in the hash).
+    def _insert_attributes(attrs, order=[])
+      return if attrs.nil?
+      order.each do |k|
+        v = attrs[k]
+        @target &lt;&lt; %{ #{k}=&quot;#{_attr_value(v)}&quot;} if v # &quot; WART
+      end
+      attrs.each do |k, v|
+        @target &lt;&lt; %{ #{k}=&quot;#{_attr_value(v)}&quot;} unless order.member?(k) # &quot; WART
+      end
+    end
+
+    def _attr_value(value)
+      case value
+      when Symbol
+        value.to_s
+      else
+        _escape_quote(value.to_s)
+      end
+    end
+
+    def _ensure_no_block(got_block)
+      if got_block
+        fail IllegalBlockError,
+        &quot;Blocks are not allowed on XML instructions&quot;
+      end
+    end
+
+  end
+
+end
+</pre>
+    </div>

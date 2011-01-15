@@ -1,0 +1,127 @@
+  <div id="C00000690">
+<div class='banner'>
+  <span class="file-title-prefix">Class</span><br />AtomFeedBuilder<br/>
+  In:
+<a href="#" onclick="jsHref('files/actionpack/lib/action_view/helpers/atom_feed_helper_rb.html');">actionpack/lib/action_view/helpers/atom_feed_helper.rb</a>
+
+Parent:&nbsp;
+        <a href="#" onclick="jsHref('classes/Object.html');">
+Object
+         </a>
+</div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+      <div id="content">
+
+
+
+
+  <div class="sectiontitle">Methods</div>
+  <ul>
+  <li><a href="index.html?a=M001912&name=entry" >entry</a></li>
+  <li><a href="index.html?a=M001910&name=new" >new</a></li>
+  <li><a href="index.html?a=M001911&name=updated" >updated</a></li>
+  </ul>
+
+
+
+
+
+
+<div class="sectiontitle">Public Class methods</div>
+<div id="M001910" class="method">
+  <div id="M001910_title" class="title">
+    <b>new</b>(xml, view, feed_options = {})
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001910_source')" id="l_M001910_source">show source</a> ]</p>
+  <div id="M001910_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File actionpack/lib/action_view/helpers/atom_feed_helper.rb, line 102</span>
+102:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">xml</span>, <span class="ruby-identifier">view</span>, <span class="ruby-identifier">feed_options</span> = {})
+103:           <span class="ruby-ivar">@xml</span>, <span class="ruby-ivar">@view</span>, <span class="ruby-ivar">@feed_options</span> = <span class="ruby-identifier">xml</span>, <span class="ruby-identifier">view</span>, <span class="ruby-identifier">feed_options</span>
+104:         <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div class="sectiontitle">Public Instance methods</div>
+<div id="M001912" class="method">
+  <div id="M001912_title" class="title">
+    <b>entry</b>(record, options = {}) {|@xml| ...}
+  </div>
+  <div class="description">
+  <p>
+Creates an entry tag for a specific record and prefills the id using class
+and id.
+</p>
+<p>
+Options:
+</p>
+<ul>
+<li><tt>:published</tt>: Time first published. Defaults to the created_at
+attribute on the record if one such exists.
+
+</li>
+<li><tt>:updated</tt>: Time of update. Defaults to the updated_at attribute on
+the record if one such exists.
+
+</li>
+<li><tt>:url</tt>: The URL for this entry. Defaults to the polymorphic_url for
+the record.
+
+</li>
+</ul>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001912_source')" id="l_M001912_source">show source</a> ]</p>
+  <div id="M001912_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File actionpack/lib/action_view/helpers/atom_feed_helper.rb, line 118</span>
+118:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">entry</span>(<span class="ruby-identifier">record</span>, <span class="ruby-identifier">options</span> = {})
+119:           <span class="ruby-ivar">@xml</span>.<span class="ruby-identifier">entry</span> <span class="ruby-keyword kw">do</span> 
+120:             <span class="ruby-ivar">@xml</span>.<span class="ruby-identifier">id</span>(<span class="ruby-node">&quot;tag:#{@view.request.host},#{@feed_options[:schema_date]}:#{record.class}/#{record.id}&quot;</span>)
+121: 
+122:             <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:published</span>] <span class="ruby-operator">||</span> (<span class="ruby-identifier">record</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">:created_at</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">record</span>.<span class="ruby-identifier">created_at</span>)
+123:               <span class="ruby-ivar">@xml</span>.<span class="ruby-identifier">published</span>((<span class="ruby-identifier">options</span>[<span class="ruby-identifier">:published</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">record</span>.<span class="ruby-identifier">created_at</span>).<span class="ruby-identifier">xmlschema</span>)
+124:             <span class="ruby-keyword kw">end</span>
+125: 
+126:             <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:updated</span>] <span class="ruby-operator">||</span> (<span class="ruby-identifier">record</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">:updated_at</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">record</span>.<span class="ruby-identifier">updated_at</span>)
+127:               <span class="ruby-ivar">@xml</span>.<span class="ruby-identifier">updated</span>((<span class="ruby-identifier">options</span>[<span class="ruby-identifier">:updated</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">record</span>.<span class="ruby-identifier">updated_at</span>).<span class="ruby-identifier">xmlschema</span>)
+128:             <span class="ruby-keyword kw">end</span>
+129: 
+130:             <span class="ruby-ivar">@xml</span>.<span class="ruby-identifier">link</span>(<span class="ruby-identifier">:rel</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'alternate'</span>, <span class="ruby-identifier">:type</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'text/html'</span>, <span class="ruby-identifier">:href</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:url</span>] <span class="ruby-operator">||</span> <span class="ruby-ivar">@view</span>.<span class="ruby-identifier">polymorphic_url</span>(<span class="ruby-identifier">record</span>))
+131: 
+132:             <span class="ruby-keyword kw">yield</span> <span class="ruby-ivar">@xml</span>
+133:           <span class="ruby-keyword kw">end</span>
+134:         <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M001911" class="method">
+  <div id="M001911_title" class="title">
+    <b>updated</b>(date_or_time = nil)
+  </div>
+  <div class="description">
+  <p>
+Accepts a Date or Time object and inserts it in the proper format. If nil
+is passed, current time in UTC is used.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001911_source')" id="l_M001911_source">show source</a> ]</p>
+  <div id="M001911_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File actionpack/lib/action_view/helpers/atom_feed_helper.rb, line 107</span>
+107:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">updated</span>(<span class="ruby-identifier">date_or_time</span> = <span class="ruby-keyword kw">nil</span>)
+108:           <span class="ruby-ivar">@xml</span>.<span class="ruby-identifier">updated</span>((<span class="ruby-identifier">date_or_time</span> <span class="ruby-operator">||</span> <span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span>.<span class="ruby-identifier">utc</span>).<span class="ruby-identifier">xmlschema</span>)
+109:         <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+</div>
+
+  </div>

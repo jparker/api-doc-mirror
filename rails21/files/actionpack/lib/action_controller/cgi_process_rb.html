@@ -1,0 +1,242 @@
+  <div id="fileHeader">
+    <h1>cgi_process.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionpack/lib/action_controller/cgi_process.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:04 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>require 'action_controller/cgi_ext'
+require 'action_controller/session/cookie_store'
+
+module ActionController #:nodoc:
+  class Base
+    # Process a request extracted from a CGI object and return a response. Pass false as &lt;tt&gt;session_options&lt;/tt&gt; to disable
+    # sessions (large performance increase if sessions are not needed). The &lt;tt&gt;session_options&lt;/tt&gt; are the same as for CGI::Session:
+    #
+    # * &lt;tt&gt;:database_manager&lt;/tt&gt; - standard options are CGI::Session::FileStore, CGI::Session::MemoryStore, and CGI::Session::PStore
+    #   (default). Additionally, there is CGI::Session::DRbStore and CGI::Session::ActiveRecordStore. Read more about these in
+    #   lib/action_controller/session.
+    # * &lt;tt&gt;:session_key&lt;/tt&gt; - the parameter name used for the session id. Defaults to '_session_id'.
+    # * &lt;tt&gt;:session_id&lt;/tt&gt; - the session id to use.  If not provided, then it is retrieved from the +session_key+ cookie, or 
+    #   automatically generated for a new session.
+    # * &lt;tt&gt;:new_session&lt;/tt&gt; - if true, force creation of a new session.  If not set, a new session is only created if none currently
+    #   exists.  If false, a new session is never created, and if none currently exists and the +session_id+ option is not set,
+    #   an ArgumentError is raised.
+    # * &lt;tt&gt;:session_expires&lt;/tt&gt; - the time the current session expires, as a Time object.  If not set, the session will continue
+    #   indefinitely.
+    # * &lt;tt&gt;:session_domain&lt;/tt&gt; - the hostname domain for which this session is valid. If not set, defaults to the hostname of the
+    #   server.
+    # * &lt;tt&gt;:session_secure&lt;/tt&gt; - if +true+, this session will only work over HTTPS.
+    # * &lt;tt&gt;:session_path&lt;/tt&gt; - the path for which this session applies.  Defaults to the directory of the CGI script.
+    # * &lt;tt&gt;:cookie_only&lt;/tt&gt; - if +true+ (the default), session IDs will only be accepted from cookies and not from
+    #   the query string or POST parameters. This protects against session fixation attacks.
+    def self.process_cgi(cgi = CGI.new, session_options = {})
+      new.process_cgi(cgi, session_options)
+    end
+
+    def process_cgi(cgi, session_options = {}) #:nodoc:
+      process(CgiRequest.new(cgi, session_options), CgiResponse.new(cgi)).out
+    end
+  end
+
+  class CgiRequest &lt; AbstractRequest #:nodoc:
+    attr_accessor :cgi, :session_options
+    class SessionFixationAttempt &lt; StandardError #:nodoc:
+    end
+
+    DEFAULT_SESSION_OPTIONS = {
+      :database_manager =&gt; CGI::Session::CookieStore, # store data in cookie
+      :prefix           =&gt; &quot;ruby_sess.&quot;,    # prefix session file names
+      :session_path     =&gt; &quot;/&quot;,             # available to all paths in app
+      :session_key      =&gt; &quot;_session_id&quot;,
+      :cookie_only      =&gt; true
+    } unless const_defined?(:DEFAULT_SESSION_OPTIONS)
+
+    def initialize(cgi, session_options = {})
+      @cgi = cgi
+      @session_options = session_options
+      @env = @cgi.send!(:env_table)
+      super()
+    end
+
+    def query_string
+      qs = @cgi.query_string if @cgi.respond_to?(:query_string)
+      if !qs.blank?
+        qs
+      else
+        super
+      end
+    end
+
+    # The request body is an IO input stream. If the RAW_POST_DATA environment
+    # variable is already set, wrap it in a StringIO.
+    def body
+      if raw_post = env['RAW_POST_DATA']
+        raw_post.force_encoding(Encoding::BINARY) if raw_post.respond_to?(:force_encoding)
+        StringIO.new(raw_post)
+      else
+        @cgi.stdinput
+      end
+    end
+
+    def query_parameters
+      @query_parameters ||= self.class.parse_query_parameters(query_string)
+    end
+
+    def request_parameters
+      @request_parameters ||= parse_formatted_request_parameters
+    end
+
+    def cookies
+      @cgi.cookies.freeze
+    end
+
+    def host_with_port_without_standard_port_handling
+      if forwarded = env[&quot;HTTP_X_FORWARDED_HOST&quot;]
+        forwarded.split(/,\s?/).last
+      elsif http_host = env['HTTP_HOST']
+        http_host
+      elsif server_name = env['SERVER_NAME']
+        server_name
+      else
+        &quot;#{env['SERVER_ADDR']}:#{env['SERVER_PORT']}&quot;
+      end
+    end
+
+    def host
+      host_with_port_without_standard_port_handling.sub(/:\d+$/, '')
+    end
+
+    def port
+      if host_with_port_without_standard_port_handling =~ /:(\d+)$/
+        $1.to_i
+      else
+        standard_port
+      end
+    end
+
+    def session
+      unless defined?(@session)
+        if @session_options == false
+          @session = Hash.new
+        else
+          stale_session_check! do
+            if cookie_only? &amp;&amp; query_parameters[session_options_with_string_keys['session_key']]
+              raise SessionFixationAttempt
+            end
+            case value = session_options_with_string_keys['new_session']
+              when true
+                @session = new_session
+              when false
+                begin
+                  @session = CGI::Session.new(@cgi, session_options_with_string_keys)
+                # CGI::Session raises ArgumentError if 'new_session' == false
+                # and no session cookie or query param is present.
+                rescue ArgumentError
+                  @session = Hash.new
+                end
+              when nil
+                @session = CGI::Session.new(@cgi, session_options_with_string_keys)
+              else
+                raise ArgumentError, &quot;Invalid new_session option: #{value}&quot;
+            end
+            @session['__valid_session']
+          end
+        end
+      end
+      @session
+    end
+
+    def reset_session
+      @session.delete if defined?(@session) &amp;&amp; @session.is_a?(CGI::Session)
+      @session = new_session
+    end
+
+    def method_missing(method_id, *arguments)
+      @cgi.send!(method_id, *arguments) rescue super
+    end
+
+    private
+      # Delete an old session if it exists then create a new one.
+      def new_session
+        if @session_options == false
+          Hash.new
+        else
+          CGI::Session.new(@cgi, session_options_with_string_keys.merge(&quot;new_session&quot; =&gt; false)).delete rescue nil
+          CGI::Session.new(@cgi, session_options_with_string_keys.merge(&quot;new_session&quot; =&gt; true))
+        end
+      end
+
+      def cookie_only?
+        session_options_with_string_keys['cookie_only']
+      end
+
+      def stale_session_check!
+        yield
+      rescue ArgumentError =&gt; argument_error
+        if argument_error.message =~ %r{undefined class/module ([\w:]*\w)}
+          begin
+            # Note that the regexp does not allow $1 to end with a ':'
+            $1.constantize
+          rescue LoadError, NameError =&gt; const_error
+            raise ActionController::SessionRestoreError, &lt;&lt;-end_msg
+Session contains objects whose class definition isn\'t available.
+Remember to require the classes for all objects kept in the session.
+(Original exception: #{const_error.message} [#{const_error.class}])
+end_msg
+          end
+
+          retry
+        else
+          raise
+        end
+      end
+
+      def session_options_with_string_keys
+        @session_options_with_string_keys ||= DEFAULT_SESSION_OPTIONS.merge(@session_options).stringify_keys
+      end
+  end
+
+  class CgiResponse &lt; AbstractResponse #:nodoc:
+    def initialize(cgi)
+      @cgi = cgi
+      super()
+    end
+
+    def out(output = $stdout)
+      output.binmode      if output.respond_to?(:binmode)
+      output.sync = false if output.respond_to?(:sync=)
+
+      begin
+        output.write(@cgi.header(@headers))
+
+        if @cgi.send!(:env_table)['REQUEST_METHOD'] == 'HEAD'
+          return
+        elsif @body.respond_to?(:call)
+          # Flush the output now in case the @body Proc uses
+          # #syswrite.
+          output.flush if output.respond_to?(:flush)
+          @body.call(self, output)
+        else
+          output.write(@body)
+        end
+
+        output.flush if output.respond_to?(:flush)
+      rescue Errno::EPIPE, Errno::ECONNRESET
+        # lost connection to parent process, ignore output
+      end
+    end
+  end
+end
+</pre>
+    </div>

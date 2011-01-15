@@ -1,0 +1,797 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>GServer</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            GServer 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/lib/gserver_rb.html">lib/gserver.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+<a href="GServer.html">GServer</a> implements a generic server, featuring
+thread pool management, simple logging, and multi-server management. See <a
+href="HttpServer.html">HttpServer</a> in <tt>xmlrpc/httpserver.rb</tt> in
+the Ruby standard library for an example of <a
+href="GServer.html">GServer</a> in action.
+</p>
+<p>
+Any kind of application-level server can be implemented using this class.
+It accepts multiple simultaneous connections from clients, up to an
+optional maximum number. Several <em>services</em> (i.e. one service per
+TCP port) can be run simultaneously, and stopped at any time through the
+class method <tt><a
+href="GServer.html#M001633">GServer.stop(port)</a></tt>. All the threading
+issues are handled, saving you the effort. All events are optionally
+logged, but you can provide your own event handlers if you wish.
+</p>
+<h3>Example</h3>
+<p>
+Using <a href="GServer.html">GServer</a> is simple. Below we implement a
+simple time server, run it, query it, and shut it down. Try this code in
+<tt>irb</tt>:
+</p>
+<pre>
+  require 'gserver'
+
+  #
+  # A server that returns the time in seconds since 1970.
+  #
+  class TimeServer &lt; GServer
+    def initialize(port=10001, *args)
+      super(port, *args)
+    end
+    def serve(io)
+      io.puts(Time.now.to_s)
+    end
+  end
+
+  # Run the server with logging enabled (it's a separate thread).
+  server = TimeServer.new
+  server.audit = true                  # Turn logging on.
+  server.start
+
+  # *** Now point your browser to http://localhost:10001 to see it working ***
+
+  # See if it's still running.
+  GServer.in_service?(10001)           # -&gt; true
+  server.stopped?                      # -&gt; false
+
+  # Shut the server down gracefully.
+  server.shutdown
+
+  # Alternatively, stop it immediately.
+  GServer.stop(10001)
+  # or, of course, &quot;server.stop&quot;.
+</pre>
+<p>
+All the business of accepting connections and exception handling is taken
+care of. All we have to do is implement the method that actually serves the
+client.
+</p>
+<h3>Advanced</h3>
+<p>
+As the example above shows, the way to use <a
+href="GServer.html">GServer</a> is to subclass it to create a specific
+server, overriding the <tt>serve</tt> method. You can override other
+methods as well if you wish, perhaps to collect statistics, or emit more
+detailed logging.
+</p>
+<pre>
+  connecting
+  disconnecting
+  starting
+  stopping
+</pre>
+<p>
+The above methods are only called if auditing is enabled.
+</p>
+<p>
+You can also override <tt>log</tt> and <tt>error</tt> if, for example, you
+wish to use a more sophisticated logging system.
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001640">connecting</a>,</li>
+                
+                <li><a href="#M001638">connections</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>D</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001641">disconnecting</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001644">error</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>I</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001634">in_service?</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>J</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001639">join</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>L</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001645">log</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001646">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001632">serve</a>,</li>
+                
+                <li><a href="#M001637">shutdown</a>,</li>
+                
+                <li><a href="#M001647">start</a>,</li>
+                
+                <li><a href="#M001642">starting</a>,</li>
+                
+                <li><a href="#M001635">stop</a>,</li>
+                
+                <li><a href="#M001633">stop</a>,</li>
+                
+                <li><a href="#M001636">stopped?</a>,</li>
+                
+                <li><a href="#M001643">stopping</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">DEFAULT_HOST</td>
+            <td>=</td>
+            <td class="attr-value">&quot;127.0.0.1&quot;</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+    <div class="sectiontitle">Attributes</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>port</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>host</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>maxConnections</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [RW]
+            </td>
+            <td class='attr-name'>stdlog</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [RW]
+            </td>
+            <td class='attr-name'>audit</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [RW]
+            </td>
+            <td class='attr-name'>debug</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+    </table>
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M001634">
+                    
+                    <a name="M001634"></a><b>in_service?</b>(port, host = DEFAULT_HOST)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001634_source')" id="l_M001634_source">show</a>
+                        
+                    </p>
+                    <div id="M001634_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/gserver.rb, line 102</span>
+102:   <span class="ruby-keyword kw">def</span> <span class="ruby-constant">GServer</span>.<span class="ruby-identifier">in_service?</span>(<span class="ruby-identifier">port</span>, <span class="ruby-identifier">host</span> = <span class="ruby-constant">DEFAULT_HOST</span>)
+103:     <span class="ruby-ivar">@@services</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-identifier">host</span>) <span class="ruby-keyword kw">and</span>
+104:       <span class="ruby-ivar">@@services</span>[<span class="ruby-identifier">host</span>].<span class="ruby-identifier">has_key?</span>(<span class="ruby-identifier">port</span>)
+105:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001646">
+                    
+                    <a name="M001646"></a><b>new</b>(port, host = DEFAULT_HOST, maxConnections = 4, stdlog = $stderr, audit = false, debug = false)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001646_source')" id="l_M001646_source">show</a>
+                        
+                    </p>
+                    <div id="M001646_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/gserver.rb, line 171</span>
+171:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">port</span>, <span class="ruby-identifier">host</span> = <span class="ruby-constant">DEFAULT_HOST</span>, <span class="ruby-identifier">maxConnections</span> = <span class="ruby-value">4</span>,
+172:     <span class="ruby-identifier">stdlog</span> = <span class="ruby-identifier">$stderr</span>, <span class="ruby-identifier">audit</span> = <span class="ruby-keyword kw">false</span>, <span class="ruby-identifier">debug</span> = <span class="ruby-keyword kw">false</span>)
+173:     <span class="ruby-ivar">@tcpServerThread</span> = <span class="ruby-keyword kw">nil</span>
+174:     <span class="ruby-ivar">@port</span> = <span class="ruby-identifier">port</span>
+175:     <span class="ruby-ivar">@host</span> = <span class="ruby-identifier">host</span>
+176:     <span class="ruby-ivar">@maxConnections</span> = <span class="ruby-identifier">maxConnections</span>
+177:     <span class="ruby-ivar">@connections</span> = []
+178:     <span class="ruby-ivar">@connectionsMutex</span> = <span class="ruby-constant">Mutex</span>.<span class="ruby-identifier">new</span>
+179:     <span class="ruby-ivar">@connectionsCV</span> = <span class="ruby-constant">ConditionVariable</span>.<span class="ruby-identifier">new</span>
+180:     <span class="ruby-ivar">@stdlog</span> = <span class="ruby-identifier">stdlog</span>
+181:     <span class="ruby-ivar">@audit</span> = <span class="ruby-identifier">audit</span>
+182:     <span class="ruby-ivar">@debug</span> = <span class="ruby-identifier">debug</span>
+183:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001633">
+                    
+                    <a name="M001633"></a><b>stop</b>(port, host = DEFAULT_HOST)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001633_source')" id="l_M001633_source">show</a>
+                        
+                    </p>
+                    <div id="M001633_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/gserver.rb, line 96</span>
+ 96:   <span class="ruby-keyword kw">def</span> <span class="ruby-constant">GServer</span>.<span class="ruby-identifier">stop</span>(<span class="ruby-identifier">port</span>, <span class="ruby-identifier">host</span> = <span class="ruby-constant">DEFAULT_HOST</span>)
+ 97:     <span class="ruby-ivar">@@servicesMutex</span>.<span class="ruby-identifier">synchronize</span> {
+ 98:       <span class="ruby-ivar">@@services</span>[<span class="ruby-identifier">host</span>][<span class="ruby-identifier">port</span>].<span class="ruby-identifier">stop</span>
+ 99:     }
+100:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M001638">
+                    
+                    <a name="M001638"></a><b>connections</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001638_source')" id="l_M001638_source">show</a>
+                        
+                    </p>
+                    <div id="M001638_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/gserver.rb, line 123</span>
+123:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">connections</span>
+124:     <span class="ruby-ivar">@connections</span>.<span class="ruby-identifier">size</span>
+125:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001639">
+                    
+                    <a name="M001639"></a><b>join</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001639_source')" id="l_M001639_source">show</a>
+                        
+                    </p>
+                    <div id="M001639_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/gserver.rb, line 127</span>
+127:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">join</span>
+128:     <span class="ruby-ivar">@tcpServerThread</span>.<span class="ruby-identifier">join</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@tcpServerThread</span>
+129:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001632">
+                    
+                    <a name="M001632"></a><b>serve</b>(io)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001632_source')" id="l_M001632_source">show</a>
+                        
+                    </p>
+                    <div id="M001632_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/gserver.rb, line 90</span>
+90:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">serve</span>(<span class="ruby-identifier">io</span>)
+91:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001637">
+                    
+                    <a name="M001637"></a><b>shutdown</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001637_source')" id="l_M001637_source">show</a>
+                        
+                    </p>
+                    <div id="M001637_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/gserver.rb, line 119</span>
+119:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">shutdown</span>
+120:     <span class="ruby-ivar">@shutdown</span> = <span class="ruby-keyword kw">true</span>
+121:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001647">
+                    
+                    <a name="M001647"></a><b>start</b>(maxConnections = -1)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001647_source')" id="l_M001647_source">show</a>
+                        
+                    </p>
+                    <div id="M001647_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/gserver.rb, line 185</span>
+185:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">start</span>(<span class="ruby-identifier">maxConnections</span> = <span class="ruby-value">-1</span>)
+186:     <span class="ruby-identifier">raise</span> <span class="ruby-value str">&quot;running&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-operator">!</span><span class="ruby-identifier">stopped?</span>
+187:     <span class="ruby-ivar">@shutdown</span> = <span class="ruby-keyword kw">false</span>
+188:     <span class="ruby-ivar">@maxConnections</span> = <span class="ruby-identifier">maxConnections</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">maxConnections</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>
+189:     <span class="ruby-ivar">@@servicesMutex</span>.<span class="ruby-identifier">synchronize</span>  {
+190:       <span class="ruby-keyword kw">if</span> <span class="ruby-constant">GServer</span>.<span class="ruby-identifier">in_service?</span>(<span class="ruby-ivar">@port</span>,<span class="ruby-ivar">@host</span>)
+191:         <span class="ruby-identifier">raise</span> <span class="ruby-node">&quot;Port already in use: #{host}:#{@port}!&quot;</span>
+192:       <span class="ruby-keyword kw">end</span>
+193:       <span class="ruby-ivar">@tcpServer</span> = <span class="ruby-constant">TCPServer</span>.<span class="ruby-identifier">new</span>(<span class="ruby-ivar">@host</span>,<span class="ruby-ivar">@port</span>)
+194:       <span class="ruby-ivar">@port</span> = <span class="ruby-ivar">@tcpServer</span>.<span class="ruby-identifier">addr</span>[<span class="ruby-value">1</span>]
+195:       <span class="ruby-ivar">@@services</span>[<span class="ruby-ivar">@host</span>] = {} <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@@services</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-ivar">@host</span>)
+196:       <span class="ruby-ivar">@@services</span>[<span class="ruby-ivar">@host</span>][<span class="ruby-ivar">@port</span>] = <span class="ruby-keyword kw">self</span>;
+197:     }
+198:     <span class="ruby-ivar">@tcpServerThread</span> = <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">new</span> {
+199:       <span class="ruby-keyword kw">begin</span>
+200:         <span class="ruby-identifier">starting</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@audit</span>
+201:         <span class="ruby-keyword kw">while</span> <span class="ruby-operator">!</span><span class="ruby-ivar">@shutdown</span>
+202:           <span class="ruby-ivar">@connectionsMutex</span>.<span class="ruby-identifier">synchronize</span>  {
+203:              <span class="ruby-keyword kw">while</span> <span class="ruby-ivar">@connections</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">&gt;=</span> <span class="ruby-ivar">@maxConnections</span>
+204:                <span class="ruby-ivar">@connectionsCV</span>.<span class="ruby-identifier">wait</span>(<span class="ruby-ivar">@connectionsMutex</span>)
+205:              <span class="ruby-keyword kw">end</span>
+206:           }
+207:           <span class="ruby-identifier">client</span> = <span class="ruby-ivar">@tcpServer</span>.<span class="ruby-identifier">accept</span>
+208:           <span class="ruby-ivar">@connections</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">client</span>)  { <span class="ruby-operator">|</span><span class="ruby-identifier">myClient</span><span class="ruby-operator">|</span>
+209:             <span class="ruby-keyword kw">begin</span>
+210:               <span class="ruby-identifier">myPort</span> = <span class="ruby-identifier">myClient</span>.<span class="ruby-identifier">peeraddr</span>[<span class="ruby-value">1</span>]
+211:               <span class="ruby-identifier">serve</span>(<span class="ruby-identifier">myClient</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-operator">!</span><span class="ruby-ivar">@audit</span> <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">connecting</span>(<span class="ruby-identifier">myClient</span>)
+212:             <span class="ruby-keyword kw">rescue</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">detail</span>
+213:               <span class="ruby-identifier">error</span>(<span class="ruby-identifier">detail</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@debug</span>
+214:             <span class="ruby-keyword kw">ensure</span>
+215:               <span class="ruby-keyword kw">begin</span>
+216:                 <span class="ruby-identifier">myClient</span>.<span class="ruby-identifier">close</span>
+217:               <span class="ruby-keyword kw">rescue</span>
+218:               <span class="ruby-keyword kw">end</span>
+219:               <span class="ruby-ivar">@connectionsMutex</span>.<span class="ruby-identifier">synchronize</span> {
+220:                 <span class="ruby-ivar">@connections</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>)
+221:                 <span class="ruby-ivar">@connectionsCV</span>.<span class="ruby-identifier">signal</span>
+222:               }
+223:               <span class="ruby-identifier">disconnecting</span>(<span class="ruby-identifier">myPort</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@audit</span>
+224:             <span class="ruby-keyword kw">end</span>
+225:           }
+226:         <span class="ruby-keyword kw">end</span>
+227:       <span class="ruby-keyword kw">rescue</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">detail</span>
+228:         <span class="ruby-identifier">error</span>(<span class="ruby-identifier">detail</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@debug</span>
+229:       <span class="ruby-keyword kw">ensure</span>
+230:         <span class="ruby-keyword kw">begin</span>
+231:           <span class="ruby-ivar">@tcpServer</span>.<span class="ruby-identifier">close</span>
+232:         <span class="ruby-keyword kw">rescue</span>
+233:         <span class="ruby-keyword kw">end</span>
+234:         <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@shutdown</span>
+235:           <span class="ruby-ivar">@connectionsMutex</span>.<span class="ruby-identifier">synchronize</span>  {
+236:              <span class="ruby-keyword kw">while</span> <span class="ruby-ivar">@connections</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>
+237:                <span class="ruby-ivar">@connectionsCV</span>.<span class="ruby-identifier">wait</span>(<span class="ruby-ivar">@connectionsMutex</span>)
+238:              <span class="ruby-keyword kw">end</span>
+239:           }
+240:         <span class="ruby-keyword kw">else</span>
+241:           <span class="ruby-ivar">@connections</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">c</span><span class="ruby-operator">|</span> <span class="ruby-identifier">c</span>.<span class="ruby-identifier">raise</span> <span class="ruby-value str">&quot;stop&quot;</span> }
+242:         <span class="ruby-keyword kw">end</span>
+243:         <span class="ruby-ivar">@tcpServerThread</span> = <span class="ruby-keyword kw">nil</span>
+244:         <span class="ruby-ivar">@@servicesMutex</span>.<span class="ruby-identifier">synchronize</span>  {
+245:           <span class="ruby-ivar">@@services</span>[<span class="ruby-ivar">@host</span>].<span class="ruby-identifier">delete</span>(<span class="ruby-ivar">@port</span>)
+246:         }
+247:         <span class="ruby-identifier">stopping</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@audit</span>
+248:       <span class="ruby-keyword kw">end</span>
+249:     }
+250:     <span class="ruby-keyword kw">self</span>
+251:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001635">
+                    
+                    <a name="M001635"></a><b>stop</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001635_source')" id="l_M001635_source">show</a>
+                        
+                    </p>
+                    <div id="M001635_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/gserver.rb, line 107</span>
+107:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">stop</span>
+108:     <span class="ruby-ivar">@connectionsMutex</span>.<span class="ruby-identifier">synchronize</span>  {
+109:       <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@tcpServerThread</span>
+110:         <span class="ruby-ivar">@tcpServerThread</span>.<span class="ruby-identifier">raise</span> <span class="ruby-value str">&quot;stop&quot;</span>
+111:       <span class="ruby-keyword kw">end</span>
+112:     }
+113:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001636">
+                    
+                    <a name="M001636"></a><b>stopped?</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001636_source')" id="l_M001636_source">show</a>
+                        
+                    </p>
+                    <div id="M001636_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/gserver.rb, line 115</span>
+115:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">stopped?</span>
+116:     <span class="ruby-ivar">@tcpServerThread</span> <span class="ruby-operator">==</span> <span class="ruby-keyword kw">nil</span>
+117:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Protected methods</div>
+            
+            <div class="method">
+                <div class="title" id="M001640">
+                    
+                    <a name="M001640"></a><b>connecting</b>(client)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001640_source')" id="l_M001640_source">show</a>
+                        
+                    </p>
+                    <div id="M001640_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/gserver.rb, line 134</span>
+134:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">connecting</span>(<span class="ruby-identifier">client</span>)
+135:     <span class="ruby-identifier">addr</span> = <span class="ruby-identifier">client</span>.<span class="ruby-identifier">peeraddr</span>
+136:     <span class="ruby-identifier">log</span>(<span class="ruby-node">&quot;#{self.class.to_s} #{@host}:#{@port} client:#{addr[1]} &quot;</span> <span class="ruby-operator">+</span>
+137:         <span class="ruby-node">&quot;#{addr[2]}&lt;#{addr[3]}&gt; connect&quot;</span>)
+138:     <span class="ruby-keyword kw">true</span>
+139:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001641">
+                    
+                    <a name="M001641"></a><b>disconnecting</b>(clientPort)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001641_source')" id="l_M001641_source">show</a>
+                        
+                    </p>
+                    <div id="M001641_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/gserver.rb, line 141</span>
+141:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">disconnecting</span>(<span class="ruby-identifier">clientPort</span>)
+142:     <span class="ruby-identifier">log</span>(<span class="ruby-node">&quot;#{self.class.to_s} #{@host}:#{@port} &quot;</span> <span class="ruby-operator">+</span>
+143:       <span class="ruby-node">&quot;client:#{clientPort} disconnect&quot;</span>)
+144:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001644">
+                    
+                    <a name="M001644"></a><b>error</b>(detail)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001644_source')" id="l_M001644_source">show</a>
+                        
+                    </p>
+                    <div id="M001644_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/gserver.rb, line 158</span>
+158:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">error</span>(<span class="ruby-identifier">detail</span>)
+159:     <span class="ruby-identifier">log</span>(<span class="ruby-identifier">detail</span>.<span class="ruby-identifier">backtrace</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;\n&quot;</span>))
+160:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001645">
+                    
+                    <a name="M001645"></a><b>log</b>(msg)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001645_source')" id="l_M001645_source">show</a>
+                        
+                    </p>
+                    <div id="M001645_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/gserver.rb, line 162</span>
+162:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">log</span>(<span class="ruby-identifier">msg</span>)
+163:     <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@stdlog</span>
+164:       <span class="ruby-ivar">@stdlog</span>.<span class="ruby-identifier">puts</span>(<span class="ruby-node">&quot;[#{Time.new.ctime}] %s&quot;</span> <span class="ruby-operator">%</span> <span class="ruby-identifier">msg</span>)
+165:       <span class="ruby-ivar">@stdlog</span>.<span class="ruby-identifier">flush</span>
+166:     <span class="ruby-keyword kw">end</span>
+167:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001642">
+                    
+                    <a name="M001642"></a><b>starting</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001642_source')" id="l_M001642_source">show</a>
+                        
+                    </p>
+                    <div id="M001642_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/gserver.rb, line 148</span>
+148:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">starting</span>()
+149:     <span class="ruby-identifier">log</span>(<span class="ruby-node">&quot;#{self.class.to_s} #{@host}:#{@port} start&quot;</span>)
+150:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001643">
+                    
+                    <a name="M001643"></a><b>stopping</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001643_source')" id="l_M001643_source">show</a>
+                        
+                    </p>
+                    <div id="M001643_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/gserver.rb, line 152</span>
+152:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">stopping</span>()
+153:     <span class="ruby-identifier">log</span>(<span class="ruby-node">&quot;#{self.class.to_s} #{@host}:#{@port} stop&quot;</span>)
+154:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

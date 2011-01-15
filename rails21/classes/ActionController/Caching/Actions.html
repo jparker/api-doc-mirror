@@ -1,0 +1,124 @@
+  <div id="C00000104">
+<div class='banner'>
+  <span class="file-title-prefix">Module</span><br />Actions<br/>
+  In:
+<a href="#" onclick="jsHref('files/actionpack/lib/action_controller/caching/actions_rb.html');">actionpack/lib/action_controller/caching/actions.rb</a>
+
+</div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+      <div id="content">
+
+  <div class="description"><p>
+Action caching is similar to page caching by the fact that the entire
+output of the response is cached, but unlike page caching, every request
+still goes through the Action Pack. The key benefit of this is that filters
+are run before the cache is served, which allows for authentication and
+other restrictions on whether someone is allowed to see the cache. Example:
+</p>
+<pre>
+  class ListsController &lt; ApplicationController
+    before_filter :authenticate, :except =&gt; :public
+    caches_page   :public
+    caches_action :index, :show, :feed
+  end
+</pre>
+<p>
+In this example, the public action doesn&#8217;t require authentication, so
+it&#8217;s possible to use the faster page caching method. But both the
+show and feed action are to be shielded behind the authenticate filter, so
+we need to implement those as action caches.
+</p>
+<p>
+Action caching internally uses the fragment caching and an around filter to
+do the job. The fragment cache is named according to both the current host
+and the path. So a page that is accessed at <a
+href="http://david.somewhere.com/lists/show/1"
+target="_blank">http://david.somewhere.com/lists/show/1</a> will result in
+a fragment named &quot;david.somewhere.com/lists/show/1&quot;. This allows
+the cacher to differentiate between &quot;david.somewhere.com/lists/&quot;
+and &quot;jamis.somewhere.com/lists/&quot; &#8212; which is a helpful way
+of assisting the subdomain-as-account-key pattern.
+</p>
+<p>
+Different representations of the same resource, e.g. <tt><a
+href="http://david.somewhere.com/lists"
+target="_blank">http://david.somewhere.com/lists</a></tt> and <tt><a
+href="http://david.somewhere.com/lists.xml"
+target="_blank">http://david.somewhere.com/lists.xml</a></tt> are treated
+like separate requests and so are cached separately. Keep in mind when
+expiring an action cache that <tt>:action =&gt; &#8216;lists&#8217;</tt> is
+not the same as <tt>:action =&gt; &#8216;list&#8217;, :format =&gt;
+:xml</tt>.
+</p>
+<p>
+You can set modify the default action cache path by passing a :cache_path
+option. This will be passed directly to <a
+href="index.html?a=M000274&name=ActionCachePath.path_for">ActionCachePath.path_for</a>.
+This is handy for actions with multiple possible routes that should be
+cached differently. If a block is given, it is called with the current
+controller instance.
+</p>
+<p>
+And you can also use :if to pass a Proc that specifies when the action
+should be cached.
+</p>
+<pre>
+  class ListsController &lt; ApplicationController
+    before_filter :authenticate, :except =&gt; :public
+    caches_page   :public
+    caches_action :index, :if =&gt; Proc.new { |c| !c.request.format.json? } # cache if is not a JSON request
+    caches_action :show, :cache_path =&gt; { :project =&gt; 1 }
+    caches_action :feed, :cache_path =&gt; Proc.new { |controller|
+      controller.params[:user_id] ?
+        controller.send(:user_list_url, c.params[:user_id], c.params[:id]) :
+        controller.send(:list_url, c.params[:id]) }
+  end
+</pre>
+</div>
+
+
+
+  <div class="sectiontitle">Methods</div>
+  <ul>
+  <li><a href="index.html?a=M000272&name=expire_action" >expire_action</a></li>
+  </ul>
+
+
+
+  <div class="sectiontitle">Classes and Modules</div>
+  Module "<a href="#" onclick="jsHref('classes/ActionController/Caching/Actions/ClassMethods.html');" class="link">ActionController::Caching::Actions::ClassMethods</a>"<br />
+Class "<a href="#" onclick="jsHref('classes/ActionController/Caching/Actions/ActionCachePath.html');" class="link">ActionController::Caching::Actions::ActionCachePath</a>"<br />
+
+
+
+
+<div class="sectiontitle">Protected Instance methods</div>
+<div id="M000272" class="method">
+  <div id="M000272_title" class="title">
+    <b>expire_action</b>(options = {})
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000272_source')" id="l_M000272_source">show source</a> ]</p>
+  <div id="M000272_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File actionpack/lib/action_controller/caching/actions.rb, line 62</span>
+62:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">expire_action</span>(<span class="ruby-identifier">options</span> = {})
+63:           <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">cache_configured?</span>
+64: 
+65:           <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:action</span>].<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Array</span>)
+66:             <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:action</span>].<span class="ruby-identifier">dup</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">action</span><span class="ruby-operator">|</span>
+67:               <span class="ruby-identifier">expire_fragment</span>(<span class="ruby-constant">ActionCachePath</span>.<span class="ruby-identifier">path_for</span>(<span class="ruby-keyword kw">self</span>, <span class="ruby-identifier">options</span>.<span class="ruby-identifier">merge</span>({ <span class="ruby-identifier">:action</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">action</span> })))
+68:             <span class="ruby-keyword kw">end</span>
+69:           <span class="ruby-keyword kw">else</span>
+70:             <span class="ruby-identifier">expire_fragment</span>(<span class="ruby-constant">ActionCachePath</span>.<span class="ruby-identifier">path_for</span>(<span class="ruby-keyword kw">self</span>, <span class="ruby-identifier">options</span>))
+71:           <span class="ruby-keyword kw">end</span>
+72:         <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+</div>
+
+  </div>

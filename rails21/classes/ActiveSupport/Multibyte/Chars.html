@@ -1,0 +1,360 @@
+  <div id="C00000400">
+<div class='banner'>
+  <span class="file-title-prefix">Class</span><br />Chars<br/>
+  In:
+<a href="#" onclick="jsHref('files/activesupport/lib/active_support/multibyte/chars_rb.html');">activesupport/lib/active_support/multibyte/chars.rb</a>
+
+Parent:&nbsp;
+        <a href="#" onclick="jsHref('classes/Object.html');">
+Object
+         </a>
+</div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+      <div id="content">
+
+  <div class="description"><p>
+<a href="index.html?a=C00000400&name=Chars">Chars</a> enables you to work
+transparently with multibyte encodings in the Ruby String class without
+having extensive knowledge about the encoding. A <a
+href="index.html?a=C00000400&name=Chars">Chars</a> object accepts a string
+upon initialization and proxies String methods in an encoding safe manner.
+All the normal String methods are also implemented on the proxy.
+</p>
+<p>
+String methods are proxied through the <a
+href="index.html?a=C00000400&name=Chars">Chars</a> object, and can be
+accessed through the <tt>chars</tt> method. Methods which would normally
+return a String object now return a <a
+href="index.html?a=C00000400&name=Chars">Chars</a> object so methods can be
+chained.
+</p>
+<pre>
+  &quot;The Perfect String  &quot;.chars.downcase.strip.normalize # =&gt; &quot;the perfect string&quot;
+</pre>
+<p>
+<a href="index.html?a=C00000400&name=Chars">Chars</a> objects are perfectly
+interchangeable with String objects as long as no explicit class checks are
+made. If certain methods do explicitly check the class, call <tt>to_s</tt>
+before you pass chars objects to them.
+</p>
+<pre>
+  bad.explicit_checking_method &quot;T&quot;.chars.downcase.to_s
+</pre>
+<p>
+The actual operations on the string are delegated to handlers.
+Theoretically handlers can be implemented for any encoding, but the default
+handler handles UTF-8. This handler is set during initialization, if you
+want to use you own handler, you can set it on the <a
+href="index.html?a=C00000400&name=Chars">Chars</a> class. Look at the
+UTF8Handler source for an example how to implement your own handler. If you
+your own handler to work on anything but UTF-8 you probably also want to
+override <a
+href="index.html?a=M000888&name=Chars#handler">Chars#handler</a>.
+</p>
+<pre>
+  ActiveSupport::Multibyte::Chars.handler = MyHandler
+</pre>
+<p>
+Note that a few methods are defined on <a
+href="index.html?a=C00000400&name=Chars">Chars</a> instead of the handler
+because they are defined on <a
+href="index.html?a=C00000051&name=Object">Object</a> or <a
+href="index.html?a=C00000739&name=Kernel">Kernel</a> and <a
+href="index.html?a=M000886&name=method_missing">method_missing</a>
+can&#8217;t catch them.
+</p>
+</div>
+
+
+
+  <div class="sectiontitle">Methods</div>
+  <ul>
+  <li><a href="index.html?a=M000882&name=&lt;=&gt;" >&lt;=&gt;</a></li>
+  <li><a href="index.html?a=M000885&name==~" >=~</a></li>
+  <li><a href="index.html?a=M000884&name=gsub" >gsub</a></li>
+  <li><a href="index.html?a=M000888&name=handler" >handler</a></li>
+  <li><a href="index.html?a=M000887&name=handler=" >handler=</a></li>
+  <li><a href="index.html?a=M000886&name=method_missing" >method_missing</a></li>
+  <li><a href="index.html?a=M000881&name=new" >new</a></li>
+  <li><a href="index.html?a=M000880&name=respond_to?" >respond_to?</a></li>
+  <li><a href="index.html?a=M000883&name=split" >split</a></li>
+  <li><a href="index.html?a=M000879&name=to_str" >to_str</a></li>
+  </ul>
+
+<div class="sectiontitle">Included Modules</div>
+<ul>
+  <li><a href="#" onclick="jsHref('');">Comparable</a></li>
+</ul>
+
+
+
+
+  <div class="sectiontitle">Attributes</div>
+  <table border='0' cellpadding='5'>
+  <tr valign='top'>
+    <td class='attr-rw'>
+[R]
+    </td>
+    <td class='attr-name'>string</td>
+    <td class='attr-desc'></td>
+  </tr>
+  </table>
+
+<div class="sectiontitle">Public Class methods</div>
+<div id="M000887" class="method">
+  <div id="M000887_title" class="title">
+    <b>handler=</b>(klass)
+  </div>
+  <div class="description">
+  <p>
+Set the handler class for the Char objects.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000887_source')" id="l_M000887_source">show source</a> ]</p>
+  <div id="M000887_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activesupport/lib/active_support/multibyte/chars.rb, line 106</span>
+106:     <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">handler=</span>(<span class="ruby-identifier">klass</span>)
+107:       <span class="ruby-ivar">@@handler</span> = <span class="ruby-identifier">klass</span>
+108:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000881" class="method">
+  <div id="M000881_title" class="title">
+    <b>new</b>(str)
+  </div>
+  <div class="description">
+  <p>
+Create a new <a href="index.html?a=C00000400&name=Chars">Chars</a>
+instance.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000881_source')" id="l_M000881_source">show source</a> ]</p>
+  <div id="M000881_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activesupport/lib/active_support/multibyte/chars.rb, line 53</span>
+53:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">str</span>)
+54:       <span class="ruby-ivar">@string</span> = <span class="ruby-identifier">str</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">:string</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">str</span>.<span class="ruby-identifier">string</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">str</span>
+55:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div class="sectiontitle">Public Instance methods</div>
+<div id="M000882" class="method">
+  <div id="M000882_title" class="title">
+    <b>&lt;=&gt;</b>(other)
+  </div>
+  <div class="description">
+  <p>
+Returns -1, 0 or +1 depending on whether the <a
+href="index.html?a=C00000400&name=Chars">Chars</a> object is to be sorted
+before, equal or after the object on the right side of the operation. It
+accepts any object that implements <tt>to_s</tt>. See String.&lt;=&gt; for
+more details.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000882_source')" id="l_M000882_source">show source</a> ]</p>
+  <div id="M000882_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activesupport/lib/active_support/multibyte/chars.rb, line 60</span>
+60:     <span class="ruby-keyword kw">def</span> <span class="ruby-operator">&lt;=&gt;</span>(<span class="ruby-identifier">other</span>); <span class="ruby-ivar">@string</span> <span class="ruby-operator">&lt;=&gt;</span> <span class="ruby-identifier">other</span>.<span class="ruby-identifier">to_s</span>; <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000885" class="method">
+  <div id="M000885_title" class="title">
+    <b>=~</b>(other)
+  </div>
+  <div class="description">
+  <p>
+Like String.=~ only it returns the character offset (in codepoints) instead
+of the byte offset.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000885_source')" id="l_M000885_source">show source</a> ]</p>
+  <div id="M000885_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activesupport/lib/active_support/multibyte/chars.rb, line 72</span>
+72:     <span class="ruby-keyword kw">def</span> <span class="ruby-operator">=~</span>(<span class="ruby-identifier">other</span>)
+73:       <span class="ruby-identifier">handler</span>.<span class="ruby-identifier">translate_offset</span>(<span class="ruby-ivar">@string</span>, <span class="ruby-ivar">@string</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">other</span>)
+74:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000884" class="method">
+  <div id="M000884_title" class="title">
+    <b>gsub</b>(*a, &amp;b)
+  </div>
+  <div class="description">
+  <p>
+Gsub works exactly the same as gsub on a normal string.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000884_source')" id="l_M000884_source">show source</a> ]</p>
+  <div id="M000884_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activesupport/lib/active_support/multibyte/chars.rb, line 69</span>
+69:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">gsub</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">a</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">b</span>); <span class="ruby-ivar">@string</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">a</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">b</span>).<span class="ruby-identifier">chars</span>; <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000888" class="method">
+  <div id="M000888_title" class="title">
+    <b>handler</b>()
+  </div>
+  <div class="description">
+  <p>
+Returns the proper handler for the contained string depending on $KCODE and
+the encoding of the string. This method is used internally to always
+redirect messages to the proper classes depending on the context.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000888_source')" id="l_M000888_source">show source</a> ]</p>
+  <div id="M000888_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activesupport/lib/active_support/multibyte/chars.rb, line 112</span>
+112:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">handler</span>
+113:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">utf8_pragma?</span>
+114:         <span class="ruby-ivar">@@handler</span>
+115:       <span class="ruby-keyword kw">else</span>
+116:         <span class="ruby-constant">ActiveSupport</span><span class="ruby-operator">::</span><span class="ruby-constant">Multibyte</span><span class="ruby-operator">::</span><span class="ruby-constant">Handlers</span><span class="ruby-operator">::</span><span class="ruby-constant">PassthruHandler</span>
+117:       <span class="ruby-keyword kw">end</span>
+118:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000886" class="method">
+  <div id="M000886_title" class="title">
+    <b>method_missing</b>(m, *a, &amp;b)
+  </div>
+  <div class="description">
+  <p>
+Try to forward all undefined methods to the handler, when a method is not
+defined on the handler, send it to the contained string. Method_missing is
+also responsible for making the bang! methods destructive.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000886_source')" id="l_M000886_source">show source</a> ]</p>
+  <div id="M000886_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activesupport/lib/active_support/multibyte/chars.rb, line 78</span>
+ 78:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">method_missing</span>(<span class="ruby-identifier">m</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">a</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">b</span>)
+ 79:       <span class="ruby-keyword kw">begin</span>
+ 80:         <span class="ruby-comment cmt"># Simulate methods with a ! at the end because we can't touch the enclosed string from the handlers.</span>
+ 81:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">m</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/^(.*)\!$/</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">handler</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">$1</span>)
+ 82:           <span class="ruby-identifier">result</span> = <span class="ruby-identifier">handler</span>.<span class="ruby-identifier">send</span>(<span class="ruby-identifier">$1</span>, <span class="ruby-ivar">@string</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">a</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">b</span>)
+ 83:           <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">result</span> <span class="ruby-operator">==</span> <span class="ruby-ivar">@string</span>
+ 84:             <span class="ruby-identifier">result</span> = <span class="ruby-keyword kw">nil</span>
+ 85:           <span class="ruby-keyword kw">else</span>
+ 86:             <span class="ruby-ivar">@string</span>.<span class="ruby-identifier">replace</span> <span class="ruby-identifier">result</span>
+ 87:           <span class="ruby-keyword kw">end</span>
+ 88:         <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">handler</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">m</span>)
+ 89:           <span class="ruby-identifier">result</span> = <span class="ruby-identifier">handler</span>.<span class="ruby-identifier">send</span>(<span class="ruby-identifier">m</span>, <span class="ruby-ivar">@string</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">a</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">b</span>)
+ 90:         <span class="ruby-keyword kw">else</span>
+ 91:           <span class="ruby-identifier">result</span> = <span class="ruby-ivar">@string</span>.<span class="ruby-identifier">send</span>(<span class="ruby-identifier">m</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">a</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">b</span>)
+ 92:         <span class="ruby-keyword kw">end</span>
+ 93:       <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Handlers</span><span class="ruby-operator">::</span><span class="ruby-constant">EncodingError</span>
+ 94:         <span class="ruby-ivar">@string</span>.<span class="ruby-identifier">replace</span> <span class="ruby-identifier">handler</span>.<span class="ruby-identifier">tidy_bytes</span>(<span class="ruby-ivar">@string</span>)
+ 95:         <span class="ruby-keyword kw">retry</span>
+ 96:       <span class="ruby-keyword kw">end</span>
+ 97:       
+ 98:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">result</span>.<span class="ruby-identifier">kind_of?</span>(<span class="ruby-constant">String</span>)
+ 99:         <span class="ruby-identifier">result</span>.<span class="ruby-identifier">chars</span>
+100:       <span class="ruby-keyword kw">else</span>
+101:         <span class="ruby-identifier">result</span>
+102:       <span class="ruby-keyword kw">end</span>
+103:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000880" class="method">
+  <div id="M000880_title" class="title">
+    <b>respond_to?</b>(method, include_priv = false)
+  </div>
+  <div class="description">
+  <p>
+Make duck-typing with String possible
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000880_source')" id="l_M000880_source">show source</a> ]</p>
+  <div id="M000880_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activesupport/lib/active_support/multibyte/chars.rb, line 45</span>
+45:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">method</span>, <span class="ruby-identifier">include_priv</span> = <span class="ruby-keyword kw">false</span>)
+46:       <span class="ruby-keyword kw">super</span> <span class="ruby-operator">||</span> <span class="ruby-ivar">@string</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">method</span>, <span class="ruby-identifier">include_priv</span>) <span class="ruby-operator">||</span>
+47:         <span class="ruby-identifier">handler</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">method</span>, <span class="ruby-identifier">include_priv</span>) <span class="ruby-operator">||</span>
+48:         (<span class="ruby-identifier">method</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/(.*)!/</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">handler</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">$1</span>, <span class="ruby-identifier">include_priv</span>)) <span class="ruby-operator">||</span>
+49:         <span class="ruby-keyword kw">false</span>
+50:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000883" class="method">
+  <div id="M000883_title" class="title">
+    <b>split</b>(*args)
+  </div>
+  <div class="description">
+  <p>
+Works just like String#split, with the exception that the items in the
+resulting list are <a href="index.html?a=C00000400&name=Chars">Chars</a>
+instances instead of String. This makes chaining methods easier.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000883_source')" id="l_M000883_source">show source</a> ]</p>
+  <div id="M000883_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activesupport/lib/active_support/multibyte/chars.rb, line 64</span>
+64:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">split</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+65:       <span class="ruby-ivar">@string</span>.<span class="ruby-identifier">split</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>).<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">i</span><span class="ruby-operator">|</span> <span class="ruby-identifier">i</span>.<span class="ruby-identifier">chars</span> }
+66:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000879" class="method">
+  <div id="M000879_title" class="title">
+    <b>to_str</b>()
+  </div>
+  <div class="description">
+  <p>
+The magic method to make String and <a
+href="index.html?a=C00000400&name=Chars">Chars</a> comparable
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000879_source')" id="l_M000879_source">show source</a> ]</p>
+  <div id="M000879_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activesupport/lib/active_support/multibyte/chars.rb, line 38</span>
+38:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">to_str</span>
+39:       <span class="ruby-comment cmt"># Using any other ways of overriding the String itself will lead you all the way from infinite loops to</span>
+40:       <span class="ruby-comment cmt"># core dumps. Don't go there.</span>
+41:       <span class="ruby-ivar">@string</span>
+42:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+</div>
+
+  </div>

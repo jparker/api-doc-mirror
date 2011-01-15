@@ -1,0 +1,2426 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>StringScanner</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            StringScanner 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/ext/strscan/strscan_c.html">ext/strscan/strscan.c</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+<a href="StringScanner.html">StringScanner</a> provides for lexical
+scanning operations on a <a href="String.html">String</a>. Here is an
+example of its usage:
+</p>
+<pre>
+  s = StringScanner.new('This is an example string')
+  s.eos?               # -&gt; false
+
+  p s.scan(/\w+/)      # -&gt; &quot;This&quot;
+  p s.scan(/\w+/)      # -&gt; nil
+  p s.scan(/\s+/)      # -&gt; &quot; &quot;
+  p s.scan(/\s+/)      # -&gt; nil
+  p s.scan(/\w+/)      # -&gt; &quot;is&quot;
+  s.eos?               # -&gt; false
+
+  p s.scan(/\s+/)      # -&gt; &quot; &quot;
+  p s.scan(/\w+/)      # -&gt; &quot;an&quot;
+  p s.scan(/\s+/)      # -&gt; &quot; &quot;
+  p s.scan(/\w+/)      # -&gt; &quot;example&quot;
+  p s.scan(/\s+/)      # -&gt; &quot; &quot;
+  p s.scan(/\w+/)      # -&gt; &quot;string&quot;
+  s.eos?               # -&gt; true
+
+  p s.scan(/\s+/)      # -&gt; nil
+  p s.scan(/\w+/)      # -&gt; nil
+</pre>
+<p>
+Scanning a string means remembering the position of a <em>scan
+pointer</em>, which is just an index. The point of scanning is to move
+forward a bit at a time, so matches are sought after the scan pointer;
+usually immediately after it.
+</p>
+<p>
+Given the string &#8220;test string&#8221;, here are the pertinent scan
+pointer positions:
+</p>
+<pre>
+    t e s t   s t r i n g
+  0 1 2 ...             1
+                        0
+</pre>
+<p>
+When you <a href="StringScanner.html#M007023">scan</a> for a pattern (a
+regular expression), the match must occur at the character after the scan
+pointer. If you use <a href="StringScanner.html#M007028">scan_until</a>,
+then the match can occur anywhere after the scan pointer. In both cases,
+the scan pointer moves <em>just beyond</em> the last character of the
+match, ready to scan again from the next character onwards. This is
+demonstrated by the example above.
+</p>
+<h2><a href="Method.html">Method</a> Categories</h2>
+<p>
+There are other methods besides the plain scanners. You can look ahead in
+the string without actually scanning. You can access the most recent match.
+You can modify the string being scanned, reset or terminate the scanner,
+find out or change the position of the scan pointer, skip ahead, and so on.
+</p>
+<h3>Advancing the Scan Pointer</h3>
+<ul>
+<li><a href="StringScanner.html#M007033">getch</a>
+
+</li>
+<li><a href="StringScanner.html#M007034">get_byte</a>
+
+</li>
+<li><a href="StringScanner.html#M007023">scan</a>
+
+</li>
+<li><a href="StringScanner.html#M007028">scan_until</a>
+
+</li>
+<li><a href="StringScanner.html#M007024">skip</a>
+
+</li>
+<li><a href="StringScanner.html#M007029">skip_until</a>
+
+</li>
+</ul>
+<h3>Looking Ahead</h3>
+<ul>
+<li><a href="StringScanner.html#M007026">check</a>
+
+</li>
+<li><a href="StringScanner.html#M007031">check_until</a>
+
+</li>
+<li><a href="StringScanner.html#M007030">exist?</a>
+
+</li>
+<li><a href="StringScanner.html#M007025">match?</a>
+
+</li>
+<li><a href="StringScanner.html#M007036">peek</a>
+
+</li>
+</ul>
+<h3>Finding Where we Are</h3>
+<ul>
+<li><a href="StringScanner.html#M007039">beginning_of_line?</a> (bol?)
+
+</li>
+<li><a href="StringScanner.html#M007040">eos?</a>
+
+</li>
+<li><a href="StringScanner.html#M007042">rest?</a>
+
+</li>
+<li><a href="StringScanner.html#M007050">rest_size</a>
+
+</li>
+<li><a href="StringScanner.html#M007019">pos</a>
+
+</li>
+</ul>
+<h3>Setting Where we Are</h3>
+<ul>
+<li><a href="StringScanner.html#M007012">reset</a>
+
+</li>
+<li><a href="StringScanner.html#M007013">terminate</a>
+
+</li>
+<li><a href="StringScanner.html#M007020">pos=</a>
+
+</li>
+</ul>
+<h3>Match <a href="Data.html">Data</a></h3>
+<ul>
+<li><a href="StringScanner.html#M007044">matched</a>
+
+</li>
+<li><a href="StringScanner.html#M007043">matched?</a>
+
+</li>
+<li><a href="StringScanner.html#M007045">matched_size</a>
+
+</li>
+<li>[]
+
+</li>
+<li><a href="StringScanner.html#M007047">pre_match</a>
+
+</li>
+<li><a href="StringScanner.html#M007048">post_match</a>
+
+</li>
+</ul>
+<h3>Miscellaneous</h3>
+<ul>
+<li><<
+
+</li>
+<li><a href="StringScanner.html#M007017">concat</a>
+
+</li>
+<li><a href="StringScanner.html#M007015">string</a>
+
+</li>
+<li><a href="StringScanner.html#M007016">string=</a>
+
+</li>
+<li><a href="StringScanner.html#M007038">unscan</a>
+
+</li>
+</ul>
+<p>
+There are aliases to several of the methods.
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>#</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007018"><<</a>,</li>
+                
+                <li><a href="#M007046">[]</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>B</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007039">beginning_of_line?</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007026">check</a>,</li>
+                
+                <li><a href="#M007031">check_until</a>,</li>
+                
+                <li><a href="#M007014">clear</a>,</li>
+                
+                <li><a href="#M007017">concat</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007041">empty?</a>,</li>
+                
+                <li><a href="#M007040">eos?</a>,</li>
+                
+                <li><a href="#M007030">exist?</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>G</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007034">get_byte</a>,</li>
+                
+                <li><a href="#M007035">getbyte</a>,</li>
+                
+                <li><a href="#M007033">getch</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>I</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007010">initialize_copy</a>,</li>
+                
+                <li><a href="#M007052">inspect</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>M</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007025">match?</a>,</li>
+                
+                <li><a href="#M007044">matched</a>,</li>
+                
+                <li><a href="#M007043">matched?</a>,</li>
+                
+                <li><a href="#M007045">matched_size</a>,</li>
+                
+                <li><a href="#M007011">must_C_version</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007009">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>P</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007036">peek</a>,</li>
+                
+                <li><a href="#M007037">peep</a>,</li>
+                
+                <li><a href="#M007021">pointer</a>,</li>
+                
+                <li><a href="#M007022">pointer=</a>,</li>
+                
+                <li><a href="#M007019">pos</a>,</li>
+                
+                <li><a href="#M007020">pos=</a>,</li>
+                
+                <li><a href="#M007048">post_match</a>,</li>
+                
+                <li><a href="#M007047">pre_match</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>R</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007012">reset</a>,</li>
+                
+                <li><a href="#M007049">rest</a>,</li>
+                
+                <li><a href="#M007042">rest?</a>,</li>
+                
+                <li><a href="#M007050">rest_size</a>,</li>
+                
+                <li><a href="#M007051">restsize</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007023">scan</a>,</li>
+                
+                <li><a href="#M007027">scan_full</a>,</li>
+                
+                <li><a href="#M007028">scan_until</a>,</li>
+                
+                <li><a href="#M007032">search_full</a>,</li>
+                
+                <li><a href="#M007024">skip</a>,</li>
+                
+                <li><a href="#M007029">skip_until</a>,</li>
+                
+                <li><a href="#M007015">string</a>,</li>
+                
+                <li><a href="#M007016">string=</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>T</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007013">terminate</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>U</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007038">unscan</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Classes and Modules</div>
+    <ul>
+        
+        <li><span class="type">CLASS</span> <a href="StringScanner/Error.html">StringScanner::Error</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M007011">
+                    
+                    <a name="M007011"></a><b> StringScanner.must_C_version
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+This method is defined for backward compatibility.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007011_source')" id="l_M007011_source">show</a>
+                        
+                    </p>
+                    <div id="M007011_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_s_mustc(VALUE self)
+{
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007009">
+                    
+                    <a name="M007009"></a><b> StringScanner.new(string, dup = false)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Creates a new <a href="StringScanner.html">StringScanner</a> object to scan
+over the given <tt>string</tt>. <tt>dup</tt> argument is obsolete and not
+used now.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007009_source')" id="l_M007009_source">show</a>
+                        
+                    </p>
+                    <div id="M007009_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_initialize(int argc, VALUE *argv, VALUE self)
+{
+    struct strscanner *p;
+    VALUE str, need_dup;
+
+    Data_Get_Struct(self, struct strscanner, p);
+    rb_scan_args(argc, argv, &quot;11&quot;, &amp;str, &amp;need_dup);
+    StringValue(str);
+    p-&gt;str = str;
+
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M007018">
+                    
+                    <a name="M007018"></a><b>concat(str)
+<<(str)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Appends <tt>str</tt> to the string being scanned. This method does not
+affect scan pointer.
+</p>
+<pre>
+  s = StringScanner.new(&quot;Fri Dec 12 1975 14:39&quot;)
+  s.scan(/Fri /)
+  s &lt;&lt; &quot; +1000 GMT&quot;
+  s.string            # -&gt; &quot;Fri Dec 12 1975 14:39 +1000 GMT&quot;
+  s.scan(/Dec/)       # -&gt; &quot;Dec&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007018_source')" id="l_M007018_source">show</a>
+                        
+                    </p>
+                    <div id="M007018_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_concat(VALUE self, VALUE str)
+{
+    struct strscanner *p;
+
+    GET_SCANNER(self, p);
+    StringValue(str);
+    rb_str_append(p-&gt;str, str);
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007046">
+                    
+                    <a name="M007046"></a><b> [](n)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Return the n-th subgroup in the most recent match.
+</p>
+<pre>
+  s = StringScanner.new(&quot;Fri Dec 12 1975 14:39&quot;)
+  s.scan(/(\w+) (\w+) (\d+) /)       # -&gt; &quot;Fri Dec 12 &quot;
+  s[0]                               # -&gt; &quot;Fri Dec 12 &quot;
+  s[1]                               # -&gt; &quot;Fri&quot;
+  s[2]                               # -&gt; &quot;Dec&quot;
+  s[3]                               # -&gt; &quot;12&quot;
+  s.post_match                       # -&gt; &quot;1975 14:39&quot;
+  s.pre_match                        # -&gt; &quot;&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007046_source')" id="l_M007046_source">show</a>
+                        
+                    </p>
+                    <div id="M007046_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_aref(VALUE self, VALUE idx)
+{
+    struct strscanner *p;
+    long i;
+
+    GET_SCANNER(self, p);
+    if (! MATCHED_P(p))        return Qnil;
+
+    i = NUM2LONG(idx);
+    if (i &lt; 0)
+        i += p-&gt;regs.num_regs;
+    if (i &lt; 0)                 return Qnil;
+    if (i &gt;= p-&gt;regs.num_regs) return Qnil;
+    if (p-&gt;regs.beg[i] == -1)  return Qnil;
+
+    return extract_range(p, p-&gt;prev + p-&gt;regs.beg[i],
+                            p-&gt;prev + p-&gt;regs.end[i]);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007039">
+                    
+                    <a name="M007039"></a><b>beginning_of_line?</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns <tt>true</tt> iff the scan pointer is at the beginning of the line.
+</p>
+<pre>
+  s = StringScanner.new(&quot;test\ntest\n&quot;)
+  s.bol?           # =&gt; true
+  s.scan(/te/)
+  s.bol?           # =&gt; false
+  s.scan(/st\n/)
+  s.bol?           # =&gt; true
+  s.terminate
+  s.bol?           # =&gt; true
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007039_source')" id="l_M007039_source">show</a>
+                        
+                    </p>
+                    <div id="M007039_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_bol_p(VALUE self)
+{
+    struct strscanner *p;
+
+    GET_SCANNER(self, p);
+    if (CURPTR(p) &gt; S_PEND(p)) return Qnil;
+    if (p-&gt;curr == 0) return Qtrue;
+    return (*(CURPTR(p) - 1) == '\n') ? Qtrue : Qfalse;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007026">
+                    
+                    <a name="M007026"></a><b> check(pattern)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+This returns the value that <a href="StringScanner.html#M007023">scan</a>
+would return, without advancing the scan pointer. The match register is
+affected, though.
+</p>
+<pre>
+  s = StringScanner.new(&quot;Fri Dec 12 1975 14:39&quot;)
+  s.check /Fri/               # -&gt; &quot;Fri&quot;
+  s.pos                       # -&gt; 0
+  s.matched                   # -&gt; &quot;Fri&quot;
+  s.check /12/                # -&gt; nil
+  s.matched                   # -&gt; nil
+</pre>
+<p>
+Mnemonic: it &#8220;checks&#8221; to see whether a <a
+href="StringScanner.html#M007023">scan</a> will return a value.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007026_source')" id="l_M007026_source">show</a>
+                        
+                    </p>
+                    <div id="M007026_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_check(VALUE self, VALUE re)
+{
+    return strscan_do_scan(self, re, 0, 1, 1);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007031">
+                    
+                    <a name="M007031"></a><b> check_until(pattern)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+This returns the value that <a
+href="StringScanner.html#M007028">scan_until</a> would return, without
+advancing the scan pointer. The match register is affected, though.
+</p>
+<pre>
+  s = StringScanner.new(&quot;Fri Dec 12 1975 14:39&quot;)
+  s.check_until /12/          # -&gt; &quot;Fri Dec 12&quot;
+  s.pos                       # -&gt; 0
+  s.matched                   # -&gt; 12
+</pre>
+<p>
+Mnemonic: it &#8220;checks&#8221; to see whether a <a
+href="StringScanner.html#M007028">scan_until</a> will return a value.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007031_source')" id="l_M007031_source">show</a>
+                        
+                    </p>
+                    <div id="M007031_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_check_until(VALUE self, VALUE re)
+{
+    return strscan_do_scan(self, re, 0, 1, 0);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007014">
+                    
+                    <a name="M007014"></a><b>clear</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Equivalent to <a href="StringScanner.html#M007013">terminate</a>. This
+method is obsolete; use <a href="StringScanner.html#M007013">terminate</a>
+instead.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007014_source')" id="l_M007014_source">show</a>
+                        
+                    </p>
+                    <div id="M007014_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_clear(VALUE self)
+{
+    rb_warning(&quot;StringScanner#clear is obsolete; use #terminate instead&quot;);
+    return strscan_terminate(self);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007017">
+                    
+                    <a name="M007017"></a><b>concat(str)
+<<(str)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Appends <tt>str</tt> to the string being scanned. This method does not
+affect scan pointer.
+</p>
+<pre>
+  s = StringScanner.new(&quot;Fri Dec 12 1975 14:39&quot;)
+  s.scan(/Fri /)
+  s &lt;&lt; &quot; +1000 GMT&quot;
+  s.string            # -&gt; &quot;Fri Dec 12 1975 14:39 +1000 GMT&quot;
+  s.scan(/Dec/)       # -&gt; &quot;Dec&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007017_source')" id="l_M007017_source">show</a>
+                        
+                    </p>
+                    <div id="M007017_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_concat(VALUE self, VALUE str)
+{
+    struct strscanner *p;
+
+    GET_SCANNER(self, p);
+    StringValue(str);
+    rb_str_append(p-&gt;str, str);
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007041">
+                    
+                    <a name="M007041"></a><b>empty?</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Equivalent to <a href="StringScanner.html#M007040">eos?</a>. This method is
+obsolete, use <a href="StringScanner.html#M007040">eos?</a> instead.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007041_source')" id="l_M007041_source">show</a>
+                        
+                    </p>
+                    <div id="M007041_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_empty_p(VALUE self)
+{
+    rb_warning(&quot;StringScanner#empty? is obsolete; use #eos? instead&quot;);
+    return strscan_eos_p(self);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007040">
+                    
+                    <a name="M007040"></a><b>eos?</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns <tt>true</tt> if the scan pointer is at the end of the string.
+</p>
+<pre>
+  s = StringScanner.new('test string')
+  p s.eos?          # =&gt; false
+  s.scan(/test/)
+  p s.eos?          # =&gt; false
+  s.terminate
+  p s.eos?          # =&gt; true
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007040_source')" id="l_M007040_source">show</a>
+                        
+                    </p>
+                    <div id="M007040_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_eos_p(VALUE self)
+{
+    struct strscanner *p;
+
+    GET_SCANNER(self, p);
+    return EOS_P(p) ? Qtrue : Qfalse;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007030">
+                    
+                    <a name="M007030"></a><b> exist?(pattern)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Looks <em>ahead</em> to see if the <tt>pattern</tt> exists
+<em>anywhere</em> in the string, without advancing the scan pointer. This
+predicates whether a <a href="StringScanner.html#M007028">scan_until</a>
+will return a value.
+</p>
+<pre>
+  s = StringScanner.new('test string')
+  s.exist? /s/            # -&gt; 3
+  s.scan /test/           # -&gt; &quot;test&quot;
+  s.exist? /s/            # -&gt; 2
+  s.exist? /e/            # -&gt; nil
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007030_source')" id="l_M007030_source">show</a>
+                        
+                    </p>
+                    <div id="M007030_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_exist_p(VALUE self, VALUE re)
+{
+    return strscan_do_scan(self, re, 0, 0, 0);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007034">
+                    
+                    <a name="M007034"></a><b>get_byte</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Scans one byte and returns it. This method is not multibyte character
+sensitive. See also: <a href="StringScanner.html#M007033">getch</a>.
+</p>
+<pre>
+  s = StringScanner.new('ab')
+  s.get_byte         # =&gt; &quot;a&quot;
+  s.get_byte         # =&gt; &quot;b&quot;
+  s.get_byte         # =&gt; nil
+
+  $KCODE = 'EUC'
+  s = StringScanner.new(&quot;\244\242&quot;)
+  s.get_byte         # =&gt; &quot;\244&quot;
+  s.get_byte         # =&gt; &quot;\242&quot;
+  s.get_byte         # =&gt; nil
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007034_source')" id="l_M007034_source">show</a>
+                        
+                    </p>
+                    <div id="M007034_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_get_byte(VALUE self)
+{
+    struct strscanner *p;
+
+    GET_SCANNER(self, p);
+    CLEAR_MATCH_STATUS(p);
+    if (EOS_P(p))
+        return Qnil;
+
+    p-&gt;prev = p-&gt;curr;
+    p-&gt;curr++;
+    MATCHED(p);
+    adjust_registers_to_matched(p);
+    return extract_range(p, p-&gt;prev + p-&gt;regs.beg[0],
+                            p-&gt;prev + p-&gt;regs.end[0]);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007035">
+                    
+                    <a name="M007035"></a><b>getbyte</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Equivalent to <a href="StringScanner.html#M007034">get_byte</a>. This
+method is obsolete; use <a href="StringScanner.html#M007034">get_byte</a>
+instead.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007035_source')" id="l_M007035_source">show</a>
+                        
+                    </p>
+                    <div id="M007035_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_getbyte(VALUE self)
+{
+    rb_warning(&quot;StringScanner#getbyte is obsolete; use #get_byte instead&quot;);
+    return strscan_get_byte(self);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007033">
+                    
+                    <a name="M007033"></a><b>getch</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Scans one character and returns it. This method is multibyte character
+sensitive.
+</p>
+<pre>
+  s = StringScanner.new(&quot;ab&quot;)
+  s.getch           # =&gt; &quot;a&quot;
+  s.getch           # =&gt; &quot;b&quot;
+  s.getch           # =&gt; nil
+
+  $KCODE = 'EUC'
+  s = StringScanner.new(&quot;\244\242&quot;)
+  s.getch           # =&gt; &quot;\244\242&quot;   # Japanese hira-kana &quot;A&quot; in EUC-JP
+  s.getch           # =&gt; nil
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007033_source')" id="l_M007033_source">show</a>
+                        
+                    </p>
+                    <div id="M007033_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_getch(VALUE self)
+{
+    struct strscanner *p;
+    long len;
+
+    GET_SCANNER(self, p);
+    CLEAR_MATCH_STATUS(p);
+    if (EOS_P(p))
+        return Qnil;
+
+    len = rb_enc_mbclen(CURPTR(p), S_PEND(p), rb_enc_get(p-&gt;str));
+    if (p-&gt;curr + len &gt; S_LEN(p)) {
+        len = S_LEN(p) - p-&gt;curr;
+    }
+    p-&gt;prev = p-&gt;curr;
+    p-&gt;curr += len;
+    MATCHED(p);
+    adjust_registers_to_matched(p);
+    return extract_range(p, p-&gt;prev + p-&gt;regs.beg[0],
+                            p-&gt;prev + p-&gt;regs.end[0]);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007052">
+                    
+                    <a name="M007052"></a><b>inspect</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns a string that represents the <a
+href="StringScanner.html">StringScanner</a> object, showing:
+</p>
+<ul>
+<li>the current position
+
+</li>
+<li>the size of the string
+
+</li>
+<li>the characters surrounding the scan pointer
+
+<p>
+s = <a href="StringScanner.html#M007009">StringScanner.new</a>(&#8220;Fri
+Dec 12 1975 14:39&#8221;) s.inspect # -> &#8217;#<<a
+href="StringScanner.html">StringScanner</a> 0/21 @ &#8220;Fri
+D&#8230;&#8221;>&#8217; s.scan_until /12/ # -> &#8220;Fri Dec 12&#8221;
+s.inspect # -> &#8217;#<<a href="StringScanner.html">StringScanner</a>
+10/21 &#8220;&#8230;ec 12&#8221; @ &#8220; 1975...&#8220;>&#8217;
+</p>
+</li>
+</ul>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007052_source')" id="l_M007052_source">show</a>
+                        
+                    </p>
+                    <div id="M007052_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_inspect(VALUE self)
+{
+    struct strscanner *p;
+    char buf[BUFSIZE];
+    long len;
+    VALUE a, b;
+
+    Data_Get_Struct(self, struct strscanner, p);
+    if (NIL_P(p-&gt;str)) {
+        len = snprintf(buf, BUFSIZE, &quot;#&lt;%s (uninitialized)&gt;&quot;,
+                       rb_class2name(CLASS_OF(self)));
+        return infect(rb_str_new(buf, len), p);
+    }
+    if (EOS_P(p)) {
+        len = snprintf(buf, BUFSIZE, &quot;#&lt;%s fin&gt;&quot;,
+                       rb_class2name(CLASS_OF(self)));
+        return infect(rb_str_new(buf, len), p);
+    }
+    if (p-&gt;curr == 0) {
+        b = inspect2(p);
+        len = snprintf(buf, BUFSIZE, &quot;#&lt;%s %ld/%ld @ %s&gt;&quot;,
+                       rb_class2name(CLASS_OF(self)),
+                       p-&gt;curr, S_LEN(p),
+                       RSTRING_PTR(b));
+        return infect(rb_str_new(buf, len), p);
+    }
+    a = inspect1(p);
+    b = inspect2(p);
+    len = snprintf(buf, BUFSIZE, &quot;#&lt;%s %ld/%ld %s @ %s&gt;&quot;,
+                   rb_class2name(CLASS_OF(self)),
+                   p-&gt;curr, S_LEN(p),
+                   RSTRING_PTR(a),
+                   RSTRING_PTR(b));
+    return infect(rb_str_new(buf, len), p);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007025">
+                    
+                    <a name="M007025"></a><b> match?(pattern)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Tests whether the given <tt>pattern</tt> is matched from the current scan
+pointer. Returns the length of the match, or <tt>nil</tt>. The scan pointer
+is not advanced.
+</p>
+<pre>
+  s = StringScanner.new('test string')
+  p s.match?(/\w+/)   # -&gt; 4
+  p s.match?(/\w+/)   # -&gt; 4
+  p s.match?(/\s+/)   # -&gt; nil
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007025_source')" id="l_M007025_source">show</a>
+                        
+                    </p>
+                    <div id="M007025_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_match_p(VALUE self, VALUE re)
+{
+    return strscan_do_scan(self, re, 0, 0, 1);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007044">
+                    
+                    <a name="M007044"></a><b>matched</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the last matched string.
+</p>
+<pre>
+  s = StringScanner.new('test string')
+  s.match?(/\w+/)     # -&gt; 4
+  s.matched           # -&gt; &quot;test&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007044_source')" id="l_M007044_source">show</a>
+                        
+                    </p>
+                    <div id="M007044_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_matched(VALUE self)
+{
+    struct strscanner *p;
+
+    GET_SCANNER(self, p);
+    if (! MATCHED_P(p)) return Qnil;
+    return extract_range(p, p-&gt;prev + p-&gt;regs.beg[0],
+                            p-&gt;prev + p-&gt;regs.end[0]);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007043">
+                    
+                    <a name="M007043"></a><b>matched?</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns <tt>true</tt> iff the last match was successful.
+</p>
+<pre>
+  s = StringScanner.new('test string')
+  s.match?(/\w+/)     # =&gt; 4
+  s.matched?          # =&gt; true
+  s.match?(/\d+/)     # =&gt; nil
+  s.matched?          # =&gt; false
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007043_source')" id="l_M007043_source">show</a>
+                        
+                    </p>
+                    <div id="M007043_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_matched_p(VALUE self)
+{
+    struct strscanner *p;
+
+    GET_SCANNER(self, p);
+    return MATCHED_P(p) ? Qtrue : Qfalse;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007045">
+                    
+                    <a name="M007045"></a><b>matched_size</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the size of the most recent match (see <a
+href="StringScanner.html#M007044">matched</a>), or <tt>nil</tt> if there
+was no recent match.
+</p>
+<pre>
+  s = StringScanner.new('test string')
+  s.check /\w+/           # -&gt; &quot;test&quot;
+  s.matched_size          # -&gt; 4
+  s.check /\d+/           # -&gt; nil
+  s.matched_size          # -&gt; nil
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007045_source')" id="l_M007045_source">show</a>
+                        
+                    </p>
+                    <div id="M007045_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_matched_size(VALUE self)
+{
+    struct strscanner *p;
+
+    GET_SCANNER(self, p);
+    if (! MATCHED_P(p)) return Qnil;
+    return INT2NUM(p-&gt;regs.end[0] - p-&gt;regs.beg[0]);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007036">
+                    
+                    <a name="M007036"></a><b> peek(len)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Extracts a string corresponding to <tt>string[pos,len]</tt>, without
+advancing the scan pointer.
+</p>
+<pre>
+  s = StringScanner.new('test string')
+  s.peek(7)          # =&gt; &quot;test st&quot;
+  s.peek(7)          # =&gt; &quot;test st&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007036_source')" id="l_M007036_source">show</a>
+                        
+                    </p>
+                    <div id="M007036_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_peek(VALUE self, VALUE vlen)
+{
+    struct strscanner *p;
+    long len;
+
+    GET_SCANNER(self, p);
+
+    len = NUM2LONG(vlen);
+    if (EOS_P(p))
+        return infect(str_new(p, &quot;&quot;, 0), p);
+
+    if (p-&gt;curr + len &gt; S_LEN(p))
+        len = S_LEN(p) - p-&gt;curr;
+    return extract_beg_len(p, p-&gt;curr, len);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007037">
+                    
+                    <a name="M007037"></a><b>peep</b>(p1)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Equivalent to <a href="StringScanner.html#M007036">peek</a>. This method is
+obsolete; use <a href="StringScanner.html#M007036">peek</a> instead.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007037_source')" id="l_M007037_source">show</a>
+                        
+                    </p>
+                    <div id="M007037_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_peep(VALUE self, VALUE vlen)
+{
+    rb_warning(&quot;StringScanner#peep is obsolete; use #peek instead&quot;);
+    return strscan_peek(self, vlen);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007021">
+                    
+                    <a name="M007021"></a><b>pointer</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the byte position of the scan pointer. In the &#8216;reset&#8217;
+position, this value is zero. In the &#8216;terminated&#8217; position
+(i.e. the string is exhausted), this value is the bytesize of the string.
+</p>
+<p>
+In short, it&#8217;s a 0-based index into the string.
+</p>
+<pre>
+  s = StringScanner.new('test string')
+  s.pos               # -&gt; 0
+  s.scan_until /str/  # -&gt; &quot;test str&quot;
+  s.pos               # -&gt; 8
+  s.terminate         # -&gt; #&lt;StringScanner fin&gt;
+  s.pos               # -&gt; 11
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007021_source')" id="l_M007021_source">show</a>
+                        
+                    </p>
+                    <div id="M007021_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_get_pos(VALUE self)
+{
+    struct strscanner *p;
+
+    GET_SCANNER(self, p);
+    return INT2FIX(p-&gt;curr);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007022">
+                    
+                    <a name="M007022"></a><b> pos=(n)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+<a href="Set.html">Set</a> the byte position of the scan pointer.
+</p>
+<pre>
+  s = StringScanner.new('test string')
+  s.pos = 7            # -&gt; 7
+  s.rest               # -&gt; &quot;ring&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007022_source')" id="l_M007022_source">show</a>
+                        
+                    </p>
+                    <div id="M007022_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_set_pos(VALUE self, VALUE v)
+{
+    struct strscanner *p;
+    long i;
+
+    GET_SCANNER(self, p);
+    i = NUM2INT(v);
+    if (i &lt; 0) i += S_LEN(p);
+    if (i &lt; 0) rb_raise(rb_eRangeError, &quot;index out of range&quot;);
+    if (i &gt; S_LEN(p)) rb_raise(rb_eRangeError, &quot;index out of range&quot;);
+    p-&gt;curr = i;
+    return INT2NUM(i);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007019">
+                    
+                    <a name="M007019"></a><b>pos</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the byte position of the scan pointer. In the &#8216;reset&#8217;
+position, this value is zero. In the &#8216;terminated&#8217; position
+(i.e. the string is exhausted), this value is the bytesize of the string.
+</p>
+<p>
+In short, it&#8217;s a 0-based index into the string.
+</p>
+<pre>
+  s = StringScanner.new('test string')
+  s.pos               # -&gt; 0
+  s.scan_until /str/  # -&gt; &quot;test str&quot;
+  s.pos               # -&gt; 8
+  s.terminate         # -&gt; #&lt;StringScanner fin&gt;
+  s.pos               # -&gt; 11
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007019_source')" id="l_M007019_source">show</a>
+                        
+                    </p>
+                    <div id="M007019_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_get_pos(VALUE self)
+{
+    struct strscanner *p;
+
+    GET_SCANNER(self, p);
+    return INT2FIX(p-&gt;curr);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007020">
+                    
+                    <a name="M007020"></a><b> pos=(n)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+<a href="Set.html">Set</a> the byte position of the scan pointer.
+</p>
+<pre>
+  s = StringScanner.new('test string')
+  s.pos = 7            # -&gt; 7
+  s.rest               # -&gt; &quot;ring&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007020_source')" id="l_M007020_source">show</a>
+                        
+                    </p>
+                    <div id="M007020_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_set_pos(VALUE self, VALUE v)
+{
+    struct strscanner *p;
+    long i;
+
+    GET_SCANNER(self, p);
+    i = NUM2INT(v);
+    if (i &lt; 0) i += S_LEN(p);
+    if (i &lt; 0) rb_raise(rb_eRangeError, &quot;index out of range&quot;);
+    if (i &gt; S_LEN(p)) rb_raise(rb_eRangeError, &quot;index out of range&quot;);
+    p-&gt;curr = i;
+    return INT2NUM(i);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007048">
+                    
+                    <a name="M007048"></a><b>post_match</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Return the <b><em>post</b>-match</em> (in the regular expression sense) of
+the last scan.
+</p>
+<pre>
+  s = StringScanner.new('test string')
+  s.scan(/\w+/)           # -&gt; &quot;test&quot;
+  s.scan(/\s+/)           # -&gt; &quot; &quot;
+  s.pre_match             # -&gt; &quot;test&quot;
+  s.post_match            # -&gt; &quot;string&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007048_source')" id="l_M007048_source">show</a>
+                        
+                    </p>
+                    <div id="M007048_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_post_match(VALUE self)
+{
+    struct strscanner *p;
+
+    GET_SCANNER(self, p);
+    if (! MATCHED_P(p)) return Qnil;
+    return extract_range(p, p-&gt;prev + p-&gt;regs.end[0], S_LEN(p));
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007047">
+                    
+                    <a name="M007047"></a><b>pre_match</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Return the <b><em>pre</b>-match</em> (in the regular expression sense) of
+the last scan.
+</p>
+<pre>
+  s = StringScanner.new('test string')
+  s.scan(/\w+/)           # -&gt; &quot;test&quot;
+  s.scan(/\s+/)           # -&gt; &quot; &quot;
+  s.pre_match             # -&gt; &quot;test&quot;
+  s.post_match            # -&gt; &quot;string&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007047_source')" id="l_M007047_source">show</a>
+                        
+                    </p>
+                    <div id="M007047_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_pre_match(VALUE self)
+{
+    struct strscanner *p;
+
+    GET_SCANNER(self, p);
+    if (! MATCHED_P(p)) return Qnil;
+    return extract_range(p, 0, p-&gt;prev + p-&gt;regs.beg[0]);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007012">
+                    
+                    <a name="M007012"></a><b>reset</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Reset the scan pointer (index 0) and clear matching data.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007012_source')" id="l_M007012_source">show</a>
+                        
+                    </p>
+                    <div id="M007012_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_reset(VALUE self)
+{
+    struct strscanner *p;
+
+    GET_SCANNER(self, p);
+    p-&gt;curr = 0;
+    CLEAR_MATCH_STATUS(p);
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007049">
+                    
+                    <a name="M007049"></a><b>rest</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the &#8220;rest&#8221; of the string (i.e. everything after the
+scan pointer). If there is no more data (eos? = true), it returns
+<tt>&quot;&quot;</tt>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007049_source')" id="l_M007049_source">show</a>
+                        
+                    </p>
+                    <div id="M007049_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_rest(VALUE self)
+{
+    struct strscanner *p;
+
+    GET_SCANNER(self, p);
+    if (EOS_P(p)) {
+        return infect(str_new(p, &quot;&quot;, 0), p);
+    }
+    return extract_range(p, p-&gt;curr, S_LEN(p));
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007042">
+                    
+                    <a name="M007042"></a><b>rest?</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns true iff there is more data in the string. See <a
+href="StringScanner.html#M007040">eos?</a>. This method is obsolete; use <a
+href="StringScanner.html#M007040">eos?</a> instead.
+</p>
+<pre>
+  s = StringScanner.new('test string')
+  s.eos?              # These two
+  s.rest?             # are opposites.
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007042_source')" id="l_M007042_source">show</a>
+                        
+                    </p>
+                    <div id="M007042_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_rest_p(VALUE self)
+{
+    struct strscanner *p;
+
+    GET_SCANNER(self, p);
+    return EOS_P(p) ? Qfalse : Qtrue;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007050">
+                    
+                    <a name="M007050"></a><b>rest_size</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+<tt>s.rest_size</tt> is equivalent to <tt>s.rest.size</tt>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007050_source')" id="l_M007050_source">show</a>
+                        
+                    </p>
+                    <div id="M007050_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_rest_size(VALUE self)
+{
+    struct strscanner *p;
+    long i;
+
+    GET_SCANNER(self, p);
+    if (EOS_P(p)) {
+        return INT2FIX(0);
+    }
+    i = S_LEN(p) - p-&gt;curr;
+    return INT2FIX(i);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007051">
+                    
+                    <a name="M007051"></a><b>restsize</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+<tt>s.restsize</tt> is equivalent to <tt>s.rest_size</tt>. This method is
+obsolete; use <a href="StringScanner.html#M007050">rest_size</a> instead.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007051_source')" id="l_M007051_source">show</a>
+                        
+                    </p>
+                    <div id="M007051_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_restsize(VALUE self)
+{
+    rb_warning(&quot;StringScanner#restsize is obsolete; use #rest_size instead&quot;);
+    return strscan_rest_size(self);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007023">
+                    
+                    <a name="M007023"></a><b> scan(pattern) => String
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Tries to match with <tt>pattern</tt> at the current position. If
+there&#8217;s a match, the scanner advances the &#8220;scan pointer&#8221;
+and returns the matched string. Otherwise, the scanner returns
+<tt>nil</tt>.
+</p>
+<pre>
+  s = StringScanner.new('test string')
+  p s.scan(/\w+/)   # -&gt; &quot;test&quot;
+  p s.scan(/\w+/)   # -&gt; nil
+  p s.scan(/\s+/)   # -&gt; &quot; &quot;
+  p s.scan(/\w+/)   # -&gt; &quot;string&quot;
+  p s.scan(/./)     # -&gt; nil
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007023_source')" id="l_M007023_source">show</a>
+                        
+                    </p>
+                    <div id="M007023_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_scan(VALUE self, VALUE re)
+{
+    return strscan_do_scan(self, re, 1, 1, 1);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007027">
+                    
+                    <a name="M007027"></a><b> scan_full(pattern, advance_pointer_p, return_string_p)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Tests whether the given <tt>pattern</tt> is matched from the current scan
+pointer. Advances the scan pointer if <tt>advance_pointer_p</tt> is true.
+Returns the matched string if <tt>return_string_p</tt> is true. The match
+register is affected.
+</p>
+<p>
+&#8220;full&#8221; means &#8220;<a
+href="StringScanner.html#M007023">scan</a> with full parameters&#8221;.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007027_source')" id="l_M007027_source">show</a>
+                        
+                    </p>
+                    <div id="M007027_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_scan_full(VALUE self, VALUE re, VALUE s, VALUE f)
+{
+    return strscan_do_scan(self, re, RTEST(s), RTEST(f), 1);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007028">
+                    
+                    <a name="M007028"></a><b> scan_until(pattern)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Scans the string <em>until</em> the <tt>pattern</tt> is matched. Returns
+the substring up to and including the end of the match, advancing the scan
+pointer to that location. If there is no match, <tt>nil</tt> is returned.
+</p>
+<pre>
+  s = StringScanner.new(&quot;Fri Dec 12 1975 14:39&quot;)
+  s.scan_until(/1/)        # -&gt; &quot;Fri Dec 1&quot;
+  s.pre_match              # -&gt; &quot;Fri Dec &quot;
+  s.scan_until(/XYZ/)      # -&gt; nil
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007028_source')" id="l_M007028_source">show</a>
+                        
+                    </p>
+                    <div id="M007028_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_scan_until(VALUE self, VALUE re)
+{
+    return strscan_do_scan(self, re, 1, 1, 0);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007032">
+                    
+                    <a name="M007032"></a><b> search_full(pattern, advance_pointer_p, return_string_p)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Scans the string <em>until</em> the <tt>pattern</tt> is matched. Advances
+the scan pointer if <tt>advance_pointer_p</tt>, otherwise not. Returns the
+matched string if <tt>return_string_p</tt> is true, otherwise returns the
+number of bytes advanced. This method does affect the match register.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007032_source')" id="l_M007032_source">show</a>
+                        
+                    </p>
+                    <div id="M007032_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_search_full(VALUE self, VALUE re, VALUE s, VALUE f)
+{
+    return strscan_do_scan(self, re, RTEST(s), RTEST(f), 0);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007024">
+                    
+                    <a name="M007024"></a><b> skip(pattern)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Attempts to skip over the given <tt>pattern</tt> beginning with the scan
+pointer. If it matches, the scan pointer is advanced to the end of the
+match, and the length of the match is returned. Otherwise, <tt>nil</tt> is
+returned.
+</p>
+<p>
+It&#8217;s similar to <a href="StringScanner.html#M007023">scan</a>, but
+without returning the matched string.
+</p>
+<pre>
+  s = StringScanner.new('test string')
+  p s.skip(/\w+/)   # -&gt; 4
+  p s.skip(/\w+/)   # -&gt; nil
+  p s.skip(/\s+/)   # -&gt; 1
+  p s.skip(/\w+/)   # -&gt; 6
+  p s.skip(/./)     # -&gt; nil
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007024_source')" id="l_M007024_source">show</a>
+                        
+                    </p>
+                    <div id="M007024_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_skip(VALUE self, VALUE re)
+{
+    return strscan_do_scan(self, re, 1, 0, 1);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007029">
+                    
+                    <a name="M007029"></a><b> skip_until(pattern)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Advances the scan pointer until <tt>pattern</tt> is matched and consumed.
+Returns the number of bytes advanced, or <tt>nil</tt> if no match was
+found.
+</p>
+<p>
+Look ahead to match <tt>pattern</tt>, and advance the scan pointer to the
+<em>end</em> of the match. Return the number of characters advanced, or
+<tt>nil</tt> if the match was unsuccessful.
+</p>
+<p>
+It&#8217;s similar to <a href="StringScanner.html#M007028">scan_until</a>,
+but without returning the intervening string.
+</p>
+<pre>
+  s = StringScanner.new(&quot;Fri Dec 12 1975 14:39&quot;)
+  s.skip_until /12/           # -&gt; 10
+  s                           #
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007029_source')" id="l_M007029_source">show</a>
+                        
+                    </p>
+                    <div id="M007029_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_skip_until(VALUE self, VALUE re)
+{
+    return strscan_do_scan(self, re, 1, 0, 0);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007015">
+                    
+                    <a name="M007015"></a><b>string</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the string being scanned.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007015_source')" id="l_M007015_source">show</a>
+                        
+                    </p>
+                    <div id="M007015_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_get_string(VALUE self)
+{
+    struct strscanner *p;
+
+    GET_SCANNER(self, p);
+    return p-&gt;str;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007016">
+                    
+                    <a name="M007016"></a><b> string=(str)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Changes the string being scanned to <tt>str</tt> and resets the scanner.
+Returns <tt>str</tt>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007016_source')" id="l_M007016_source">show</a>
+                        
+                    </p>
+                    <div id="M007016_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_set_string(VALUE self, VALUE str)
+{
+    struct strscanner *p;
+
+    Data_Get_Struct(self, struct strscanner, p);
+    StringValue(str);
+    p-&gt;str = str;
+    p-&gt;curr = 0;
+    CLEAR_MATCH_STATUS(p);
+    return str;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007013">
+                    
+                    <a name="M007013"></a><b>terminate
+clear
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+<a href="Set.html">Set</a> the scan pointer to the end of the string and
+clear matching data.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007013_source')" id="l_M007013_source">show</a>
+                        
+                    </p>
+                    <div id="M007013_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_terminate(VALUE self)
+{
+    struct strscanner *p;
+
+    GET_SCANNER(self, p);
+    p-&gt;curr = S_LEN(p);
+    CLEAR_MATCH_STATUS(p);
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007038">
+                    
+                    <a name="M007038"></a><b>unscan</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+<a href="Set.html">Set</a> the scan pointer to the previous position. Only
+one previous position is remembered, and it changes with each scanning
+operation.
+</p>
+<pre>
+  s = StringScanner.new('test string')
+  s.scan(/\w+/)        # =&gt; &quot;test&quot;
+  s.unscan
+  s.scan(/../)         # =&gt; &quot;te&quot;
+  s.scan(/\d/)         # =&gt; nil
+  s.unscan             # ScanError: unscan failed: previous match record not exist
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007038_source')" id="l_M007038_source">show</a>
+                        
+                    </p>
+                    <div id="M007038_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_unscan(VALUE self)
+{
+    struct strscanner *p;
+
+    GET_SCANNER(self, p);
+    if (! MATCHED_P(p))
+        rb_raise(ScanError, &quot;unscan failed: previous match record not exist&quot;);
+    p-&gt;curr = p-&gt;prev;
+    CLEAR_MATCH_STATUS(p);
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Private methods</div>
+            
+            <div class="method">
+                <div class="title" id="M007010">
+                    
+                    <a name="M007010"></a><b>dup
+clone
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Duplicates a <a href="StringScanner.html">StringScanner</a> object.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007010_source')" id="l_M007010_source">show</a>
+                        
+                    </p>
+                    <div id="M007010_source" class="dyn-source">
+                        <pre>static VALUE
+strscan_init_copy(VALUE vself, VALUE vorig)
+{
+    struct strscanner *self, *orig;
+
+    Data_Get_Struct(vself, struct strscanner, self);
+    check_strscan(vorig);
+    Data_Get_Struct(vorig, struct strscanner, orig);
+    if (self != orig) {
+        self-&gt;flags = orig-&gt;flags;
+        self-&gt;str = orig-&gt;str;
+        self-&gt;prev = orig-&gt;prev;
+        self-&gt;curr = orig-&gt;curr;
+        onig_region_copy(&amp;self-&gt;regs, &amp;orig-&gt;regs);
+    }
+
+    return vself;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

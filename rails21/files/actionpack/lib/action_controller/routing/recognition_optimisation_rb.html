@@ -1,0 +1,181 @@
+  <div id="fileHeader">
+    <h1>recognition_optimisation.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionpack/lib/action_controller/routing/recognition_optimisation.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:04 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>module ActionController
+  module Routing
+    # BEFORE:   0.191446860631307 ms/url
+    # AFTER:    0.029847304022858 ms/url
+    # Speed up: 6.4 times
+    #
+    # Route recognition is slow due to one-by-one iterating over
+    # a whole routeset (each map.resources generates at least 14 routes)
+    # and matching weird regexps on each step.
+    #
+    # We optimize this by skipping all URI segments that 100% sure can't
+    # be matched, moving deeper in a tree of routes (where node == segment)
+    # until first possible match is accured. In such case, we start walking
+    # a flat list of routes, matching them with accurate matcher.
+    # So, first step: search a segment tree for the first relevant index.
+    # Second step: iterate routes starting with that index.
+    #
+    # How tree is walked? We can do a recursive tests, but it's smarter:
+    # We just create a tree of if-s and elsif-s matching segments.
+    #
+    # We have segments of 3 flavors:
+    # 1) nil (no segment, route finished)
+    # 2) const-dot-dynamic (like &quot;/posts.:xml&quot;, &quot;/preview.:size.jpg&quot;)
+    # 3) const (like &quot;/posts&quot;, &quot;/comments&quot;)
+    # 4) dynamic (&quot;/:id&quot;, &quot;file.:size.:extension&quot;)
+    #
+    # We split incoming string into segments and iterate over them.
+    # When segment is nil, we drop immediately, on a current node index.
+    # When segment is equal to some const, we step into branch.
+    # If none constants matched, we step into 'dynamic' branch (it's a last).
+    # If we can't match anything, we drop to last index on a level.
+    #
+    # Note: we maintain the original routes order, so we finish building
+    #       steps on a first dynamic segment.
+    #
+    #
+    # Example. Given the routes:
+    #   0 /posts/
+    #   1 /posts/:id
+    #   2 /posts/:id/comments
+    #   3 /posts/blah
+    #   4 /users/
+    #   5 /users/:id
+    #   6 /users/:id/profile
+    #
+    # request_uri = /users/123
+    #
+    # There will be only 4 iterations:
+    #  1) segm test for /posts prefix, skip all /posts/* routes
+    #  2) segm test for /users/
+    #  3) segm test for /users/:id
+    #     (jump to list index = 5)
+    #  4) full test for /users/:id =&gt; here we are!
+
+    class RouteSet
+      def recognize_path(path, environment={})
+        result = recognize_optimized(path, environment) and return result
+
+        # Route was not recognized. Try to find out why (maybe wrong verb).
+        allows = HTTP_METHODS.select { |verb| routes.find { |r| r.recognize(path, :method =&gt; verb) } }
+
+        if environment[:method] &amp;&amp; !HTTP_METHODS.include?(environment[:method])
+          raise NotImplemented.new(*allows)
+        elsif !allows.empty?
+          raise MethodNotAllowed.new(*allows)
+        else
+          raise RoutingError, &quot;No route matches #{path.inspect} with #{environment.inspect}&quot;
+        end
+      end
+
+      def clear_recognize_optimized!
+        instance_eval %{
+          def recognize_optimized(path, env)
+            write_recognize_optimized!
+            recognize_optimized(path, env)
+          end
+        }, __FILE__, __LINE__
+      end
+
+      def write_recognize_optimized!
+        tree = segment_tree(routes)
+        body = generate_code(tree)
+        instance_eval %{
+          def recognize_optimized(path, env)
+            segments = to_plain_segments(path)
+            index = #{body}
+            return nil unless index
+            while index &lt; routes.size
+              result = routes[index].recognize(path, env) and return result
+              index += 1
+            end
+            nil
+          end
+        }, __FILE__, __LINE__
+      end
+
+      def segment_tree(routes)
+        tree = [0]
+
+        i = -1
+        routes.each do |route|
+          i += 1
+          # not fast, but runs only once
+          segments = to_plain_segments(route.segments.inject(&quot;&quot;) { |str,s| str &lt;&lt; s.to_s })
+
+          node  = tree
+          segments.each do |seg|
+            seg = :dynamic if seg &amp;&amp; seg[0] == ?:
+            node &lt;&lt; [seg, [i]] if node.empty? || node[node.size - 1][0] != seg
+            node = node[node.size - 1][1]
+          end
+        end
+        tree
+      end
+
+      def generate_code(list, padding='  ', level = 0)
+        # a digit
+        return padding + &quot;#{list[0]}\n&quot; if list.size == 1 &amp;&amp; !(Array === list[0])
+
+        body = padding + &quot;(seg = segments[#{level}]; \n&quot;
+
+        i = 0
+        was_nil = false
+        list.each do |item|
+          if Array === item
+            i += 1
+            start = (i == 1)
+            final = (i == list.size)
+            tag, sub = item
+            if tag == :dynamic
+              body += padding + &quot;#{start ? 'if' : 'elsif'} true\n&quot;
+              body += generate_code(sub, padding + &quot;  &quot;, level + 1)
+              break
+            elsif tag == nil &amp;&amp; !was_nil
+              was_nil = true
+              body += padding + &quot;#{start ? 'if' : 'elsif'} seg.nil?\n&quot;
+              body += generate_code(sub, padding + &quot;  &quot;, level + 1)
+            else
+              body += padding + &quot;#{start ? 'if' : 'elsif'} seg == '#{tag}'\n&quot;
+              body += generate_code(sub, padding + &quot;  &quot;, level + 1)
+            end
+          end
+        end
+        body += padding + &quot;else\n&quot;
+        body += padding + &quot;  #{list[0]}\n&quot;
+        body += padding + &quot;end)\n&quot;
+        body
+      end
+
+      # this must be really fast
+      def to_plain_segments(str)
+        str = str.dup
+        str.sub!(/^\/+/,'')
+        str.sub!(/\/+$/,'')
+        segments = str.split(/\.[^\/]+\/+|\/+|\.[^\/]+\Z/) # cut off &quot;.format&quot; also
+        segments &lt;&lt; nil
+        segments
+      end
+
+    end
+  end
+end
+</pre>
+    </div>

@@ -1,0 +1,58 @@
+  <div id="fileHeader">
+    <h1>behavior.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activesupport/lib/active_support/core_ext/date/behavior.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>module ActiveSupport #:nodoc:
+  module CoreExtensions #:nodoc:
+    module Date #:nodoc:
+      module Behavior
+        # Enable more predictable duck-typing on Date-like classes. See
+        # Object#acts_like?.
+        def acts_like_date?
+          true
+        end
+
+        # Date memoizes some instance methods using metaprogramming to wrap
+        # the methods with one that caches the result in an instance variable.
+        # If a Date is frozen but the memoized method hasn't been called, the
+        # first call will result in a frozen object error since the memo
+        # instance variable is uninitialized.
+        #
+        # Work around by eagerly memoizing before freezing.
+        #
+        # Ruby 1.9 uses a preinitialized instance variable so it's unaffected.
+        # This hack is as close as we can get to feature detection:
+        begin
+          ::Date.today.freeze.jd
+        rescue =&gt; frozen_object_error
+          if frozen_object_error.message =~ /frozen/
+            def freeze #:nodoc:
+              self.class.private_instance_methods(false).each do |m|
+                if m.to_s =~ /\A__\d+__\Z/
+                  instance_variable_set(:&quot;@#{m}&quot;, [send(m)])
+                end
+              end
+
+              super
+            end
+          end
+        end
+      end
+    end
+  end
+end
+</pre>
+    </div>

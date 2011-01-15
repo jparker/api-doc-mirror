@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>OpenURI::Meta</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Module</span> 
+            OpenURI::Meta 
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../files/lib/open-uri_rb.html">lib/open-uri.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+Mixin for holding meta-information.
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006311">charset</a>,</li>
+                
+                <li><a href="#M006312">content_encoding</a>,</li>
+                
+                <li><a href="#M006310">content_type</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>L</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006308">last_modified</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">RE_LWS</td>
+            <td>=</td>
+            <td class="attr-value">/[\r\n\t ]+/n</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">RE_TOKEN</td>
+            <td>=</td>
+            <td class="attr-value">%r{[^\x00- ()&lt;&gt;@,;:\\&quot;/\[\]?={}\x7f]+}n</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">RE_QUOTED_STRING</td>
+            <td>=</td>
+            <td class="attr-value">%r{&quot;(?:[\r\n\t !#-\[\]-~\x80-\xff]|\\[\x00-\x7f])*&quot;}n</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">RE_PARAMETERS</td>
+            <td>=</td>
+            <td class="attr-value">%r{(?:;#{RE_LWS}?#{RE_TOKEN}#{RE_LWS}?=#{RE_LWS}?(?:#{RE_TOKEN}|#{RE_QUOTED_STRING})#{RE_LWS}?)*}n</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+    <div class="sectiontitle">Attributes</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [RW]
+            </td>
+            <td class='attr-name'>status</td>
+            <td class='attr-desc'><p>
+returns an <a href="../Array.html">Array</a> which consists status code and
+message.
+</p></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [RW]
+            </td>
+            <td class='attr-name'>base_uri</td>
+            <td class='attr-desc'><p>
+returns a <a href="../URI.html">URI</a> which is base of relative URIs in
+the data. It may differ from the <a href="../URI.html">URI</a> supplied by
+a user because redirection.
+</p></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>meta</td>
+            <td class='attr-desc'><p>
+returns a <a href="../Hash.html">Hash</a> which represents header fields.
+The <a href="../Hash.html">Hash</a> keys are downcased for
+canonicalization.
+</p></td>
+        </tr>
+        
+    </table>
+    
+
+    
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M006311">
+                    
+                    <a name="M006311"></a><b>charset</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+returns a charset parameter in Content-Type field. It is downcased for
+canonicalization.
+</p>
+<p>
+If charset parameter is not given but a block is given, the block is called
+and its result is returned. It can be used to guess charset.
+</p>
+<p>
+If charset parameter and block is not given, nil is returned except text
+type in HTTP. In that case, &#8220;iso-8859-1&#8221; is returned as defined
+by RFC2616 3.7.1.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006311_source')" id="l_M006311_source">show</a>
+                        
+                    </p>
+                    <div id="M006311_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/open-uri.rb, line 397</span>
+397:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">charset</span>
+398:       <span class="ruby-identifier">type</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">parameters</span> = <span class="ruby-identifier">content_type_parse</span>
+399:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">pair</span> = <span class="ruby-identifier">parameters</span>.<span class="ruby-identifier">assoc</span>(<span class="ruby-value str">'charset'</span>)
+400:         <span class="ruby-identifier">pair</span>.<span class="ruby-identifier">last</span>.<span class="ruby-identifier">downcase</span>
+401:       <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">block_given?</span>
+402:         <span class="ruby-keyword kw">yield</span>
+403:       <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">type</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-regexp re">%r{\Atext/}</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">type</span> <span class="ruby-operator">&amp;&amp;</span>
+404:             <span class="ruby-ivar">@base_uri</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-regexp re">/\Ahttp\z/i</span> <span class="ruby-operator">=~</span> <span class="ruby-ivar">@base_uri</span>.<span class="ruby-identifier">scheme</span>
+405:         <span class="ruby-value str">&quot;iso-8859-1&quot;</span> <span class="ruby-comment cmt"># RFC2616 3.7.1</span>
+406:       <span class="ruby-keyword kw">else</span>
+407:         <span class="ruby-keyword kw">nil</span>
+408:       <span class="ruby-keyword kw">end</span>
+409:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006312">
+                    
+                    <a name="M006312"></a><b>content_encoding</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+returns a list of encodings in Content-Encoding field as an <a
+href="../Array.html">Array</a> of <a href="../String.html">String</a>. The
+encodings are downcased for canonicalization.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006312_source')" id="l_M006312_source">show</a>
+                        
+                    </p>
+                    <div id="M006312_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/open-uri.rb, line 414</span>
+414:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">content_encoding</span>
+415:       <span class="ruby-identifier">v</span> = <span class="ruby-ivar">@meta</span>[<span class="ruby-value str">'content-encoding'</span>]
+416:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">v</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-node">%r{\A#{RE_LWS}?#{RE_TOKEN}#{RE_LWS}?(?:,#{RE_LWS}?#{RE_TOKEN}#{RE_LWS}?)*}o</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">v</span>
+417:         <span class="ruby-identifier">v</span>.<span class="ruby-identifier">scan</span>(<span class="ruby-constant">RE_TOKEN</span>).<span class="ruby-identifier">map</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">content_coding</span><span class="ruby-operator">|</span> <span class="ruby-identifier">content_coding</span>.<span class="ruby-identifier">downcase</span>}
+418:       <span class="ruby-keyword kw">else</span>
+419:         []
+420:       <span class="ruby-keyword kw">end</span>
+421:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006310">
+                    
+                    <a name="M006310"></a><b>content_type</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+returns &#8220;type/subtype&#8220; which is MIME Content-Type. It is
+downcased for canonicalization. Content-Type parameters are stripped.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006310_source')" id="l_M006310_source">show</a>
+                        
+                    </p>
+                    <div id="M006310_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/open-uri.rb, line 382</span>
+382:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">content_type</span>
+383:       <span class="ruby-identifier">type</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">parameters</span> = <span class="ruby-identifier">content_type_parse</span>
+384:       <span class="ruby-identifier">type</span> <span class="ruby-operator">||</span> <span class="ruby-value str">'application/octet-stream'</span>
+385:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006308">
+                    
+                    <a name="M006308"></a><b>last_modified</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+returns a <a href="../Time.html">Time</a> which represents Last-Modified
+field.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006308_source')" id="l_M006308_source">show</a>
+                        
+                    </p>
+                    <div id="M006308_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/open-uri.rb, line 349</span>
+349:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">last_modified</span>
+350:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">v</span> = <span class="ruby-ivar">@meta</span>[<span class="ruby-value str">'last-modified'</span>]
+351:         <span class="ruby-constant">Time</span>.<span class="ruby-identifier">httpdate</span>(<span class="ruby-identifier">v</span>)
+352:       <span class="ruby-keyword kw">else</span>
+353:         <span class="ruby-keyword kw">nil</span>
+354:       <span class="ruby-keyword kw">end</span>
+355:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

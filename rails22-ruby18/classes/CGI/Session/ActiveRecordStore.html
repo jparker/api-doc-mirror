@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>CGI::Session::ActiveRecordStore</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            CGI::Session::ActiveRecordStore 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../../Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../../files/actionpack/lib/action_controller/session/active_record_store_rb.html">actionpack/lib/action_controller/session/active_record_store.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+A session store backed by an Active Record class. A default class is
+provided, but any object duck-typing to an Active Record <a
+href="ActiveRecordStore/Session.html">Session</a> class with text
+<tt>session_id</tt> and <tt>data</tt> attributes is sufficient.
+</p>
+<p>
+The default assumes a <tt>sessions</tt> tables with columns:
+</p>
+<pre>
+  +id+ (numeric primary key),
+  +session_id+ (text, or longtext if your session data exceeds 65K), and
+  +data+ (text or longtext; careful if your session data exceeds 65KB).
+</pre>
+<p>
+The <tt>session_id</tt> column should always be indexed for speedy lookups.
+<a href="ActiveRecordStore/Session.html">Session</a> data is marshaled to
+the <tt>data</tt> column in Base64 format. If the data you write is larger
+than the column&#8217;s size limit, ActionController::SessionOverflowError
+will be raised.
+</p>
+<p>
+You may configure the table name, primary key, and data column. For
+example, at the end of <tt>config/environment.rb</tt>:
+</p>
+<pre>
+  CGI::Session::ActiveRecordStore::Session.table_name = 'legacy_session_table'
+  CGI::Session::ActiveRecordStore::Session.primary_key = 'session_id'
+  CGI::Session::ActiveRecordStore::Session.data_column_name = 'legacy_session_data'
+</pre>
+<p>
+Note that setting the primary key to the <tt>session_id</tt> frees you from
+having a separate <tt>id</tt> column if you don&#8217;t want it. However,
+you must set <tt>session.model.id = session.session_id</tt> by hand! A
+before filter on ApplicationController is a good place.
+</p>
+<p>
+Since the default class is a simple Active Record, you get timestamps for
+free if you add <tt>created_at</tt> and <tt>updated_at</tt> datetime
+columns to the <tt>sessions</tt> table, making periodic session expiration
+a snap.
+</p>
+<p>
+You may provide your own session class implementation, whether a
+feature-packed Active Record or a bare-metal high-performance SQL store, by
+setting
+</p>
+<pre>
+  CGI::Session::ActiveRecordStore.session_class = MySessionClass
+</pre>
+<p>
+You must implement these methods:
+</p>
+<pre>
+  self.find_by_session_id(session_id)
+  initialize(hash_of_session_id_and_data)
+  attr_reader :session_id
+  attr_accessor :data
+  save
+  destroy
+</pre>
+<p>
+The example <a href="ActiveRecordStore/SqlBypass.html">SqlBypass</a> class
+is a generic SQL session store. You may use it as a basis for
+high-performance database-specific stores.
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001561">close</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>D</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001562">delete</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>L</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001563">logger</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>M</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001558">model</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001557">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>R</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001559">restore</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>U</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001560">update</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Classes and Modules</div>
+    <ul>
+        
+        <li><span class="type">CLASS</span> <a href="ActiveRecordStore/Session.html">CGI::Session::ActiveRecordStore::Session</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="ActiveRecordStore/SqlBypass.html">CGI::Session::ActiveRecordStore::SqlBypass</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M001557">
+                    
+                    <a name="M001557"></a><b>new</b>(session, option = nil)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Find or instantiate a session given a CGI::Session.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001557_source')" id="l_M001557_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/dc4eec1129520ce9863c9373d7cb79d8636ab7ca/actionpack/lib/action_controller/session/active_record_store.rb#L291" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M001557_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File actionpack/lib/action_controller/session/active_record_store.rb, line 291</span>
+291:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">session</span>, <span class="ruby-identifier">option</span> = <span class="ruby-keyword kw">nil</span>)
+292:         <span class="ruby-identifier">session_id</span> = <span class="ruby-identifier">session</span>.<span class="ruby-identifier">session_id</span>
+293:         <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@session</span> = <span class="ruby-constant">ActiveRecord</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">silence</span> { <span class="ruby-ivar">@@session_class</span>.<span class="ruby-identifier">find_by_session_id</span>(<span class="ruby-identifier">session_id</span>) }
+294:           <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">session</span>.<span class="ruby-identifier">new_session</span>
+295:             <span class="ruby-identifier">raise</span> <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-constant">Session</span><span class="ruby-operator">::</span><span class="ruby-constant">NoSession</span>, <span class="ruby-value str">'uninitialized session'</span>
+296:           <span class="ruby-keyword kw">end</span>
+297:           <span class="ruby-ivar">@session</span> = <span class="ruby-ivar">@@session_class</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">:session_id</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">session_id</span>, <span class="ruby-identifier">:data</span> =<span class="ruby-operator">&gt;</span> {})
+298:           <span class="ruby-comment cmt"># session saving can be lazy again, because of improved component implementation</span>
+299:           <span class="ruby-comment cmt"># therefore next line gets commented out:</span>
+300:           <span class="ruby-comment cmt"># @session.save</span>
+301:         <span class="ruby-keyword kw">end</span>
+302:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M001561">
+                    
+                    <a name="M001561"></a><b>close</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Save and close the session store.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001561_source')" id="l_M001561_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/dc4eec1129520ce9863c9373d7cb79d8636ab7ca/actionpack/lib/action_controller/session/active_record_store.rb#L324" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M001561_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File actionpack/lib/action_controller/session/active_record_store.rb, line 324</span>
+324:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">close</span>
+325:         <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@session</span>
+326:           <span class="ruby-identifier">update</span>
+327:           <span class="ruby-ivar">@session</span> = <span class="ruby-keyword kw">nil</span>
+328:         <span class="ruby-keyword kw">end</span>
+329:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001562">
+                    
+                    <a name="M001562"></a><b>delete</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Delete and close the session store.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001562_source')" id="l_M001562_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/dc4eec1129520ce9863c9373d7cb79d8636ab7ca/actionpack/lib/action_controller/session/active_record_store.rb#L332" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M001562_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File actionpack/lib/action_controller/session/active_record_store.rb, line 332</span>
+332:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">delete</span>
+333:         <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@session</span>
+334:           <span class="ruby-constant">ActiveRecord</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">silence</span> { <span class="ruby-ivar">@session</span>.<span class="ruby-identifier">destroy</span> }
+335:           <span class="ruby-ivar">@session</span> = <span class="ruby-keyword kw">nil</span>
+336:         <span class="ruby-keyword kw">end</span>
+337:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001558">
+                    
+                    <a name="M001558"></a><b>model</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Access the underlying session model.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001558_source')" id="l_M001558_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/dc4eec1129520ce9863c9373d7cb79d8636ab7ca/actionpack/lib/action_controller/session/active_record_store.rb#L305" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M001558_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File actionpack/lib/action_controller/session/active_record_store.rb, line 305</span>
+305:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">model</span>
+306:         <span class="ruby-ivar">@session</span>
+307:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001559">
+                    
+                    <a name="M001559"></a><b>restore</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Restore session state. The session model handles unmarshaling.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001559_source')" id="l_M001559_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/dc4eec1129520ce9863c9373d7cb79d8636ab7ca/actionpack/lib/action_controller/session/active_record_store.rb#L310" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M001559_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File actionpack/lib/action_controller/session/active_record_store.rb, line 310</span>
+310:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">restore</span>
+311:         <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@session</span>
+312:           <span class="ruby-ivar">@session</span>.<span class="ruby-identifier">data</span>
+313:         <span class="ruby-keyword kw">end</span>
+314:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001560">
+                    
+                    <a name="M001560"></a><b>update</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Save session store.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001560_source')" id="l_M001560_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/dc4eec1129520ce9863c9373d7cb79d8636ab7ca/actionpack/lib/action_controller/session/active_record_store.rb#L317" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M001560_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File actionpack/lib/action_controller/session/active_record_store.rb, line 317</span>
+317:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">update</span>
+318:         <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@session</span>
+319:           <span class="ruby-constant">ActiveRecord</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">silence</span> { <span class="ruby-ivar">@session</span>.<span class="ruby-identifier">save</span> }
+320:         <span class="ruby-keyword kw">end</span>
+321:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Protected methods</div>
+            
+            <div class="method">
+                <div class="title" id="M001563">
+                    
+                    <a name="M001563"></a><b>logger</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001563_source')" id="l_M001563_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/dc4eec1129520ce9863c9373d7cb79d8636ab7ca/actionpack/lib/action_controller/session/active_record_store.rb#L340" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M001563_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File actionpack/lib/action_controller/session/active_record_store.rb, line 340</span>
+340:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">logger</span>
+341:           <span class="ruby-constant">ActionController</span><span class="ruby-operator">::</span><span class="ruby-constant">Base</span>.<span class="ruby-identifier">logger</span> <span class="ruby-keyword kw">rescue</span> <span class="ruby-keyword kw">nil</span>
+342:         <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

@@ -1,0 +1,754 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>OpenSSL::PKey::DSA</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            OpenSSL::PKey::DSA 
+            
+                <span class="parent">&lt; 
+                    
+                    cPKey
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../../files/ext/openssl/ossl_pkey_rsa_c.html">ext/openssl/ossl_pkey_rsa.c</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+let rdoc know about mOSSL and m<a href="PKey.html">PKey</a>
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006295">export</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>G</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006290">generate</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006291">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>P</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006300">params</a>,</li>
+                
+                <li><a href="#M006293">private?</a>,</li>
+                
+                <li><a href="#M006292">public?</a>,</li>
+                
+                <li><a href="#M006297">public_key</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006298">syssign</a>,</li>
+                
+                <li><a href="#M006299">sysverify</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>T</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006296">to_der</a>,</li>
+                
+                <li><a href="#M006301">to_pem</a>,</li>
+                
+                <li><a href="#M006302">to_s</a>,</li>
+                
+                <li><a href="#M006294">to_text</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M006290">
+                    
+                    <a name="M006290"></a><b>DSA.generate(size) &rarr; dsa
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <h3>Parameters</h3>
+<ul>
+<li><tt>size</tt> is an integer representing the desired key size.
+
+</li>
+</ul>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006290_source')" id="l_M006290_source">show</a>
+                        
+                    </p>
+                    <div id="M006290_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_dsa_s_generate(VALUE klass, VALUE size)
+{
+    DSA *dsa = dsa_generate(NUM2INT(size)); /* err handled by dsa_instance */
+    VALUE obj = dsa_instance(klass, dsa);
+
+    if (obj == Qfalse) {
+        DSA_free(dsa);
+        ossl_raise(eDSAError, NULL);
+    }
+
+    return obj;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006291">
+                    
+                    <a name="M006291"></a><b>DSA.new([size | string [, pass]) &rarr; dsa
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <h3>Parameters</h3>
+<ul>
+<li><tt>size</tt> is an integer representing the desired key size.
+
+</li>
+<li><tt>string</tt> contains a DER or PEM encoded key.
+
+</li>
+<li><tt>pass</tt> is a string that contains a optional password.
+
+</li>
+</ul>
+<h3>Examples</h3>
+<ul>
+<li><a href="DSA.html#M006291">DSA.new</a> -> dsa
+
+</li>
+<li><a href="DSA.html#M006291">DSA.new(1024)</a> -> dsa
+
+</li>
+<li><a href="DSA.html#M006291">DSA.new</a>(File.read(&#8216;dsa.pem&#8217;)) ->
+dsa
+
+</li>
+<li><a href="DSA.html#M006291">DSA.new</a>(File.read(&#8216;dsa.pem&#8217;),
+&#8216;mypassword&#8217;) -> dsa
+
+</li>
+</ul>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006291_source')" id="l_M006291_source">show</a>
+                        
+                    </p>
+                    <div id="M006291_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_dsa_initialize(int argc, VALUE *argv, VALUE self)
+{
+    EVP_PKEY *pkey;
+    DSA *dsa;
+    BIO *in;
+    char *passwd = NULL;
+    VALUE arg, pass;
+
+    GetPKey(self, pkey);
+    if(rb_scan_args(argc, argv, &quot;02&quot;, &amp;arg, &amp;pass) == 0) {
+        dsa = DSA_new();
+    }
+    else if (FIXNUM_P(arg)) {
+        if (!(dsa = dsa_generate(FIX2INT(arg)))) {
+            ossl_raise(eDSAError, NULL);
+        }
+    }
+    else {
+        if (!NIL_P(pass)) passwd = StringValuePtr(pass);
+        arg = ossl_to_der_if_possible(arg);
+        in = ossl_obj2bio(arg);
+        dsa = PEM_read_bio_DSAPrivateKey(in, NULL, ossl_pem_passwd_cb, passwd);
+        if (!dsa) {
+            (void)BIO_reset(in);
+            dsa = PEM_read_bio_DSAPublicKey(in, NULL, NULL, NULL);
+        }
+        if (!dsa) {
+            (void)BIO_reset(in);
+            dsa = PEM_read_bio_DSA_PUBKEY(in, NULL, NULL, NULL);
+        }
+        if (!dsa) {
+            (void)BIO_reset(in);
+            dsa = d2i_DSAPrivateKey_bio(in, NULL);
+        }
+        if (!dsa) {
+            (void)BIO_reset(in);
+            dsa = d2i_DSA_PUBKEY_bio(in, NULL);
+        }
+        BIO_free(in);
+        if (!dsa) ossl_raise(eDSAError, &quot;Neither PUB key nor PRIV key:&quot;);
+    }
+    if (!EVP_PKEY_assign_DSA(pkey, dsa)) {
+        DSA_free(dsa);
+        ossl_raise(eDSAError, NULL);
+    }
+
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M006295">
+                    
+                    <a name="M006295"></a><b>dsa.to_pem([cipher, password]) &rarr; aString
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <h3>Parameters</h3>
+<p>
+<tt>cipher</tt> is an <a href="../Cipher.html">OpenSSL::Cipher</a>.
+<tt>password</tt> is a string containing your password.
+</p>
+<h3>Examples</h3>
+<ul>
+<li><a href="DSA.html#M006301">DSA.to_pem</a> -> a<a
+href="../../String.html">String</a>
+
+</li>
+<li><a href="DSA.html#M006301">DSA.to_pem</a>(cipher, &#8216;mypassword&#8217;)
+-> a<a href="../../String.html">String</a>
+
+</li>
+</ul>
+
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="DSA.html#M006301">to_pem</a>
+                    
+                    <a href="DSA.html#M006302">to_s</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006295_source')" id="l_M006295_source">show</a>
+                        
+                    </p>
+                    <div id="M006295_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_dsa_export(int argc, VALUE *argv, VALUE self)
+{
+    EVP_PKEY *pkey;
+    BIO *out;
+    const EVP_CIPHER *ciph = NULL;
+    char *passwd = NULL;
+    VALUE cipher, pass, str;
+
+    GetPKeyDSA(self, pkey);
+    rb_scan_args(argc, argv, &quot;02&quot;, &amp;cipher, &amp;pass);
+    if (!NIL_P(cipher)) {
+        ciph = GetCipherPtr(cipher);
+        if (!NIL_P(pass)) {
+            passwd = StringValuePtr(pass);
+        }
+    }
+    if (!(out = BIO_new(BIO_s_mem()))) {
+        ossl_raise(eDSAError, NULL);
+    }
+    if (DSA_HAS_PRIVATE(pkey-&gt;pkey.dsa)) {
+        if (!PEM_write_bio_DSAPrivateKey(out, pkey-&gt;pkey.dsa, ciph,
+                                         NULL, 0, ossl_pem_passwd_cb, passwd)){
+            BIO_free(out);
+            ossl_raise(eDSAError, NULL);
+        }
+    } else {
+        if (!PEM_write_bio_DSAPublicKey(out, pkey-&gt;pkey.dsa)) {
+            BIO_free(out);
+            ossl_raise(eDSAError, NULL);
+        }
+    }
+    str = ossl_membio2str(out);
+
+    return str;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006300">
+                    
+                    <a name="M006300"></a><b>dsa.params &rarr; hash
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Stores all parameters of key to the hash INSECURE: PRIVATE INFORMATIONS CAN
+LEAK OUT!!! Don&#8217;t use :-)) (I&#8217;s up to you)
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006300_source')" id="l_M006300_source">show</a>
+                        
+                    </p>
+                    <div id="M006300_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_dsa_get_params(VALUE self)
+{
+    EVP_PKEY *pkey;
+    VALUE hash;
+
+    GetPKeyDSA(self, pkey);
+
+    hash = rb_hash_new();
+
+    rb_hash_aset(hash, rb_str_new2(&quot;p&quot;), ossl_bn_new(pkey-&gt;pkey.dsa-&gt;p));
+    rb_hash_aset(hash, rb_str_new2(&quot;q&quot;), ossl_bn_new(pkey-&gt;pkey.dsa-&gt;q));
+    rb_hash_aset(hash, rb_str_new2(&quot;g&quot;), ossl_bn_new(pkey-&gt;pkey.dsa-&gt;g));
+    rb_hash_aset(hash, rb_str_new2(&quot;pub_key&quot;), ossl_bn_new(pkey-&gt;pkey.dsa-&gt;pub_key));
+    rb_hash_aset(hash, rb_str_new2(&quot;priv_key&quot;), ossl_bn_new(pkey-&gt;pkey.dsa-&gt;priv_key));
+
+    return hash;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006293">
+                    
+                    <a name="M006293"></a><b>dsa.private? &rarr; true | false
+</b>
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006293_source')" id="l_M006293_source">show</a>
+                        
+                    </p>
+                    <div id="M006293_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_dsa_is_private(VALUE self)
+{
+    EVP_PKEY *pkey;
+
+    GetPKeyDSA(self, pkey);
+
+    return (DSA_PRIVATE(self, pkey-&gt;pkey.dsa)) ? Qtrue : Qfalse;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006292">
+                    
+                    <a name="M006292"></a><b>dsa.public? &rarr; true | false
+</b>
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006292_source')" id="l_M006292_source">show</a>
+                        
+                    </p>
+                    <div id="M006292_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_dsa_is_public(VALUE self)
+{
+    EVP_PKEY *pkey;
+
+    GetPKeyDSA(self, pkey);
+
+    return (pkey-&gt;pkey.dsa-&gt;pub_key) ? Qtrue : Qfalse;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006297">
+                    
+                    <a name="M006297"></a><b>dsa.public_key &rarr; aDSA
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Makes new instance <a href="DSA.html">DSA</a> PUBLIC_KEY from PRIVATE_KEY
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006297_source')" id="l_M006297_source">show</a>
+                        
+                    </p>
+                    <div id="M006297_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_dsa_to_public_key(VALUE self)
+{
+    EVP_PKEY *pkey;
+    DSA *dsa;
+    VALUE obj;
+
+    GetPKeyDSA(self, pkey);
+    /* err check performed by dsa_instance */
+    dsa = DSAPublicKey_dup(pkey-&gt;pkey.dsa);
+    obj = dsa_instance(CLASS_OF(self), dsa);
+    if (obj == Qfalse) {
+        DSA_free(dsa);
+        ossl_raise(eDSAError, NULL);
+    }
+    return obj;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006298">
+                    
+                    <a name="M006298"></a><b>dsa.syssign(string) &rarr; aString
+</b>
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006298_source')" id="l_M006298_source">show</a>
+                        
+                    </p>
+                    <div id="M006298_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_dsa_sign(VALUE self, VALUE data)
+{
+    EVP_PKEY *pkey;
+    unsigned int buf_len;
+    VALUE str;
+
+    GetPKeyDSA(self, pkey);
+    StringValue(data);
+    if (!DSA_PRIVATE(self, pkey-&gt;pkey.dsa)) {
+        ossl_raise(eDSAError, &quot;Private DSA key needed!&quot;);
+    }
+    str = rb_str_new(0, ossl_dsa_buf_size(pkey));
+    if (!DSA_sign(0, (unsigned char *)RSTRING_PTR(data), RSTRING_LEN(data),
+                  (unsigned char *)RSTRING_PTR(str),
+                  &amp;buf_len, pkey-&gt;pkey.dsa)) { /* type is ignored (0) */
+        ossl_raise(eDSAError, NULL);
+    }
+    rb_str_set_len(str, buf_len);
+
+    return str;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006299">
+                    
+                    <a name="M006299"></a><b>dsa.sysverify(digest, sig) &rarr; true | false
+</b>
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006299_source')" id="l_M006299_source">show</a>
+                        
+                    </p>
+                    <div id="M006299_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_dsa_verify(VALUE self, VALUE digest, VALUE sig)
+{
+    EVP_PKEY *pkey;
+    int ret;
+
+    GetPKeyDSA(self, pkey);
+    StringValue(digest);
+    StringValue(sig);
+    /* type is ignored (0) */
+    ret = DSA_verify(0, (unsigned char *)RSTRING_PTR(digest), RSTRING_LEN(digest),
+                     (unsigned char *)RSTRING_PTR(sig), RSTRING_LEN(sig), pkey-&gt;pkey.dsa);
+    if (ret &lt; 0) {
+        ossl_raise(eDSAError, NULL);
+    }
+    else if (ret == 1) {
+        return Qtrue;
+    }
+
+    return Qfalse;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006296">
+                    
+                    <a name="M006296"></a><b>dsa.to_der &rarr; aString
+</b>
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006296_source')" id="l_M006296_source">show</a>
+                        
+                    </p>
+                    <div id="M006296_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_dsa_to_der(VALUE self)
+{
+    EVP_PKEY *pkey;
+    int (*i2d_func)_((DSA*, unsigned char**));
+    unsigned char *p;
+    long len;
+    VALUE str;
+
+    GetPKeyDSA(self, pkey);
+    if(DSA_HAS_PRIVATE(pkey-&gt;pkey.dsa))
+        i2d_func = (int(*)_((DSA*,unsigned char**)))i2d_DSAPrivateKey;
+    else
+        i2d_func = i2d_DSA_PUBKEY;
+    if((len = i2d_func(pkey-&gt;pkey.dsa, NULL)) &lt;= 0)
+        ossl_raise(eDSAError, NULL);
+    str = rb_str_new(0, len);
+    p = (unsigned char *)RSTRING_PTR(str);
+    if(i2d_func(pkey-&gt;pkey.dsa, &amp;p) &lt; 0)
+        ossl_raise(eDSAError, NULL);
+    ossl_str_adjust(str, p);
+
+    return str;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006301">
+                    
+                    <a name="M006301"></a><b>to_pem</b>(...)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a href="DSA.html#M006295">export</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006302">
+                    
+                    <a name="M006302"></a><b>to_s</b>(...)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a href="DSA.html#M006295">export</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006294">
+                    
+                    <a name="M006294"></a><b>dsa.to_text &rarr; aString
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Prints all parameters of key to buffer INSECURE: PRIVATE INFORMATIONS CAN
+LEAK OUT!!! Don&#8217;t use :-)) (I&#8217;s up to you)
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006294_source')" id="l_M006294_source">show</a>
+                        
+                    </p>
+                    <div id="M006294_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_dsa_to_text(VALUE self)
+{
+    EVP_PKEY *pkey;
+    BIO *out;
+    VALUE str;
+
+    GetPKeyDSA(self, pkey);
+    if (!(out = BIO_new(BIO_s_mem()))) {
+        ossl_raise(eDSAError, NULL);
+    }
+    if (!DSA_print(out, pkey-&gt;pkey.dsa, 0)) { /* offset = 0 */
+        BIO_free(out);
+        ossl_raise(eDSAError, NULL);
+    }
+    str = ossl_membio2str(out);
+
+    return str;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

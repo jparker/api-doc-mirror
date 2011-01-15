@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>singleton.rb</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            singleton.rb
+        </h1>
+        <ul class="files">
+            <li>lib/singleton.rb</li>
+            <li>Last modified: 2010-09-02 19:37:30 +0000</li>
+        </ul>
+    </div>
+
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+The <a href="../../classes/Singleton.html">Singleton</a> module implements
+the <a href="../../classes/Singleton.html">Singleton</a> pattern.
+</p>
+<p>
+Usage:
+</p>
+<pre>
+   class Klass
+      include Singleton
+      # ...
+   end
+</pre>
+<ul>
+<li>this ensures that only one instance of Klass lets call it ``the
+instance&#8217;&#8217; can be created.
+
+<pre>
+  a,b  = Klass.instance, Klass.instance
+  a == b    # =&gt; true
+  Klass.new #  NoMethodError - new is private ...
+</pre>
+</li>
+<li>``The instance&#8217;&#8217; is created at instantiation time, in other
+words the first call of Klass.instance(), thus
+
+<pre>
+  class OtherKlass
+    include Singleton
+    # ...
+  end
+  ObjectSpace.each_object(OtherKlass){} # =&gt; 0.
+</pre>
+</li>
+<li>This behavior is preserved under inheritance and cloning.
+
+</li>
+</ul>
+<p>
+This is achieved by marking
+</p>
+<ul>
+<li>Klass.new and Klass.allocate - as private
+
+</li>
+</ul>
+<p>
+Providing (or modifying) the class methods
+</p>
+<ul>
+<li>Klass.inherited(sub_klass) and Klass.clone() - to ensure that the <a
+href="../../classes/Singleton.html">Singleton</a> pattern is properly
+inherited and cloned.
+
+</li>
+<li>Klass.instance() - returning ``the instance&#8217;&#8217;. After a
+successful self modifying (normally the first) call the method body is a
+simple:
+
+<pre>
+   def Klass.instance()
+     return @singleton__instance__
+   end
+</pre>
+</li>
+<li>Klass._load(str) - calling Klass.instance()
+
+</li>
+<li>Klass._instantiate?() - returning ``the instance&#8217;&#8217; or nil. This
+hook method puts a second (or nth) thread calling Klass.instance() on a
+waiting loop. The return value signifies the successful completion or
+premature termination of the first, or more generally, current
+&#8220;instantiation thread&#8221;.
+
+</li>
+</ul>
+<p>
+The instance method of <a href="../../classes/Singleton.html">Singleton</a>
+are
+</p>
+<ul>
+<li>clone and dup - raising TypeErrors to prevent cloning or duping
+
+</li>
+<li>_dump(depth) - returning the empty string. Marshalling strips by default
+all state information, e.g. instance variables and taint state, from ``the
+instance&#8217;&#8217;. Providing custom _load(str) and _dump(depth) hooks
+allows the (partially) resurrections of a previous state of ``the
+instance&#8217;&#8217;.
+
+</li>
+</ul>
+
+    </div>
+    
+
+    
+    <div class="sectiontitle">Required Files</div>
+    <ul>
+        
+        <li>thread</li>
+        
+    </ul>
+    
+
+    
+    
+
+    
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Classes and Modules</div>
+    <ul>
+        
+        <li><span class="type">MODULE</span> <a href="../../classes/AModule.html">AModule</a></li>
+        
+        <li><span class="type">MODULE</span> <a href="../../classes/Singleton.html">Singleton</a></li>
+        
+        <li><span class="type">MODULE</span> <a href="../../classes/Yup.html">Yup</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="../../classes/A.html">A</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="../../classes/Down.html">Down</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="../../classes/Middle.html">Middle</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="../../classes/SomeSingletonClass.html">SomeSingletonClass</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="../../classes/Up.html">Up</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="../../classes/Ups.html">Ups</a></li>
+        
+    </ul>
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">Yup</td>
+            <td>=</td>
+            <td class="attr-value">Ups.clone</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+
+    
+</div>
+    </div>
+  </body>
+</html>

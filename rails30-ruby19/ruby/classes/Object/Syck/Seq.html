@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Object::Syck::Seq</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            Object::Syck::Seq 
+            
+                <span class="parent">&lt; 
+                    
+                    cNode 
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../../files/lib/minitest/spec_rb.html">lib/minitest/spec.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+Define YAML::Syck::Scalar, YAML::Syck::Seq, YAML::Syck::Map &#8212;
+</p>
+<pre>
+    all are the publicly usable variants of YAML::Syck::Node
+</pre>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>A</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007115">add</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007113">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007116">style=</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>V</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007114">value=</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M007113">
+                    
+                    <a name="M007113"></a><b>new</b>(p1, p2, p3)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+YAML::Syck::Seq.initialize
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007113_source')" id="l_M007113_source">show</a>
+                        
+                    </p>
+                    <div id="M007113_source" class="dyn-source">
+                        <pre>VALUE
+syck_seq_initialize(VALUE self, VALUE type_id, VALUE val, VALUE style)
+{
+    SyckNode *node;
+    Data_Get_Struct( self, SyckNode, node );
+
+    rb_iv_set( self, &quot;@kind&quot;, sym_seq );
+    rb_funcall( self, s_type_id_set, 1, type_id );
+    rb_funcall( self, s_value_set, 1, val );
+    rb_funcall( self, s_style_set, 1, style );
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M007115">
+                    
+                    <a name="M007115"></a><b>add</b>(p1)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+YAML::Syck::Seq.add
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007115_source')" id="l_M007115_source">show</a>
+                        
+                    </p>
+                    <div id="M007115_source" class="dyn-source">
+                        <pre>VALUE
+syck_seq_add_m(VALUE self, VALUE val)
+{
+    SyckNode *node;
+    VALUE emitter = rb_ivar_get( self, s_emitter );
+    Data_Get_Struct( self, SyckNode, node );
+
+    if ( rb_respond_to( emitter, s_node_export ) ) {
+        val = rb_funcall( emitter, s_node_export, 1, val );
+    }
+    syck_seq_add( node, val );
+    rb_ary_push( rb_ivar_get( self, s_value ), val );
+
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007116">
+                    
+                    <a name="M007116"></a><b>style=</b>(p1)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+YAML::Syck::Seq.style=
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007116_source')" id="l_M007116_source">show</a>
+                        
+                    </p>
+                    <div id="M007116_source" class="dyn-source">
+                        <pre>VALUE
+syck_seq_style_set(VALUE self, VALUE style)
+{
+    SyckNode *node;
+    Data_Get_Struct( self, SyckNode, node );
+
+    if ( style == sym_inline )
+    {
+        node-&gt;data.list-&gt;style = seq_inline;
+    }
+    else
+    {
+        node-&gt;data.list-&gt;style = seq_none;
+    }
+
+    rb_iv_set( self, &quot;@style&quot;, style );
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007114">
+                    
+                    <a name="M007114"></a><b>value=</b>(p1)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+YAML::Syck::Seq.value=
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007114_source')" id="l_M007114_source">show</a>
+                        
+                    </p>
+                    <div id="M007114_source" class="dyn-source">
+                        <pre>VALUE
+syck_seq_value_set(VALUE self, VALUE val)
+{
+    SyckNode *node;
+    Data_Get_Struct( self, SyckNode, node );
+
+    val = rb_check_array_type( val );
+    if ( !NIL_P( val ) ) {
+        int i;
+        syck_seq_empty( node );
+        for ( i = 0; i &lt; RARRAY_LEN( val ); i++ )
+        {
+            syck_seq_add( node, rb_ary_entry(val, i) );
+        }
+    }
+
+    rb_iv_set( self, &quot;@value&quot;, val );
+    return val;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

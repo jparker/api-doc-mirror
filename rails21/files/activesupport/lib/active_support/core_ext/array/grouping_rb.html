@@ -1,0 +1,82 @@
+  <div id="fileHeader">
+    <h1>grouping.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activesupport/lib/active_support/core_ext/array/grouping.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>require 'enumerator'
+
+module ActiveSupport #:nodoc:
+  module CoreExtensions #:nodoc:
+    module Array #:nodoc:
+      module Grouping
+        # Iterates over the array in groups of size +number+, padding any remaining 
+        # slots with +fill_with+ unless it is +false+.
+        # 
+        #   %w(1 2 3 4 5 6 7).in_groups_of(3) {|g| p g}
+        #   [&quot;1&quot;, &quot;2&quot;, &quot;3&quot;]
+        #   [&quot;4&quot;, &quot;5&quot;, &quot;6&quot;]
+        #   [&quot;7&quot;, nil, nil]
+        #
+        #   %w(1 2 3).in_groups_of(2, '&amp;nbsp;') {|g| p g}
+        #   [&quot;1&quot;, &quot;2&quot;]
+        #   [&quot;3&quot;, &quot;&amp;nbsp;&quot;]
+        #
+        #   %w(1 2 3).in_groups_of(2, false) {|g| p g}
+        #   [&quot;1&quot;, &quot;2&quot;]
+        #   [&quot;3&quot;]
+        def in_groups_of(number, fill_with = nil, &amp;block)
+          if fill_with == false
+            collection = self
+          else
+            # size % number gives how many extra we have;
+            # subtracting from number gives how many to add;
+            # modulo number ensures we don't add group of just fill.
+            padding = (number - size % number) % number
+            collection = dup.concat([fill_with] * padding)
+          end
+
+          if block_given?
+            collection.each_slice(number, &amp;block)
+          else
+            returning [] do |groups|
+              collection.each_slice(number) { |group| groups &lt;&lt; group }
+            end
+          end
+        end
+
+        # Divides the array into one or more subarrays based on a delimiting +value+
+        # or the result of an optional block.
+        #
+        #   [1, 2, 3, 4, 5].split(3)                # =&gt; [[1, 2], [4, 5]]
+        #   (1..10).to_a.split { |i| i % 3 == 0 }   # =&gt; [[1, 2], [4, 5], [7, 8], [10]]
+        def split(value = nil, &amp;block)
+          block ||= Proc.new { |e| e == value }
+
+          inject([[]]) do |results, element|
+            if block.call(element)
+              results &lt;&lt; []
+            else
+              results.last &lt;&lt; element
+            end
+
+            results
+          end
+        end
+      end
+    end
+  end
+end
+</pre>
+    </div>

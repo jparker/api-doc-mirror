@@ -1,0 +1,146 @@
+  <div id="fileHeader">
+    <h1>template.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionpack/lib/action_view/template.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:04 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>module ActionView #:nodoc:
+  class Template #:nodoc:
+
+    attr_accessor :locals
+    attr_reader :handler, :path, :extension, :filename, :path_without_extension, :method
+
+    def initialize(view, path, use_full_path, locals = {})
+      @view = view
+      @finder = @view.finder
+
+      # Clear the forward slash at the beginning if exists
+      @path = use_full_path ? path.sub(/^\//, '') : path
+      @view.first_render ||= @path
+      @source = nil # Don't read the source until we know that it is required
+      set_extension_and_file_name(use_full_path)
+      
+      @locals = locals || {}
+      @handler = self.class.handler_class_for_extension(@extension).new(@view)
+    end
+
+    def render_template
+      render
+    rescue Exception =&gt; e
+      raise e unless filename
+      if TemplateError === e
+        e.sub_template_of(filename)
+        raise e
+      else
+        raise TemplateError.new(self, @view.assigns, e)
+      end
+    end
+    
+    def render
+      prepare!
+      @handler.render(self)
+    end
+
+    def source
+      @source ||= File.read(self.filename)
+    end
+
+    def method_key
+      @filename
+    end
+
+    def base_path_for_exception
+      @finder.find_base_path_for(&quot;#{@path_without_extension}.#{@extension}&quot;) || @finder.view_paths.first
+    end
+    
+    def prepare!
+      @view.send :evaluate_assigns
+      @view.current_render_extension = @extension
+      
+      if @handler.compilable?
+        @handler.compile_template(self) # compile the given template, if necessary
+        @method = @view.method_names[method_key] # Set the method name for this template and run it
+      end
+    end
+
+    private
+
+    def set_extension_and_file_name(use_full_path)
+      @path_without_extension, @extension = @finder.path_and_extension(@path)
+      if use_full_path
+        if @extension
+          @filename = @finder.pick_template(@path_without_extension, @extension)
+        else
+          @extension = @finder.pick_template_extension(@path).to_s
+          raise_missing_template_exception unless @extension
+          
+          @filename = @finder.pick_template(@path, @extension)
+          @extension = @extension.gsub(/^.+\./, '') # strip off any formats
+        end
+      else
+        @filename = @path
+      end
+
+      raise_missing_template_exception if @filename.blank?
+    end
+    
+    def raise_missing_template_exception
+      full_template_path = @path.include?('.') ? @path : &quot;#{@path}.#{@view.template_format}.erb&quot;
+      display_paths = @finder.view_paths.join(':')
+      template_type = (@path =~ /layouts/i) ? 'layout' : 'template'
+      raise(MissingTemplate, &quot;Missing #{template_type} #{full_template_path} in view path #{display_paths}&quot;)
+    end
+
+    # Template Handlers
+    
+    @@template_handlers = HashWithIndifferentAccess.new
+    @@default_template_handlers = nil
+    
+    # Register a class that knows how to handle template files with the given
+    # extension. This can be used to implement new template types.
+    # The constructor for the class must take the ActiveView::Base instance
+    # as a parameter, and the class must implement a +render+ method that
+    # takes the contents of the template to render as well as the Hash of
+    # local assigns available to the template. The +render+ method ought to
+    # return the rendered template as a string.
+    def self.register_template_handler(extension, klass)
+      @@template_handlers[extension.to_sym] = klass
+      TemplateFinder.update_extension_cache_for(extension.to_s)
+    end
+
+    def self.template_handler_extensions
+      @@template_handlers.keys.map(&amp;:to_s).sort
+    end
+
+    def self.register_default_template_handler(extension, klass)
+      register_template_handler(extension, klass)
+      @@default_template_handlers = klass
+    end
+
+    def self.handler_class_for_extension(extension)
+      (extension &amp;&amp; @@template_handlers[extension.to_sym]) || @@default_template_handlers
+    end
+
+    register_default_template_handler :erb, TemplateHandlers::ERB
+    register_template_handler :rjs, TemplateHandlers::RJS
+    register_template_handler :builder, TemplateHandlers::Builder
+
+    # TODO: Depreciate old template extensions
+    register_template_handler :rhtml, TemplateHandlers::ERB
+    register_template_handler :rxml, TemplateHandlers::Builder
+    
+  end
+end
+</pre>
+    </div>

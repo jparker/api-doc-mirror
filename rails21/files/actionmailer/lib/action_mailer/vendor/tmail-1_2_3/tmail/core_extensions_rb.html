@@ -1,0 +1,81 @@
+  <div id="fileHeader">
+    <h1>core_extensions.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionmailer/lib/action_mailer/vendor/tmail-1.2.3/tmail/core_extensions.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>#:stopdoc:
+unless Object.respond_to?(:blank?)
+  class Object
+    # Check first to see if we are in a Rails environment, no need to 
+    # define these methods if we are
+
+    # An object is blank if it's nil, empty, or a whitespace string.
+    # For example, &quot;&quot;, &quot;   &quot;, nil, [], and {} are blank.
+    #
+    # This simplifies
+    #   if !address.nil? &amp;&amp; !address.empty?
+    # to
+    #   if !address.blank?
+    def blank?
+      if respond_to?(:empty?) &amp;&amp; respond_to?(:strip)
+        empty? or strip.empty?
+      elsif respond_to?(:empty?)
+        empty?
+      else
+        !self
+      end
+    end
+  end
+
+  class NilClass
+    def blank?
+      true
+    end
+  end
+
+  class FalseClass
+    def blank?
+      true
+    end
+  end
+
+  class TrueClass
+    def blank?
+      false
+    end
+  end
+
+  class Array
+    alias_method :blank?, :empty?
+  end
+
+  class Hash
+    alias_method :blank?, :empty?
+  end
+
+  class String
+    def blank?
+      empty? || strip.empty?
+    end
+  end
+
+  class Numeric
+    def blank?
+      false
+    end
+  end
+end
+#:startdoc:</pre>
+    </div>

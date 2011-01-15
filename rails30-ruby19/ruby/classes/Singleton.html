@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Singleton</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Module</span> 
+            Singleton 
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/lib/singleton_rb.html">lib/singleton.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>#</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002227">__init__</a>,</li>
+                
+                <li><a href="#M002223">_dump</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>A</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002229">append_features</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002221">clone</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>D</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002222">dup</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>I</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002230">included</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Classes and Modules</div>
+    <ul>
+        
+        <li><span class="type">MODULE</span> <a href="Singleton/SingletonClassMethods.html">Singleton::SingletonClassMethods</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M002227">
+                    
+                    <a name="M002227"></a><b>__init__</b>(klass)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002227_source')" id="l_M002227_source">show</a>
+                        
+                    </p>
+                    <div id="M002227_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/singleton.rb, line 100</span>
+100:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">__init__</span>(<span class="ruby-identifier">klass</span>)
+101:       <span class="ruby-identifier">klass</span>.<span class="ruby-identifier">instance_eval</span> {
+102:         <span class="ruby-ivar">@singleton__instance__</span> = <span class="ruby-keyword kw">nil</span>
+103:         <span class="ruby-ivar">@singleton__mutex__</span> = <span class="ruby-constant">Mutex</span>.<span class="ruby-identifier">new</span>
+104:       }
+105:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">klass</span>.<span class="ruby-identifier">instance</span>
+106:         <span class="ruby-keyword kw">return</span> <span class="ruby-ivar">@singleton__instance__</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@singleton__instance__</span>
+107:         <span class="ruby-ivar">@singleton__mutex__</span>.<span class="ruby-identifier">synchronize</span> {
+108:           <span class="ruby-keyword kw">return</span> <span class="ruby-ivar">@singleton__instance__</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@singleton__instance__</span>
+109:           <span class="ruby-ivar">@singleton__instance__</span> = <span class="ruby-identifier">new</span>()
+110:         }
+111:         <span class="ruby-ivar">@singleton__instance__</span>
+112:       <span class="ruby-keyword kw">end</span>
+113:       <span class="ruby-identifier">klass</span>
+114:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Class Private methods</div>
+            
+            <div class="method">
+                <div class="title" id="M002229">
+                    
+                    <a name="M002229"></a><b>append_features</b>(mod)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002229_source')" id="l_M002229_source">show</a>
+                        
+                    </p>
+                    <div id="M002229_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/singleton.rb, line 121</span>
+121:     <span class="ruby-keyword kw">def</span>  <span class="ruby-identifier">append_features</span><span class="ruby-identifier">append_features</span>(<span class="ruby-identifier">mod</span>)
+122:       <span class="ruby-comment cmt">#  help out people counting on transitive mixins</span>
+123:       <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">mod</span>.<span class="ruby-identifier">instance_of?</span>(<span class="ruby-constant">Class</span>)
+124:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">TypeError</span>, <span class="ruby-node">&quot;Inclusion of the OO-Singleton module in module #{mod}&quot;</span>
+125:       <span class="ruby-keyword kw">end</span>
+126:       <span class="ruby-keyword kw">super</span>
+127:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002230">
+                    
+                    <a name="M002230"></a><b>included</b>(klass)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002230_source')" id="l_M002230_source">show</a>
+                        
+                    </p>
+                    <div id="M002230_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/singleton.rb, line 129</span>
+129:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">included</span>(<span class="ruby-identifier">klass</span>)
+130:       <span class="ruby-keyword kw">super</span>
+131:       <span class="ruby-identifier">klass</span>.<span class="ruby-identifier">private_class_method</span>  <span class="ruby-identifier">:new</span>, <span class="ruby-identifier">:allocate</span>
+132:       <span class="ruby-identifier">klass</span>.<span class="ruby-identifier">extend</span> <span class="ruby-constant">SingletonClassMethods</span>
+133:       <span class="ruby-constant">Singleton</span>.<span class="ruby-identifier">__init__</span>(<span class="ruby-identifier">klass</span>)
+134:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M002223">
+                    
+                    <a name="M002223"></a><b>_dump</b>(depth = -1)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+default marshalling strategy
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002223_source')" id="l_M002223_source">show</a>
+                        
+                    </p>
+                    <div id="M002223_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/singleton.rb, line 75</span>
+75:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">_dump</span>(<span class="ruby-identifier">depth</span> = <span class="ruby-value">-1</span>)
+76:     <span class="ruby-value str">''</span>
+77:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002221">
+                    
+                    <a name="M002221"></a><b>clone</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+disable build-in copying methods
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002221_source')" id="l_M002221_source">show</a>
+                        
+                    </p>
+                    <div id="M002221_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/singleton.rb, line 67</span>
+67:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">clone</span>
+68:     <span class="ruby-identifier">raise</span> <span class="ruby-constant">TypeError</span>, <span class="ruby-node">&quot;can't clone instance of singleton #{self.class}&quot;</span>
+69:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002222">
+                    
+                    <a name="M002222"></a><b>dup</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002222_source')" id="l_M002222_source">show</a>
+                        
+                    </p>
+                    <div id="M002222_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/singleton.rb, line 70</span>
+70:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">dup</span>
+71:     <span class="ruby-identifier">raise</span> <span class="ruby-constant">TypeError</span>, <span class="ruby-node">&quot;can't dup instance of singleton #{self.class}&quot;</span>
+72:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

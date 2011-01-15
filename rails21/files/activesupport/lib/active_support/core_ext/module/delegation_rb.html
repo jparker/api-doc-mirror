@@ -1,0 +1,83 @@
+  <div id="fileHeader">
+    <h1>delegation.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activesupport/lib/active_support/core_ext/module/delegation.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>class Module
+  # Provides a delegate class method to easily expose contained objects' methods
+  # as your own. Pass one or more methods (specified as symbols or strings)
+  # and the name of the target object as the final &lt;tt&gt;:to&lt;/tt&gt; option (also a symbol
+  # or string).  At least one method and the &lt;tt&gt;:to&lt;/tt&gt; option are required.
+  #
+  # Delegation is particularly useful with Active Record associations:
+  #
+  #   class Greeter &lt; ActiveRecord::Base
+  #     def hello()   &quot;hello&quot;   end
+  #     def goodbye() &quot;goodbye&quot; end
+  #   end
+  #
+  #   class Foo &lt; ActiveRecord::Base
+  #     belongs_to :greeter
+  #     delegate :hello, :to =&gt; :greeter
+  #   end
+  #
+  #   Foo.new.hello   # =&gt; &quot;hello&quot;
+  #   Foo.new.goodbye # =&gt; NoMethodError: undefined method `goodbye' for #&lt;Foo:0x1af30c&gt;
+  #
+  # Multiple delegates to the same target are allowed:
+  #
+  #   class Foo &lt; ActiveRecord::Base
+  #     belongs_to :greeter
+  #     delegate :hello, :goodbye, :to =&gt; :greeter
+  #   end
+  #
+  #   Foo.new.goodbye # =&gt; &quot;goodbye&quot;
+  #
+  # Methods can be delegated to instance variables, class variables, or constants
+  # by providing them as a symbols:
+  #
+  #   class Foo
+  #     CONSTANT_ARRAY = [0,1,2,3]
+  #     @@class_array  = [4,5,6,7]
+  #     
+  #     def initialize
+  #       @instance_array = [8,9,10,11]
+  #     end
+  #     delegate :sum, :to =&gt; :CONSTANT_ARRAY
+  #     delegate :min, :to =&gt; :@@class_array
+  #     delegate :max, :to =&gt; :@instance_array
+  #   end
+  #
+  #   Foo.new.sum # =&gt; 6
+  #   Foo.new.min # =&gt; 4
+  #   Foo.new.max # =&gt; 11
+  #
+  def delegate(*methods)
+    options = methods.pop
+    unless options.is_a?(Hash) &amp;&amp; to = options[:to]
+      raise ArgumentError, &quot;Delegation needs a target. Supply an options hash with a :to key as the last argument (e.g. delegate :hello, :to =&gt; :greeter).&quot;
+    end
+
+    methods.each do |method|
+      module_eval(&lt;&lt;-EOS, &quot;(__DELEGATION__)&quot;, 1)
+        def #{method}(*args, &amp;block)
+          #{to}.__send__(#{method.inspect}, *args, &amp;block)
+        end
+      EOS
+    end
+  end
+end
+</pre>
+    </div>

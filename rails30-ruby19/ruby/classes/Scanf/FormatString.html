@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Scanf::FormatString</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            Scanf::FormatString 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../files/lib/scanf_rb.html">lib/scanf.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>L</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005026">last_spec</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>M</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005027">match</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005022">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>P</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005024">prune</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005025">spec_count</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>T</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005023">to_s</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">SPECIFIERS</td>
+            <td>=</td>
+            <td class="attr-value">'diuXxofFeEgGscaA'</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">REGEX</td>
+            <td>=</td>
+            <td class="attr-value">/         # possible space, followed by...           (?:\s*           # percent sign, followed by...             %             # another percent sign, or...               (?:%|                  # optional assignment suppression flag                  \*?                  # optional maximum field width                  \d*                    # named character class, ...                    (?:\[\[:\w+:\]\]|                    # traditional character class, or...                       \[[^\]]*\]|                    # specifier letter.                       [#{SPECIFIERS}])))|             # or miscellaneous characters               [^%\s]+/ix</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+    <div class="sectiontitle">Attributes</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>string_left</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>last_spec_tried</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>last_match_tried</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>matched_count</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>space</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+    </table>
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005022">
+                    
+                    <a name="M005022"></a><b>new</b>(str)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005022_source')" id="l_M005022_source">show</a>
+                        
+                    </p>
+                    <div id="M005022_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/scanf.rb, line 530</span>
+530:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">str</span>)
+531:       <span class="ruby-ivar">@specs</span> = []
+532:       <span class="ruby-ivar">@i</span> = <span class="ruby-value">1</span>
+533:       <span class="ruby-identifier">s</span> = <span class="ruby-identifier">str</span>.<span class="ruby-identifier">to_s</span>
+534:       <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-regexp re">/\S/</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">s</span>)
+535:       <span class="ruby-ivar">@space</span> = <span class="ruby-keyword kw">true</span> <span class="ruby-keyword kw">if</span> <span class="ruby-regexp re">/\s\z/</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">s</span>)
+536:       <span class="ruby-ivar">@specs</span>.<span class="ruby-identifier">replace</span> <span class="ruby-identifier">s</span>.<span class="ruby-identifier">scan</span>(<span class="ruby-constant">REGEX</span>).<span class="ruby-identifier">map</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">spec</span><span class="ruby-operator">|</span> <span class="ruby-constant">FormatSpecifier</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">spec</span>) }
+537:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005026">
+                    
+                    <a name="M005026"></a><b>last_spec</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005026_source')" id="l_M005026_source">show</a>
+                        
+                    </p>
+                    <div id="M005026_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/scanf.rb, line 551</span>
+551:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">last_spec</span>
+552:       <span class="ruby-ivar">@i</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">spec_count</span> <span class="ruby-operator">-</span> <span class="ruby-value">1</span>
+553:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005027">
+                    
+                    <a name="M005027"></a><b>match</b>(str)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005027_source')" id="l_M005027_source">show</a>
+                        
+                    </p>
+                    <div id="M005027_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/scanf.rb, line 555</span>
+555:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">match</span>(<span class="ruby-identifier">str</span>)
+556:       <span class="ruby-identifier">accum</span> = []
+557:       <span class="ruby-ivar">@string_left</span> = <span class="ruby-identifier">str</span>
+558:       <span class="ruby-ivar">@matched_count</span> = <span class="ruby-value">0</span>
+559: 
+560:       <span class="ruby-ivar">@specs</span>.<span class="ruby-identifier">each_with_index</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">spec</span>,<span class="ruby-identifier">i</span><span class="ruby-operator">|</span>
+561:         <span class="ruby-ivar">@i</span>=<span class="ruby-identifier">i</span>
+562:         <span class="ruby-ivar">@last_spec_tried</span> = <span class="ruby-identifier">spec</span>
+563:         <span class="ruby-ivar">@last_match_tried</span> = <span class="ruby-identifier">spec</span>.<span class="ruby-identifier">match</span>(<span class="ruby-ivar">@string_left</span>)
+564:         <span class="ruby-keyword kw">break</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@last_match_tried</span>
+565:         <span class="ruby-ivar">@matched_count</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
+566: 
+567:         <span class="ruby-identifier">accum</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">spec</span>.<span class="ruby-identifier">conversion</span>
+568: 
+569:         <span class="ruby-ivar">@string_left</span> = <span class="ruby-ivar">@last_match_tried</span>.<span class="ruby-identifier">post_match</span>
+570:         <span class="ruby-keyword kw">break</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@string_left</span>.<span class="ruby-identifier">empty?</span>
+571:       <span class="ruby-keyword kw">end</span>
+572:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">accum</span>.<span class="ruby-identifier">compact</span>
+573:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005024">
+                    
+                    <a name="M005024"></a><b>prune</b>(n=matched_count)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005024_source')" id="l_M005024_source">show</a>
+                        
+                    </p>
+                    <div id="M005024_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/scanf.rb, line 543</span>
+543:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">prune</span>(<span class="ruby-identifier">n</span>=<span class="ruby-identifier">matched_count</span>)
+544:       <span class="ruby-identifier">n</span>.<span class="ruby-identifier">times</span> { <span class="ruby-ivar">@specs</span>.<span class="ruby-identifier">shift</span> }
+545:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005025">
+                    
+                    <a name="M005025"></a><b>spec_count</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005025_source')" id="l_M005025_source">show</a>
+                        
+                    </p>
+                    <div id="M005025_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/scanf.rb, line 547</span>
+547:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">spec_count</span>
+548:       <span class="ruby-ivar">@specs</span>.<span class="ruby-identifier">size</span>
+549:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005023">
+                    
+                    <a name="M005023"></a><b>to_s</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005023_source')" id="l_M005023_source">show</a>
+                        
+                    </p>
+                    <div id="M005023_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/scanf.rb, line 539</span>
+539:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">to_s</span>
+540:       <span class="ruby-ivar">@specs</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">''</span>)
+541:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

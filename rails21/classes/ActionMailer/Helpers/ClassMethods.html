@@ -1,0 +1,160 @@
+  <div id="C00000551">
+<div class='banner'>
+  <span class="file-title-prefix">Module</span><br />ClassMethods<br/>
+  In:
+<a href="#" onclick="jsHref('files/actionmailer/lib/action_mailer/helpers_rb.html');">actionmailer/lib/action_mailer/helpers.rb</a>
+
+</div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+      <div id="content">
+
+
+
+
+  <div class="sectiontitle">Methods</div>
+  <ul>
+  <li><a href="index.html?a=M001425&name=helper" >helper</a></li>
+  <li><a href="index.html?a=M001427&name=helper_attr" >helper_attr</a></li>
+  <li><a href="index.html?a=M001426&name=helper_method" >helper_method</a></li>
+  </ul>
+
+
+
+
+
+
+<div class="sectiontitle">Public Instance methods</div>
+<div id="M001425" class="method">
+  <div id="M001425_title" class="title">
+    <b>helper</b>(*args, &amp;block)
+  </div>
+  <div class="description">
+  <p>
+Declare a helper:
+</p>
+<pre>
+  helper :foo
+</pre>
+<p>
+requires &#8216;foo_helper&#8217; and includes FooHelper in the template
+class.
+</p>
+<pre>
+  helper FooHelper
+</pre>
+<p>
+includes FooHelper in the template class.
+</p>
+<pre>
+  helper { def foo() &quot;#{bar} is the very best&quot; end }
+</pre>
+<p>
+evaluates the block in the template class, adding method <tt>foo</tt>.
+</p>
+<pre>
+  helper(:three, BlindHelper) { def mice() 'mice' end }
+</pre>
+<p>
+does all three.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001425_source')" id="l_M001425_source">show source</a> ]</p>
+  <div id="M001425_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File actionmailer/lib/action_mailer/helpers.rb, line 40</span>
+40:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">helper</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+41:         <span class="ruby-identifier">args</span>.<span class="ruby-identifier">flatten</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">arg</span><span class="ruby-operator">|</span>
+42:           <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">arg</span>
+43:             <span class="ruby-keyword kw">when</span> <span class="ruby-constant">Module</span>
+44:               <span class="ruby-identifier">add_template_helper</span>(<span class="ruby-identifier">arg</span>)
+45:             <span class="ruby-keyword kw">when</span> <span class="ruby-constant">String</span>, <span class="ruby-constant">Symbol</span>
+46:               <span class="ruby-identifier">file_name</span>  = <span class="ruby-identifier">arg</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">underscore</span> <span class="ruby-operator">+</span> <span class="ruby-value str">'_helper'</span>
+47:               <span class="ruby-identifier">class_name</span> = <span class="ruby-identifier">file_name</span>.<span class="ruby-identifier">camelize</span>
+48: 
+49:               <span class="ruby-keyword kw">begin</span>
+50:                 <span class="ruby-identifier">require_dependency</span>(<span class="ruby-identifier">file_name</span>)
+51:               <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">LoadError</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">load_error</span>
+52:                 <span class="ruby-identifier">requiree</span> = <span class="ruby-regexp re">/ -- (.*?)(\.rb)?$/</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">load_error</span>.<span class="ruby-identifier">message</span>).<span class="ruby-identifier">to_a</span>[<span class="ruby-value">1</span>]
+53:                 <span class="ruby-identifier">msg</span> = (<span class="ruby-identifier">requiree</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">file_name</span>) <span class="ruby-operator">?</span> <span class="ruby-node">&quot;Missing helper file helpers/#{file_name}.rb&quot;</span> <span class="ruby-operator">:</span> <span class="ruby-node">&quot;Can't load file: #{requiree}&quot;</span>
+54:                 <span class="ruby-identifier">raise</span> <span class="ruby-constant">LoadError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">msg</span>).<span class="ruby-identifier">copy_blame!</span>(<span class="ruby-identifier">load_error</span>)
+55:               <span class="ruby-keyword kw">end</span>
+56: 
+57:               <span class="ruby-identifier">add_template_helper</span>(<span class="ruby-identifier">class_name</span>.<span class="ruby-identifier">constantize</span>)
+58:             <span class="ruby-keyword kw">else</span>
+59:               <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-value str">'helper expects String, Symbol, or Module argument'</span>
+60:           <span class="ruby-keyword kw">end</span>
+61:         <span class="ruby-keyword kw">end</span>
+62: 
+63:         <span class="ruby-comment cmt"># Evaluate block in template class if given.</span>
+64:         <span class="ruby-identifier">master_helper_module</span>.<span class="ruby-identifier">module_eval</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">block_given?</span>
+65:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M001427" class="method">
+  <div id="M001427_title" class="title">
+    <b>helper_attr</b>(*attrs)
+  </div>
+  <div class="description">
+  <p>
+Declare a controller attribute as a helper. For example,
+</p>
+<pre>
+  helper_attr :name
+  attr_accessor :name
+</pre>
+<p>
+makes the name and name= controller methods available in the view. The is a
+convenience wrapper for <a
+href="index.html?a=M001426&name=helper_method">helper_method</a>.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001427_source')" id="l_M001427_source">show source</a> ]</p>
+  <div id="M001427_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File actionmailer/lib/action_mailer/helpers.rb, line 87</span>
+87:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">helper_attr</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">attrs</span>)
+88:         <span class="ruby-identifier">attrs</span>.<span class="ruby-identifier">flatten</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">attr</span><span class="ruby-operator">|</span> <span class="ruby-identifier">helper_method</span>(<span class="ruby-identifier">attr</span>, <span class="ruby-node">&quot;#{attr}=&quot;</span>) }
+89:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M001426" class="method">
+  <div id="M001426_title" class="title">
+    <b>helper_method</b>(*methods)
+  </div>
+  <div class="description">
+  <p>
+Declare a controller method as a helper. For example,
+</p>
+<pre>
+  helper_method :link_to
+  def link_to(name, options) ... end
+</pre>
+<p>
+makes the link_to controller method available in the view.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001426_source')" id="l_M001426_source">show source</a> ]</p>
+  <div id="M001426_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File actionmailer/lib/action_mailer/helpers.rb, line 71</span>
+71:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">helper_method</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">methods</span>)
+72:         <span class="ruby-identifier">methods</span>.<span class="ruby-identifier">flatten</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">method</span><span class="ruby-operator">|</span>
+73:           <span class="ruby-identifier">master_helper_module</span>.<span class="ruby-identifier">module_eval</span> <span class="ruby-value str">&quot;def \#{method}(*args, &amp;block)\ncontroller.send!(%(\#{method}), *args, &amp;block)\nend\n&quot;</span>
+74:         <span class="ruby-keyword kw">end</span>
+75:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+</div>
+
+  </div>

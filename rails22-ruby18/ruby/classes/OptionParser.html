@@ -1,0 +1,504 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>OptionParser</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            OptionParser 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/lib/optparse_rb.html">lib/optparse.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <h2>Developer Documentation (not for RDoc output)</h2>
+<h3><a href="Class.html">Class</a> tree</h3>
+<ul>
+<li>OptionParser:: front end
+
+</li>
+<li>OptionParser::Switch:: each switches
+
+</li>
+<li>OptionParser::List:: options list
+
+</li>
+<li>OptionParser::ParseError:: errors on parsing
+
+<ul>
+<li><a href="AmbiguousOption.html">OptionParser::AmbiguousOption</a>
+
+</li>
+<li><a href="NeedlessArgument.html">OptionParser::NeedlessArgument</a>
+
+</li>
+<li><a href="MissingArgument.html">OptionParser::MissingArgument</a>
+
+</li>
+<li><a href="InvalidOption.html">OptionParser::InvalidOption</a>
+
+</li>
+<li><a href="InvalidArgument.html">OptionParser::InvalidArgument</a>
+
+<ul>
+<li><a href="AmbiguousArgument.html">OptionParser::AmbiguousArgument</a>
+
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3><a href="Object.html">Object</a> relationship diagram</h3>
+<pre>
+  +--------------+
+  | OptionParser |&lt;&gt;-----+
+  +--------------+       |                      +--------+
+                         |                    ,-| Switch |
+       on_head --------&gt;+---------------+    /  +--------+
+       accept/reject --&gt;| List          |&lt;|&gt;-
+                        |               |&lt;|&gt;-  +----------+
+       on -------------&gt;+---------------+    `-| argument |
+                          :           :        |  class   |
+                        +---------------+      |==========|
+       on_tail --------&gt;|               |      |pattern   |
+                        +---------------+      |----------|
+  OptionParser.accept -&gt;| DefaultList   |      |converter |
+               reject   |(shared between|      +----------+
+                        | all instances)|
+                        +---------------+
+</pre>
+<h2><a href="OptionParser.html">OptionParser</a></h2>
+<h3>Introduction</h3>
+<p>
+<a href="OptionParser.html">OptionParser</a> is a class for command-line
+option analysis. It is much more advanced, yet also easier to use, than <a
+href="GetoptLong.html">GetoptLong</a>, and is a more Ruby-oriented
+solution.
+</p>
+<h3>Features</h3>
+<ol>
+<li>The argument specification and the code to handle it are written in the
+same place.
+
+</li>
+<li>It can output an option summary; you don&#8217;t need to maintain this
+string separately.
+
+</li>
+<li>Optional and mandatory arguments are specified very gracefully.
+
+</li>
+<li>Arguments can be automatically converted to a specified class.
+
+</li>
+<li>Arguments can be restricted to a certain set.
+
+</li>
+</ol>
+<p>
+All of these features are demonstrated in the examples below.
+</p>
+<h3>Minimal example</h3>
+<pre>
+  require 'optparse'
+
+  options = {}
+  OptionParser.new do |opts|
+    opts.banner = &quot;Usage: example.rb [options]&quot;
+
+    opts.on(&quot;-v&quot;, &quot;--[no-]verbose&quot;, &quot;Run verbosely&quot;) do |v|
+      options[:verbose] = v
+    end
+  end.parse!
+
+  p options
+  p ARGV
+</pre>
+<h3>Complete example</h3>
+<p>
+The following example is a complete Ruby program. You can run it and see
+the effect of specifying various options. This is probably the best way to
+learn the features of <tt>optparse</tt>.
+</p>
+<pre>
+  require 'optparse'
+  require 'optparse/time'
+  require 'ostruct'
+  require 'pp'
+
+  class OptparseExample
+
+    CODES = %w[iso-2022-jp shift_jis euc-jp utf8 binary]
+    CODE_ALIASES = { &quot;jis&quot; =&gt; &quot;iso-2022-jp&quot;, &quot;sjis&quot; =&gt; &quot;shift_jis&quot; }
+
+    #
+    # Return a structure describing the options.
+    #
+    def self.parse(args)
+      # The options specified on the command line will be collected in *options*.
+      # We set default values here.
+      options = OpenStruct.new
+      options.library = []
+      options.inplace = false
+      options.encoding = &quot;utf8&quot;
+      options.transfer_type = :auto
+      options.verbose = false
+
+      opts = OptionParser.new do |opts|
+        opts.banner = &quot;Usage: example.rb [options]&quot;
+
+        opts.separator &quot;&quot;
+        opts.separator &quot;Specific options:&quot;
+
+        # Mandatory argument.
+        opts.on(&quot;-r&quot;, &quot;--require LIBRARY&quot;,
+                &quot;Require the LIBRARY before executing your script&quot;) do |lib|
+          options.library &lt;&lt; lib
+        end
+
+        # Optional argument; multi-line description.
+        opts.on(&quot;-i&quot;, &quot;--inplace [EXTENSION]&quot;,
+                &quot;Edit ARGV files in place&quot;,
+                &quot;  (make backup if EXTENSION supplied)&quot;) do |ext|
+          options.inplace = true
+          options.extension = ext || ''
+          options.extension.sub!(/\A\.?(?=.)/, &quot;.&quot;)  # Ensure extension begins with dot.
+        end
+
+        # Cast 'delay' argument to a Float.
+        opts.on(&quot;--delay N&quot;, Float, &quot;Delay N seconds before executing&quot;) do |n|
+          options.delay = n
+        end
+
+        # Cast 'time' argument to a Time object.
+        opts.on(&quot;-t&quot;, &quot;--time [TIME]&quot;, Time, &quot;Begin execution at given time&quot;) do |time|
+          options.time = time
+        end
+
+        # Cast to octal integer.
+        opts.on(&quot;-F&quot;, &quot;--irs [OCTAL]&quot;, OptionParser::OctalInteger,
+                &quot;Specify record separator (default \\0)&quot;) do |rs|
+          options.record_separator = rs
+        end
+
+        # List of arguments.
+        opts.on(&quot;--list x,y,z&quot;, Array, &quot;Example 'list' of arguments&quot;) do |list|
+          options.list = list
+        end
+
+        # Keyword completion.  We are specifying a specific set of arguments (CODES
+        # and CODE_ALIASES - notice the latter is a Hash), and the user may provide
+        # the shortest unambiguous text.
+        code_list = (CODE_ALIASES.keys + CODES).join(',')
+        opts.on(&quot;--code CODE&quot;, CODES, CODE_ALIASES, &quot;Select encoding&quot;,
+                &quot;  (#{code_list})&quot;) do |encoding|
+          options.encoding = encoding
+        end
+
+        # Optional argument with keyword completion.
+        opts.on(&quot;--type [TYPE]&quot;, [:text, :binary, :auto],
+                &quot;Select transfer type (text, binary, auto)&quot;) do |t|
+          options.transfer_type = t
+        end
+
+        # Boolean switch.
+        opts.on(&quot;-v&quot;, &quot;--[no-]verbose&quot;, &quot;Run verbosely&quot;) do |v|
+          options.verbose = v
+        end
+
+        opts.separator &quot;&quot;
+        opts.separator &quot;Common options:&quot;
+
+        # No argument, shows at tail.  This will print an options summary.
+        # Try it and see!
+        opts.on_tail(&quot;-h&quot;, &quot;--help&quot;, &quot;Show this message&quot;) do
+          puts opts
+          exit
+        end
+
+        # Another typical switch to print the version.
+        opts.on_tail(&quot;--version&quot;, &quot;Show version&quot;) do
+          puts OptionParser::Version.join('.')
+          exit
+        end
+      end
+
+      opts.parse!(args)
+      options
+    end  # parse()
+
+  end  # class OptparseExample
+
+  options = OptparseExample.parse(ARGV)
+  pp options
+</pre>
+<h3>Further documentation</h3>
+<p>
+The above examples should be enough to learn how to use this class. If you
+have any questions, email me (gsinclair@soyabean.com.au) and I will update
+this document.
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001410">each_const</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001411">search_const</a>,</li>
+                
+                <li><a href="#M001409">show_version</a>,</li>
+                
+                <li><a href="#M001326">switch_name</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Classes and Modules</div>
+    <ul>
+        
+        <li><span class="type">MODULE</span> <a href="OptionParser/Completion.html">OptionParser::Completion</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="OptionParser/NoArgument.html">OptionParser::NoArgument</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="OptionParser/OptionMap.html">OptionParser::OptionMap</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="OptionParser/OptionalArgument.html">OptionParser::OptionalArgument</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="OptionParser/PlacedArgument.html">OptionParser::PlacedArgument</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="OptionParser/RequiredArgument.html">OptionParser::RequiredArgument</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="OptionParser/Switch.html">OptionParser::Switch</a></li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M001410">
+                    
+                    <a name="M001410"></a><b>each_const</b>(path, klass = ::Object)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001410_source')" id="l_M001410_source">show</a>
+                        
+                    </p>
+                    <div id="M001410_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/optparse/version.rb, line 49</span>
+49:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">each_const</span>(<span class="ruby-identifier">path</span>, <span class="ruby-identifier">klass</span> = <span class="ruby-operator">::</span><span class="ruby-constant">Object</span>)
+50:     <span class="ruby-identifier">path</span>.<span class="ruby-identifier">split</span>(<span class="ruby-regexp re">/::|\//</span>).<span class="ruby-identifier">inject</span>(<span class="ruby-identifier">klass</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">klass</span>, <span class="ruby-identifier">name</span><span class="ruby-operator">|</span>
+51:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">NameError</span>, <span class="ruby-identifier">path</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-constant">Module</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">klass</span>
+52:       <span class="ruby-identifier">klass</span>.<span class="ruby-identifier">constants</span>.<span class="ruby-identifier">grep</span>(<span class="ruby-node">/#{name}/i</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">c</span><span class="ruby-operator">|</span>
+53:         <span class="ruby-identifier">klass</span>.<span class="ruby-identifier">const_defined?</span>(<span class="ruby-identifier">c</span>) <span class="ruby-keyword kw">or</span> <span class="ruby-keyword kw">next</span>
+54:         <span class="ruby-identifier">c</span> = <span class="ruby-identifier">klass</span>.<span class="ruby-identifier">const_get</span>(<span class="ruby-identifier">c</span>)
+55:       <span class="ruby-keyword kw">end</span>
+56:     <span class="ruby-keyword kw">end</span>
+57:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001411">
+                    
+                    <a name="M001411"></a><b>search_const</b>(klass, name)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001411_source')" id="l_M001411_source">show</a>
+                        
+                    </p>
+                    <div id="M001411_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/optparse/version.rb, line 59</span>
+59:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">search_const</span>(<span class="ruby-identifier">klass</span>, <span class="ruby-identifier">name</span>)
+60:     <span class="ruby-identifier">klasses</span> = [<span class="ruby-identifier">klass</span>]
+61:     <span class="ruby-keyword kw">while</span> <span class="ruby-identifier">klass</span> = <span class="ruby-identifier">klasses</span>.<span class="ruby-identifier">shift</span>
+62:       <span class="ruby-identifier">klass</span>.<span class="ruby-identifier">constants</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">cname</span><span class="ruby-operator">|</span>
+63:         <span class="ruby-identifier">klass</span>.<span class="ruby-identifier">const_defined?</span>(<span class="ruby-identifier">cname</span>) <span class="ruby-keyword kw">or</span> <span class="ruby-keyword kw">next</span>
+64:         <span class="ruby-identifier">const</span> = <span class="ruby-identifier">klass</span>.<span class="ruby-identifier">const_get</span>(<span class="ruby-identifier">cname</span>)
+65:         <span class="ruby-keyword kw">yield</span> <span class="ruby-identifier">klass</span>, <span class="ruby-identifier">cname</span>, <span class="ruby-identifier">const</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">name</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">cname</span>
+66:         <span class="ruby-identifier">klasses</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">const</span> <span class="ruby-keyword kw">if</span> <span class="ruby-constant">Module</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">const</span> <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">const</span> <span class="ruby-operator">!=</span> <span class="ruby-operator">::</span><span class="ruby-constant">Object</span>
+67:       <span class="ruby-keyword kw">end</span>
+68:     <span class="ruby-keyword kw">end</span>
+69:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001409">
+                    
+                    <a name="M001409"></a><b>show_version</b>(*pkg)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001409_source')" id="l_M001409_source">show</a>
+                        
+                    </p>
+                    <div id="M001409_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/optparse/version.rb, line 4</span>
+ 4:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">show_version</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">pkg</span>)
+ 5:     <span class="ruby-identifier">progname</span> = <span class="ruby-constant">ARGV</span>.<span class="ruby-identifier">options</span>.<span class="ruby-identifier">program_name</span>
+ 6:     <span class="ruby-identifier">result</span> = <span class="ruby-keyword kw">false</span>
+ 7:     <span class="ruby-identifier">show</span> = <span class="ruby-identifier">proc</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">klass</span>, <span class="ruby-identifier">cname</span>, <span class="ruby-identifier">version</span><span class="ruby-operator">|</span>
+ 8:       <span class="ruby-identifier">str</span> = <span class="ruby-node">&quot;#{progname}&quot;</span>
+ 9:       <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">klass</span> <span class="ruby-operator">==</span> <span class="ruby-operator">::</span><span class="ruby-constant">Object</span> <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">cname</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">:VERSION</span>
+10:         <span class="ruby-identifier">version</span> = <span class="ruby-identifier">version</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;.&quot;</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-constant">Array</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">version</span>
+11:         <span class="ruby-identifier">str</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot;: #{klass}&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">klass</span> <span class="ruby-operator">==</span> <span class="ruby-constant">Object</span>
+12:         <span class="ruby-identifier">str</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot; version #{version}&quot;</span>
+13:       <span class="ruby-keyword kw">end</span>
+14:       [<span class="ruby-identifier">:Release</span>, <span class="ruby-identifier">:RELEASE</span>].<span class="ruby-identifier">find</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">rel</span><span class="ruby-operator">|</span>
+15:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">klass</span>.<span class="ruby-identifier">const_defined?</span>(<span class="ruby-identifier">rel</span>)
+16:           <span class="ruby-identifier">str</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot; (#{klass.const_get(rel)})&quot;</span>
+17:         <span class="ruby-keyword kw">end</span>
+18:       <span class="ruby-keyword kw">end</span>
+19:       <span class="ruby-identifier">puts</span> <span class="ruby-identifier">str</span>
+20:       <span class="ruby-identifier">result</span> = <span class="ruby-keyword kw">true</span>
+21:     <span class="ruby-keyword kw">end</span>
+22:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">pkg</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-value">1</span> <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">pkg</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">==</span> <span class="ruby-value str">&quot;all&quot;</span>
+23:       <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">search_const</span>(<span class="ruby-operator">::</span><span class="ruby-constant">Object</span>, <span class="ruby-regexp re">/\AV(?:ERSION|ersion)\z/</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">klass</span>, <span class="ruby-identifier">cname</span>, <span class="ruby-identifier">version</span><span class="ruby-operator">|</span>
+24:         <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">cname</span>[<span class="ruby-value">1</span>] <span class="ruby-operator">==</span> <span class="ruby-value">?e</span> <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">klass</span>.<span class="ruby-identifier">const_defined?</span>(<span class="ruby-identifier">:Version</span>)
+25:           <span class="ruby-identifier">show</span>.<span class="ruby-identifier">call</span>(<span class="ruby-identifier">klass</span>, <span class="ruby-identifier">cname</span>.<span class="ruby-identifier">intern</span>, <span class="ruby-identifier">version</span>)
+26:         <span class="ruby-keyword kw">end</span>
+27:       <span class="ruby-keyword kw">end</span>
+28:     <span class="ruby-keyword kw">else</span>
+29:       <span class="ruby-identifier">pkg</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">pkg</span><span class="ruby-operator">|</span>
+30:         <span class="ruby-keyword kw">begin</span>
+31:           <span class="ruby-identifier">pkg</span> = <span class="ruby-identifier">pkg</span>.<span class="ruby-identifier">split</span>(<span class="ruby-regexp re">/::|\//</span>).<span class="ruby-identifier">inject</span>(<span class="ruby-operator">::</span><span class="ruby-constant">Object</span>) {<span class="ruby-operator">|</span><span class="ruby-identifier">m</span>, <span class="ruby-identifier">c</span><span class="ruby-operator">|</span> <span class="ruby-identifier">m</span>.<span class="ruby-identifier">const_get</span>(<span class="ruby-identifier">c</span>)}
+32:           <span class="ruby-identifier">v</span> = <span class="ruby-keyword kw">case</span>
+33:               <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">pkg</span>.<span class="ruby-identifier">const_defined?</span>(<span class="ruby-identifier">:Version</span>)
+34:                 <span class="ruby-identifier">pkg</span>.<span class="ruby-identifier">const_get</span>(<span class="ruby-identifier">n</span> = <span class="ruby-identifier">:Version</span>)
+35:               <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">pkg</span>.<span class="ruby-identifier">const_defined?</span>(<span class="ruby-identifier">:VERSION</span>)
+36:                 <span class="ruby-identifier">pkg</span>.<span class="ruby-identifier">const_get</span>(<span class="ruby-identifier">n</span> = <span class="ruby-identifier">:VERSION</span>)
+37:               <span class="ruby-keyword kw">else</span>
+38:                 <span class="ruby-identifier">n</span> = <span class="ruby-keyword kw">nil</span>
+39:                 <span class="ruby-value str">&quot;unknown&quot;</span>
+40:               <span class="ruby-keyword kw">end</span>
+41:           <span class="ruby-identifier">show</span>.<span class="ruby-identifier">call</span>(<span class="ruby-identifier">pkg</span>, <span class="ruby-identifier">n</span>, <span class="ruby-identifier">v</span>)
+42:         <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">NameError</span>
+43:         <span class="ruby-keyword kw">end</span>
+44:       <span class="ruby-keyword kw">end</span>
+45:     <span class="ruby-keyword kw">end</span>
+46:     <span class="ruby-identifier">result</span>
+47:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M001326">
+                    
+                    <a name="M001326"></a><b>switch_name</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Main name of the switch.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001326_source')" id="l_M001326_source">show</a>
+                        
+                    </p>
+                    <div id="M001326_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/optparse.rb, line 416</span>
+416:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">switch_name</span>
+417:       (<span class="ruby-identifier">long</span>.<span class="ruby-identifier">first</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">short</span>.<span class="ruby-identifier">first</span>).<span class="ruby-identifier">sub</span>(<span class="ruby-regexp re">/\A-+(?:\[no-\])?/</span>, <span class="ruby-value str">''</span>)
+418:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

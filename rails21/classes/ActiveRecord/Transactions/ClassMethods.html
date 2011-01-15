@@ -1,0 +1,125 @@
+  <div id="C00000589">
+<div class='banner'>
+  <span class="file-title-prefix">Module</span><br />ClassMethods<br/>
+  In:
+<a href="#" onclick="jsHref('files/activerecord/lib/active_record/transactions_rb.html');">activerecord/lib/active_record/transactions.rb</a>
+
+</div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+      <div id="content">
+
+  <div class="description"><p>
+Transactions are protective blocks where SQL statements are only permanent
+if they can all succeed as one atomic action. The classic example is a
+transfer between two accounts where you can only have a deposit if the
+withdrawal succeeded and vice versa. Transactions enforce the integrity of
+the database and guard the data against program errors or database
+break-downs. So basically you should use transaction blocks whenever you
+have a number of statements that must be executed together or not at all.
+Example:
+</p>
+<pre>
+  transaction do
+    david.withdrawal(100)
+    mary.deposit(100)
+  end
+</pre>
+<p>
+This example will only take money from David and give to Mary if neither
+<tt>withdrawal</tt> nor <tt>deposit</tt> raises an exception. Exceptions
+will force a ROLLBACK that returns the database to the state before the
+transaction was begun. Be aware, though, that the objects will <em>not</em>
+have their instance data returned to their pre-transactional state.
+</p>
+<h2>Different Active Record classes in a single transaction</h2>
+<p>
+Though the transaction class method is called on some Active Record class,
+the objects within the transaction block need not all be instances of that
+class. In this example a <tt>Balance</tt> record is transactionally saved
+even though <tt>transaction</tt> is called on the <tt>Account</tt> class:
+</p>
+<pre>
+  Account.transaction do
+    balance.save!
+    account.save!
+  end
+</pre>
+<h2>Transactions are not distributed across database connections</h2>
+<p>
+A transaction acts on a single database connection. If you have multiple
+class-specific databases, the transaction will not protect interaction
+among them. One workaround is to begin a transaction on each class whose
+models you alter:
+</p>
+<pre>
+  Student.transaction do
+    Course.transaction do
+      course.enroll(student)
+      student.units += course.units
+    end
+  end
+</pre>
+<p>
+This is a poor solution, but full distributed transactions are beyond the
+scope of Active Record.
+</p>
+<h2>Save and destroy are automatically wrapped in a transaction</h2>
+<p>
+Both <a href="index.html?a=M001854&name=Base#save">Base#save</a> and <a
+href="index.html?a=M001801&name=Base#destroy">Base#destroy</a> come wrapped
+in a transaction that ensures that whatever you do in validations or
+callbacks will happen under the protected cover of a transaction. So you
+can use validations to check for values that the transaction depends on or
+you can raise exceptions in the callbacks to rollback.
+</p>
+<h2>Exception handling</h2>
+<p>
+Also have in mind that exceptions thrown within a transaction block will be
+propagated (after triggering the ROLLBACK), so you should be ready to catch
+those in your application code. One exception is the <a
+href="index.html?a=C00000658&name=ActiveRecord::Rollback">ActiveRecord::Rollback</a>
+exception, which will trigger a ROLLBACK when raised, but not be re-raised
+by the transaction block.
+</p>
+</div>
+
+
+
+  <div class="sectiontitle">Methods</div>
+  <ul>
+  <li><a href="index.html?a=M001492&name=transaction" >transaction</a></li>
+  </ul>
+
+
+
+
+
+
+<div class="sectiontitle">Public Instance methods</div>
+<div id="M001492" class="method">
+  <div id="M001492_title" class="title">
+    <b>transaction</b>(&amp;block)
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001492_source')" id="l_M001492_source">show source</a> ]</p>
+  <div id="M001492_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activerecord/lib/active_record/transactions.rb, line 75</span>
+75:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">transaction</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+76:         <span class="ruby-identifier">increment_open_transactions</span>
+77: 
+78:         <span class="ruby-keyword kw">begin</span>
+79:           <span class="ruby-identifier">connection</span>.<span class="ruby-identifier">transaction</span>(<span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>[<span class="ruby-value str">'start_db_transaction'</span>], <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+80:         <span class="ruby-keyword kw">ensure</span>
+81:           <span class="ruby-identifier">decrement_open_transactions</span>
+82:         <span class="ruby-keyword kw">end</span>
+83:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+</div>
+
+  </div>

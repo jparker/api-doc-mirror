@@ -1,0 +1,603 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Shellwords</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Module</span> 
+            Shellwords 
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/lib/shellwords_rb.html">lib/shellwords.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+This module manipulates strings according to the word parsing rules of the
+UNIX Bourne shell.
+</p>
+<p>
+The shellwords() function was originally a port of shellwords.pl, but
+modified to conform to POSIX / SUSv3 (IEEE Std 1003.1-2001).
+</p>
+<p>
+Authors:
+</p>
+<pre>
+  - Wakou Aoyama
+  - Akinori MUSHA &lt;knu@iDaemons.org&gt;
+</pre>
+<p>
+Contact:
+</p>
+<pre>
+  - Akinori MUSHA &lt;knu@iDaemons.org&gt; (current maintainer)
+</pre>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004764">escape</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>J</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004766">join</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004763">shellescape</a>,</li>
+                
+                <li><a href="#M004763">shellescape</a>,</li>
+                
+                <li><a href="#M004765">shelljoin</a>,</li>
+                
+                <li><a href="#M004765">shelljoin</a>,</li>
+                
+                <li><a href="#M004760">shellsplit</a>,</li>
+                
+                <li><a href="#M004760">shellsplit</a>,</li>
+                
+                <li><a href="#M004761">shellwords</a>,</li>
+                
+                <li><a href="#M004761">shellwords</a>,</li>
+                
+                <li><a href="#M004762">split</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M004763">
+                    
+                    <a name="M004763"></a><b>shellescape</b>(str)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Escapes a string so that it can be safely used in a Bourne shell command
+line.
+</p>
+<p>
+Note that a resulted string should be used unquoted and is not intended for
+use in double quotes nor in single quotes.
+</p>
+<pre>
+  open(&quot;| grep #{Shellwords.escape(pattern)} file&quot;) { |pipe|
+    # ...
+  }
+</pre>
+<p>
++<a href="String.html#M004768">String#shellescape</a>+ is a shorthand for
+this function.
+</p>
+<pre>
+  open(&quot;| grep #{pattern.shellescape} file&quot;) { |pipe|
+    # ...
+  }
+</pre>
+
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="Shellwords.html#M004764">escape</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004763_source')" id="l_M004763_source">show</a>
+                        
+                    </p>
+                    <div id="M004763_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/shellwords.rb, line 72</span>
+72:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">shellescape</span>(<span class="ruby-identifier">str</span>)
+73:     <span class="ruby-comment cmt"># An empty argument will be skipped, so return empty quotes.</span>
+74:     <span class="ruby-keyword kw">return</span> <span class="ruby-value str">&quot;''&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">str</span>.<span class="ruby-identifier">empty?</span>
+75: 
+76:     <span class="ruby-identifier">str</span> = <span class="ruby-identifier">str</span>.<span class="ruby-identifier">dup</span>
+77: 
+78:     <span class="ruby-comment cmt"># Process as a single byte sequence because not all shell</span>
+79:     <span class="ruby-comment cmt"># implementations are multibyte aware.</span>
+80:     <span class="ruby-identifier">str</span>.<span class="ruby-identifier">gsub!</span>(<span class="ruby-regexp re">/([^A-Za-z0-9_\-.,:\/@\n])/n</span>, <span class="ruby-value str">&quot;\\\\\\1&quot;</span>)
+81: 
+82:     <span class="ruby-comment cmt"># A LF cannot be escaped with a backslash because a backslash + LF</span>
+83:     <span class="ruby-comment cmt"># combo is regarded as line continuation and simply ignored.</span>
+84:     <span class="ruby-identifier">str</span>.<span class="ruby-identifier">gsub!</span>(<span class="ruby-regexp re">/\n/</span>, <span class="ruby-value str">&quot;'\n'&quot;</span>)
+85: 
+86:     <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">str</span>
+87:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004765">
+                    
+                    <a name="M004765"></a><b>shelljoin</b>(array)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Builds a command line string from an argument list <tt>array</tt> joining
+all elements escaped for Bourne shell and separated by a space.
+</p>
+<pre>
+  open('|' + Shellwords.join(['grep', pattern, *files])) { |pipe|
+    # ...
+  }
+</pre>
+<p>
++<a href="Array.html#M004769">Array#shelljoin</a>+ is a shorthand for this
+function.
+</p>
+<pre>
+  open('|' + ['grep', pattern, *files].shelljoin) { |pipe|
+    # ...
+  }
+</pre>
+
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="Shellwords.html#M004766">join</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004765_source')" id="l_M004765_source">show</a>
+                        
+                    </p>
+                    <div id="M004765_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/shellwords.rb, line 109</span>
+109:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">shelljoin</span>(<span class="ruby-identifier">array</span>)
+110:     <span class="ruby-identifier">array</span>.<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">arg</span><span class="ruby-operator">|</span> <span class="ruby-identifier">shellescape</span>(<span class="ruby-identifier">arg</span>) }.<span class="ruby-identifier">join</span>(<span class="ruby-value str">' '</span>)
+111:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004760">
+                    
+                    <a name="M004760"></a><b>shellsplit</b>(line)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Splits a string into an array of tokens in the same way the UNIX Bourne
+shell does.
+</p>
+<pre>
+  argv = Shellwords.split('here are &quot;two words&quot;')
+  argv #=&gt; [&quot;here&quot;, &quot;are&quot;, &quot;two words&quot;]
+</pre>
+<p>
++<a href="String.html#M004767">String#shellsplit</a>+ is a shorthand for
+this function.
+</p>
+<pre>
+  argv = 'here are &quot;two words&quot;'.shellsplit
+  argv #=&gt; [&quot;here&quot;, &quot;are&quot;, &quot;two words&quot;]
+</pre>
+
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="Shellwords.html#M004761">shellwords</a>
+                    
+                    <a href="Shellwords.html#M004762">split</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004760_source')" id="l_M004760_source">show</a>
+                        
+                    </p>
+                    <div id="M004760_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/shellwords.rb, line 32</span>
+32:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">shellsplit</span>(<span class="ruby-identifier">line</span>)
+33:     <span class="ruby-identifier">words</span> = []
+34:     <span class="ruby-identifier">field</span> = <span class="ruby-value str">''</span>
+35:     <span class="ruby-identifier">line</span>.<span class="ruby-identifier">scan</span>(<span class="ruby-regexp re">/\G\s*(?&gt;([^\s\\\'\&quot;]+)|'([^\']*)'|&quot;((?:[^\&quot;\\]|\\.)*)&quot;|(\\.?)|(\S))(\s|\z)?/</span><span class="ruby-identifier">m</span>) <span class="ruby-keyword kw">do</span>
+36:       <span class="ruby-operator">|</span><span class="ruby-identifier">word</span>, <span class="ruby-identifier">sq</span>, <span class="ruby-identifier">dq</span>, <span class="ruby-identifier">esc</span>, <span class="ruby-identifier">garbage</span>, <span class="ruby-identifier">sep</span><span class="ruby-operator">|</span>
+37:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;Unmatched double quote: #{line.inspect}&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">garbage</span>
+38:       <span class="ruby-identifier">field</span> <span class="ruby-operator">&lt;&lt;</span> (<span class="ruby-identifier">word</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">sq</span> <span class="ruby-operator">||</span> (<span class="ruby-identifier">dq</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">esc</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/\\(?=.)/</span>, <span class="ruby-value str">''</span>))
+39:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">sep</span>
+40:         <span class="ruby-identifier">words</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">field</span>
+41:         <span class="ruby-identifier">field</span> = <span class="ruby-value str">''</span>
+42:       <span class="ruby-keyword kw">end</span>
+43:     <span class="ruby-keyword kw">end</span>
+44:     <span class="ruby-identifier">words</span>
+45:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004761">
+                    
+                    <a name="M004761"></a><b>shellwords</b>(line)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a href="Shellwords.html#M004760">shellsplit</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M004764">
+                    
+                    <a name="M004764"></a><b>escape</b>(str)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a href="Shellwords.html#M004763">shellescape</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004766">
+                    
+                    <a name="M004766"></a><b>join</b>(array)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a href="Shellwords.html#M004765">shelljoin</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004762">
+                    
+                    <a name="M004762"></a><b>split</b>(line)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a href="Shellwords.html#M004760">shellsplit</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Private methods</div>
+            
+            <div class="method">
+                <div class="title" id="M004763">
+                    
+                    <a name="M004763"></a><b>shellescape</b>(str)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Escapes a string so that it can be safely used in a Bourne shell command
+line.
+</p>
+<p>
+Note that a resulted string should be used unquoted and is not intended for
+use in double quotes nor in single quotes.
+</p>
+<pre>
+  open(&quot;| grep #{Shellwords.escape(pattern)} file&quot;) { |pipe|
+    # ...
+  }
+</pre>
+<p>
++<a href="String.html#M004768">String#shellescape</a>+ is a shorthand for
+this function.
+</p>
+<pre>
+  open(&quot;| grep #{pattern.shellescape} file&quot;) { |pipe|
+    # ...
+  }
+</pre>
+
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="Shellwords.html#M004764">escape</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004763_source')" id="l_M004763_source">show</a>
+                        
+                    </p>
+                    <div id="M004763_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/shellwords.rb, line 72</span>
+72:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">shellescape</span>(<span class="ruby-identifier">str</span>)
+73:     <span class="ruby-comment cmt"># An empty argument will be skipped, so return empty quotes.</span>
+74:     <span class="ruby-keyword kw">return</span> <span class="ruby-value str">&quot;''&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">str</span>.<span class="ruby-identifier">empty?</span>
+75: 
+76:     <span class="ruby-identifier">str</span> = <span class="ruby-identifier">str</span>.<span class="ruby-identifier">dup</span>
+77: 
+78:     <span class="ruby-comment cmt"># Process as a single byte sequence because not all shell</span>
+79:     <span class="ruby-comment cmt"># implementations are multibyte aware.</span>
+80:     <span class="ruby-identifier">str</span>.<span class="ruby-identifier">gsub!</span>(<span class="ruby-regexp re">/([^A-Za-z0-9_\-.,:\/@\n])/n</span>, <span class="ruby-value str">&quot;\\\\\\1&quot;</span>)
+81: 
+82:     <span class="ruby-comment cmt"># A LF cannot be escaped with a backslash because a backslash + LF</span>
+83:     <span class="ruby-comment cmt"># combo is regarded as line continuation and simply ignored.</span>
+84:     <span class="ruby-identifier">str</span>.<span class="ruby-identifier">gsub!</span>(<span class="ruby-regexp re">/\n/</span>, <span class="ruby-value str">&quot;'\n'&quot;</span>)
+85: 
+86:     <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">str</span>
+87:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004765">
+                    
+                    <a name="M004765"></a><b>shelljoin</b>(array)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Builds a command line string from an argument list <tt>array</tt> joining
+all elements escaped for Bourne shell and separated by a space.
+</p>
+<pre>
+  open('|' + Shellwords.join(['grep', pattern, *files])) { |pipe|
+    # ...
+  }
+</pre>
+<p>
++<a href="Array.html#M004769">Array#shelljoin</a>+ is a shorthand for this
+function.
+</p>
+<pre>
+  open('|' + ['grep', pattern, *files].shelljoin) { |pipe|
+    # ...
+  }
+</pre>
+
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="Shellwords.html#M004766">join</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004765_source')" id="l_M004765_source">show</a>
+                        
+                    </p>
+                    <div id="M004765_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/shellwords.rb, line 109</span>
+109:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">shelljoin</span>(<span class="ruby-identifier">array</span>)
+110:     <span class="ruby-identifier">array</span>.<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">arg</span><span class="ruby-operator">|</span> <span class="ruby-identifier">shellescape</span>(<span class="ruby-identifier">arg</span>) }.<span class="ruby-identifier">join</span>(<span class="ruby-value str">' '</span>)
+111:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004760">
+                    
+                    <a name="M004760"></a><b>shellsplit</b>(line)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Splits a string into an array of tokens in the same way the UNIX Bourne
+shell does.
+</p>
+<pre>
+  argv = Shellwords.split('here are &quot;two words&quot;')
+  argv #=&gt; [&quot;here&quot;, &quot;are&quot;, &quot;two words&quot;]
+</pre>
+<p>
++<a href="String.html#M004767">String#shellsplit</a>+ is a shorthand for
+this function.
+</p>
+<pre>
+  argv = 'here are &quot;two words&quot;'.shellsplit
+  argv #=&gt; [&quot;here&quot;, &quot;are&quot;, &quot;two words&quot;]
+</pre>
+
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="Shellwords.html#M004761">shellwords</a>
+                    
+                    <a href="Shellwords.html#M004762">split</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004760_source')" id="l_M004760_source">show</a>
+                        
+                    </p>
+                    <div id="M004760_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/shellwords.rb, line 32</span>
+32:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">shellsplit</span>(<span class="ruby-identifier">line</span>)
+33:     <span class="ruby-identifier">words</span> = []
+34:     <span class="ruby-identifier">field</span> = <span class="ruby-value str">''</span>
+35:     <span class="ruby-identifier">line</span>.<span class="ruby-identifier">scan</span>(<span class="ruby-regexp re">/\G\s*(?&gt;([^\s\\\'\&quot;]+)|'([^\']*)'|&quot;((?:[^\&quot;\\]|\\.)*)&quot;|(\\.?)|(\S))(\s|\z)?/</span><span class="ruby-identifier">m</span>) <span class="ruby-keyword kw">do</span>
+36:       <span class="ruby-operator">|</span><span class="ruby-identifier">word</span>, <span class="ruby-identifier">sq</span>, <span class="ruby-identifier">dq</span>, <span class="ruby-identifier">esc</span>, <span class="ruby-identifier">garbage</span>, <span class="ruby-identifier">sep</span><span class="ruby-operator">|</span>
+37:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;Unmatched double quote: #{line.inspect}&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">garbage</span>
+38:       <span class="ruby-identifier">field</span> <span class="ruby-operator">&lt;&lt;</span> (<span class="ruby-identifier">word</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">sq</span> <span class="ruby-operator">||</span> (<span class="ruby-identifier">dq</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">esc</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/\\(?=.)/</span>, <span class="ruby-value str">''</span>))
+39:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">sep</span>
+40:         <span class="ruby-identifier">words</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">field</span>
+41:         <span class="ruby-identifier">field</span> = <span class="ruby-value str">''</span>
+42:       <span class="ruby-keyword kw">end</span>
+43:     <span class="ruby-keyword kw">end</span>
+44:     <span class="ruby-identifier">words</span>
+45:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004761">
+                    
+                    <a name="M004761"></a><b>shellwords</b>(line)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a href="Shellwords.html#M004760">shellsplit</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

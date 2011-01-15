@@ -1,0 +1,56 @@
+  <div id="fileHeader">
+    <h1>encoding.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activesupport/lib/active_support/json/encoding.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>require 'active_support/json/variable'
+require 'active_support/json/encoders/object' # Require explicitly for rdoc.
+Dir[&quot;#{File.dirname(__FILE__)}/encoders/**/*.rb&quot;].each do |file|
+  basename = File.basename(file, '.rb')
+  unless basename == 'object'
+    require &quot;active_support/json/encoders/#{basename}&quot;
+  end
+end
+
+module ActiveSupport
+  module JSON
+    class CircularReferenceError &lt; StandardError
+    end
+
+    class &lt;&lt; self
+      REFERENCE_STACK_VARIABLE = :json_reference_stack #:nodoc:
+
+      # Converts a Ruby object into a JSON string.
+      def encode(value, options = {})
+        raise_on_circular_reference(value) do
+          value.send(:to_json, options)
+        end
+      end
+
+      protected
+        def raise_on_circular_reference(value) #:nodoc:
+          stack = Thread.current[REFERENCE_STACK_VARIABLE] ||= []
+          raise CircularReferenceError, 'object references itself' if
+            stack.include? value
+          stack &lt;&lt; value
+          yield
+        ensure
+          stack.pop
+        end
+    end
+  end
+end
+</pre>
+    </div>

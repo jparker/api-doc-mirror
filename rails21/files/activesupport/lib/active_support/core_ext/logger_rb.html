@@ -1,0 +1,34 @@
+  <div id="fileHeader">
+    <h1>logger.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activesupport/lib/active_support/core_ext/logger.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre># Adds the 'around_level' method to Logger.
+
+class Logger
+  def self.define_around_helper(level)
+    module_eval &lt;&lt;-end_eval
+      def around_#{level}(before_message, after_message, &amp;block)
+        self.#{level}(before_message)
+        return_value = block.call(self)
+        self.#{level}(after_message)
+        return return_value
+      end
+    end_eval
+  end
+  [:debug, :info, :error, :fatal].each {|level| define_around_helper(level) }
+
+end</pre>
+    </div>

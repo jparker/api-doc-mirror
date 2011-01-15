@@ -1,0 +1,743 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>CGI::QueryExtension</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Module</span> 
+            CGI::QueryExtension 
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../files/lib/cgi/core_rb.html">lib/cgi/core.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+Mixin module. It provides the follow functionality groups:
+</p>
+<ol>
+<li>Access to <a href="../CGI.html">CGI</a> environment variables as methods.
+See documentation to the <a href="../CGI.html">CGI</a> class for a list of
+these variables.
+
+</li>
+<li>Access to cookies, including the cookies attribute.
+
+</li>
+<li>Access to parameters, including the params attribute, and overloading
+
+<dl>
+<dt></dt><dd>to perform parameter value lookup by key.
+
+</dd>
+</dl>
+</li>
+<li>The <a href="QueryExtension.html#M003730">initialize_query</a> method, for
+initialising the above mechanisms, handling multipart forms, and allowing
+the class to be used in &#8220;offline&#8221; mode.
+
+</li>
+</ol>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>#</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003732">[]</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>H</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003734">has_key?</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>I</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003736">include?</a>,</li>
+                
+                <li><a href="#M003730">initialize_query</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>K</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003735">key?</a>,</li>
+                
+                <li><a href="#M003733">keys</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>M</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003731">multipart?</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>P</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003724">params=</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>R</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003722">raw_cookie</a>,</li>
+                
+                <li><a href="#M003723">raw_cookie2</a>,</li>
+                
+                <li><a href="#M003729">read_from_cmdline</a>,</li>
+                
+                <li><a href="#M003725">read_multipart</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Attributes</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [RW]
+            </td>
+            <td class='attr-name'>cookies</td>
+            <td class='attr-desc'><p>
+Get the cookies as a hash of cookie-name=><a href="Cookie.html">Cookie</a>
+pairs.
+</p></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>params</td>
+            <td class='attr-desc'><p>
+Get the parameters as a hash of name=>values pairs, where values is an <a
+href="../Array.html">Array</a>.
+</p></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>files</td>
+            <td class='attr-desc'><p>
+Get the uploaded files as a hash of name=>values pairs
+</p></td>
+        </tr>
+        
+    </table>
+    
+
+    
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M003732">
+                    
+                    <a name="M003732"></a><b>[]</b>(key)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Get the value for the parameter with a given key.
+</p>
+<p>
+If the parameter has multiple values, only the first will be retrieved; use
+params() to get the array of values.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003732_source')" id="l_M003732_source">show</a>
+                        
+                    </p>
+                    <div id="M003732_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi/core.rb, line 627</span>
+627:     <span class="ruby-keyword kw">def</span> <span class="ruby-operator">[]</span>(<span class="ruby-identifier">key</span>)
+628:       <span class="ruby-identifier">params</span> = <span class="ruby-ivar">@params</span>[<span class="ruby-identifier">key</span>]
+629:       <span class="ruby-keyword kw">return</span> <span class="ruby-value str">''</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">params</span>
+630:       <span class="ruby-identifier">value</span> = <span class="ruby-identifier">params</span>[<span class="ruby-value">0</span>]
+631:       <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@multipart</span>
+632:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">value</span>
+633:           <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">value</span>
+634:         <span class="ruby-keyword kw">elsif</span> <span class="ruby-keyword kw">defined?</span> <span class="ruby-constant">StringIO</span>
+635:           <span class="ruby-constant">StringIO</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value str">&quot;&quot;</span>.<span class="ruby-identifier">force_encoding</span>(<span class="ruby-value str">&quot;ascii-8bit&quot;</span>))
+636:         <span class="ruby-keyword kw">else</span>
+637:           <span class="ruby-constant">Tempfile</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value str">&quot;CGI&quot;</span>,<span class="ruby-identifier">encoding</span><span class="ruby-identifier">:&quot;ascii-8bit&quot;</span>)
+638:         <span class="ruby-keyword kw">end</span>
+639:       <span class="ruby-keyword kw">else</span>
+640:         <span class="ruby-identifier">str</span> = <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">value</span> <span class="ruby-keyword kw">then</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">dup</span> <span class="ruby-keyword kw">else</span> <span class="ruby-value str">&quot;&quot;</span> <span class="ruby-keyword kw">end</span>
+641:         <span class="ruby-identifier">str</span>
+642:       <span class="ruby-keyword kw">end</span>
+643:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003734">
+                    
+                    <a name="M003734"></a><b>has_key?</b>(*args)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns true if a given parameter key exists in the query.
+</p>
+
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="QueryExtension.html#M003735">key?</a>
+                    
+                    <a href="QueryExtension.html#M003736">include?</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003734_source')" id="l_M003734_source">show</a>
+                        
+                    </p>
+                    <div id="M003734_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi/core.rb, line 651</span>
+651:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">has_key?</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+652:       <span class="ruby-ivar">@params</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+653:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003736">
+                    
+                    <a name="M003736"></a><b>include?</b>(*args)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a href="QueryExtension.html#M003734">has_key?</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003735">
+                    
+                    <a name="M003735"></a><b>key?</b>(*args)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a href="QueryExtension.html#M003734">has_key?</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003733">
+                    
+                    <a name="M003733"></a><b>keys</b>(*args)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Return all parameter keys as an array.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003733_source')" id="l_M003733_source">show</a>
+                        
+                    </p>
+                    <div id="M003733_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi/core.rb, line 646</span>
+646:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">keys</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+647:       <span class="ruby-ivar">@params</span>.<span class="ruby-identifier">keys</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+648:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003731">
+                    
+                    <a name="M003731"></a><b>multipart?</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003731_source')" id="l_M003731_source">show</a>
+                        
+                    </p>
+                    <div id="M003731_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi/core.rb, line 619</span>
+619:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">multipart?</span>
+620:       <span class="ruby-ivar">@multipart</span>
+621:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003724">
+                    
+                    <a name="M003724"></a><b>params=</b>(hash)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+<a href="../Set.html">Set</a> all the parameters.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003724_source')" id="l_M003724_source">show</a>
+                        
+                    </p>
+                    <div id="M003724_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi/core.rb, line 409</span>
+409:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">params=</span>(<span class="ruby-identifier">hash</span>)
+410:       <span class="ruby-ivar">@params</span>.<span class="ruby-identifier">clear</span>
+411:       <span class="ruby-ivar">@params</span>.<span class="ruby-identifier">update</span>(<span class="ruby-identifier">hash</span>)
+412:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003722">
+                    
+                    <a name="M003722"></a><b>raw_cookie</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Get the raw cookies as a string.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003722_source')" id="l_M003722_source">show</a>
+                        
+                    </p>
+                    <div id="M003722_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi/core.rb, line 389</span>
+389:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">raw_cookie</span>
+390:       <span class="ruby-identifier">env_table</span>[<span class="ruby-value str">&quot;HTTP_COOKIE&quot;</span>]
+391:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003723">
+                    
+                    <a name="M003723"></a><b>raw_cookie2</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Get the raw RFC2965 cookies as a string.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003723_source')" id="l_M003723_source">show</a>
+                        
+                    </p>
+                    <div id="M003723_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi/core.rb, line 394</span>
+394:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">raw_cookie2</span>
+395:       <span class="ruby-identifier">env_table</span>[<span class="ruby-value str">&quot;HTTP_COOKIE2&quot;</span>]
+396:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Private methods</div>
+            
+            <div class="method">
+                <div class="title" id="M003730">
+                    
+                    <a name="M003730"></a><b>initialize_query</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+<a href="../A.html">A</a> wrapper class to use a <a
+href="../StringIO.html">StringIO</a> object as the body and switch to a
+TempFile when the passed threshold is passed. Initialize the data from the
+query.
+</p>
+<p>
+Handles multipart forms (in particular, forms that involve file uploads).
+Reads query parameters in the @params field, and cookies into @cookies.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003730_source')" id="l_M003730_source">show</a>
+                        
+                    </p>
+                    <div id="M003730_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi/core.rb, line 576</span>
+576:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize_query</span>()
+577:       <span class="ruby-keyword kw">if</span> (<span class="ruby-value str">&quot;POST&quot;</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">env_table</span>[<span class="ruby-value str">'REQUEST_METHOD'</span>]) <span class="ruby-keyword kw">and</span>
+578:          <span class="ruby-regexp re">%r|\Amultipart/form-data.*boundary=\&quot;?([^\&quot;;,]+)\&quot;?|</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">env_table</span>[<span class="ruby-value str">'CONTENT_TYPE'</span>])
+579:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">StandardError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value str">&quot;too large multipart data.&quot;</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">env_table</span>[<span class="ruby-value str">'CONTENT_LENGTH'</span>].<span class="ruby-identifier">to_i</span> <span class="ruby-operator">&gt;</span> <span class="ruby-constant">MAX_MULTIPART_LENGTH</span>
+580:         <span class="ruby-identifier">boundary</span> = <span class="ruby-identifier">$1</span>.<span class="ruby-identifier">dup</span>
+581:         <span class="ruby-ivar">@multipart</span> = <span class="ruby-keyword kw">true</span>
+582:         <span class="ruby-ivar">@params</span> = <span class="ruby-identifier">read_multipart</span>(<span class="ruby-identifier">boundary</span>, <span class="ruby-constant">Integer</span>(<span class="ruby-identifier">env_table</span>[<span class="ruby-value str">'CONTENT_LENGTH'</span>]))
+583:       <span class="ruby-keyword kw">else</span>
+584:         <span class="ruby-ivar">@multipart</span> = <span class="ruby-keyword kw">false</span>
+585:         <span class="ruby-ivar">@params</span> = <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">parse</span>(
+586:                     <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">env_table</span>[<span class="ruby-value str">'REQUEST_METHOD'</span>]
+587:                     <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;GET&quot;</span>, <span class="ruby-value str">&quot;HEAD&quot;</span>
+588:                       <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">defined?</span>(<span class="ruby-constant">MOD_RUBY</span>)
+589:                         <span class="ruby-constant">Apache</span><span class="ruby-operator">::</span><span class="ruby-identifier">request</span>.<span class="ruby-identifier">args</span> <span class="ruby-keyword kw">or</span> <span class="ruby-value str">&quot;&quot;</span>
+590:                       <span class="ruby-keyword kw">else</span>
+591:                         <span class="ruby-identifier">env_table</span>[<span class="ruby-value str">'QUERY_STRING'</span>] <span class="ruby-keyword kw">or</span> <span class="ruby-value str">&quot;&quot;</span>
+592:                       <span class="ruby-keyword kw">end</span>
+593:                     <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;POST&quot;</span>
+594:                       <span class="ruby-identifier">stdinput</span>.<span class="ruby-identifier">binmode</span> <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">defined?</span> <span class="ruby-identifier">stdinput</span>.<span class="ruby-identifier">binmode</span>
+595:                       <span class="ruby-identifier">stdinput</span>.<span class="ruby-identifier">read</span>(<span class="ruby-constant">Integer</span>(<span class="ruby-identifier">env_table</span>[<span class="ruby-value str">'CONTENT_LENGTH'</span>])) <span class="ruby-keyword kw">or</span> <span class="ruby-value str">''</span>
+596:                     <span class="ruby-keyword kw">else</span>
+597:                       <span class="ruby-identifier">read_from_cmdline</span>
+598:                     <span class="ruby-keyword kw">end</span>.<span class="ruby-identifier">dup</span>.<span class="ruby-identifier">force_encoding</span>(<span class="ruby-ivar">@accept_charset</span>)
+599:                   )
+600:         <span class="ruby-keyword kw">unless</span> <span class="ruby-constant">Encoding</span>.<span class="ruby-identifier">find</span>(<span class="ruby-ivar">@accept_charset</span>) <span class="ruby-operator">==</span> <span class="ruby-constant">Encoding</span><span class="ruby-operator">::</span><span class="ruby-constant">ASCII_8BIT</span>
+601:           <span class="ruby-ivar">@params</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">key</span>,<span class="ruby-identifier">values</span><span class="ruby-operator">|</span>
+602:             <span class="ruby-identifier">values</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">value</span><span class="ruby-operator">|</span>
+603:               <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">valid_encoding?</span>
+604:                 <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@accept_charset_error_block</span>
+605:                   <span class="ruby-ivar">@accept_charset_error_block</span>.<span class="ruby-identifier">call</span>(<span class="ruby-identifier">key</span>,<span class="ruby-identifier">value</span>)
+606:                 <span class="ruby-keyword kw">else</span>
+607:                   <span class="ruby-identifier">raise</span> <span class="ruby-constant">InvalidEncoding</span>,<span class="ruby-value str">&quot;Accept-Charset encoding error&quot;</span>
+608:                 <span class="ruby-keyword kw">end</span>
+609:               <span class="ruby-keyword kw">end</span>
+610:             <span class="ruby-keyword kw">end</span>
+611:           <span class="ruby-keyword kw">end</span>
+612:         <span class="ruby-keyword kw">end</span>
+613:       <span class="ruby-keyword kw">end</span>
+614: 
+615:       <span class="ruby-ivar">@cookies</span> = <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-constant">Cookie</span><span class="ruby-operator">::</span><span class="ruby-identifier">parse</span>((<span class="ruby-identifier">env_table</span>[<span class="ruby-value str">'HTTP_COOKIE'</span>] <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">env_table</span>[<span class="ruby-value str">'COOKIE'</span>]))
+616:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003729">
+                    
+                    <a name="M003729"></a><b>read_from_cmdline</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+offline mode. read name=value pairs on standard input.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003729_source')" id="l_M003729_source">show</a>
+                        
+                    </p>
+                    <div id="M003729_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi/core.rb, line 541</span>
+541:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">read_from_cmdline</span>
+542:       <span class="ruby-identifier">require</span> <span class="ruby-value str">&quot;shellwords&quot;</span>
+543: 
+544:       <span class="ruby-identifier">string</span> = <span class="ruby-keyword kw">unless</span> <span class="ruby-constant">ARGV</span>.<span class="ruby-identifier">empty?</span>
+545:         <span class="ruby-constant">ARGV</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">' '</span>)
+546:       <span class="ruby-keyword kw">else</span>
+547:         <span class="ruby-keyword kw">if</span> <span class="ruby-constant">STDIN</span>.<span class="ruby-identifier">tty?</span>
+548:           <span class="ruby-constant">STDERR</span>.<span class="ruby-identifier">print</span>(
+549:             <span class="ruby-value str">%|(offline mode: enter name=value pairs on standard input)\n|</span>
+550:           )
+551:         <span class="ruby-keyword kw">end</span>
+552:         <span class="ruby-identifier">array</span> = <span class="ruby-identifier">readlines</span> <span class="ruby-keyword kw">rescue</span> <span class="ruby-keyword kw">nil</span>
+553:         <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">not</span> <span class="ruby-identifier">array</span>.<span class="ruby-identifier">nil?</span>
+554:             <span class="ruby-identifier">array</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">' '</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/\n/n</span>, <span class="ruby-value str">''</span>)
+555:         <span class="ruby-keyword kw">else</span>
+556:             <span class="ruby-value str">&quot;&quot;</span>
+557:         <span class="ruby-keyword kw">end</span>
+558:       <span class="ruby-keyword kw">end</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/\\=/n</span>, <span class="ruby-value str">'%3D'</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/\\&amp;/n</span>, <span class="ruby-value str">'%26'</span>)
+559: 
+560:       <span class="ruby-identifier">words</span> = <span class="ruby-constant">Shellwords</span>.<span class="ruby-identifier">shellwords</span>(<span class="ruby-identifier">string</span>)
+561: 
+562:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">words</span>.<span class="ruby-identifier">find</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">x</span><span class="ruby-operator">|</span> <span class="ruby-regexp re">/=/n</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">x</span>) }
+563:         <span class="ruby-identifier">words</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">'&amp;'</span>)
+564:       <span class="ruby-keyword kw">else</span>
+565:         <span class="ruby-identifier">words</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">'+'</span>)
+566:       <span class="ruby-keyword kw">end</span>
+567:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003725">
+                    
+                    <a name="M003725"></a><b>read_multipart</b>(boundary, content_length)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003725_source')" id="l_M003725_source">show</a>
+                        
+                    </p>
+                    <div id="M003725_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi/core.rb, line 414</span>
+414:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">read_multipart</span>(<span class="ruby-identifier">boundary</span>, <span class="ruby-identifier">content_length</span>)
+415:       <span class="ruby-comment cmt">## read first boundary</span>
+416:       <span class="ruby-identifier">stdin</span> = <span class="ruby-identifier">$stdin</span>
+417:       <span class="ruby-identifier">first_line</span> = <span class="ruby-node">&quot;--#{boundary}#{EOL}&quot;</span>
+418:       <span class="ruby-identifier">content_length</span> <span class="ruby-operator">-=</span> <span class="ruby-identifier">first_line</span>.<span class="ruby-identifier">bytesize</span>
+419:       <span class="ruby-identifier">status</span> = <span class="ruby-identifier">stdin</span>.<span class="ruby-identifier">read</span>(<span class="ruby-identifier">first_line</span>.<span class="ruby-identifier">bytesize</span>)
+420:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">EOFError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value str">&quot;no content body&quot;</span>)  <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">status</span>
+421:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">EOFError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value str">&quot;bad content body&quot;</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">first_line</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">status</span>
+422:       <span class="ruby-comment cmt">## parse and set params</span>
+423:       <span class="ruby-identifier">params</span> = {}
+424:       <span class="ruby-ivar">@files</span> = {}
+425:       <span class="ruby-identifier">boundary_rexp</span> = <span class="ruby-node">/--#{Regexp.quote(boundary)}(#{EOL}|--)/</span>
+426:       <span class="ruby-identifier">boundary_size</span> = <span class="ruby-node">&quot;#{EOL}--#{boundary}#{EOL}&quot;</span>.<span class="ruby-identifier">bytesize</span>
+427:       <span class="ruby-identifier">boundary_end</span>  = <span class="ruby-keyword kw">nil</span>
+428:       <span class="ruby-identifier">buf</span> = <span class="ruby-value str">''</span>
+429:       <span class="ruby-identifier">bufsize</span> = <span class="ruby-value">10</span> <span class="ruby-operator">*</span> <span class="ruby-value">1024</span>
+430:       <span class="ruby-identifier">max_count</span> = <span class="ruby-constant">MAX_MULTIPART_COUNT</span>
+431:       <span class="ruby-identifier">n</span> = <span class="ruby-value">0</span>
+432:       <span class="ruby-keyword kw">while</span> <span class="ruby-keyword kw">true</span>
+433:         (<span class="ruby-identifier">n</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>) <span class="ruby-operator">&lt;</span> <span class="ruby-identifier">max_count</span> <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">raise</span> <span class="ruby-constant">StandardError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value str">&quot;too many parameters.&quot;</span>)
+434:         <span class="ruby-comment cmt">## create body (StringIO or Tempfile)</span>
+435:         <span class="ruby-identifier">body</span> = <span class="ruby-identifier">create_body</span>(<span class="ruby-identifier">bufsize</span> <span class="ruby-operator">&lt;</span> <span class="ruby-identifier">content_length</span>)
+436:         <span class="ruby-keyword kw">class</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">body</span>
+437:           <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">method_defined?</span>(<span class="ruby-identifier">:path</span>)
+438:             <span class="ruby-keyword kw">alias</span> <span class="ruby-identifier">local_path</span> <span class="ruby-identifier">path</span>
+439:           <span class="ruby-keyword kw">else</span>
+440:             <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">local_path</span>
+441:               <span class="ruby-keyword kw">nil</span>
+442:             <span class="ruby-keyword kw">end</span>
+443:           <span class="ruby-keyword kw">end</span>
+444:           <span class="ruby-identifier">attr_reader</span> <span class="ruby-identifier">:original_filename</span>, <span class="ruby-identifier">:content_type</span>
+445:         <span class="ruby-keyword kw">end</span>
+446:         <span class="ruby-comment cmt">## find head and boundary</span>
+447:         <span class="ruby-identifier">head</span> = <span class="ruby-keyword kw">nil</span>
+448:         <span class="ruby-identifier">separator</span> = <span class="ruby-constant">EOL</span> <span class="ruby-operator">*</span> <span class="ruby-value">2</span>
+449:         <span class="ruby-keyword kw">until</span> <span class="ruby-identifier">head</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">matched</span> = <span class="ruby-identifier">boundary_rexp</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">buf</span>)
+450:           <span class="ruby-keyword kw">if</span> <span class="ruby-operator">!</span><span class="ruby-identifier">head</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">pos</span> = <span class="ruby-identifier">buf</span>.<span class="ruby-identifier">index</span>(<span class="ruby-identifier">separator</span>)
+451:             <span class="ruby-identifier">len</span>  = <span class="ruby-identifier">pos</span> <span class="ruby-operator">+</span> <span class="ruby-constant">EOL</span>.<span class="ruby-identifier">bytesize</span>
+452:             <span class="ruby-identifier">head</span> = <span class="ruby-identifier">buf</span>[<span class="ruby-value">0</span>, <span class="ruby-identifier">len</span>]
+453:             <span class="ruby-identifier">buf</span>  = <span class="ruby-identifier">buf</span>[(<span class="ruby-identifier">pos</span><span class="ruby-operator">+</span><span class="ruby-identifier">separator</span>.<span class="ruby-identifier">bytesize</span>)<span class="ruby-operator">..</span><span class="ruby-value">-1</span>]
+454:           <span class="ruby-keyword kw">else</span>
+455:             <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">head</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">buf</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">&gt;</span> <span class="ruby-identifier">boundary_size</span>
+456:               <span class="ruby-identifier">len</span> = <span class="ruby-identifier">buf</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">-</span> <span class="ruby-identifier">boundary_size</span>
+457:               <span class="ruby-identifier">body</span>.<span class="ruby-identifier">print</span>(<span class="ruby-identifier">buf</span>[<span class="ruby-value">0</span>, <span class="ruby-identifier">len</span>])
+458:               <span class="ruby-identifier">buf</span>[<span class="ruby-value">0</span>, <span class="ruby-identifier">len</span>] = <span class="ruby-value str">''</span>
+459:             <span class="ruby-keyword kw">end</span>
+460:             <span class="ruby-identifier">c</span> = <span class="ruby-identifier">stdin</span>.<span class="ruby-identifier">read</span>(<span class="ruby-identifier">bufsize</span> <span class="ruby-operator">&lt;</span> <span class="ruby-identifier">content_length</span> <span class="ruby-value">? </span><span class="ruby-identifier">bufsize</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">content_length</span>)
+461:             <span class="ruby-identifier">raise</span> <span class="ruby-constant">EOFError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value str">&quot;bad content body&quot;</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">c</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">c</span>.<span class="ruby-identifier">empty?</span>
+462:             <span class="ruby-identifier">buf</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">c</span>
+463:             <span class="ruby-identifier">content_length</span> <span class="ruby-operator">-=</span> <span class="ruby-identifier">c</span>.<span class="ruby-identifier">bytesize</span>
+464:           <span class="ruby-keyword kw">end</span>
+465:         <span class="ruby-keyword kw">end</span>
+466:         <span class="ruby-comment cmt">## read to end of boundary</span>
+467:         <span class="ruby-identifier">m</span> = <span class="ruby-identifier">matched</span>
+468:         <span class="ruby-identifier">len</span> = <span class="ruby-identifier">m</span>.<span class="ruby-identifier">begin</span>(<span class="ruby-value">0</span>)
+469:         <span class="ruby-identifier">s</span> = <span class="ruby-identifier">buf</span>[<span class="ruby-value">0</span>, <span class="ruby-identifier">len</span>]
+470:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">s</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/(\r?\n)\z/</span>
+471:           <span class="ruby-identifier">s</span> = <span class="ruby-identifier">buf</span>[<span class="ruby-value">0</span>, <span class="ruby-identifier">len</span> <span class="ruby-operator">-</span> <span class="ruby-identifier">$1</span>.<span class="ruby-identifier">bytesize</span>]
+472:         <span class="ruby-keyword kw">end</span>
+473:         <span class="ruby-identifier">body</span>.<span class="ruby-identifier">print</span>(<span class="ruby-identifier">s</span>)
+474:         <span class="ruby-identifier">buf</span> = <span class="ruby-identifier">buf</span>[<span class="ruby-identifier">m</span>.<span class="ruby-identifier">end</span>(<span class="ruby-value">0</span>)<span class="ruby-operator">..</span><span class="ruby-value">-1</span>]
+475:         <span class="ruby-identifier">boundary_end</span> = <span class="ruby-identifier">m</span>[<span class="ruby-value">1</span>]
+476:         <span class="ruby-identifier">content_length</span> = <span class="ruby-value">-1</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">boundary_end</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'--'</span>
+477:         <span class="ruby-comment cmt">## reset file cursor position</span>
+478:         <span class="ruby-identifier">body</span>.<span class="ruby-identifier">rewind</span>
+479:         <span class="ruby-comment cmt">## original filename</span>
+480:         <span class="ruby-regexp re">/Content-Disposition:.* filename=(?:&quot;(.*?)&quot;|([^;\r\n]*))/i</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">head</span>)
+481:         <span class="ruby-identifier">filename</span> = <span class="ruby-identifier">$1</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">$2</span> <span class="ruby-operator">||</span> <span class="ruby-value str">''</span>
+482:         <span class="ruby-identifier">filename</span> = <span class="ruby-constant">CGI</span>.<span class="ruby-identifier">unescape</span>(<span class="ruby-identifier">filename</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">unescape_filename?</span>()
+483:         <span class="ruby-identifier">body</span>.<span class="ruby-identifier">instance_variable_set</span>(<span class="ruby-value str">'@original_filename'</span>, <span class="ruby-identifier">filename</span>.<span class="ruby-identifier">taint</span>)
+484:         <span class="ruby-comment cmt">## content type</span>
+485:         <span class="ruby-regexp re">/Content-Type: (.*)/i</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">head</span>)
+486:         (<span class="ruby-identifier">content_type</span> = <span class="ruby-identifier">$1</span> <span class="ruby-operator">||</span> <span class="ruby-value str">''</span>).<span class="ruby-identifier">chomp!</span>
+487:         <span class="ruby-identifier">body</span>.<span class="ruby-identifier">instance_variable_set</span>(<span class="ruby-value str">'@content_type'</span>, <span class="ruby-identifier">content_type</span>.<span class="ruby-identifier">taint</span>)
+488:         <span class="ruby-comment cmt">## query parameter name</span>
+489:         <span class="ruby-regexp re">/Content-Disposition:.* name=(?:&quot;(.*?)&quot;|([^;\r\n]*))/i</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">head</span>)
+490:         <span class="ruby-identifier">name</span> = <span class="ruby-identifier">$1</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">$2</span> <span class="ruby-operator">||</span> <span class="ruby-value str">''</span>
+491:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">body</span>.<span class="ruby-identifier">original_filename</span>.<span class="ruby-identifier">empty?</span>
+492:           <span class="ruby-identifier">value</span>=<span class="ruby-identifier">body</span>.<span class="ruby-identifier">read</span>.<span class="ruby-identifier">dup</span>.<span class="ruby-identifier">force_encoding</span>(<span class="ruby-ivar">@accept_charset</span>)
+493:           (<span class="ruby-identifier">params</span>[<span class="ruby-identifier">name</span>] <span class="ruby-operator">||=</span> []) <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">value</span>
+494:           <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">valid_encoding?</span>
+495:             <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@accept_charset_error_block</span>
+496:               <span class="ruby-ivar">@accept_charset_error_block</span>.<span class="ruby-identifier">call</span>(<span class="ruby-identifier">name</span>,<span class="ruby-identifier">value</span>)
+497:             <span class="ruby-keyword kw">else</span>
+498:               <span class="ruby-identifier">raise</span> <span class="ruby-constant">InvalidEncoding</span>,<span class="ruby-value str">&quot;Accept-Charset encoding error&quot;</span>
+499:             <span class="ruby-keyword kw">end</span>
+500:           <span class="ruby-keyword kw">end</span>
+501:           <span class="ruby-keyword kw">class</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">params</span>[<span class="ruby-identifier">name</span>].<span class="ruby-identifier">last</span>;<span class="ruby-keyword kw">self</span>;<span class="ruby-keyword kw">end</span>.<span class="ruby-identifier">class_eval</span> <span class="ruby-keyword kw">do</span>
+502:             <span class="ruby-identifier">define_method</span>(<span class="ruby-identifier">:read</span>){<span class="ruby-keyword kw">self</span>}
+503:             <span class="ruby-identifier">define_method</span>(<span class="ruby-identifier">:original_filename</span>){<span class="ruby-value str">&quot;&quot;</span>}
+504:             <span class="ruby-identifier">define_method</span>(<span class="ruby-identifier">:content_type</span>){<span class="ruby-value str">&quot;&quot;</span>}
+505:           <span class="ruby-keyword kw">end</span>
+506:         <span class="ruby-keyword kw">else</span>
+507:           (<span class="ruby-identifier">params</span>[<span class="ruby-identifier">name</span>] <span class="ruby-operator">||=</span> []) <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">body</span>
+508:           <span class="ruby-ivar">@files</span>[<span class="ruby-identifier">name</span>]=<span class="ruby-identifier">body</span>
+509:         <span class="ruby-keyword kw">end</span>
+510:         <span class="ruby-comment cmt">## break loop</span>
+511:         <span class="ruby-keyword kw">break</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">buf</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-value">0</span>
+512:         <span class="ruby-keyword kw">break</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">content_length</span> <span class="ruby-operator">==</span> <span class="ruby-value">-1</span>
+513:       <span class="ruby-keyword kw">end</span>
+514:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">EOFError</span>, <span class="ruby-value str">&quot;bad boundary end of body part&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">boundary_end</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/--/</span>
+515:       <span class="ruby-identifier">params</span>.<span class="ruby-identifier">default</span> = []
+516:       <span class="ruby-identifier">params</span>
+517:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

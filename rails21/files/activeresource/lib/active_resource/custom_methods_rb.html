@@ -1,0 +1,138 @@
+  <div id="fileHeader">
+    <h1>custom_methods.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activeresource/lib/active_resource/custom_methods.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>module ActiveResource
+  # A module to support custom REST methods and sub-resources, allowing you to break out
+  # of the &quot;default&quot; REST methods with your own custom resource requests.  For example,
+  # say you use Rails to expose a REST service and configure your routes with:
+  #
+  #    map.resources :people, :new =&gt; { :register =&gt; :post },
+  #                           :member =&gt; { :promote =&gt; :put, :deactivate =&gt; :delete }
+  #                           :collection =&gt; { :active =&gt; :get }
+  #
+  #  This route set creates routes for the following HTTP requests:
+  #
+  #    POST    /people/new/register.xml # PeopleController.register
+  #    PUT     /people/1/promote.xml    # PeopleController.promote with :id =&gt; 1
+  #    DELETE  /people/1/deactivate.xml # PeopleController.deactivate with :id =&gt; 1
+  #    GET     /people/active.xml       # PeopleController.active
+  #
+  # Using this module, Active Resource can use these custom REST methods just like the
+  # standard methods.
+  #
+  #   class Person &lt; ActiveResource::Base
+  #     self.site = &quot;http://37s.sunrise.i:3000&quot;
+  #   end
+  #
+  #   Person.new(:name =&gt; 'Ryan).post(:register)  # POST /people/new/register.xml
+  #   # =&gt; { :id =&gt; 1, :name =&gt; 'Ryan' }
+  #
+  #   Person.find(1).put(:promote, :position =&gt; 'Manager') # PUT /people/1/promote.xml
+  #   Person.find(1).delete(:deactivate) # DELETE /people/1/deactivate.xml
+  #
+  #   Person.get(:active)  # GET /people/active.xml
+  #   # =&gt; [{:id =&gt; 1, :name =&gt; 'Ryan'}, {:id =&gt; 2, :name =&gt; 'Joe'}]
+  #
+  module CustomMethods 
+    def self.included(base)
+      base.class_eval do
+        extend ActiveResource::CustomMethods::ClassMethods
+        include ActiveResource::CustomMethods::InstanceMethods
+
+        class &lt;&lt; self
+          alias :orig_delete :delete
+
+          # Invokes a GET to a given custom REST method. For example:
+          #
+          #   Person.get(:active)  # GET /people/active.xml
+          #   # =&gt; [{:id =&gt; 1, :name =&gt; 'Ryan'}, {:id =&gt; 2, :name =&gt; 'Joe'}]
+          #
+          #   Person.get(:active, :awesome =&gt; true)  # GET /people/active.xml?awesome=true
+          #   # =&gt; [{:id =&gt; 1, :name =&gt; 'Ryan'}]
+          #
+          # Note: the objects returned from this method are not automatically converted
+          # into Active Resource instances - they are ordinary Hashes. If you are expecting
+          # Active Resource instances, use the &lt;tt&gt;find&lt;/tt&gt; class method with the
+          # &lt;tt&gt;:from&lt;/tt&gt; option. For example:
+          #
+          #   Person.find(:all, :from =&gt; :active)
+          def get(custom_method_name, options = {})
+            connection.get(custom_method_collection_url(custom_method_name, options), headers)
+          end
+
+          def post(custom_method_name, options = {}, body = '')
+            connection.post(custom_method_collection_url(custom_method_name, options), body, headers)
+          end
+
+          def put(custom_method_name, options = {}, body = '')
+            connection.put(custom_method_collection_url(custom_method_name, options), body, headers)
+          end
+
+          def delete(custom_method_name, options = {})
+            # Need to jump through some hoops to retain the original class 'delete' method
+            if custom_method_name.is_a?(Symbol)
+              connection.delete(custom_method_collection_url(custom_method_name, options), headers)
+            else
+              orig_delete(custom_method_name, options)
+            end
+          end
+        end
+      end
+    end
+
+    module ClassMethods
+      def custom_method_collection_url(method_name, options = {})
+        prefix_options, query_options = split_options(options)
+        &quot;#{prefix(prefix_options)}#{collection_name}/#{method_name}.#{format.extension}#{query_string(query_options)}&quot;
+      end
+    end
+    
+    module InstanceMethods
+      def get(method_name, options = {})
+        connection.get(custom_method_element_url(method_name, options), self.class.headers)
+      end
+      
+      def post(method_name, options = {}, body = '')
+        if new?
+          connection.post(custom_method_new_element_url(method_name, options), (body.nil? ? to_xml : body), self.class.headers)
+        else
+          connection.post(custom_method_element_url(method_name, options), body, self.class.headers)
+        end
+      end
+      
+      def put(method_name, options = {}, body = '')
+        connection.put(custom_method_element_url(method_name, options), body, self.class.headers)
+      end
+      
+      def delete(method_name, options = {})
+        connection.delete(custom_method_element_url(method_name, options), self.class.headers)
+      end
+
+
+      private
+        def custom_method_element_url(method_name, options = {})
+          &quot;#{self.class.prefix(prefix_options)}#{self.class.collection_name}/#{id}/#{method_name}.#{self.class.format.extension}#{self.class.send!(:query_string, options)}&quot;
+        end
+      
+        def custom_method_new_element_url(method_name, options = {})
+          &quot;#{self.class.prefix(prefix_options)}#{self.class.collection_name}/new/#{method_name}.#{self.class.format.extension}#{self.class.send!(:query_string, options)}&quot;
+        end
+    end
+  end
+end
+</pre>
+    </div>

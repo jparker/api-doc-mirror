@@ -1,0 +1,62 @@
+  <div id="fileHeader">
+    <h1>ordered_hash.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activesupport/lib/active_support/ordered_hash.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre># OrderedHash is namespaced to prevent conflicts with other implementations
+module ActiveSupport
+  # Hash is ordered in Ruby 1.9!
+  if RUBY_VERSION &gt;= '1.9'
+    OrderedHash = ::Hash
+  else
+    class OrderedHash &lt; Array #:nodoc:
+      def []=(key, value)
+        if pair = assoc(key)
+          pair.pop
+          pair &lt;&lt; value
+        else
+          self &lt;&lt; [key, value]
+        end
+      end
+
+      def [](key)
+        pair = assoc(key)
+        pair ? pair.last : nil
+      end
+
+      def delete(key)
+        pair = assoc(key)
+        pair ? array_index = index(pair) : nil
+        array_index ? delete_at(array_index).last : nil
+      end
+
+      def keys
+        collect { |key, value| key }
+      end
+
+      def values
+        collect { |key, value| value }
+      end
+
+      def to_hash
+        returning({}) do |hash|
+          each { |array| hash[array[0]] = array[1] }
+        end
+      end
+    end
+  end
+end
+</pre>
+    </div>

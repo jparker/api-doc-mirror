@@ -1,0 +1,273 @@
+  <div id="C00000503">
+<div class='banner'>
+  <span class="file-title-prefix">Class</span><br />BufferedLogger<br/>
+  In:
+<a href="#" onclick="jsHref('files/activesupport/lib/active_support/buffered_logger_rb.html');">activesupport/lib/active_support/buffered_logger.rb</a>
+
+Parent:&nbsp;
+        <a href="#" onclick="jsHref('classes/Object.html');">
+Object
+         </a>
+</div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+      <div id="content">
+
+  <div class="description"><p>
+Inspired by the buffered logger idea by Ezra
+</p>
+</div>
+
+
+
+  <div class="sectiontitle">Methods</div>
+  <ul>
+  <li><a href="index.html?a=M001280&name=add" >add</a></li>
+  <li><a href="index.html?a=M001284&name=auto_flush" >auto_flush</a></li>
+  <li><a href="index.html?a=M001281&name=auto_flushing=" >auto_flushing=</a></li>
+  <li><a href="index.html?a=M001283&name=close" >close</a></li>
+  <li><a href="index.html?a=M001282&name=flush" >flush</a></li>
+  <li><a href="index.html?a=M001278&name=new" >new</a></li>
+  <li><a href="index.html?a=M001279&name=set_non_blocking_io" >set_non_blocking_io</a></li>
+  <li><a href="index.html?a=M001277&name=silence" >silence</a></li>
+  </ul>
+
+<div class="sectiontitle">Included Modules</div>
+<ul>
+  <li><a href="#" onclick="jsHref('classes/ActiveSupport/BufferedLogger/Severity.html');">Severity</a></li>
+</ul>
+
+
+  <div class="sectiontitle">Classes and Modules</div>
+  Module "<a href="#" onclick="jsHref('classes/ActiveSupport/BufferedLogger/Severity.html');" class="link">ActiveSupport::BufferedLogger::Severity</a>"<br />
+
+
+  <div class="sectiontitle">Constants</div>
+  <table border='0' cellpadding='5'>
+  <tr valign='top'>
+    <td class="attr-name">MAX_BUFFER_SIZE</td>
+    <td>=</td>
+    <td class="attr-value">1000</td>
+  </tr>
+  </table>
+
+  <div class="sectiontitle">Attributes</div>
+  <table border='0' cellpadding='5'>
+  <tr valign='top'>
+    <td class='attr-rw'>
+[R]
+    </td>
+    <td class='attr-name'>auto_flushing</td>
+    <td class='attr-desc'></td>
+  </tr>
+  <tr valign='top'>
+    <td class='attr-rw'>
+[R]
+    </td>
+    <td class='attr-name'>buffer</td>
+    <td class='attr-desc'></td>
+  </tr>
+  <tr valign='top'>
+    <td class='attr-rw'>
+[RW]
+    </td>
+    <td class='attr-name'>level</td>
+    <td class='attr-desc'></td>
+  </tr>
+  </table>
+
+<div class="sectiontitle">Public Class methods</div>
+<div id="M001278" class="method">
+  <div id="M001278_title" class="title">
+    <b>new</b>(log, level = DEBUG)
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001278_source')" id="l_M001278_source">show source</a> ]</p>
+  <div id="M001278_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activesupport/lib/active_support/buffered_logger.rb, line 38</span>
+38:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">log</span>, <span class="ruby-identifier">level</span> = <span class="ruby-constant">DEBUG</span>)
+39:       <span class="ruby-ivar">@level</span>         = <span class="ruby-identifier">level</span>
+40:       <span class="ruby-ivar">@buffer</span>        = []
+41:       <span class="ruby-ivar">@auto_flushing</span> = <span class="ruby-value">1</span>
+42:       <span class="ruby-ivar">@no_block</span> = <span class="ruby-keyword kw">false</span>
+43: 
+44:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">log</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">:write</span>)
+45:         <span class="ruby-ivar">@log</span> = <span class="ruby-identifier">log</span>
+46:       <span class="ruby-keyword kw">elsif</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">log</span>)
+47:         <span class="ruby-ivar">@log</span> = <span class="ruby-identifier">open</span>(<span class="ruby-identifier">log</span>, (<span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-constant">WRONLY</span> <span class="ruby-operator">|</span> <span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-constant">APPEND</span>))
+48:         <span class="ruby-ivar">@log</span>.<span class="ruby-identifier">sync</span> = <span class="ruby-keyword kw">true</span>
+49:       <span class="ruby-keyword kw">else</span>
+50:         <span class="ruby-constant">FileUtils</span>.<span class="ruby-identifier">mkdir_p</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">dirname</span>(<span class="ruby-identifier">log</span>))
+51:         <span class="ruby-ivar">@log</span> = <span class="ruby-identifier">open</span>(<span class="ruby-identifier">log</span>, (<span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-constant">WRONLY</span> <span class="ruby-operator">|</span> <span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-constant">APPEND</span> <span class="ruby-operator">|</span> <span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-constant">CREAT</span>))
+52:         <span class="ruby-ivar">@log</span>.<span class="ruby-identifier">sync</span> = <span class="ruby-keyword kw">true</span>
+53:         <span class="ruby-ivar">@log</span>.<span class="ruby-identifier">write</span>(<span class="ruby-value str">&quot;# Logfile created on %s&quot;</span> <span class="ruby-operator">%</span> [<span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span>.<span class="ruby-identifier">to_s</span>])
+54:       <span class="ruby-keyword kw">end</span>
+55:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div class="sectiontitle">Public Instance methods</div>
+<div id="M001280" class="method">
+  <div id="M001280_title" class="title">
+    <b>add</b>(severity, message = nil, progname = nil, &amp;block)
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001280_source')" id="l_M001280_source">show source</a> ]</p>
+  <div id="M001280_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activesupport/lib/active_support/buffered_logger.rb, line 63</span>
+63:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">add</span>(<span class="ruby-identifier">severity</span>, <span class="ruby-identifier">message</span> = <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">progname</span> = <span class="ruby-keyword kw">nil</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+64:       <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@level</span> <span class="ruby-operator">&gt;</span> <span class="ruby-identifier">severity</span>
+65:       <span class="ruby-identifier">message</span> = (<span class="ruby-identifier">message</span> <span class="ruby-operator">||</span> (<span class="ruby-identifier">block</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">block</span>.<span class="ruby-identifier">call</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">progname</span>).<span class="ruby-identifier">to_s</span>
+66:       <span class="ruby-comment cmt"># If a newline is necessary then create a new message ending with a newline.</span>
+67:       <span class="ruby-comment cmt"># Ensures that the original message is not mutated.</span>
+68:       <span class="ruby-identifier">message</span> = <span class="ruby-node">&quot;#{message}\n&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">message</span>[<span class="ruby-value">-1</span>] <span class="ruby-operator">==</span> <span class="ruby-value">?\n</span>
+69:       <span class="ruby-identifier">buffer</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">message</span>
+70:       <span class="ruby-identifier">auto_flush</span>
+71:       <span class="ruby-identifier">message</span>
+72:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M001281" class="method">
+  <div id="M001281_title" class="title">
+    <b>auto_flushing=</b>(period)
+  </div>
+  <div class="description">
+  <p>
+Set the auto-flush period. Set to true to flush after every log message, to
+an integer to flush every N messages, or to false, nil, or zero to never
+auto-flush. If you turn auto-flushing off, be sure to regularly flush the
+log yourself &#8212; it will eat up memory until you do.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001281_source')" id="l_M001281_source">show source</a> ]</p>
+  <div id="M001281_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activesupport/lib/active_support/buffered_logger.rb, line 91</span>
+91:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">auto_flushing=</span>(<span class="ruby-identifier">period</span>)
+92:       <span class="ruby-ivar">@auto_flushing</span> =
+93:         <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">period</span>
+94:         <span class="ruby-keyword kw">when</span> <span class="ruby-keyword kw">true</span>;                <span class="ruby-value">1</span>
+95:         <span class="ruby-keyword kw">when</span> <span class="ruby-keyword kw">false</span>, <span class="ruby-keyword kw">nil</span>, <span class="ruby-value">0</span>;       <span class="ruby-constant">MAX_BUFFER_SIZE</span>
+96:         <span class="ruby-keyword kw">when</span> <span class="ruby-constant">Integer</span>;             <span class="ruby-identifier">period</span>
+97:         <span class="ruby-keyword kw">else</span> <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;Unrecognized auto_flushing period: #{period.inspect}&quot;</span>
+98:         <span class="ruby-keyword kw">end</span>
+99:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M001283" class="method">
+  <div id="M001283_title" class="title">
+    <b>close</b>()
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001283_source')" id="l_M001283_source">show source</a> ]</p>
+  <div id="M001283_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activesupport/lib/active_support/buffered_logger.rb, line 111</span>
+111:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">close</span>
+112:       <span class="ruby-identifier">flush</span>
+113:       <span class="ruby-ivar">@log</span>.<span class="ruby-identifier">close</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@log</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">:close</span>)
+114:       <span class="ruby-ivar">@log</span> = <span class="ruby-keyword kw">nil</span>
+115:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M001282" class="method">
+  <div id="M001282_title" class="title">
+    <b>flush</b>()
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001282_source')" id="l_M001282_source">show source</a> ]</p>
+  <div id="M001282_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activesupport/lib/active_support/buffered_logger.rb, line 101</span>
+101:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">flush</span>
+102:       <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">buffer</span>.<span class="ruby-identifier">empty?</span>
+103:         <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@no_block</span>
+104:           <span class="ruby-ivar">@log</span>.<span class="ruby-identifier">write_nonblock</span>(<span class="ruby-identifier">buffer</span>.<span class="ruby-identifier">slice!</span>(<span class="ruby-value">0</span><span class="ruby-operator">..</span><span class="ruby-value">-1</span>).<span class="ruby-identifier">join</span>)
+105:         <span class="ruby-keyword kw">else</span>
+106:           <span class="ruby-ivar">@log</span>.<span class="ruby-identifier">write</span>(<span class="ruby-identifier">buffer</span>.<span class="ruby-identifier">slice!</span>(<span class="ruby-value">0</span><span class="ruby-operator">..</span><span class="ruby-value">-1</span>).<span class="ruby-identifier">join</span>)
+107:         <span class="ruby-keyword kw">end</span>
+108:       <span class="ruby-keyword kw">end</span>
+109:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M001279" class="method">
+  <div id="M001279_title" class="title">
+    <b>set_non_blocking_io</b>()
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001279_source')" id="l_M001279_source">show source</a> ]</p>
+  <div id="M001279_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activesupport/lib/active_support/buffered_logger.rb, line 57</span>
+57:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">set_non_blocking_io</span>
+58:       <span class="ruby-keyword kw">if</span> <span class="ruby-operator">!</span><span class="ruby-constant">RUBY_PLATFORM</span>.<span class="ruby-identifier">match</span>(<span class="ruby-regexp re">/java|mswin/</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span>(<span class="ruby-ivar">@log</span> <span class="ruby-operator">==</span> <span class="ruby-constant">STDOUT</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-ivar">@log</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">:write_nonblock</span>)
+59:         <span class="ruby-ivar">@no_block</span> = <span class="ruby-keyword kw">true</span>
+60:       <span class="ruby-keyword kw">end</span>
+61:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M001277" class="method">
+  <div id="M001277_title" class="title">
+    <b>silence</b>(temporary_level = ERROR) {|self| ...}
+  </div>
+  <div class="description">
+  <p>
+Silences the logger for the duration of the block.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001277_source')" id="l_M001277_source">show source</a> ]</p>
+  <div id="M001277_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activesupport/lib/active_support/buffered_logger.rb, line 21</span>
+21:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">silence</span>(<span class="ruby-identifier">temporary_level</span> = <span class="ruby-constant">ERROR</span>)
+22:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">silencer</span>
+23:         <span class="ruby-keyword kw">begin</span>
+24:           <span class="ruby-identifier">old_logger_level</span>, <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">level</span> = <span class="ruby-identifier">level</span>, <span class="ruby-identifier">temporary_level</span>
+25:           <span class="ruby-keyword kw">yield</span> <span class="ruby-keyword kw">self</span>
+26:         <span class="ruby-keyword kw">ensure</span>
+27:           <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">level</span> = <span class="ruby-identifier">old_logger_level</span>
+28:         <span class="ruby-keyword kw">end</span>
+29:       <span class="ruby-keyword kw">else</span>
+30:         <span class="ruby-keyword kw">yield</span> <span class="ruby-keyword kw">self</span>
+31:       <span class="ruby-keyword kw">end</span>
+32:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div class="sectiontitle">Protected Instance methods</div>
+<div id="M001284" class="method">
+  <div id="M001284_title" class="title">
+    <b>auto_flush</b>()
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001284_source')" id="l_M001284_source">show source</a> ]</p>
+  <div id="M001284_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activesupport/lib/active_support/buffered_logger.rb, line 118</span>
+118:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">auto_flush</span>
+119:         <span class="ruby-identifier">flush</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">buffer</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">&gt;=</span> <span class="ruby-ivar">@auto_flushing</span>
+120:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+</div>
+
+  </div>

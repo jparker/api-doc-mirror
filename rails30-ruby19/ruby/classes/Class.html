@@ -1,0 +1,466 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Class</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            Class 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/object_c.html">object.c</a></li>
+            
+            <li><a href="../files/class_c.html">class.c</a></li>
+            
+            <li><a href="../files/ext/json/lib/json/common_rb.html">ext/json/lib/json/common.rb</a></li>
+            
+            <li><a href="../files/ext/syck/lib/syck/rubytypes_rb.html">ext/syck/lib/syck/rubytypes.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>A</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001267">allocate</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>I</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001174">inherited</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>J</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007378">json_creatable?</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001268">new</a>,</li>
+                
+                <li><a href="#M001269">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001271">superclass</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>T</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007936">to_yaml</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M001269">
+                    
+                    <a name="M001269"></a><b>Class.new(super_class=Object)   &rarr;    a_class
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Creates a new anonymous (unnamed) class with the given superclass (or
+<tt>Object</tt> if no parameter is given). You can give a class a name by
+assigning the class object to a constant.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001269_source')" id="l_M001269_source">show</a>
+                        
+                    </p>
+                    <div id="M001269_source" class="dyn-source">
+                        <pre>static VALUE
+rb_class_initialize(int argc, VALUE *argv, VALUE klass)
+{
+    VALUE super;
+
+    if (RCLASS_SUPER(klass) != 0 || klass == rb_cBasicObject) {
+        rb_raise(rb_eTypeError, &quot;already initialized class&quot;);
+    }
+    if (argc == 0) {
+        super = rb_cObject;
+    }
+    else {
+        rb_scan_args(argc, argv, &quot;01&quot;, &amp;super);
+        rb_check_inheritable(super);
+    }
+    RCLASS_SUPER(klass) = super;
+    rb_make_metaclass(klass, RBASIC(super)-&gt;klass);
+    rb_class_inherited(super, klass);
+    rb_mod_initialize(klass);
+
+    return klass;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M001267">
+                    
+                    <a name="M001267"></a><b>class.allocate()   &rarr;   obj
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Allocates space for a new object of <em>class</em>&#8217;s class and does
+not call initialize on the new instance. The returned object must be an
+instance of <em>class</em>.
+</p>
+<pre>
+    klass = Class.new do
+      def initialize(*args)
+        @initialized = true
+      end
+
+      def initialized?
+        @initialized || false
+      end
+    end
+
+    klass.allocate.initialized? #=&gt; false
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001267_source')" id="l_M001267_source">show</a>
+                        
+                    </p>
+                    <div id="M001267_source" class="dyn-source">
+                        <pre>VALUE
+rb_obj_alloc(VALUE klass)
+{
+    VALUE obj;
+
+    if (RCLASS_SUPER(klass) == 0 &amp;&amp; klass != rb_cBasicObject) {
+        rb_raise(rb_eTypeError, &quot;can't instantiate uninitialized class&quot;);
+    }
+    if (FL_TEST(klass, FL_SINGLETON)) {
+        rb_raise(rb_eTypeError, &quot;can't create instance of singleton class&quot;);
+    }
+    obj = rb_funcall(klass, ID_ALLOCATOR, 0, 0);
+    if (rb_obj_class(obj) != rb_class_real(klass)) {
+        rb_raise(rb_eTypeError, &quot;wrong instance allocation&quot;);
+    }
+    return obj;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007378">
+                    
+                    <a name="M007378"></a><b>json_creatable?</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns true, if this class can be used to create an instance from a
+serialised <a href="JSON.html">JSON</a> string. The class has to implement
+a class method <em>json_create</em> that expects a hash as first parameter,
+which includes the required data.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007378_source')" id="l_M007378_source">show</a>
+                        
+                    </p>
+                    <div id="M007378_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File ext/json/lib/json/common.rb, line 394</span>
+394:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">json_creatable?</span>
+395:     <span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">:json_create</span>)
+396:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001268">
+                    
+                    <a name="M001268"></a><b>class.new(args, ...)    &rarr;  obj
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Calls <tt>allocate</tt> to create a new object of <em>class</em>&#8217;s
+class, then invokes that object&#8217;s <tt>initialize</tt> method, passing
+it <em>args</em>. This is the method that ends up getting called whenever
+an object is constructed using .new.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001268_source')" id="l_M001268_source">show</a>
+                        
+                    </p>
+                    <div id="M001268_source" class="dyn-source">
+                        <pre>VALUE
+rb_class_new_instance(int argc, VALUE *argv, VALUE klass)
+{
+    VALUE obj;
+
+    obj = rb_obj_alloc(klass);
+    rb_obj_call_init(obj, argc, argv);
+
+    return obj;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001271">
+                    
+                    <a name="M001271"></a><b>class.superclass &rarr; a_super_class or nil
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the superclass of <em>class</em>, or <tt>nil</tt>.
+</p>
+<pre>
+   File.superclass          #=&gt; IO
+   IO.superclass            #=&gt; Object
+   Object.superclass        #=&gt; BasicObject
+   class Foo; end
+   class Bar &lt; Foo; end
+   Bar.superclass           #=&gt; Foo
+</pre>
+<p>
+returns nil when the given class hasn&#8217;t a parent class:
+</p>
+<pre>
+   BasicObject.superclass   #=&gt; nil
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001271_source')" id="l_M001271_source">show</a>
+                        
+                    </p>
+                    <div id="M001271_source" class="dyn-source">
+                        <pre>static VALUE
+rb_class_superclass(VALUE klass)
+{
+    VALUE super = RCLASS_SUPER(klass);
+
+    if (!super) {
+        if (klass == rb_cBasicObject) return Qnil;
+        rb_raise(rb_eTypeError, &quot;uninitialized class&quot;);
+    }
+    while (TYPE(super) == T_ICLASS) {
+        super = RCLASS_SUPER(super);
+    }
+    if (!super) {
+        return Qnil;
+    }
+    return super;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007936">
+                    
+                    <a name="M007936"></a><b>to_yaml</b>( opts = {} )
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007936_source')" id="l_M007936_source">show</a>
+                        
+                    </p>
+                    <div id="M007936_source" class="dyn-source">
+                        <pre>   <span class="ruby-comment cmt"># File ext/syck/lib/syck/rubytypes.rb, line 5</span>
+5:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">to_yaml</span>( <span class="ruby-identifier">opts</span> = {} )
+6:                 <span class="ruby-identifier">raise</span> <span class="ruby-constant">TypeError</span>, <span class="ruby-value str">&quot;can't dump anonymous class %s&quot;</span> <span class="ruby-operator">%</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>
+7:         <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Private methods</div>
+            
+            <div class="method">
+                <div class="title" id="M001174">
+                    
+                    <a name="M001174"></a><b>inherited(subclass)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Callback invoked whenever a subclass of the current class is created.
+</p>
+<p>
+Example:
+</p>
+<pre>
+   class Foo
+      def self.inherited(subclass)
+         puts &quot;New subclass: #{subclass}&quot;
+      end
+   end
+
+   class Bar &lt; Foo
+   end
+
+   class Baz &lt; Bar
+   end
+</pre>
+<p>
+produces:
+</p>
+<pre>
+   New subclass: Bar
+   New subclass: Baz
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001174_source')" id="l_M001174_source">show</a>
+                        
+                    </p>
+                    <div id="M001174_source" class="dyn-source">
+                        <pre>static VALUE
+rb_obj_dummy(void)
+{
+    return Qnil;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

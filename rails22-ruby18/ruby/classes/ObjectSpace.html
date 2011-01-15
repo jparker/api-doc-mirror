@@ -1,0 +1,607 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>ObjectSpace</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Module</span> 
+            ObjectSpace 
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/gc_c.html">gc.c</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+The <tt>ObjectSpace</tt> module contains a number of routines that interact
+with the garbage collection facility and allow you to traverse all living
+objects with an iterator.
+</p>
+<p>
+<tt>ObjectSpace</tt> also provides support for object finalizers, procs
+that will be called when a specific object is about to be destroyed by
+garbage collection.
+</p>
+<pre>
+   include ObjectSpace
+
+   a = &quot;A&quot;
+   b = &quot;B&quot;
+   c = &quot;C&quot;
+
+   define_finalizer(a, proc {|id| puts &quot;Finalizer one on #{id}&quot; })
+   define_finalizer(a, proc {|id| puts &quot;Finalizer two on #{id}&quot; })
+   define_finalizer(b, proc {|id| puts &quot;Finalizer three on #{id}&quot; })
+</pre>
+<p>
+<em>produces:</em>
+</p>
+<pre>
+   Finalizer three on 537763470
+   Finalizer one on 537763480
+   Finalizer two on 537763480
+</pre>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>#</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000607">_id2ref</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>A</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000601">add_finalizer</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000604">call_finalizer</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>D</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000605">define_finalizer</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000599">each_object</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>F</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000603">finalizers</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>G</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000600">garbage_collect</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>R</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000602">remove_finalizer</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>U</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000606">undefine_finalizer</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M000607">
+                    
+                    <a name="M000607"></a><b>ObjectSpace._id2ref(object_id) &rarr; an_object
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Converts an object id to a reference to the object. May not be called on an
+object id passed as a parameter to a finalizer.
+</p>
+<pre>
+   s = &quot;I am a string&quot;                    #=&gt; &quot;I am a string&quot;
+   r = ObjectSpace._id2ref(s.object_id)   #=&gt; &quot;I am a string&quot;
+   r == s                                 #=&gt; true
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000607_source')" id="l_M000607_source">show</a>
+                        
+                    </p>
+                    <div id="M000607_source" class="dyn-source">
+                        <pre>static VALUE
+id2ref(obj, objid)
+    VALUE obj, objid;
+{
+    unsigned long ptr, p0;
+    int type;
+
+    rb_secure(4);
+    p0 = ptr = NUM2ULONG(objid);
+    if (ptr == Qtrue) return Qtrue;
+    if (ptr == Qfalse) return Qfalse;
+    if (ptr == Qnil) return Qnil;
+    if (FIXNUM_P(ptr)) return (VALUE)ptr;
+    ptr = objid ^ FIXNUM_FLAG;  /* unset FIXNUM_FLAG */
+
+    if ((ptr % sizeof(RVALUE)) == (4 &lt;&lt; 2)) {
+        ID symid = ptr / sizeof(RVALUE);
+        if (rb_id2name(symid) == 0)
+            rb_raise(rb_eRangeError, &quot;%p is not symbol id value&quot;, p0);
+        return ID2SYM(symid);
+    }
+
+    if (!is_pointer_to_heap((void *)ptr)||
+        (type = BUILTIN_TYPE(ptr)) &gt; T_SYMBOL || type == T_ICLASS) {
+        rb_raise(rb_eRangeError, &quot;0x%lx is not id value&quot;, p0);
+    }
+    if (BUILTIN_TYPE(ptr) == 0 || RBASIC(ptr)-&gt;klass == 0) {
+        rb_raise(rb_eRangeError, &quot;0x%lx is recycled object&quot;, p0);
+    }
+    return (VALUE)ptr;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000601">
+                    
+                    <a name="M000601"></a><b>add_finalizer</b>(p1)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+deprecated
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000601_source')" id="l_M000601_source">show</a>
+                        
+                    </p>
+                    <div id="M000601_source" class="dyn-source">
+                        <pre>static VALUE
+add_final(os, block)
+    VALUE os, block;
+{
+    rb_warn(&quot;ObjectSpace::add_finalizer is deprecated; use define_finalizer&quot;);
+    if (!rb_respond_to(block, rb_intern(&quot;call&quot;))) {
+        rb_raise(rb_eArgError, &quot;wrong type argument %s (should be callable)&quot;,
+                 rb_obj_classname(block));
+    }
+    rb_ary_push(finalizers, block);
+    return block;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000604">
+                    
+                    <a name="M000604"></a><b>call_finalizer</b>(p1)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+deprecated
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000604_source')" id="l_M000604_source">show</a>
+                        
+                    </p>
+                    <div id="M000604_source" class="dyn-source">
+                        <pre>static VALUE
+call_final(os, obj)
+    VALUE os, obj;
+{
+    rb_warn(&quot;ObjectSpace::call_finalizer is deprecated; use define_finalizer&quot;);
+    need_call_final = 1;
+    FL_SET(obj, FL_FINALIZE);
+    return obj;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000605">
+                    
+                    <a name="M000605"></a><b>ObjectSpace.define_finalizer(obj, aProc=proc())
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Adds <em>aProc</em> as a finalizer, to be called after <em>obj</em> was
+destroyed.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000605_source')" id="l_M000605_source">show</a>
+                        
+                    </p>
+                    <div id="M000605_source" class="dyn-source">
+                        <pre>static VALUE
+define_final(argc, argv, os)
+    int argc;
+    VALUE *argv;
+    VALUE os;
+{
+    VALUE obj, block, table;
+
+    rb_scan_args(argc, argv, &quot;11&quot;, &amp;obj, &amp;block);
+    if (argc == 1) {
+        block = rb_block_proc();
+    }
+    else if (!rb_respond_to(block, rb_intern(&quot;call&quot;))) {
+        rb_raise(rb_eArgError, &quot;wrong type argument %s (should be callable)&quot;,
+                 rb_obj_classname(block));
+    }
+    need_call_final = 1;
+    if (!FL_ABLE(obj)) {
+        rb_raise(rb_eArgError, &quot;cannot define finalizer for %s&quot;,
+                 rb_obj_classname(obj));
+    }
+    RBASIC(obj)-&gt;flags |= FL_FINALIZE;
+
+    block = rb_ary_new3(2, INT2FIX(ruby_safe_level), block);
+    OBJ_FREEZE(block);
+
+    if (!finalizer_table) {
+        finalizer_table = st_init_numtable();
+    }
+    if (st_lookup(finalizer_table, obj, &amp;table)) {
+        rb_ary_push(table, block);
+    }
+    else {
+        table = rb_ary_new3(1, block);
+        RBASIC(table)-&gt;klass = 0;
+        st_add_direct(finalizer_table, obj, table);
+    }
+    return block;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000599">
+                    
+                    <a name="M000599"></a><b>ObjectSpace.each_object([module]) {|obj| ... } => fixnum
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Calls the block once for each living, nonimmediate object in this Ruby
+process. If <em>module</em> is specified, calls the block for only those
+classes or modules that match (or are a subclass of) <em>module</em>.
+Returns the number of objects found. Immediate objects (<tt>Fixnum</tt>s,
+<tt>Symbol</tt>s <tt>true</tt>, <tt>false</tt>, and <tt>nil</tt>) are never
+returned. In the example below, <tt><a
+href="ObjectSpace.html#M000599">each_object</a></tt> returns both the
+numbers we defined and several constants defined in the <tt>Math</tt>
+module.
+</p>
+<pre>
+   a = 102.7
+   b = 95       # Won't be returned
+   c = 12345678987654321
+   count = ObjectSpace.each_object(Numeric) {|x| p x }
+   puts &quot;Total count: #{count}&quot;
+</pre>
+<p>
+<em>produces:</em>
+</p>
+<pre>
+   12345678987654321
+   102.7
+   2.71828182845905
+   3.14159265358979
+   2.22044604925031e-16
+   1.7976931348623157e+308
+   2.2250738585072e-308
+   Total count: 7
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000599_source')" id="l_M000599_source">show</a>
+                        
+                    </p>
+                    <div id="M000599_source" class="dyn-source">
+                        <pre>static VALUE
+os_each_obj(argc, argv, os)
+    int argc;
+    VALUE *argv;
+    VALUE os;
+{
+    VALUE of;
+
+    rb_secure(4);
+    if (argc == 0) {
+        of = 0;
+    }
+    else {
+        rb_scan_args(argc, argv, &quot;01&quot;, &amp;of);
+    }
+    RETURN_ENUMERATOR(os, 1, &amp;of);
+    return os_obj_of(of);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000603">
+                    
+                    <a name="M000603"></a><b>finalizers</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+deprecated
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000603_source')" id="l_M000603_source">show</a>
+                        
+                    </p>
+                    <div id="M000603_source" class="dyn-source">
+                        <pre>static VALUE
+finals()
+{
+    rb_warn(&quot;ObjectSpace::finalizers is deprecated&quot;);
+    return finalizers;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000600">
+                    
+                    <a name="M000600"></a><b>GC.start                     => nil
+gc.garbage_collect           => nil
+ObjectSpace.garbage_collect  => nil
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Initiates garbage collection, unless manually disabled.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000600_source')" id="l_M000600_source">show</a>
+                        
+                    </p>
+                    <div id="M000600_source" class="dyn-source">
+                        <pre>VALUE
+rb_gc_start()
+{
+    rb_gc();
+    return Qnil;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000602">
+                    
+                    <a name="M000602"></a><b>remove_finalizer</b>(p1)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+deprecated
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000602_source')" id="l_M000602_source">show</a>
+                        
+                    </p>
+                    <div id="M000602_source" class="dyn-source">
+                        <pre>static VALUE
+rm_final(os, block)
+    VALUE os, block;
+{
+    rb_warn(&quot;ObjectSpace::remove_finalizer is deprecated; use undefine_finalizer&quot;);
+    rb_ary_delete(finalizers, block);
+    return block;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000606">
+                    
+                    <a name="M000606"></a><b>ObjectSpace.undefine_finalizer(obj)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Removes all finalizers for <em>obj</em>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000606_source')" id="l_M000606_source">show</a>
+                        
+                    </p>
+                    <div id="M000606_source" class="dyn-source">
+                        <pre>static VALUE
+undefine_final(os, obj)
+    VALUE os, obj;
+{
+    if (finalizer_table) {
+        st_delete(finalizer_table, (st_data_t*)&amp;obj, 0);
+    }
+    return obj;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

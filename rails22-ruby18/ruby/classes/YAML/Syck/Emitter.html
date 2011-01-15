@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>YAML::Syck::Emitter</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            YAML::Syck::Emitter 
+            
+                <span class="parent">&lt; 
+                    
+                    rb_cObject 
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../../files/ext/syck/rubyext_c.html">ext/syck/rubyext.c</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+Define <a href="Emitter.html">YAML::Syck::Emitter</a> class
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007409">emit</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007407">new</a>,</li>
+                
+                <li><a href="#M007411">node_export</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>R</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007408">reset</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007410">set_resolver</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Attributes</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [RW]
+            </td>
+            <td class='attr-name'>level</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+    </table>
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M007407">
+                    
+                    <a name="M007407"></a><b>new</b>(...)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+<a href="Emitter.html#M007408">YAML::Syck::Emitter.reset</a>( options )
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007407_source')" id="l_M007407_source">show</a>
+                        
+                    </p>
+                    <div id="M007407_source" class="dyn-source">
+                        <pre>VALUE
+syck_emitter_reset( argc, argv, self )
+    int argc;
+    VALUE *argv;
+    VALUE self;
+{
+    VALUE options, tmp;
+    SyckEmitter *emitter;
+    struct emitter_xtra *bonus;
+
+    Data_Get_Struct(self, SyckEmitter, emitter);
+    bonus = (struct emitter_xtra *)emitter-&gt;bonus;
+
+    bonus-&gt;oid = Qnil;
+    bonus-&gt;port = rb_str_new2( &quot;&quot; );
+    bonus-&gt;data = rb_hash_new();
+
+    if (rb_scan_args(argc, argv, &quot;01&quot;, &amp;options) == 0)
+    {
+        options = rb_hash_new();
+        rb_ivar_set(self, s_options, options);
+    }
+    else if ( !NIL_P(tmp = rb_check_string_type(options)) )
+    {
+        bonus-&gt;port = tmp;
+    }
+    else if ( rb_respond_to( options, s_write ) )
+    {
+        bonus-&gt;port = options;
+    }
+    else
+    {
+        Check_Type(options, T_HASH);
+        rb_ivar_set(self, s_options, options);
+    }
+    
+    emitter-&gt;headless = 0;
+    rb_ivar_set(self, s_level, INT2FIX(0));
+    rb_ivar_set(self, s_resolver, Qnil);
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M007409">
+                    
+                    <a name="M007409"></a><b>emit</b>(...)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+<a href="Emitter.html#M007409">YAML::Syck::Emitter.emit</a>( object_id ) {
+|out| &#8230; }
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007409_source')" id="l_M007409_source">show</a>
+                        
+                    </p>
+                    <div id="M007409_source" class="dyn-source">
+                        <pre>VALUE
+syck_emitter_emit( argc, argv, self )
+    int argc;
+    VALUE *argv;
+    VALUE self;
+{
+    VALUE oid, proc;
+    SyckEmitter *emitter;
+    struct emitter_xtra *bonus;
+    SYMID symple;
+    int level = FIX2INT(rb_ivar_get(self, s_level)) + 1;
+    rb_ivar_set(self, s_level, INT2FIX(level));
+
+    rb_scan_args(argc, argv, &quot;1&amp;&quot;, &amp;oid, &amp;proc);
+    Data_Get_Struct(self, SyckEmitter, emitter);
+    bonus = (struct emitter_xtra *)emitter-&gt;bonus;
+
+    /* Calculate anchors, normalize nodes, build a simpler symbol table */
+    bonus-&gt;oid = oid;
+    if ( !NIL_P( oid ) &amp;&amp; RTEST( rb_funcall( bonus-&gt;data, s_haskey, 1, oid ) ) ) {
+        symple = rb_hash_aref( bonus-&gt;data, oid );
+    } else {
+        symple = rb_funcall( proc, s_call, 1, rb_ivar_get( self, s_out ) );
+    }
+    syck_emitter_mark_node( emitter, (st_data_t)symple );
+
+    /* Second pass, build emitted string */
+    level -= 1;
+    rb_ivar_set(self, s_level, INT2FIX(level));
+    if ( level == 0 ) 
+    {
+        syck_emit(emitter, (st_data_t)symple);
+        syck_emitter_flush(emitter, 0);
+
+        return bonus-&gt;port;
+    }
+    
+    return symple;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007411">
+                    
+                    <a name="M007411"></a><b>node_export</b>(p1)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+<a href="Emitter.html#M007411">YAML::Syck::Emitter#node_export</a>
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007411_source')" id="l_M007411_source">show</a>
+                        
+                    </p>
+                    <div id="M007411_source" class="dyn-source">
+                        <pre>VALUE
+syck_emitter_node_export( self, node )
+    VALUE self, node;
+{
+    return rb_funcall( node, s_to_yaml, 1, self );
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007408">
+                    
+                    <a name="M007408"></a><b>reset</b>(...)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+<a href="Emitter.html#M007408">YAML::Syck::Emitter.reset</a>( options )
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007408_source')" id="l_M007408_source">show</a>
+                        
+                    </p>
+                    <div id="M007408_source" class="dyn-source">
+                        <pre>VALUE
+syck_emitter_reset( argc, argv, self )
+    int argc;
+    VALUE *argv;
+    VALUE self;
+{
+    VALUE options, tmp;
+    SyckEmitter *emitter;
+    struct emitter_xtra *bonus;
+
+    Data_Get_Struct(self, SyckEmitter, emitter);
+    bonus = (struct emitter_xtra *)emitter-&gt;bonus;
+
+    bonus-&gt;oid = Qnil;
+    bonus-&gt;port = rb_str_new2( &quot;&quot; );
+    bonus-&gt;data = rb_hash_new();
+
+    if (rb_scan_args(argc, argv, &quot;01&quot;, &amp;options) == 0)
+    {
+        options = rb_hash_new();
+        rb_ivar_set(self, s_options, options);
+    }
+    else if ( !NIL_P(tmp = rb_check_string_type(options)) )
+    {
+        bonus-&gt;port = tmp;
+    }
+    else if ( rb_respond_to( options, s_write ) )
+    {
+        bonus-&gt;port = options;
+    }
+    else
+    {
+        Check_Type(options, T_HASH);
+        rb_ivar_set(self, s_options, options);
+    }
+    
+    emitter-&gt;headless = 0;
+    rb_ivar_set(self, s_level, INT2FIX(0));
+    rb_ivar_set(self, s_resolver, Qnil);
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007410">
+                    
+                    <a name="M007410"></a><b>set_resolver</b>(p1)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+<a href="Emitter.html#M007410">YAML::Syck::Emitter#set_resolver</a>
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007410_source')" id="l_M007410_source">show</a>
+                        
+                    </p>
+                    <div id="M007410_source" class="dyn-source">
+                        <pre>VALUE
+syck_emitter_set_resolver( self, resolver )
+    VALUE self, resolver;
+{
+    rb_ivar_set( self, s_resolver, resolver );
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

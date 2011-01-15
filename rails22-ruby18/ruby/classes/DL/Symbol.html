@@ -1,0 +1,1166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>DL::Symbol</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            DL::Symbol 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../files/ext/dl/dl_c.html">ext/dl/dl.c</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+defined(DLSTACK)
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>#</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007224">[]</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007223">call</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M007224">
+                    
+                    <a name="M007224"></a><b>[]</b>(...)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+defined(DLSTACK_GUARD)
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007224_source')" id="l_M007224_source">show</a>
+                        
+                    </p>
+                    <div id="M007224_source" class="dyn-source">
+                        <pre>VALUE
+rb_dlsym_call(int argc, VALUE argv[], VALUE self)
+{
+  struct sym_data *sym;
+  ANY_TYPE *args;
+  ANY_TYPE *dargs;
+  ANY_TYPE ret;
+  int   *dtypes;
+  VALUE val;
+  VALUE dvals;
+  int i;
+  long ftype;
+  void *func;
+
+  rb_secure_update(self);
+  Data_Get_Struct(self, struct sym_data, sym);
+  DEBUG_CODE({
+    printf(&quot;rb_dlsym_call(): type = '%s', func = 0x%x\n&quot;, sym-&gt;type, sym-&gt;func);
+  });
+  if( (sym-&gt;len - 1) != argc ){
+    rb_raise(rb_eArgError, &quot;%d arguments are needed&quot;, sym-&gt;len - 1);
+  }
+
+  ftype = 0;
+  dvals = Qnil;
+
+  args = ALLOC_N(ANY_TYPE, sym-&gt;len - 1);
+  dargs = ALLOC_N(ANY_TYPE, sym-&gt;len - 1);
+  dtypes = ALLOC_N(int, sym-&gt;len - 1);
+#define FREE_ARGS {xfree(args); xfree(dargs); xfree(dtypes);}
+
+  for( i = sym-&gt;len - 2; i &gt;= 0; i-- ){
+    dtypes[i] = 0;
+
+    switch( sym-&gt;type[i+1] ){
+    case 'p':
+      dtypes[i] = 'p';
+    case 'P':
+      {
+        struct ptr_data *data;
+        VALUE pval;
+
+        if( argv[i] == Qnil ){
+          ANY2P(args[i]) = DLVOIDP(0);
+        }
+        else{
+          if( rb_obj_is_kind_of(argv[i], rb_cDLPtrData) ){
+            pval = argv[i];
+          }
+          else{
+            pval = rb_funcall(argv[i], rb_intern(&quot;to_ptr&quot;), 0);
+            if( !rb_obj_is_kind_of(pval, rb_cDLPtrData) ){
+              rb_raise(rb_eDLTypeError, &quot;unexpected type of argument #%d&quot;, i);
+            }
+          }
+          rb_check_safe_obj(pval);
+          Data_Get_Struct(pval, struct ptr_data, data);
+          ANY2P(args[i]) = DLVOIDP(data-&gt;ptr);
+        }
+      }
+      PUSH_P(ftype);
+      break;
+    case 'a':
+      dtypes[i] = 'a';
+    case 'A':
+      if( argv[i] == Qnil ){
+        ANY2P(args[i]) = DLVOIDP(0);
+      }
+      else{
+        ANY2P(args[i]) = DLVOIDP(rb_ary2cary(0, argv[i], NULL));
+      }
+      PUSH_P(ftype);
+      break;
+    case 'C':
+      ANY2C(args[i]) = DLCHAR(NUM2CHR(argv[i]));
+      PUSH_C(ftype);
+      break;
+    case 'c':
+      ANY2C(dargs[i]) = DLCHAR(NUM2CHR(argv[i]));
+      ANY2P(args[i]) = DLVOIDP(&amp;(ANY2C(dargs[i])));
+      dtypes[i] = 'c';
+      PUSH_P(ftype);
+      break;
+    case 'H':
+      ANY2H(args[i]) = DLSHORT(NUM2INT(argv[i]));
+      PUSH_C(ftype);
+      break;
+    case 'h':
+      ANY2H(dargs[i]) = DLSHORT(NUM2INT(argv[i]));
+      ANY2P(args[i]) = DLVOIDP(&amp;(ANY2H(dargs[i])));
+      dtypes[i] = 'h';
+      PUSH_P(ftype);
+      break;
+    case 'I':
+      ANY2I(args[i]) = DLINT(NUM2INT(argv[i]));
+      PUSH_I(ftype);
+      break;
+    case 'i':
+      ANY2I(dargs[i]) = DLINT(NUM2INT(argv[i]));
+      ANY2P(args[i]) = DLVOIDP(&amp;(ANY2I(dargs[i])));
+      dtypes[i] = 'i';
+      PUSH_P(ftype);
+      break;
+    case 'L':
+      ANY2L(args[i]) = DLNUM2LONG(argv[i]);
+      PUSH_L(ftype);
+      break;
+    case 'l':
+      ANY2L(dargs[i]) = DLNUM2LONG(argv[i]);
+      ANY2P(args[i]) = DLVOIDP(&amp;(ANY2L(dargs[i])));
+      dtypes[i] = 'l';
+      PUSH_P(ftype);
+      break;
+    case 'F':
+      Check_Type(argv[i], T_FLOAT);
+      ANY2F(args[i]) = DLFLOAT(RFLOAT(argv[i])-&gt;value);
+      PUSH_F(ftype);
+      break;
+    case 'f':
+      Check_Type(argv[i], T_FLOAT);
+      ANY2F(dargs[i]) = DLFLOAT(RFLOAT(argv[i])-&gt;value);
+      ANY2P(args[i]) = DLVOIDP(&amp;(ANY2F(dargs[i])));
+      dtypes[i] = 'f';
+      PUSH_P(ftype);
+      break;
+    case 'D':
+      Check_Type(argv[i], T_FLOAT);
+      ANY2D(args[i]) = RFLOAT(argv[i])-&gt;value;
+      PUSH_D(ftype);
+      break;
+    case 'd':
+      Check_Type(argv[i], T_FLOAT);
+      ANY2D(dargs[i]) = RFLOAT(argv[i])-&gt;value;
+      ANY2P(args[i]) = DLVOIDP(&amp;(ANY2D(dargs[i])));
+      dtypes[i] = 'd';
+      PUSH_P(ftype);
+      break;
+    case 'S':
+      if( argv[i] == Qnil ){
+        ANY2S(args[i]) = DLSTR(0);
+      }
+      else{
+        VALUE str = argv[i];
+        SafeStringValue(str);
+        ANY2S(args[i]) = DLSTR(RSTRING(str)-&gt;ptr);
+      }
+      PUSH_P(ftype);
+      break;
+    case 's':
+      {
+        VALUE str = argv[i];
+        SafeStringValue(str);
+        ANY2S(args[i]) = DLSTR(dlmalloc(RSTRING(str)-&gt;len + 1));
+        memcpy((char*)(ANY2S(args[i])), RSTRING(str)-&gt;ptr, RSTRING(str)-&gt;len + 1);
+        dtypes[i] = 's';
+      }
+      PUSH_P(ftype);
+      break;
+    default:
+      FREE_ARGS;
+      rb_raise(rb_eDLTypeError,
+               &quot;unknown type '%c' of the return value.&quot;,
+               sym-&gt;type[i+1]);
+    }
+  }
+
+  switch( sym-&gt;type[0] ){
+  case '0':
+    PUSH_0(ftype);
+    break;
+  case 'P':
+  case 'p':
+  case 'S':
+  case 's':
+  case 'A':
+  case 'a':
+    PUSH_P(ftype);
+    break;
+  case 'C':
+  case 'c':
+    PUSH_C(ftype);
+    break;
+  case 'H':
+  case 'h':
+    PUSH_H(ftype);
+    break;
+  case 'I':
+  case 'i':
+    PUSH_I(ftype);
+    break;
+  case 'L':
+  case 'l':
+    PUSH_L(ftype);
+    break;
+  case 'F':
+  case 'f':
+    PUSH_F(ftype);
+    break;
+  case 'D':
+  case 'd':
+    PUSH_D(ftype);
+    break;
+  default:
+    FREE_ARGS;
+    rb_raise(rb_eDLTypeError,
+             &quot;unknown type `%c' of the return value.&quot;,
+             sym-&gt;type[0]);
+  }
+
+  func = sym-&gt;func;
+
+#if defined(DLSTACK)
+  {
+#if defined(DLSTACK_SIZE)
+  int  stk_size;
+  long stack[DLSTACK_SIZE];
+  long *sp;
+
+  sp = stack;
+  stk_size = stack_size(sym);
+  if( stk_size &lt; 0 ){
+    FREE_ARGS;
+    rb_raise(rb_eDLTypeError, &quot;unknown type '%c'.&quot;, -stk_size);
+  }
+  else if( stk_size &gt; (int)(DLSTACK_SIZE) ){
+    FREE_ARGS;
+    rb_raise(rb_eArgError, &quot;too many arguments.&quot;);
+  }
+#endif
+
+  DLSTACK_START(sym);
+
+#if defined(DLSTACK_REVERSE)
+  for( i = sym-&gt;len - 2; i &gt;= 0; i-- )
+#else
+  for( i = 0; i &lt;= sym-&gt;len -2; i++ )
+#endif
+  {
+    switch( sym-&gt;type[i+1] ){
+    case 'p':
+    case 'P':
+      DLSTACK_PUSH_P(ANY2P(args[i]));
+      break;
+    case 'a':
+    case 'A':
+      DLSTACK_PUSH_P(ANY2P(args[i]));
+      break;
+    case 'C':
+      DLSTACK_PUSH_C(ANY2C(args[i]));
+      break;
+    case 'c':
+      DLSTACK_PUSH_P(ANY2P(args[i]));
+      break;
+    case 'H':
+      DLSTACK_PUSH_H(ANY2H(args[i]));
+      break;
+    case 'h':
+      DLSTACK_PUSH_P(ANY2P(args[i]));
+      break;
+    case 'I':
+      DLSTACK_PUSH_I(ANY2I(args[i]));
+      break;
+    case 'i':
+      DLSTACK_PUSH_P(ANY2P(args[i]));
+      break;
+    case 'L':
+      DLSTACK_PUSH_L(ANY2L(args[i]));
+      break;
+    case 'l':
+      DLSTACK_PUSH_P(ANY2P(args[i]));
+      break;
+    case 'F':
+      DLSTACK_PUSH_F(ANY2F(args[i]));
+      break;
+    case 'f':
+      DLSTACK_PUSH_P(ANY2P(args[i]));
+      break;
+    case 'D':
+      DLSTACK_PUSH_D(ANY2D(args[i]));
+      break;
+    case 'd':
+      DLSTACK_PUSH_P(ANY2P(args[i]));
+      break;
+    case 'S':
+    case 's':
+      DLSTACK_PUSH_P(ANY2S(args[i]));
+      break;
+    }
+  }
+  DLSTACK_END(sym-&gt;type);
+
+#ifdef DLSTACK_GUARD
+  if(!rb_dlsym_guardcall(sym-&gt;type[0], &amp;ret, stack, func)) {
+    FREE_ARGS;
+    rb_raise(rb_eDLTypeError, &quot;unknown type `%c'&quot;, sym-&gt;type[0]);
+  }
+#else /* defined(DLSTACK_GUARD) */
+  {
+    switch( sym-&gt;type[0] ){
+    case '0':
+      {
+        void (*f)(DLSTACK_PROTO) = func;
+        f(DLSTACK_ARGS);
+      }
+      break;
+    case 'P':
+    case 'p':
+      {
+        void * (*f)(DLSTACK_PROTO) = func;
+        ret.p = f(DLSTACK_ARGS);
+      }
+      break;
+    case 'C':
+    case 'c':
+      {
+        char (*f)(DLSTACK_PROTO) = func;
+        ret.c = f(DLSTACK_ARGS);
+      }
+      break;
+    case 'H':
+    case 'h':
+      {
+        short (*f)(DLSTACK_PROTO) = func;
+        ret.h = f(DLSTACK_ARGS);
+      }
+      break;
+    case 'I':
+    case 'i':
+      {
+        int (*f)(DLSTACK_PROTO) = func;
+        ret.i = f(DLSTACK_ARGS);
+      }
+      break;
+    case 'L':
+    case 'l':
+      {
+        long (*f)(DLSTACK_PROTO) = func;
+        ret.l = f(DLSTACK_ARGS);
+      }
+      break;
+    case 'F':
+    case 'f':
+      {
+        float (*f)(DLSTACK_PROTO) = func;
+        ret.f = f(DLSTACK_ARGS);
+      }
+      break;
+    case 'D':
+    case 'd':
+      {
+        double (*f)(DLSTACK_PROTO) = func;
+        ret.d = f(DLSTACK_ARGS);
+      }
+      break;
+    case 'S':
+    case 's':
+      {
+        char * (*f)(DLSTACK_PROTO) = func;
+        ret.s = f(DLSTACK_ARGS);
+      }
+      break;
+    default:
+      FREE_ARGS;
+      rb_raise(rb_eDLTypeError, &quot;unknown type `%c'&quot;, sym-&gt;type[0]);
+    }
+  }
+#endif /* defubed(DLSTACK_GUARD) */
+
+  {
+    /*
+     * We should get the value of errno/GetLastError() before calling another functions.
+     */
+    int last_errno = errno;
+#ifdef _WIN32
+    DWORD win32_last_err = GetLastError();
+#endif
+
+    rb_thread_local_aset(rb_thread_current(), rb_dl_id_DLErrno, INT2NUM(last_errno));
+#ifdef _WIN32
+    rb_thread_local_aset(rb_thread_current(), rb_dl_id_DLW32Error, INT2NUM(win32_last_err));
+#endif
+  }
+
+  }
+#else /* defined(DLSTACK) */
+  switch(ftype){
+#include &quot;call.func&quot;
+  default:
+    FREE_ARGS;
+    rb_raise(rb_eDLTypeError, &quot;unsupported function type `%s'&quot;, sym-&gt;type);
+  }
+#endif /* defined(DLSTACK) */
+
+  switch( sym-&gt;type[0] ){
+  case '0':
+    val = Qnil;
+    break;
+  case 'P':
+    val = rb_dlptr_new((void*)(ANY2P(ret)), 0, 0);
+    break;
+  case 'p':
+    val = rb_dlptr_new((void*)(ANY2P(ret)), 0, dlfree);
+    break;
+  case 'C':
+  case 'c':
+    val = CHR2FIX((char)(ANY2C(ret)));
+    break;
+  case 'H':
+  case 'h':
+    val = INT2NUM((short)(ANY2H(ret)));
+    break;
+  case 'I':
+  case 'i':
+    val = INT2NUM((int)(ANY2I(ret)));
+    break;
+  case 'L':
+  case 'l':
+    val = DLLONG2NUM((long)(ANY2L(ret)));
+    break;
+  case 'F':
+  case 'f':
+    val = rb_float_new((double)(ANY2F(ret)));
+    break;
+  case 'D':
+  case 'd':
+    val = rb_float_new((double)(ANY2D(ret)));
+    break;
+  case 'S':
+    if( ANY2S(ret) ){
+      val = rb_tainted_str_new2((char*)(ANY2S(ret)));
+    }
+    else{
+      val = Qnil;
+    }
+    break;
+  case 's':
+    if( ANY2S(ret) ){
+      val = rb_tainted_str_new2((char*)(ANY2S(ret)));
+      DEBUG_CODE({
+        printf(&quot;dlfree(%s)\n&quot;,(char*)(ANY2S(ret)));
+      });
+      dlfree((void*)(ANY2S(ret)));
+    }
+    else{
+      val = Qnil;
+    }
+    break;
+  default:
+    FREE_ARGS;
+    rb_raise(rb_eDLTypeError, &quot;unknown type `%c'&quot;, sym-&gt;type[0]);
+  }
+
+  dvals = rb_ary_new();
+  for( i = 0; i &lt;= sym-&gt;len - 2; i++ ){
+    if( dtypes[i] ){
+      switch( dtypes[i] ){
+      case 'c':
+        rb_ary_push(dvals, CHR2FIX(*((char*)(ANY2P(args[i])))));
+        break;
+      case 'h':
+        rb_ary_push(dvals, INT2NUM(*((short*)(ANY2P(args[i])))));
+        break;
+      case 'i':
+        rb_ary_push(dvals, INT2NUM(*((int*)(ANY2P(args[i])))));
+        break;
+      case 'l':
+        rb_ary_push(dvals, DLLONG2NUM(*((long*)(ANY2P(args[i])))));
+        break;
+      case 'f':
+        rb_ary_push(dvals, rb_float_new(*((float*)(ANY2P(args[i])))));
+        break;
+      case 'd':
+        rb_ary_push(dvals, rb_float_new(*((double*)(ANY2P(args[i])))));
+        break;
+      case 'p':
+        rb_ary_push(dvals, rb_dlptr_new((void*)(ANY2P(args[i])), 0, 0));
+        break;
+      case 'a':
+        rb_ary_push(dvals, rb_dlptr_new((void*)ANY2P(args[i]), 0, 0));
+        break;
+      case 's':
+        rb_ary_push(dvals, rb_tainted_str_new2((char*)ANY2S(args[i])));
+        DEBUG_CODE({
+          printf(&quot;dlfree(%s)\n&quot;,(char*)ANY2S(args[i]));
+        });
+        dlfree((void*)ANY2S(args[i]));
+        break;
+      default:
+        {
+          char c = dtypes[i];
+          FREE_ARGS;
+          rb_raise(rb_eRuntimeError, &quot;unknown argument type '%c'&quot;, i, c);
+        }
+      }
+    }
+    else{
+      switch( sym-&gt;type[i+1] ){
+      case 'A':
+        dlfree((void*)ANY2P(args[i]));
+        break;
+      }
+      rb_ary_push(dvals, argv[i]);
+    }
+  }
+
+  FREE_ARGS;
+#undef FREE_ARGS
+  return rb_assoc_new(val,dvals);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007223">
+                    
+                    <a name="M007223"></a><b>call</b>(...)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+defined(DLSTACK_GUARD)
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007223_source')" id="l_M007223_source">show</a>
+                        
+                    </p>
+                    <div id="M007223_source" class="dyn-source">
+                        <pre>VALUE
+rb_dlsym_call(int argc, VALUE argv[], VALUE self)
+{
+  struct sym_data *sym;
+  ANY_TYPE *args;
+  ANY_TYPE *dargs;
+  ANY_TYPE ret;
+  int   *dtypes;
+  VALUE val;
+  VALUE dvals;
+  int i;
+  long ftype;
+  void *func;
+
+  rb_secure_update(self);
+  Data_Get_Struct(self, struct sym_data, sym);
+  DEBUG_CODE({
+    printf(&quot;rb_dlsym_call(): type = '%s', func = 0x%x\n&quot;, sym-&gt;type, sym-&gt;func);
+  });
+  if( (sym-&gt;len - 1) != argc ){
+    rb_raise(rb_eArgError, &quot;%d arguments are needed&quot;, sym-&gt;len - 1);
+  }
+
+  ftype = 0;
+  dvals = Qnil;
+
+  args = ALLOC_N(ANY_TYPE, sym-&gt;len - 1);
+  dargs = ALLOC_N(ANY_TYPE, sym-&gt;len - 1);
+  dtypes = ALLOC_N(int, sym-&gt;len - 1);
+#define FREE_ARGS {xfree(args); xfree(dargs); xfree(dtypes);}
+
+  for( i = sym-&gt;len - 2; i &gt;= 0; i-- ){
+    dtypes[i] = 0;
+
+    switch( sym-&gt;type[i+1] ){
+    case 'p':
+      dtypes[i] = 'p';
+    case 'P':
+      {
+        struct ptr_data *data;
+        VALUE pval;
+
+        if( argv[i] == Qnil ){
+          ANY2P(args[i]) = DLVOIDP(0);
+        }
+        else{
+          if( rb_obj_is_kind_of(argv[i], rb_cDLPtrData) ){
+            pval = argv[i];
+          }
+          else{
+            pval = rb_funcall(argv[i], rb_intern(&quot;to_ptr&quot;), 0);
+            if( !rb_obj_is_kind_of(pval, rb_cDLPtrData) ){
+              rb_raise(rb_eDLTypeError, &quot;unexpected type of argument #%d&quot;, i);
+            }
+          }
+          rb_check_safe_obj(pval);
+          Data_Get_Struct(pval, struct ptr_data, data);
+          ANY2P(args[i]) = DLVOIDP(data-&gt;ptr);
+        }
+      }
+      PUSH_P(ftype);
+      break;
+    case 'a':
+      dtypes[i] = 'a';
+    case 'A':
+      if( argv[i] == Qnil ){
+        ANY2P(args[i]) = DLVOIDP(0);
+      }
+      else{
+        ANY2P(args[i]) = DLVOIDP(rb_ary2cary(0, argv[i], NULL));
+      }
+      PUSH_P(ftype);
+      break;
+    case 'C':
+      ANY2C(args[i]) = DLCHAR(NUM2CHR(argv[i]));
+      PUSH_C(ftype);
+      break;
+    case 'c':
+      ANY2C(dargs[i]) = DLCHAR(NUM2CHR(argv[i]));
+      ANY2P(args[i]) = DLVOIDP(&amp;(ANY2C(dargs[i])));
+      dtypes[i] = 'c';
+      PUSH_P(ftype);
+      break;
+    case 'H':
+      ANY2H(args[i]) = DLSHORT(NUM2INT(argv[i]));
+      PUSH_C(ftype);
+      break;
+    case 'h':
+      ANY2H(dargs[i]) = DLSHORT(NUM2INT(argv[i]));
+      ANY2P(args[i]) = DLVOIDP(&amp;(ANY2H(dargs[i])));
+      dtypes[i] = 'h';
+      PUSH_P(ftype);
+      break;
+    case 'I':
+      ANY2I(args[i]) = DLINT(NUM2INT(argv[i]));
+      PUSH_I(ftype);
+      break;
+    case 'i':
+      ANY2I(dargs[i]) = DLINT(NUM2INT(argv[i]));
+      ANY2P(args[i]) = DLVOIDP(&amp;(ANY2I(dargs[i])));
+      dtypes[i] = 'i';
+      PUSH_P(ftype);
+      break;
+    case 'L':
+      ANY2L(args[i]) = DLNUM2LONG(argv[i]);
+      PUSH_L(ftype);
+      break;
+    case 'l':
+      ANY2L(dargs[i]) = DLNUM2LONG(argv[i]);
+      ANY2P(args[i]) = DLVOIDP(&amp;(ANY2L(dargs[i])));
+      dtypes[i] = 'l';
+      PUSH_P(ftype);
+      break;
+    case 'F':
+      Check_Type(argv[i], T_FLOAT);
+      ANY2F(args[i]) = DLFLOAT(RFLOAT(argv[i])-&gt;value);
+      PUSH_F(ftype);
+      break;
+    case 'f':
+      Check_Type(argv[i], T_FLOAT);
+      ANY2F(dargs[i]) = DLFLOAT(RFLOAT(argv[i])-&gt;value);
+      ANY2P(args[i]) = DLVOIDP(&amp;(ANY2F(dargs[i])));
+      dtypes[i] = 'f';
+      PUSH_P(ftype);
+      break;
+    case 'D':
+      Check_Type(argv[i], T_FLOAT);
+      ANY2D(args[i]) = RFLOAT(argv[i])-&gt;value;
+      PUSH_D(ftype);
+      break;
+    case 'd':
+      Check_Type(argv[i], T_FLOAT);
+      ANY2D(dargs[i]) = RFLOAT(argv[i])-&gt;value;
+      ANY2P(args[i]) = DLVOIDP(&amp;(ANY2D(dargs[i])));
+      dtypes[i] = 'd';
+      PUSH_P(ftype);
+      break;
+    case 'S':
+      if( argv[i] == Qnil ){
+        ANY2S(args[i]) = DLSTR(0);
+      }
+      else{
+        VALUE str = argv[i];
+        SafeStringValue(str);
+        ANY2S(args[i]) = DLSTR(RSTRING(str)-&gt;ptr);
+      }
+      PUSH_P(ftype);
+      break;
+    case 's':
+      {
+        VALUE str = argv[i];
+        SafeStringValue(str);
+        ANY2S(args[i]) = DLSTR(dlmalloc(RSTRING(str)-&gt;len + 1));
+        memcpy((char*)(ANY2S(args[i])), RSTRING(str)-&gt;ptr, RSTRING(str)-&gt;len + 1);
+        dtypes[i] = 's';
+      }
+      PUSH_P(ftype);
+      break;
+    default:
+      FREE_ARGS;
+      rb_raise(rb_eDLTypeError,
+               &quot;unknown type '%c' of the return value.&quot;,
+               sym-&gt;type[i+1]);
+    }
+  }
+
+  switch( sym-&gt;type[0] ){
+  case '0':
+    PUSH_0(ftype);
+    break;
+  case 'P':
+  case 'p':
+  case 'S':
+  case 's':
+  case 'A':
+  case 'a':
+    PUSH_P(ftype);
+    break;
+  case 'C':
+  case 'c':
+    PUSH_C(ftype);
+    break;
+  case 'H':
+  case 'h':
+    PUSH_H(ftype);
+    break;
+  case 'I':
+  case 'i':
+    PUSH_I(ftype);
+    break;
+  case 'L':
+  case 'l':
+    PUSH_L(ftype);
+    break;
+  case 'F':
+  case 'f':
+    PUSH_F(ftype);
+    break;
+  case 'D':
+  case 'd':
+    PUSH_D(ftype);
+    break;
+  default:
+    FREE_ARGS;
+    rb_raise(rb_eDLTypeError,
+             &quot;unknown type `%c' of the return value.&quot;,
+             sym-&gt;type[0]);
+  }
+
+  func = sym-&gt;func;
+
+#if defined(DLSTACK)
+  {
+#if defined(DLSTACK_SIZE)
+  int  stk_size;
+  long stack[DLSTACK_SIZE];
+  long *sp;
+
+  sp = stack;
+  stk_size = stack_size(sym);
+  if( stk_size &lt; 0 ){
+    FREE_ARGS;
+    rb_raise(rb_eDLTypeError, &quot;unknown type '%c'.&quot;, -stk_size);
+  }
+  else if( stk_size &gt; (int)(DLSTACK_SIZE) ){
+    FREE_ARGS;
+    rb_raise(rb_eArgError, &quot;too many arguments.&quot;);
+  }
+#endif
+
+  DLSTACK_START(sym);
+
+#if defined(DLSTACK_REVERSE)
+  for( i = sym-&gt;len - 2; i &gt;= 0; i-- )
+#else
+  for( i = 0; i &lt;= sym-&gt;len -2; i++ )
+#endif
+  {
+    switch( sym-&gt;type[i+1] ){
+    case 'p':
+    case 'P':
+      DLSTACK_PUSH_P(ANY2P(args[i]));
+      break;
+    case 'a':
+    case 'A':
+      DLSTACK_PUSH_P(ANY2P(args[i]));
+      break;
+    case 'C':
+      DLSTACK_PUSH_C(ANY2C(args[i]));
+      break;
+    case 'c':
+      DLSTACK_PUSH_P(ANY2P(args[i]));
+      break;
+    case 'H':
+      DLSTACK_PUSH_H(ANY2H(args[i]));
+      break;
+    case 'h':
+      DLSTACK_PUSH_P(ANY2P(args[i]));
+      break;
+    case 'I':
+      DLSTACK_PUSH_I(ANY2I(args[i]));
+      break;
+    case 'i':
+      DLSTACK_PUSH_P(ANY2P(args[i]));
+      break;
+    case 'L':
+      DLSTACK_PUSH_L(ANY2L(args[i]));
+      break;
+    case 'l':
+      DLSTACK_PUSH_P(ANY2P(args[i]));
+      break;
+    case 'F':
+      DLSTACK_PUSH_F(ANY2F(args[i]));
+      break;
+    case 'f':
+      DLSTACK_PUSH_P(ANY2P(args[i]));
+      break;
+    case 'D':
+      DLSTACK_PUSH_D(ANY2D(args[i]));
+      break;
+    case 'd':
+      DLSTACK_PUSH_P(ANY2P(args[i]));
+      break;
+    case 'S':
+    case 's':
+      DLSTACK_PUSH_P(ANY2S(args[i]));
+      break;
+    }
+  }
+  DLSTACK_END(sym-&gt;type);
+
+#ifdef DLSTACK_GUARD
+  if(!rb_dlsym_guardcall(sym-&gt;type[0], &amp;ret, stack, func)) {
+    FREE_ARGS;
+    rb_raise(rb_eDLTypeError, &quot;unknown type `%c'&quot;, sym-&gt;type[0]);
+  }
+#else /* defined(DLSTACK_GUARD) */
+  {
+    switch( sym-&gt;type[0] ){
+    case '0':
+      {
+        void (*f)(DLSTACK_PROTO) = func;
+        f(DLSTACK_ARGS);
+      }
+      break;
+    case 'P':
+    case 'p':
+      {
+        void * (*f)(DLSTACK_PROTO) = func;
+        ret.p = f(DLSTACK_ARGS);
+      }
+      break;
+    case 'C':
+    case 'c':
+      {
+        char (*f)(DLSTACK_PROTO) = func;
+        ret.c = f(DLSTACK_ARGS);
+      }
+      break;
+    case 'H':
+    case 'h':
+      {
+        short (*f)(DLSTACK_PROTO) = func;
+        ret.h = f(DLSTACK_ARGS);
+      }
+      break;
+    case 'I':
+    case 'i':
+      {
+        int (*f)(DLSTACK_PROTO) = func;
+        ret.i = f(DLSTACK_ARGS);
+      }
+      break;
+    case 'L':
+    case 'l':
+      {
+        long (*f)(DLSTACK_PROTO) = func;
+        ret.l = f(DLSTACK_ARGS);
+      }
+      break;
+    case 'F':
+    case 'f':
+      {
+        float (*f)(DLSTACK_PROTO) = func;
+        ret.f = f(DLSTACK_ARGS);
+      }
+      break;
+    case 'D':
+    case 'd':
+      {
+        double (*f)(DLSTACK_PROTO) = func;
+        ret.d = f(DLSTACK_ARGS);
+      }
+      break;
+    case 'S':
+    case 's':
+      {
+        char * (*f)(DLSTACK_PROTO) = func;
+        ret.s = f(DLSTACK_ARGS);
+      }
+      break;
+    default:
+      FREE_ARGS;
+      rb_raise(rb_eDLTypeError, &quot;unknown type `%c'&quot;, sym-&gt;type[0]);
+    }
+  }
+#endif /* defubed(DLSTACK_GUARD) */
+
+  {
+    /*
+     * We should get the value of errno/GetLastError() before calling another functions.
+     */
+    int last_errno = errno;
+#ifdef _WIN32
+    DWORD win32_last_err = GetLastError();
+#endif
+
+    rb_thread_local_aset(rb_thread_current(), rb_dl_id_DLErrno, INT2NUM(last_errno));
+#ifdef _WIN32
+    rb_thread_local_aset(rb_thread_current(), rb_dl_id_DLW32Error, INT2NUM(win32_last_err));
+#endif
+  }
+
+  }
+#else /* defined(DLSTACK) */
+  switch(ftype){
+#include &quot;call.func&quot;
+  default:
+    FREE_ARGS;
+    rb_raise(rb_eDLTypeError, &quot;unsupported function type `%s'&quot;, sym-&gt;type);
+  }
+#endif /* defined(DLSTACK) */
+
+  switch( sym-&gt;type[0] ){
+  case '0':
+    val = Qnil;
+    break;
+  case 'P':
+    val = rb_dlptr_new((void*)(ANY2P(ret)), 0, 0);
+    break;
+  case 'p':
+    val = rb_dlptr_new((void*)(ANY2P(ret)), 0, dlfree);
+    break;
+  case 'C':
+  case 'c':
+    val = CHR2FIX((char)(ANY2C(ret)));
+    break;
+  case 'H':
+  case 'h':
+    val = INT2NUM((short)(ANY2H(ret)));
+    break;
+  case 'I':
+  case 'i':
+    val = INT2NUM((int)(ANY2I(ret)));
+    break;
+  case 'L':
+  case 'l':
+    val = DLLONG2NUM((long)(ANY2L(ret)));
+    break;
+  case 'F':
+  case 'f':
+    val = rb_float_new((double)(ANY2F(ret)));
+    break;
+  case 'D':
+  case 'd':
+    val = rb_float_new((double)(ANY2D(ret)));
+    break;
+  case 'S':
+    if( ANY2S(ret) ){
+      val = rb_tainted_str_new2((char*)(ANY2S(ret)));
+    }
+    else{
+      val = Qnil;
+    }
+    break;
+  case 's':
+    if( ANY2S(ret) ){
+      val = rb_tainted_str_new2((char*)(ANY2S(ret)));
+      DEBUG_CODE({
+        printf(&quot;dlfree(%s)\n&quot;,(char*)(ANY2S(ret)));
+      });
+      dlfree((void*)(ANY2S(ret)));
+    }
+    else{
+      val = Qnil;
+    }
+    break;
+  default:
+    FREE_ARGS;
+    rb_raise(rb_eDLTypeError, &quot;unknown type `%c'&quot;, sym-&gt;type[0]);
+  }
+
+  dvals = rb_ary_new();
+  for( i = 0; i &lt;= sym-&gt;len - 2; i++ ){
+    if( dtypes[i] ){
+      switch( dtypes[i] ){
+      case 'c':
+        rb_ary_push(dvals, CHR2FIX(*((char*)(ANY2P(args[i])))));
+        break;
+      case 'h':
+        rb_ary_push(dvals, INT2NUM(*((short*)(ANY2P(args[i])))));
+        break;
+      case 'i':
+        rb_ary_push(dvals, INT2NUM(*((int*)(ANY2P(args[i])))));
+        break;
+      case 'l':
+        rb_ary_push(dvals, DLLONG2NUM(*((long*)(ANY2P(args[i])))));
+        break;
+      case 'f':
+        rb_ary_push(dvals, rb_float_new(*((float*)(ANY2P(args[i])))));
+        break;
+      case 'd':
+        rb_ary_push(dvals, rb_float_new(*((double*)(ANY2P(args[i])))));
+        break;
+      case 'p':
+        rb_ary_push(dvals, rb_dlptr_new((void*)(ANY2P(args[i])), 0, 0));
+        break;
+      case 'a':
+        rb_ary_push(dvals, rb_dlptr_new((void*)ANY2P(args[i]), 0, 0));
+        break;
+      case 's':
+        rb_ary_push(dvals, rb_tainted_str_new2((char*)ANY2S(args[i])));
+        DEBUG_CODE({
+          printf(&quot;dlfree(%s)\n&quot;,(char*)ANY2S(args[i]));
+        });
+        dlfree((void*)ANY2S(args[i]));
+        break;
+      default:
+        {
+          char c = dtypes[i];
+          FREE_ARGS;
+          rb_raise(rb_eRuntimeError, &quot;unknown argument type '%c'&quot;, i, c);
+        }
+      }
+    }
+    else{
+      switch( sym-&gt;type[i+1] ){
+      case 'A':
+        dlfree((void*)ANY2P(args[i]));
+        break;
+      }
+      rb_ary_push(dvals, argv[i]);
+    }
+  }
+
+  FREE_ARGS;
+#undef FREE_ARGS
+  return rb_assoc_new(val,dvals);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

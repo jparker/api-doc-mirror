@@ -1,0 +1,867 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>OpenSSL::PKey::RSA</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            OpenSSL::PKey::RSA 
+            
+                <span class="parent">&lt; 
+                    
+                    cPKey
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../../files/ext/openssl/ossl_pkey_rsa_c.html">ext/openssl/ossl_pkey_rsa.c</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+let rdoc know about mOSSL and m<a href="PKey.html">PKey</a>
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006364">export</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>G</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006359">generate</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006360">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>P</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006371">params</a>,</li>
+                
+                <li><a href="#M006362">private?</a>,</li>
+                
+                <li><a href="#M006370">private_decrypt</a>,</li>
+                
+                <li><a href="#M006369">private_encrypt</a>,</li>
+                
+                <li><a href="#M006361">public?</a>,</li>
+                
+                <li><a href="#M006368">public_decrypt</a>,</li>
+                
+                <li><a href="#M006367">public_encrypt</a>,</li>
+                
+                <li><a href="#M006366">public_key</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>T</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006365">to_der</a>,</li>
+                
+                <li><a href="#M006374">to_pem</a>,</li>
+                
+                <li><a href="#M006375">to_s</a>,</li>
+                
+                <li><a href="#M006363">to_text</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M006359">
+                    
+                    <a name="M006359"></a><b>RSA.generate(size [, exponent]) &rarr; rsa
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <h3>Parameters</h3>
+<ul>
+<li><tt>size</tt> is an integer representing the desired key size. Keys smaller
+than 1024 should be considered insecure.
+
+</li>
+<li><tt>exponent</tt> is an odd number normally 3, 17, or 65537.
+
+</li>
+</ul>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006359_source')" id="l_M006359_source">show</a>
+                        
+                    </p>
+                    <div id="M006359_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_rsa_s_generate(int argc, VALUE *argv, VALUE klass)
+{
+/* why does this method exist?  why can't initialize take an optional exponent? */
+    RSA *rsa;
+    VALUE size, exp;
+    VALUE obj;
+
+    rb_scan_args(argc, argv, &quot;11&quot;, &amp;size, &amp;exp);
+
+    rsa = rsa_generate(NUM2INT(size), NIL_P(exp) ? RSA_F4 : NUM2INT(exp)); /* err handled by rsa_instance */
+    obj = rsa_instance(klass, rsa);
+
+    if (obj == Qfalse) {
+        RSA_free(rsa);
+        ossl_raise(eRSAError, NULL);
+    }
+
+    return obj;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006360">
+                    
+                    <a name="M006360"></a><b>RSA.new([size | encoded_key] [, pass]) &rarr; rsa
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <h3>Parameters</h3>
+<ul>
+<li><tt>size</tt> is an integer representing the desired key size.
+
+</li>
+<li><tt>encoded_key</tt> is a string containing PEM or DER encoded key.
+
+</li>
+<li><tt>pass</tt> is an optional string with the password to decrypt the
+encoded key.
+
+</li>
+</ul>
+<h3>Examples</h3>
+<ul>
+<li><a href="RSA.html#M006360">RSA.new(2048)</a> -> rsa
+
+</li>
+<li><a href="RSA.html#M006360">RSA.new</a>(File.read(&#8220;rsa.pem&#8220;)) ->
+rsa
+
+</li>
+<li><a href="RSA.html#M006360">RSA.new</a>(File.read(&#8220;rsa.pem&#8220;),
+&#8220;mypassword&#8221;) -> rsa
+
+</li>
+</ul>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006360_source')" id="l_M006360_source">show</a>
+                        
+                    </p>
+                    <div id="M006360_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_rsa_initialize(int argc, VALUE *argv, VALUE self)
+{
+    EVP_PKEY *pkey;
+    RSA *rsa;
+    BIO *in;
+    char *passwd = NULL;
+    VALUE arg, pass;
+        
+    GetPKey(self, pkey);
+    if(rb_scan_args(argc, argv, &quot;02&quot;, &amp;arg, &amp;pass) == 0) {
+        rsa = RSA_new();
+    }
+    else if (FIXNUM_P(arg)) {
+        rsa = rsa_generate(FIX2INT(arg), NIL_P(pass) ? RSA_F4 : NUM2INT(pass));
+        if (!rsa) ossl_raise(eRSAError, NULL);
+    }
+    else {
+        if (!NIL_P(pass)) passwd = StringValuePtr(pass);
+        arg = ossl_to_der_if_possible(arg);
+        in = ossl_obj2bio(arg);
+        rsa = PEM_read_bio_RSAPrivateKey(in, NULL, ossl_pem_passwd_cb, passwd);
+        if (!rsa) {
+            BIO_reset(in);
+            rsa = PEM_read_bio_RSAPublicKey(in, NULL, NULL, NULL);
+        }
+        if (!rsa) {
+            BIO_reset(in);
+            rsa = PEM_read_bio_RSA_PUBKEY(in, NULL, NULL, NULL);
+        }
+        if (!rsa) {
+            BIO_reset(in);
+            rsa = d2i_RSAPrivateKey_bio(in, NULL);
+        }
+        if (!rsa) {
+            BIO_reset(in);
+            rsa = d2i_RSAPublicKey_bio(in, NULL);
+        }
+        if (!rsa) {
+            BIO_reset(in);
+            rsa = d2i_RSA_PUBKEY_bio(in, NULL);
+        }
+        BIO_free(in);
+        if (!rsa) ossl_raise(eRSAError, &quot;Neither PUB key nor PRIV key:&quot;);
+    }
+    if (!EVP_PKEY_assign_RSA(pkey, rsa)) {
+        RSA_free(rsa);
+        ossl_raise(eRSAError, NULL);
+    }
+
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M006364">
+                    
+                    <a name="M006364"></a><b>rsa.to_pem([cipher, pass]) &rarr; aString
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <h3>Parameters</h3>
+<ul>
+<li><tt>cipher</tt> is a <a href="../Cipher.html">Cipher</a> object.
+
+</li>
+<li><tt>pass</tt> is a string.
+
+</li>
+</ul>
+<h3>Examples</h3>
+<ul>
+<li>rsa.to_pem -> a<a href="../../String.html">String</a>
+
+</li>
+<li>rsa.to_pem(cipher, pass) -> a<a href="../../String.html">String</a>
+
+</li>
+</ul>
+
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="RSA.html#M006374">to_pem</a>
+                    
+                    <a href="RSA.html#M006375">to_s</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006364_source')" id="l_M006364_source">show</a>
+                        
+                    </p>
+                    <div id="M006364_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_rsa_export(int argc, VALUE *argv, VALUE self)
+{
+    EVP_PKEY *pkey;
+    BIO *out;
+    const EVP_CIPHER *ciph = NULL;
+    char *passwd = NULL;
+    VALUE cipher, pass, str;
+
+    GetPKeyRSA(self, pkey);
+
+    rb_scan_args(argc, argv, &quot;02&quot;, &amp;cipher, &amp;pass);
+
+    if (!NIL_P(cipher)) {
+        ciph = GetCipherPtr(cipher);
+        if (!NIL_P(pass)) {
+            passwd = StringValuePtr(pass);
+        }
+    }
+    if (!(out = BIO_new(BIO_s_mem()))) {
+        ossl_raise(eRSAError, NULL);
+    }
+    if (RSA_HAS_PRIVATE(pkey-&gt;pkey.rsa)) {
+        if (!PEM_write_bio_RSAPrivateKey(out, pkey-&gt;pkey.rsa, ciph,
+                                         NULL, 0, ossl_pem_passwd_cb, passwd)) {
+            BIO_free(out);
+            ossl_raise(eRSAError, NULL);
+        }
+    } else {
+        if (!PEM_write_bio_RSAPublicKey(out, pkey-&gt;pkey.rsa)) {
+            BIO_free(out);
+            ossl_raise(eRSAError, NULL);
+        }
+    }
+    str = ossl_membio2str(out);
+    
+    return str;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006371">
+                    
+                    <a name="M006371"></a><b>rsa.params &rarr; hash
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Stores all parameters of key to the hash INSECURE: PRIVATE INFORMATIONS CAN
+LEAK OUT!!! Don&#8217;t use :-)) (I&#8217;s up to you)
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006371_source')" id="l_M006371_source">show</a>
+                        
+                    </p>
+                    <div id="M006371_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_rsa_get_params(VALUE self)
+{
+    EVP_PKEY *pkey;
+    VALUE hash;
+
+    GetPKeyRSA(self, pkey);
+
+    hash = rb_hash_new();
+
+    rb_hash_aset(hash, rb_str_new2(&quot;n&quot;), ossl_bn_new(pkey-&gt;pkey.rsa-&gt;n));
+    rb_hash_aset(hash, rb_str_new2(&quot;e&quot;), ossl_bn_new(pkey-&gt;pkey.rsa-&gt;e));
+    rb_hash_aset(hash, rb_str_new2(&quot;d&quot;), ossl_bn_new(pkey-&gt;pkey.rsa-&gt;d));
+    rb_hash_aset(hash, rb_str_new2(&quot;p&quot;), ossl_bn_new(pkey-&gt;pkey.rsa-&gt;p));
+    rb_hash_aset(hash, rb_str_new2(&quot;q&quot;), ossl_bn_new(pkey-&gt;pkey.rsa-&gt;q));
+    rb_hash_aset(hash, rb_str_new2(&quot;dmp1&quot;), ossl_bn_new(pkey-&gt;pkey.rsa-&gt;dmp1));
+    rb_hash_aset(hash, rb_str_new2(&quot;dmq1&quot;), ossl_bn_new(pkey-&gt;pkey.rsa-&gt;dmq1));
+    rb_hash_aset(hash, rb_str_new2(&quot;iqmp&quot;), ossl_bn_new(pkey-&gt;pkey.rsa-&gt;iqmp));
+    
+    return hash;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006362">
+                    
+                    <a name="M006362"></a><b>rsa.private? &rarr; true | false
+</b>
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006362_source')" id="l_M006362_source">show</a>
+                        
+                    </p>
+                    <div id="M006362_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_rsa_is_private(VALUE self)
+{
+    EVP_PKEY *pkey;
+        
+    GetPKeyRSA(self, pkey);
+    
+    return (RSA_PRIVATE(self, pkey-&gt;pkey.rsa)) ? Qtrue : Qfalse;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006370">
+                    
+                    <a name="M006370"></a><b>rsa.private_decrypt(string [, padding]) &rarr; aString
+</b>
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006370_source')" id="l_M006370_source">show</a>
+                        
+                    </p>
+                    <div id="M006370_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_rsa_private_decrypt(int argc, VALUE *argv, VALUE self)
+{
+    EVP_PKEY *pkey;
+    int buf_len, pad;
+    VALUE str, buffer, padding;
+
+    GetPKeyRSA(self, pkey);
+    if (!RSA_PRIVATE(self, pkey-&gt;pkey.rsa)) {
+        ossl_raise(eRSAError, &quot;private key needed.&quot;);
+    }
+    rb_scan_args(argc, argv, &quot;11&quot;, &amp;buffer, &amp;padding);
+    pad = (argc == 1) ? RSA_PKCS1_PADDING : NUM2INT(padding);
+    StringValue(buffer);
+    str = rb_str_new(0, ossl_rsa_buf_size(pkey));
+    buf_len = RSA_private_decrypt(RSTRING_LEN(buffer), RSTRING_PTR(buffer),
+                                  RSTRING_PTR(str), pkey-&gt;pkey.rsa,
+                                  pad);
+    if (buf_len &lt; 0) ossl_raise(eRSAError, NULL);
+    rb_str_set_len(str, buf_len);
+
+    return str;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006369">
+                    
+                    <a name="M006369"></a><b>rsa.private_encrypt(string [, padding]) &rarr; aString
+</b>
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006369_source')" id="l_M006369_source">show</a>
+                        
+                    </p>
+                    <div id="M006369_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_rsa_private_encrypt(int argc, VALUE *argv, VALUE self)
+{
+    EVP_PKEY *pkey;
+    int buf_len, pad;
+    VALUE str, buffer, padding;
+
+    GetPKeyRSA(self, pkey);
+    if (!RSA_PRIVATE(self, pkey-&gt;pkey.rsa)) {
+        ossl_raise(eRSAError, &quot;private key needed.&quot;);
+    }   
+    rb_scan_args(argc, argv, &quot;11&quot;, &amp;buffer, &amp;padding);
+    pad = (argc == 1) ? RSA_PKCS1_PADDING : NUM2INT(padding);
+    StringValue(buffer);
+    str = rb_str_new(0, ossl_rsa_buf_size(pkey));
+    buf_len = RSA_private_encrypt(RSTRING_LEN(buffer), RSTRING_PTR(buffer),
+                                  RSTRING_PTR(str), pkey-&gt;pkey.rsa,
+                                  pad);
+    if (buf_len &lt; 0) ossl_raise(eRSAError, NULL);
+    rb_str_set_len(str, buf_len);
+    
+    return str;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006361">
+                    
+                    <a name="M006361"></a><b>rsa.public? &rarr; true
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+The return value is always true since every private key is also a public
+key.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006361_source')" id="l_M006361_source">show</a>
+                        
+                    </p>
+                    <div id="M006361_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_rsa_is_public(VALUE self)
+{
+    EVP_PKEY *pkey;
+
+    GetPKeyRSA(self, pkey);
+    /*
+     * This method should check for n and e.  BUG.
+     */
+    return Qtrue;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006368">
+                    
+                    <a name="M006368"></a><b>rsa.public_decrypt(string [, padding]) &rarr; aString
+</b>
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006368_source')" id="l_M006368_source">show</a>
+                        
+                    </p>
+                    <div id="M006368_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_rsa_public_decrypt(int argc, VALUE *argv, VALUE self)
+{
+    EVP_PKEY *pkey;
+    int buf_len, pad;
+    VALUE str, buffer, padding;
+
+    GetPKeyRSA(self, pkey);
+    rb_scan_args(argc, argv, &quot;11&quot;, &amp;buffer, &amp;padding);
+    pad = (argc == 1) ? RSA_PKCS1_PADDING : NUM2INT(padding);
+    StringValue(buffer);
+    str = rb_str_new(0, ossl_rsa_buf_size(pkey));
+    buf_len = RSA_public_decrypt(RSTRING_LEN(buffer), RSTRING_PTR(buffer),
+                                 RSTRING_PTR(str), pkey-&gt;pkey.rsa,
+                                 pad);
+    if (buf_len &lt; 0) ossl_raise(eRSAError, NULL);
+    rb_str_set_len(str, buf_len);
+    
+    return str;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006367">
+                    
+                    <a name="M006367"></a><b>rsa.public_encrypt(string [, padding]) &rarr; aString
+</b>
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006367_source')" id="l_M006367_source">show</a>
+                        
+                    </p>
+                    <div id="M006367_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_rsa_public_encrypt(int argc, VALUE *argv, VALUE self)
+{
+    EVP_PKEY *pkey;
+    int buf_len, pad;
+    VALUE str, buffer, padding;
+
+    GetPKeyRSA(self, pkey);
+    rb_scan_args(argc, argv, &quot;11&quot;, &amp;buffer, &amp;padding);
+    pad = (argc == 1) ? RSA_PKCS1_PADDING : NUM2INT(padding);
+    StringValue(buffer);
+    str = rb_str_new(0, ossl_rsa_buf_size(pkey));
+    buf_len = RSA_public_encrypt(RSTRING_LEN(buffer), RSTRING_PTR(buffer),
+                                 RSTRING_PTR(str), pkey-&gt;pkey.rsa,
+                                 pad);
+    if (buf_len &lt; 0) ossl_raise(eRSAError, NULL);
+    rb_str_set_len(str, buf_len);
+
+    return str;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006366">
+                    
+                    <a name="M006366"></a><b>rsa.public_key &rarr; aRSA
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Makes new instance <a href="RSA.html">RSA</a> PUBLIC_KEY from PRIVATE_KEY
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006366_source')" id="l_M006366_source">show</a>
+                        
+                    </p>
+                    <div id="M006366_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_rsa_to_public_key(VALUE self)
+{
+    EVP_PKEY *pkey;
+    RSA *rsa;
+    VALUE obj;
+    
+    GetPKeyRSA(self, pkey);
+    /* err check performed by rsa_instance */
+    rsa = RSAPublicKey_dup(pkey-&gt;pkey.rsa);
+    obj = rsa_instance(CLASS_OF(self), rsa);
+    if (obj == Qfalse) {
+        RSA_free(rsa);
+        ossl_raise(eRSAError, NULL);
+    }
+    return obj;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006365">
+                    
+                    <a name="M006365"></a><b>rsa.to_der &rarr; aString
+</b>
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006365_source')" id="l_M006365_source">show</a>
+                        
+                    </p>
+                    <div id="M006365_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_rsa_to_der(VALUE self)
+{
+    EVP_PKEY *pkey;
+    int (*i2d_func)_((const RSA*, unsigned char**));
+    unsigned char *p;
+    long len;
+    VALUE str;
+
+    GetPKeyRSA(self, pkey);
+    if(RSA_HAS_PRIVATE(pkey-&gt;pkey.rsa))
+        i2d_func = i2d_RSAPrivateKey;
+    else
+        i2d_func = i2d_RSAPublicKey;
+    if((len = i2d_func(pkey-&gt;pkey.rsa, NULL)) &lt;= 0)
+        ossl_raise(eRSAError, NULL);
+    str = rb_str_new(0, len);
+    p = RSTRING_PTR(str);
+    if(i2d_func(pkey-&gt;pkey.rsa, &amp;p) &lt; 0)
+        ossl_raise(eRSAError, NULL);
+    ossl_str_adjust(str, p);
+
+    return str;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006374">
+                    
+                    <a name="M006374"></a><b>to_pem</b>(...)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a href="RSA.html#M006364">export</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006375">
+                    
+                    <a name="M006375"></a><b>to_s</b>(...)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a href="RSA.html#M006364">export</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006363">
+                    
+                    <a name="M006363"></a><b>rsa.to_text &rarr; aString
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Prints all parameters of key to buffer INSECURE: PRIVATE INFORMATIONS CAN
+LEAK OUT!!! Don&#8217;t use :-)) (It&#8217;s up to you)
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006363_source')" id="l_M006363_source">show</a>
+                        
+                    </p>
+                    <div id="M006363_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_rsa_to_text(VALUE self)
+{
+    EVP_PKEY *pkey;
+    BIO *out;
+    VALUE str;
+
+    GetPKeyRSA(self, pkey);
+    if (!(out = BIO_new(BIO_s_mem()))) {
+        ossl_raise(eRSAError, NULL);
+    }
+    if (!RSA_print(out, pkey-&gt;pkey.rsa, 0)) { /* offset = 0 */
+        BIO_free(out);
+        ossl_raise(eRSAError, NULL);
+    }
+    str = ossl_membio2str(out);
+
+    return str;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

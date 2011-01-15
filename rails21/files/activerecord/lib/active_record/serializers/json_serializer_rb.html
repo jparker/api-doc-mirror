@@ -1,0 +1,99 @@
+  <div id="fileHeader">
+    <h1>json_serializer.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activerecord/lib/active_record/serializers/json_serializer.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>module ActiveRecord #:nodoc:
+  module Serialization
+    def self.included(base)
+      base.cattr_accessor :include_root_in_json, :instance_writer =&gt; false
+      base.extend ClassMethods
+    end
+
+    # Returns a JSON string representing the model. Some configuration is
+    # available through +options+.
+    #
+    # Without any +options+, the returned JSON string will include all
+    # the model's attributes. For example:
+    #
+    #   konata = User.find(1)
+    #   konata.to_json
+    #   # =&gt; {&quot;id&quot;: 1, &quot;name&quot;: &quot;Konata Izumi&quot;, &quot;age&quot;: 16,
+    #         &quot;created_at&quot;: &quot;2006/08/01&quot;, &quot;awesome&quot;: true}
+    #
+    # The &lt;tt&gt;:only&lt;/tt&gt; and &lt;tt&gt;:except&lt;/tt&gt; options can be used to limit the attributes
+    # included, and work similar to the +attributes+ method. For example:
+    #
+    #   konata.to_json(:only =&gt; [ :id, :name ])
+    #   # =&gt; {&quot;id&quot;: 1, &quot;name&quot;: &quot;Konata Izumi&quot;}
+    #
+    #   konata.to_json(:except =&gt; [ :id, :created_at, :age ])
+    #   # =&gt; {&quot;name&quot;: &quot;Konata Izumi&quot;, &quot;awesome&quot;: true}
+    #
+    # To include any methods on the model, use &lt;tt&gt;:methods&lt;/tt&gt;.
+    #
+    #   konata.to_json(:methods =&gt; :permalink)
+    #   # =&gt; {&quot;id&quot;: 1, &quot;name&quot;: &quot;Konata Izumi&quot;, &quot;age&quot;: 16,
+    #         &quot;created_at&quot;: &quot;2006/08/01&quot;, &quot;awesome&quot;: true,
+    #         &quot;permalink&quot;: &quot;1-konata-izumi&quot;}
+    #
+    # To include associations, use &lt;tt&gt;:include&lt;/tt&gt;.
+    #
+    #   konata.to_json(:include =&gt; :posts)
+    #   # =&gt; {&quot;id&quot;: 1, &quot;name&quot;: &quot;Konata Izumi&quot;, &quot;age&quot;: 16,
+    #         &quot;created_at&quot;: &quot;2006/08/01&quot;, &quot;awesome&quot;: true,
+    #         &quot;posts&quot;: [{&quot;id&quot;: 1, &quot;author_id&quot;: 1, &quot;title&quot;: &quot;Welcome to the weblog&quot;},
+    #                   {&quot;id&quot;: 2, author_id: 1, &quot;title&quot;: &quot;So I was thinking&quot;}]}
+    #
+    # 2nd level and higher order associations work as well:
+    #
+    #   konata.to_json(:include =&gt; { :posts =&gt; {
+    #                                  :include =&gt; { :comments =&gt; {
+    #                                                :only =&gt; :body } },
+    #                                  :only =&gt; :title } })
+    #   # =&gt; {&quot;id&quot;: 1, &quot;name&quot;: &quot;Konata Izumi&quot;, &quot;age&quot;: 16,
+    #         &quot;created_at&quot;: &quot;2006/08/01&quot;, &quot;awesome&quot;: true,
+    #         &quot;posts&quot;: [{&quot;comments&quot;: [{&quot;body&quot;: &quot;1st post!&quot;}, {&quot;body&quot;: &quot;Second!&quot;}],
+    #                    &quot;title&quot;: &quot;Welcome to the weblog&quot;},
+    #                   {&quot;comments&quot;: [{&quot;body&quot;: &quot;Don't think too hard&quot;}],
+    #                    &quot;title&quot;: &quot;So I was thinking&quot;}]}
+    def to_json(options = {})
+      if include_root_in_json
+        &quot;{#{self.class.json_class_name}: #{JsonSerializer.new(self, options).to_s}}&quot;
+      else
+        JsonSerializer.new(self, options).to_s
+      end
+    end
+
+    def from_json(json)
+      self.attributes = ActiveSupport::JSON.decode(json)
+      self
+    end
+
+    class JsonSerializer &lt; ActiveRecord::Serialization::Serializer #:nodoc:
+      def serialize
+        serializable_record.to_json
+      end
+    end
+
+    module ClassMethods
+      def json_class_name
+        @json_class_name ||= name.demodulize.underscore.inspect
+      end
+    end
+  end
+end
+</pre>
+    </div>

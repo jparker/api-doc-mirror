@@ -1,0 +1,89 @@
+  <div id="fileHeader">
+    <h1>partial_template.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionpack/lib/action_view/partial_template.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:04 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>module ActionView #:nodoc:
+  class PartialTemplate &lt; Template #:nodoc:
+    
+    attr_reader :variable_name, :object
+    
+    def initialize(view, partial_path, object = nil, locals = {})
+      @path, @variable_name = extract_partial_name_and_path(view, partial_path)
+      super(view, @path, true, locals)
+      add_object_to_local_assigns!(object)
+
+      # This is needed here in order to compile template with knowledge of 'counter'
+      initialize_counter
+      
+      # Prepare early. This is a performance optimization for partial collections
+      prepare!
+    end
+    
+    def render
+      ActionController::Base.benchmark(&quot;Rendered #{@path}&quot;, Logger::DEBUG, false) do
+        @handler.render(self)
+      end
+    end
+    
+    def render_member(object)
+      @locals[:object] = @locals[@variable_name] = object
+      
+      template = render_template
+      @locals[@counter_name] += 1
+      @locals.delete(@variable_name)
+      @locals.delete(:object)
+      
+      template
+    end
+    
+    def counter=(num)
+      @locals[@counter_name] = num
+    end
+
+    private
+
+    def add_object_to_local_assigns!(object)
+      @locals[:object] ||=
+        @locals[@variable_name] ||=
+          if object.is_a?(ActionView::Base::ObjectWrapper)
+            object.value
+          else
+            object
+          end || @view.controller.instance_variable_get(&quot;@#{variable_name}&quot;)
+    end
+    
+    def extract_partial_name_and_path(view, partial_path)
+      path, partial_name = partial_pieces(view, partial_path)
+      [File.join(path, &quot;_#{partial_name}&quot;), partial_name.split('/').last.split('.').first.to_sym] 
+    end
+    
+    def partial_pieces(view, partial_path)
+      if partial_path.include?('/')
+        return File.dirname(partial_path), File.basename(partial_path)
+      else
+        return view.controller.class.controller_path, partial_path
+      end
+    end
+    
+    def initialize_counter
+      @counter_name ||= &quot;#{@variable_name}_counter&quot;.to_sym
+      @locals[@counter_name] = 0
+    end
+    
+  end
+end
+</pre>
+    </div>

@@ -1,0 +1,2664 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Net::FTP</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            Net::FTP 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../files/lib/net/ftp_rb.html">lib/net/ftp.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+This class implements the <a href="../File.html">File</a> Transfer
+Protocol. If you have used a command-line <a href="FTP.html">FTP</a>
+program, and are familiar with the commands, you will be able to use this
+class easily. Some extra features are included to take advantage of
+Ruby&#8217;s style and strengths.
+</p>
+<h2>Example</h2>
+<pre>
+  require 'net/ftp'
+</pre>
+<h3>Example 1</h3>
+<pre>
+  ftp = Net::FTP.new('ftp.netlab.co.jp')
+  ftp.login
+  files = ftp.chdir('pub/lang/ruby/contrib')
+  files = ftp.list('n*')
+  ftp.getbinaryfile('nif.rb-0.91.gz', 'nif.gz', 1024)
+  ftp.close
+</pre>
+<h3>Example 2</h3>
+<pre>
+  Net::FTP.open('ftp.netlab.co.jp') do |ftp|
+    ftp.login
+    files = ftp.chdir('pub/lang/ruby/contrib')
+    files = ftp.list('n*')
+    ftp.getbinaryfile('nif.rb-0.91.gz', 'nif.gz', 1024)
+  end
+</pre>
+<h2>Major Methods</h2>
+<p>
+The following are the methods most likely to be useful to users:
+</p>
+<ul>
+<li><a href="FTP.html#M004753">FTP.open</a>
+
+</li>
+<li><a href="FTP.html#M004778">getbinaryfile</a>
+
+</li>
+<li><a href="FTP.html#M004779">gettextfile</a>
+
+</li>
+<li><a href="FTP.html#M004788">putbinaryfile</a>
+
+</li>
+<li><a href="FTP.html#M004789">puttextfile</a>
+
+</li>
+<li><a href="FTP.html#M004798">chdir</a>
+
+</li>
+<li><a href="FTP.html#M004792">nlst</a>
+
+</li>
+<li><a href="FTP.html#M004799">size</a>
+
+</li>
+<li><a href="FTP.html#M004796">rename</a>
+
+</li>
+<li><a href="FTP.html#M004797">delete</a>
+
+</li>
+</ul>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>A</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004806">abort</a>,</li>
+                
+                <li><a href="#M004791">acct</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004798">chdir</a>,</li>
+                
+                <li><a href="#M004813">close</a>,</li>
+                
+                <li><a href="#M004814">closed?</a>,</li>
+                
+                <li><a href="#M004758">connect</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>D</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004797">delete</a>,</li>
+                
+                <li><a href="#M004795">dir</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>G</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004780">get</a>,</li>
+                
+                <li><a href="#M004772">getaddress</a>,</li>
+                
+                <li><a href="#M004778">getbinaryfile</a>,</li>
+                
+                <li><a href="#M004804">getdir</a>,</li>
+                
+                <li><a href="#M004762">getline</a>,</li>
+                
+                <li><a href="#M004763">getmultiline</a>,</li>
+                
+                <li><a href="#M004764">getresp</a>,</li>
+                
+                <li><a href="#M004779">gettextfile</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>H</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004809">help</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>L</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004793">list</a>,</li>
+                
+                <li><a href="#M004773">login</a>,</li>
+                
+                <li><a href="#M004794">ls</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>M</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004770">makepasv</a>,</li>
+                
+                <li><a href="#M004769">makeport</a>,</li>
+                
+                <li><a href="#M004808">mdtm</a>,</li>
+                
+                <li><a href="#M004801">mkdir</a>,</li>
+                
+                <li><a href="#M004800">mtime</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004754">new</a>,</li>
+                
+                <li><a href="#M004792">nlst</a>,</li>
+                
+                <li><a href="#M004811">noop</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>O</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004753">open</a>,</li>
+                
+                <li><a href="#M004757">open_socket</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>P</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004815">parse227</a>,</li>
+                
+                <li><a href="#M004816">parse228</a>,</li>
+                
+                <li><a href="#M004817">parse229</a>,</li>
+                
+                <li><a href="#M004860">parse257</a>,</li>
+                
+                <li><a href="#M004790">put</a>,</li>
+                
+                <li><a href="#M004788">putbinaryfile</a>,</li>
+                
+                <li><a href="#M004761">putline</a>,</li>
+                
+                <li><a href="#M004789">puttextfile</a>,</li>
+                
+                <li><a href="#M004803">pwd</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>Q</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004810">quit</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>R</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004796">rename</a>,</li>
+                
+                <li><a href="#M004774">retrbinary</a>,</li>
+                
+                <li><a href="#M004775">retrlines</a>,</li>
+                
+                <li><a href="#M004755">return_code</a>,</li>
+                
+                <li><a href="#M004756">return_code=</a>,</li>
+                
+                <li><a href="#M004802">rmdir</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004760">sanitize</a>,</li>
+                
+                <li><a href="#M004766">sendcmd</a>,</li>
+                
+                <li><a href="#M004768">sendport</a>,</li>
+                
+                <li><a href="#M004759">set_socket</a>,</li>
+                
+                <li><a href="#M004812">site</a>,</li>
+                
+                <li><a href="#M004799">size</a>,</li>
+                
+                <li><a href="#M004807">status</a>,</li>
+                
+                <li><a href="#M004776">storbinary</a>,</li>
+                
+                <li><a href="#M004777">storlines</a>,</li>
+                
+                <li><a href="#M004805">system</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>T</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004771">transfercmd</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>V</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M004767">voidcmd</a>,</li>
+                
+                <li><a href="#M004765">voidresp</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+    <div class="sectiontitle">Included Modules</div>
+    <ul>
+        
+        <li>
+            
+            <a href="../Marshal.html">Marshal</a>
+            
+            START:includes
+        </li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Attributes</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [RW]
+            </td>
+            <td class='attr-name'>binary</td>
+            <td class='attr-desc'><p>
+When <tt>true</tt>, transfers are performed in binary mode. Default:
+<tt>true</tt>.
+</p></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [RW]
+            </td>
+            <td class='attr-name'>passive</td>
+            <td class='attr-desc'><p>
+When <tt>true</tt>, the connection is in passive mode. Default:
+<tt>false</tt>.
+</p></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [RW]
+            </td>
+            <td class='attr-name'>debug_mode</td>
+            <td class='attr-desc'><p>
+When <tt>true</tt>, all traffic to and from the server is written to
++$stdout+. Default: <tt>false</tt>.
+</p></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [RW]
+            </td>
+            <td class='attr-name'>resume</td>
+            <td class='attr-desc'><p>
+Sets or retrieves the <tt>resume</tt> status, which decides whether
+incomplete transfers are resumed or restarted. Default: <tt>false</tt>.
+</p></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>welcome</td>
+            <td class='attr-desc'><p>
+The server&#8217;s welcome message.
+</p></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>last_response_code</td>
+            <td class='attr-desc'><p>
+The server&#8217;s last response code.
+</p></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>last_response</td>
+            <td class='attr-desc'><p>
+The server&#8217;s last response.
+</p></td>
+        </tr>
+        
+    </table>
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M004754">
+                    
+                    <a name="M004754"></a><b>new</b>(host = nil, user = nil, passwd = nil, acct = nil)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Creates and returns a new <tt>FTP</tt> object. If a <tt>host</tt> is given,
+a connection is made. Additionally, if the <tt>user</tt> is given, the
+given user name, password, and (optionally) account are used to log in. See
+<a href="FTP.html#M004773">login</a>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004754_source')" id="l_M004754_source">show</a>
+                        
+                    </p>
+                    <div id="M004754_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 129</span>
+129:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">host</span> = <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">user</span> = <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">passwd</span> = <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">acct</span> = <span class="ruby-keyword kw">nil</span>)
+130:       <span class="ruby-keyword kw">super</span>()
+131:       <span class="ruby-ivar">@binary</span> = <span class="ruby-keyword kw">true</span>
+132:       <span class="ruby-ivar">@passive</span> = <span class="ruby-keyword kw">false</span>
+133:       <span class="ruby-ivar">@debug_mode</span> = <span class="ruby-keyword kw">false</span>
+134:       <span class="ruby-ivar">@resume</span> = <span class="ruby-keyword kw">false</span>
+135:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">host</span>
+136:         <span class="ruby-identifier">connect</span>(<span class="ruby-identifier">host</span>)
+137:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">user</span>
+138:           <span class="ruby-identifier">login</span>(<span class="ruby-identifier">user</span>, <span class="ruby-identifier">passwd</span>, <span class="ruby-identifier">acct</span>)
+139:         <span class="ruby-keyword kw">end</span>
+140:       <span class="ruby-keyword kw">end</span>
+141:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004753">
+                    
+                    <a name="M004753"></a><b>open</b>(host, user = nil, passwd = nil, acct = nil)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+A synonym for <tt><a href="FTP.html#M004754">FTP.new</a></tt>, but with a
+mandatory host parameter.
+</p>
+<p>
+If a block is given, it is passed the <tt>FTP</tt> object, which will be
+closed when the block finishes, or when an exception is raised.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004753_source')" id="l_M004753_source">show</a>
+                        
+                    </p>
+                    <div id="M004753_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 111</span>
+111:     <span class="ruby-keyword kw">def</span> <span class="ruby-constant">FTP</span>.<span class="ruby-identifier">open</span>(<span class="ruby-identifier">host</span>, <span class="ruby-identifier">user</span> = <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">passwd</span> = <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">acct</span> = <span class="ruby-keyword kw">nil</span>)
+112:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">block_given?</span>
+113:         <span class="ruby-identifier">ftp</span> = <span class="ruby-identifier">new</span>(<span class="ruby-identifier">host</span>, <span class="ruby-identifier">user</span>, <span class="ruby-identifier">passwd</span>, <span class="ruby-identifier">acct</span>)
+114:         <span class="ruby-keyword kw">begin</span>
+115:           <span class="ruby-keyword kw">yield</span> <span class="ruby-identifier">ftp</span>
+116:         <span class="ruby-keyword kw">ensure</span>
+117:           <span class="ruby-identifier">ftp</span>.<span class="ruby-identifier">close</span>
+118:         <span class="ruby-keyword kw">end</span>
+119:       <span class="ruby-keyword kw">else</span>
+120:         <span class="ruby-identifier">new</span>(<span class="ruby-identifier">host</span>, <span class="ruby-identifier">user</span>, <span class="ruby-identifier">passwd</span>, <span class="ruby-identifier">acct</span>)
+121:       <span class="ruby-keyword kw">end</span>
+122:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M004806">
+                    
+                    <a name="M004806"></a><b>abort</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Aborts the previous command (ABOR command).
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004806_source')" id="l_M004806_source">show</a>
+                        
+                    </p>
+                    <div id="M004806_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 745</span>
+745:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">abort</span>
+746:       <span class="ruby-identifier">line</span> = <span class="ruby-value str">&quot;ABOR&quot;</span> <span class="ruby-operator">+</span> <span class="ruby-constant">CRLF</span>
+747:       <span class="ruby-identifier">print</span> <span class="ruby-value str">&quot;put: ABOR\n&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@debug_mode</span>
+748:       <span class="ruby-ivar">@sock</span>.<span class="ruby-identifier">send</span>(<span class="ruby-identifier">line</span>, <span class="ruby-constant">Socket</span><span class="ruby-operator">::</span><span class="ruby-constant">MSG_OOB</span>)
+749:       <span class="ruby-identifier">resp</span> = <span class="ruby-identifier">getmultiline</span>
+750:       <span class="ruby-keyword kw">unless</span> [<span class="ruby-value str">&quot;426&quot;</span>, <span class="ruby-value str">&quot;226&quot;</span>, <span class="ruby-value str">&quot;225&quot;</span>].<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">resp</span>[<span class="ruby-value">0</span>, <span class="ruby-value">3</span>])
+751:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">FTPProtoError</span>, <span class="ruby-identifier">resp</span>
+752:       <span class="ruby-keyword kw">end</span>
+753:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">resp</span>
+754:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004791">
+                    
+                    <a name="M004791"></a><b>acct</b>(account)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Sends the ACCT command. TODO: more info.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004791_source')" id="l_M004791_source">show</a>
+                        
+                    </p>
+                    <div id="M004791_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 598</span>
+598:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">acct</span>(<span class="ruby-identifier">account</span>)
+599:       <span class="ruby-identifier">cmd</span> = <span class="ruby-value str">&quot;ACCT &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">account</span>
+600:       <span class="ruby-identifier">voidcmd</span>(<span class="ruby-identifier">cmd</span>)
+601:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004798">
+                    
+                    <a name="M004798"></a><b>chdir</b>(dirname)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Changes the (remote) directory.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004798_source')" id="l_M004798_source">show</a>
+                        
+                    </p>
+                    <div id="M004798_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 668</span>
+668:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">chdir</span>(<span class="ruby-identifier">dirname</span>)
+669:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">dirname</span> <span class="ruby-operator">==</span> <span class="ruby-value str">&quot;..&quot;</span>
+670:         <span class="ruby-keyword kw">begin</span>
+671:           <span class="ruby-identifier">voidcmd</span>(<span class="ruby-value str">&quot;CDUP&quot;</span>)
+672:           <span class="ruby-keyword kw">return</span>
+673:         <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">FTPPermError</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+674:           <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">e</span>.<span class="ruby-identifier">message</span>[<span class="ruby-value">0</span>, <span class="ruby-value">3</span>] <span class="ruby-operator">!=</span> <span class="ruby-value str">&quot;500&quot;</span>
+675:             <span class="ruby-identifier">raise</span> <span class="ruby-identifier">e</span>
+676:           <span class="ruby-keyword kw">end</span>
+677:         <span class="ruby-keyword kw">end</span>
+678:       <span class="ruby-keyword kw">end</span>
+679:       <span class="ruby-identifier">cmd</span> = <span class="ruby-value str">&quot;CWD &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">dirname</span>
+680:       <span class="ruby-identifier">voidcmd</span>(<span class="ruby-identifier">cmd</span>)
+681:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004813">
+                    
+                    <a name="M004813"></a><b>close</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Closes the connection. Further operations are impossible until you open a
+new connection with <a href="FTP.html#M004758">connect</a>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004813_source')" id="l_M004813_source">show</a>
+                        
+                    </p>
+                    <div id="M004813_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 813</span>
+813:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">close</span>
+814:       <span class="ruby-ivar">@sock</span>.<span class="ruby-identifier">close</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@sock</span> <span class="ruby-keyword kw">and</span> <span class="ruby-keyword kw">not</span> <span class="ruby-ivar">@sock</span>.<span class="ruby-identifier">closed?</span>
+815:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004814">
+                    
+                    <a name="M004814"></a><b>closed?</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns <tt>true</tt> iff the connection is closed.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004814_source')" id="l_M004814_source">show</a>
+                        
+                    </p>
+                    <div id="M004814_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 820</span>
+820:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">closed?</span>
+821:       <span class="ruby-ivar">@sock</span> <span class="ruby-operator">==</span> <span class="ruby-keyword kw">nil</span> <span class="ruby-keyword kw">or</span> <span class="ruby-ivar">@sock</span>.<span class="ruby-identifier">closed?</span>
+822:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004758">
+                    
+                    <a name="M004758"></a><b>connect</b>(host, port = FTP_PORT)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Establishes an <a href="FTP.html">FTP</a> connection to host, optionally
+overriding the default port. If the environment variable
+<tt>SOCKS_SERVER</tt> is set, sets up the connection through a SOCKS proxy.
+Raises an exception (typically <tt>Errno::ECONNREFUSED</tt>) if the
+connection cannot be established.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004758_source')" id="l_M004758_source">show</a>
+                        
+                    </p>
+                    <div id="M004758_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 170</span>
+170:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">connect</span>(<span class="ruby-identifier">host</span>, <span class="ruby-identifier">port</span> = <span class="ruby-constant">FTP_PORT</span>)
+171:       <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@debug_mode</span>
+172:         <span class="ruby-identifier">print</span> <span class="ruby-value str">&quot;connect: &quot;</span>, <span class="ruby-identifier">host</span>, <span class="ruby-value str">&quot;, &quot;</span>, <span class="ruby-identifier">port</span>, <span class="ruby-value str">&quot;\n&quot;</span>
+173:       <span class="ruby-keyword kw">end</span>
+174:       <span class="ruby-identifier">synchronize</span> <span class="ruby-keyword kw">do</span>
+175:         <span class="ruby-ivar">@sock</span> = <span class="ruby-identifier">open_socket</span>(<span class="ruby-identifier">host</span>, <span class="ruby-identifier">port</span>)
+176:         <span class="ruby-identifier">voidresp</span>
+177:       <span class="ruby-keyword kw">end</span>
+178:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004797">
+                    
+                    <a name="M004797"></a><b>delete</b>(filename)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Deletes a file on the server.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004797_source')" id="l_M004797_source">show</a>
+                        
+                    </p>
+                    <div id="M004797_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 654</span>
+654:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">delete</span>(<span class="ruby-identifier">filename</span>)
+655:       <span class="ruby-identifier">resp</span> = <span class="ruby-identifier">sendcmd</span>(<span class="ruby-value str">&quot;DELE &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">filename</span>)
+656:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">resp</span>[<span class="ruby-value">0</span>, <span class="ruby-value">3</span>] <span class="ruby-operator">==</span> <span class="ruby-value str">&quot;250&quot;</span>
+657:         <span class="ruby-keyword kw">return</span>
+658:       <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">resp</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">==</span> <span class="ruby-value">?5</span>
+659:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">FTPPermError</span>, <span class="ruby-identifier">resp</span>
+660:       <span class="ruby-keyword kw">else</span>
+661:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">FTPReplyError</span>, <span class="ruby-identifier">resp</span>
+662:       <span class="ruby-keyword kw">end</span>
+663:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004795">
+                    
+                    <a name="M004795"></a><b>dir</b>(*args)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a href="FTP.html#M004793">list</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004780">
+                    
+                    <a name="M004780"></a><b>get</b>(remotefile, localfile = File.basename(remotefile), blocksize = DEFAULT_BLOCKSIZE)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Retrieves <tt>remotefile</tt> in whatever mode the session is set (text or
+binary). See <a href="FTP.html#M004779">gettextfile</a> and <a
+href="FTP.html#M004778">getbinaryfile</a>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004780_source')" id="l_M004780_source">show</a>
+                        
+                    </p>
+                    <div id="M004780_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 534</span>
+534:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">get</span>(<span class="ruby-identifier">remotefile</span>, <span class="ruby-identifier">localfile</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">basename</span>(<span class="ruby-identifier">remotefile</span>),
+535:             <span class="ruby-identifier">blocksize</span> = <span class="ruby-constant">DEFAULT_BLOCKSIZE</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>) <span class="ruby-comment cmt"># :yield: data</span>
+536:       <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@binary</span>
+537:         <span class="ruby-identifier">gettextfile</span>(<span class="ruby-identifier">remotefile</span>, <span class="ruby-identifier">localfile</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+538:       <span class="ruby-keyword kw">else</span>
+539:         <span class="ruby-identifier">getbinaryfile</span>(<span class="ruby-identifier">remotefile</span>, <span class="ruby-identifier">localfile</span>, <span class="ruby-identifier">blocksize</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+540:       <span class="ruby-keyword kw">end</span>
+541:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004778">
+                    
+                    <a name="M004778"></a><b>getbinaryfile</b>(remotefile, localfile = File.basename(remotefile), blocksize = DEFAULT_BLOCKSIZE)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Retrieves <tt>remotefile</tt> in binary mode, storing the result in
+<tt>localfile</tt>. If a block is supplied, it is passed the retrieved data
+in <tt>blocksize</tt> chunks.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004778_source')" id="l_M004778_source">show</a>
+                        
+                    </p>
+                    <div id="M004778_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 493</span>
+493:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">getbinaryfile</span>(<span class="ruby-identifier">remotefile</span>, <span class="ruby-identifier">localfile</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">basename</span>(<span class="ruby-identifier">remotefile</span>),
+494:                       <span class="ruby-identifier">blocksize</span> = <span class="ruby-constant">DEFAULT_BLOCKSIZE</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>) <span class="ruby-comment cmt"># :yield: data</span>
+495:       <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@resume</span>
+496:         <span class="ruby-identifier">rest_offset</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">size?</span>(<span class="ruby-identifier">localfile</span>)
+497:         <span class="ruby-identifier">f</span> = <span class="ruby-identifier">open</span>(<span class="ruby-identifier">localfile</span>, <span class="ruby-value str">&quot;a&quot;</span>)
+498:       <span class="ruby-keyword kw">else</span>
+499:         <span class="ruby-identifier">rest_offset</span> = <span class="ruby-keyword kw">nil</span>
+500:         <span class="ruby-identifier">f</span> = <span class="ruby-identifier">open</span>(<span class="ruby-identifier">localfile</span>, <span class="ruby-value str">&quot;w&quot;</span>)
+501:       <span class="ruby-keyword kw">end</span>
+502:       <span class="ruby-keyword kw">begin</span>
+503:         <span class="ruby-identifier">f</span>.<span class="ruby-identifier">binmode</span>
+504:         <span class="ruby-identifier">retrbinary</span>(<span class="ruby-value str">&quot;RETR &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">remotefile</span>, <span class="ruby-identifier">blocksize</span>, <span class="ruby-identifier">rest_offset</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">data</span><span class="ruby-operator">|</span>
+505:           <span class="ruby-identifier">f</span>.<span class="ruby-identifier">write</span>(<span class="ruby-identifier">data</span>)
+506:           <span class="ruby-keyword kw">yield</span>(<span class="ruby-identifier">data</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">block</span>
+507:         <span class="ruby-keyword kw">end</span>
+508:       <span class="ruby-keyword kw">ensure</span>
+509:         <span class="ruby-identifier">f</span>.<span class="ruby-identifier">close</span>
+510:       <span class="ruby-keyword kw">end</span>
+511:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004804">
+                    
+                    <a name="M004804"></a><b>getdir</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a href="FTP.html#M004803">pwd</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004779">
+                    
+                    <a name="M004779"></a><b>gettextfile</b>(remotefile, localfile = File.basename(remotefile))
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Retrieves <tt>remotefile</tt> in ASCII (text) mode, storing the result in
+<tt>localfile</tt>. If a block is supplied, it is passed the retrieved data
+one line at a time.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004779_source')" id="l_M004779_source">show</a>
+                        
+                    </p>
+                    <div id="M004779_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 518</span>
+518:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">gettextfile</span>(<span class="ruby-identifier">remotefile</span>, <span class="ruby-identifier">localfile</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">basename</span>(<span class="ruby-identifier">remotefile</span>), <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>) <span class="ruby-comment cmt"># :yield: line</span>
+519:       <span class="ruby-identifier">f</span> = <span class="ruby-identifier">open</span>(<span class="ruby-identifier">localfile</span>, <span class="ruby-value str">&quot;w&quot;</span>)
+520:       <span class="ruby-keyword kw">begin</span>
+521:         <span class="ruby-identifier">retrlines</span>(<span class="ruby-value str">&quot;RETR &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">remotefile</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">line</span><span class="ruby-operator">|</span>
+522:           <span class="ruby-identifier">f</span>.<span class="ruby-identifier">puts</span>(<span class="ruby-identifier">line</span>)
+523:           <span class="ruby-keyword kw">yield</span>(<span class="ruby-identifier">line</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">block</span>
+524:         <span class="ruby-keyword kw">end</span>
+525:       <span class="ruby-keyword kw">ensure</span>
+526:         <span class="ruby-identifier">f</span>.<span class="ruby-identifier">close</span>
+527:       <span class="ruby-keyword kw">end</span>
+528:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004809">
+                    
+                    <a name="M004809"></a><b>help</b>(arg = nil)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Issues the HELP command.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004809_source')" id="l_M004809_source">show</a>
+                        
+                    </p>
+                    <div id="M004809_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 779</span>
+779:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">help</span>(<span class="ruby-identifier">arg</span> = <span class="ruby-keyword kw">nil</span>)
+780:       <span class="ruby-identifier">cmd</span> = <span class="ruby-value str">&quot;HELP&quot;</span>
+781:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">arg</span>
+782:         <span class="ruby-identifier">cmd</span> = <span class="ruby-identifier">cmd</span> <span class="ruby-operator">+</span> <span class="ruby-value str">&quot; &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">arg</span>
+783:       <span class="ruby-keyword kw">end</span>
+784:       <span class="ruby-identifier">sendcmd</span>(<span class="ruby-identifier">cmd</span>)
+785:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004793">
+                    
+                    <a name="M004793"></a><b>list</b>(*args)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns an array of file information in the directory (the output is like
+`ls -l`). If a block is given, it iterates through the listing.
+</p>
+
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="FTP.html#M004794">ls</a>
+                    
+                    <a href="FTP.html#M004795">dir</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004793_source')" id="l_M004793_source">show</a>
+                        
+                    </p>
+                    <div id="M004793_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 622</span>
+622:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">list</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>) <span class="ruby-comment cmt"># :yield: line</span>
+623:       <span class="ruby-identifier">cmd</span> = <span class="ruby-value str">&quot;LIST&quot;</span>
+624:       <span class="ruby-identifier">args</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">arg</span><span class="ruby-operator">|</span>
+625:         <span class="ruby-identifier">cmd</span> = <span class="ruby-identifier">cmd</span> <span class="ruby-operator">+</span> <span class="ruby-value str">&quot; &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">arg</span>
+626:       <span class="ruby-keyword kw">end</span>
+627:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">block</span>
+628:         <span class="ruby-identifier">retrlines</span>(<span class="ruby-identifier">cmd</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+629:       <span class="ruby-keyword kw">else</span>
+630:         <span class="ruby-identifier">lines</span> = []
+631:         <span class="ruby-identifier">retrlines</span>(<span class="ruby-identifier">cmd</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">line</span><span class="ruby-operator">|</span>
+632:           <span class="ruby-identifier">lines</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">line</span>
+633:         <span class="ruby-keyword kw">end</span>
+634:         <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">lines</span>
+635:       <span class="ruby-keyword kw">end</span>
+636:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004773">
+                    
+                    <a name="M004773"></a><b>login</b>(user = &quot;anonymous&quot;, passwd = nil, acct = nil)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Logs in to the remote host. The session must have been previously
+connected. If <tt>user</tt> is the string &#8220;anonymous&#8221; and the
+<tt>password</tt> is <tt>nil</tt>, a password of <tt>user@host</tt> is
+synthesized. If the <tt>acct</tt> parameter is not <tt>nil</tt>, an <a
+href="FTP.html">FTP</a> ACCT command is sent following the successful
+login. Raises an exception on error (typically <tt>Net::FTPPermError</tt>).
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004773_source')" id="l_M004773_source">show</a>
+                        
+                    </p>
+                    <div id="M004773_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 372</span>
+372:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">login</span>(<span class="ruby-identifier">user</span> = <span class="ruby-value str">&quot;anonymous&quot;</span>, <span class="ruby-identifier">passwd</span> = <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">acct</span> = <span class="ruby-keyword kw">nil</span>)
+373:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">user</span> <span class="ruby-operator">==</span> <span class="ruby-value str">&quot;anonymous&quot;</span> <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">passwd</span> <span class="ruby-operator">==</span> <span class="ruby-keyword kw">nil</span>
+374:         <span class="ruby-identifier">passwd</span> = <span class="ruby-identifier">getaddress</span>
+375:       <span class="ruby-keyword kw">end</span>
+376:       
+377:       <span class="ruby-identifier">resp</span> = <span class="ruby-value str">&quot;&quot;</span>
+378:       <span class="ruby-identifier">synchronize</span> <span class="ruby-keyword kw">do</span>
+379:         <span class="ruby-identifier">resp</span> = <span class="ruby-identifier">sendcmd</span>(<span class="ruby-value str">'USER '</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">user</span>)
+380:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">resp</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">==</span> <span class="ruby-value">?3</span>
+381:           <span class="ruby-identifier">raise</span> <span class="ruby-constant">FTPReplyError</span>, <span class="ruby-identifier">resp</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">passwd</span>.<span class="ruby-identifier">nil?</span>
+382:           <span class="ruby-identifier">resp</span> = <span class="ruby-identifier">sendcmd</span>(<span class="ruby-value str">'PASS '</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">passwd</span>)
+383:         <span class="ruby-keyword kw">end</span>
+384:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">resp</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">==</span> <span class="ruby-value">?3</span>
+385:           <span class="ruby-identifier">raise</span> <span class="ruby-constant">FTPReplyError</span>, <span class="ruby-identifier">resp</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">acct</span>.<span class="ruby-identifier">nil?</span>
+386:           <span class="ruby-identifier">resp</span> = <span class="ruby-identifier">sendcmd</span>(<span class="ruby-value str">'ACCT '</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">acct</span>)
+387:         <span class="ruby-keyword kw">end</span>
+388:       <span class="ruby-keyword kw">end</span>
+389:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">resp</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">!=</span> <span class="ruby-value">?2</span>
+390:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">FTPReplyError</span>, <span class="ruby-identifier">resp</span>
+391:       <span class="ruby-keyword kw">end</span>
+392:       <span class="ruby-ivar">@welcome</span> = <span class="ruby-identifier">resp</span>
+393:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004794">
+                    
+                    <a name="M004794"></a><b>ls</b>(*args)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a href="FTP.html#M004793">list</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004808">
+                    
+                    <a name="M004808"></a><b>mdtm</b>(filename)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Issues the MDTM command. TODO: more info.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004808_source')" id="l_M004808_source">show</a>
+                        
+                    </p>
+                    <div id="M004808_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 769</span>
+769:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">mdtm</span>(<span class="ruby-identifier">filename</span>)
+770:       <span class="ruby-identifier">resp</span> = <span class="ruby-identifier">sendcmd</span>(<span class="ruby-value str">&quot;MDTM &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">filename</span>)
+771:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">resp</span>[<span class="ruby-value">0</span>, <span class="ruby-value">3</span>] <span class="ruby-operator">==</span> <span class="ruby-value str">&quot;213&quot;</span>
+772:         <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">resp</span>[<span class="ruby-value">3</span> <span class="ruby-operator">..</span> <span class="ruby-value">-1</span>].<span class="ruby-identifier">strip</span>
+773:       <span class="ruby-keyword kw">end</span>
+774:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004801">
+                    
+                    <a name="M004801"></a><b>mkdir</b>(dirname)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Creates a remote directory.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004801_source')" id="l_M004801_source">show</a>
+                        
+                    </p>
+                    <div id="M004801_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 710</span>
+710:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">mkdir</span>(<span class="ruby-identifier">dirname</span>)
+711:       <span class="ruby-identifier">resp</span> = <span class="ruby-identifier">sendcmd</span>(<span class="ruby-value str">&quot;MKD &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">dirname</span>)
+712:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">parse257</span>(<span class="ruby-identifier">resp</span>)
+713:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004800">
+                    
+                    <a name="M004800"></a><b>mtime</b>(filename, local = false)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the last modification time of the (remote) file. If <tt>local</tt>
+is <tt>true</tt>, it is returned as a local time, otherwise it&#8217;s a
+UTC time.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004800_source')" id="l_M004800_source">show</a>
+                        
+                    </p>
+                    <div id="M004800_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 701</span>
+701:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">mtime</span>(<span class="ruby-identifier">filename</span>, <span class="ruby-identifier">local</span> = <span class="ruby-keyword kw">false</span>)
+702:       <span class="ruby-identifier">str</span> = <span class="ruby-identifier">mdtm</span>(<span class="ruby-identifier">filename</span>)
+703:       <span class="ruby-identifier">ary</span> = <span class="ruby-identifier">str</span>.<span class="ruby-identifier">scan</span>(<span class="ruby-constant">MDTM_REGEXP</span>)[<span class="ruby-value">0</span>].<span class="ruby-identifier">collect</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">i</span><span class="ruby-operator">|</span> <span class="ruby-identifier">i</span>.<span class="ruby-identifier">to_i</span>}
+704:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">local</span> <span class="ruby-operator">?</span> <span class="ruby-constant">Time</span>.<span class="ruby-identifier">local</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">ary</span>) <span class="ruby-operator">:</span> <span class="ruby-constant">Time</span>.<span class="ruby-identifier">gm</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">ary</span>)
+705:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004792">
+                    
+                    <a name="M004792"></a><b>nlst</b>(dir = nil)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns an array of filenames in the remote directory.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004792_source')" id="l_M004792_source">show</a>
+                        
+                    </p>
+                    <div id="M004792_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 606</span>
+606:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">nlst</span>(<span class="ruby-identifier">dir</span> = <span class="ruby-keyword kw">nil</span>)
+607:       <span class="ruby-identifier">cmd</span> = <span class="ruby-value str">&quot;NLST&quot;</span>
+608:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">dir</span>
+609:         <span class="ruby-identifier">cmd</span> = <span class="ruby-identifier">cmd</span> <span class="ruby-operator">+</span> <span class="ruby-value str">&quot; &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">dir</span>
+610:       <span class="ruby-keyword kw">end</span>
+611:       <span class="ruby-identifier">files</span> = []
+612:       <span class="ruby-identifier">retrlines</span>(<span class="ruby-identifier">cmd</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">line</span><span class="ruby-operator">|</span>
+613:         <span class="ruby-identifier">files</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">line</span>)
+614:       <span class="ruby-keyword kw">end</span>
+615:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">files</span>
+616:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004811">
+                    
+                    <a name="M004811"></a><b>noop</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Issues a NOOP command.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004811_source')" id="l_M004811_source">show</a>
+                        
+                    </p>
+                    <div id="M004811_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 797</span>
+797:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">noop</span>
+798:       <span class="ruby-identifier">voidcmd</span>(<span class="ruby-value str">&quot;NOOP&quot;</span>)
+799:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004790">
+                    
+                    <a name="M004790"></a><b>put</b>(localfile, remotefile = File.basename(localfile), blocksize = DEFAULT_BLOCKSIZE, &amp;block)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Transfers <tt>localfile</tt> to the server in whatever mode the session is
+set (text or binary). See <a href="FTP.html#M004789">puttextfile</a> and <a
+href="FTP.html#M004788">putbinaryfile</a>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004790_source')" id="l_M004790_source">show</a>
+                        
+                    </p>
+                    <div id="M004790_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 586</span>
+586:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">put</span>(<span class="ruby-identifier">localfile</span>, <span class="ruby-identifier">remotefile</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">basename</span>(<span class="ruby-identifier">localfile</span>),
+587:             <span class="ruby-identifier">blocksize</span> = <span class="ruby-constant">DEFAULT_BLOCKSIZE</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+588:       <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@binary</span>
+589:         <span class="ruby-identifier">puttextfile</span>(<span class="ruby-identifier">localfile</span>, <span class="ruby-identifier">remotefile</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+590:       <span class="ruby-keyword kw">else</span>
+591:         <span class="ruby-identifier">putbinaryfile</span>(<span class="ruby-identifier">localfile</span>, <span class="ruby-identifier">remotefile</span>, <span class="ruby-identifier">blocksize</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+592:       <span class="ruby-keyword kw">end</span>
+593:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004788">
+                    
+                    <a name="M004788"></a><b>putbinaryfile</b>(localfile, remotefile = File.basename(localfile), blocksize = DEFAULT_BLOCKSIZE)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Transfers <tt>localfile</tt> to the server in binary mode, storing the
+result in <tt>remotefile</tt>. If a block is supplied, calls it, passing in
+the transmitted data in <tt>blocksize</tt> chunks.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004788_source')" id="l_M004788_source">show</a>
+                        
+                    </p>
+                    <div id="M004788_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 548</span>
+548:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">putbinaryfile</span>(<span class="ruby-identifier">localfile</span>, <span class="ruby-identifier">remotefile</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">basename</span>(<span class="ruby-identifier">localfile</span>),
+549:                       <span class="ruby-identifier">blocksize</span> = <span class="ruby-constant">DEFAULT_BLOCKSIZE</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>) <span class="ruby-comment cmt"># :yield: data</span>
+550:       <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@resume</span>
+551:         <span class="ruby-keyword kw">begin</span>
+552:           <span class="ruby-identifier">rest_offset</span> = <span class="ruby-identifier">size</span>(<span class="ruby-identifier">remotefile</span>)
+553:         <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Net</span><span class="ruby-operator">::</span><span class="ruby-constant">FTPPermError</span>
+554:           <span class="ruby-identifier">rest_offset</span> = <span class="ruby-keyword kw">nil</span>
+555:         <span class="ruby-keyword kw">end</span>
+556:       <span class="ruby-keyword kw">else</span>
+557:         <span class="ruby-identifier">rest_offset</span> = <span class="ruby-keyword kw">nil</span>
+558:       <span class="ruby-keyword kw">end</span>
+559:       <span class="ruby-identifier">f</span> = <span class="ruby-identifier">open</span>(<span class="ruby-identifier">localfile</span>)
+560:       <span class="ruby-keyword kw">begin</span>
+561:         <span class="ruby-identifier">f</span>.<span class="ruby-identifier">binmode</span>
+562:         <span class="ruby-identifier">storbinary</span>(<span class="ruby-value str">&quot;STOR &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">remotefile</span>, <span class="ruby-identifier">f</span>, <span class="ruby-identifier">blocksize</span>, <span class="ruby-identifier">rest_offset</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+563:       <span class="ruby-keyword kw">ensure</span>
+564:         <span class="ruby-identifier">f</span>.<span class="ruby-identifier">close</span>
+565:       <span class="ruby-keyword kw">end</span>
+566:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004789">
+                    
+                    <a name="M004789"></a><b>puttextfile</b>(localfile, remotefile = File.basename(localfile))
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Transfers <tt>localfile</tt> to the server in ASCII (text) mode, storing
+the result in <tt>remotefile</tt>. If callback or an associated block is
+supplied, calls it, passing in the transmitted data one line at a time.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004789_source')" id="l_M004789_source">show</a>
+                        
+                    </p>
+                    <div id="M004789_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 573</span>
+573:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">puttextfile</span>(<span class="ruby-identifier">localfile</span>, <span class="ruby-identifier">remotefile</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">basename</span>(<span class="ruby-identifier">localfile</span>), <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>) <span class="ruby-comment cmt"># :yield: line</span>
+574:       <span class="ruby-identifier">f</span> = <span class="ruby-identifier">open</span>(<span class="ruby-identifier">localfile</span>)
+575:       <span class="ruby-keyword kw">begin</span>
+576:         <span class="ruby-identifier">storlines</span>(<span class="ruby-value str">&quot;STOR &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">remotefile</span>, <span class="ruby-identifier">f</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+577:       <span class="ruby-keyword kw">ensure</span>
+578:         <span class="ruby-identifier">f</span>.<span class="ruby-identifier">close</span>
+579:       <span class="ruby-keyword kw">end</span>
+580:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004803">
+                    
+                    <a name="M004803"></a><b>pwd</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the current remote directory.
+</p>
+
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="FTP.html#M004804">getdir</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004803_source')" id="l_M004803_source">show</a>
+                        
+                    </p>
+                    <div id="M004803_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 725</span>
+725:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">pwd</span>
+726:       <span class="ruby-identifier">resp</span> = <span class="ruby-identifier">sendcmd</span>(<span class="ruby-value str">&quot;PWD&quot;</span>)
+727:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">parse257</span>(<span class="ruby-identifier">resp</span>)
+728:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004810">
+                    
+                    <a name="M004810"></a><b>quit</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Exits the <a href="FTP.html">FTP</a> session.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004810_source')" id="l_M004810_source">show</a>
+                        
+                    </p>
+                    <div id="M004810_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 790</span>
+790:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">quit</span>
+791:       <span class="ruby-identifier">voidcmd</span>(<span class="ruby-value str">&quot;QUIT&quot;</span>)
+792:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004796">
+                    
+                    <a name="M004796"></a><b>rename</b>(fromname, toname)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Renames a file on the server.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004796_source')" id="l_M004796_source">show</a>
+                        
+                    </p>
+                    <div id="M004796_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 643</span>
+643:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">rename</span>(<span class="ruby-identifier">fromname</span>, <span class="ruby-identifier">toname</span>)
+644:       <span class="ruby-identifier">resp</span> = <span class="ruby-identifier">sendcmd</span>(<span class="ruby-value str">&quot;RNFR &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">fromname</span>)
+645:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">resp</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">!=</span> <span class="ruby-value">?3</span>
+646:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">FTPReplyError</span>, <span class="ruby-identifier">resp</span>
+647:       <span class="ruby-keyword kw">end</span>
+648:       <span class="ruby-identifier">voidcmd</span>(<span class="ruby-value str">&quot;RNTO &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">toname</span>)
+649:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004774">
+                    
+                    <a name="M004774"></a><b>retrbinary</b>(cmd, blocksize, rest_offset = nil)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Puts the connection into binary (image) mode, issues the given command, and
+fetches the data returned, passing it to the associated block in chunks of
+<tt>blocksize</tt> characters. Note that <tt>cmd</tt> is a server command
+(such as &#8220;RETR myfile&#8221;).
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004774_source')" id="l_M004774_source">show</a>
+                        
+                    </p>
+                    <div id="M004774_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 401</span>
+401:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">retrbinary</span>(<span class="ruby-identifier">cmd</span>, <span class="ruby-identifier">blocksize</span>, <span class="ruby-identifier">rest_offset</span> = <span class="ruby-keyword kw">nil</span>) <span class="ruby-comment cmt"># :yield: data</span>
+402:       <span class="ruby-identifier">synchronize</span> <span class="ruby-keyword kw">do</span>
+403:         <span class="ruby-identifier">voidcmd</span>(<span class="ruby-value str">&quot;TYPE I&quot;</span>)
+404:         <span class="ruby-identifier">conn</span> = <span class="ruby-identifier">transfercmd</span>(<span class="ruby-identifier">cmd</span>, <span class="ruby-identifier">rest_offset</span>)
+405:         <span class="ruby-identifier">loop</span> <span class="ruby-keyword kw">do</span>
+406:           <span class="ruby-identifier">data</span> = <span class="ruby-identifier">conn</span>.<span class="ruby-identifier">read</span>(<span class="ruby-identifier">blocksize</span>)
+407:           <span class="ruby-keyword kw">break</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">data</span> <span class="ruby-operator">==</span> <span class="ruby-keyword kw">nil</span>
+408:           <span class="ruby-keyword kw">yield</span>(<span class="ruby-identifier">data</span>)
+409:         <span class="ruby-keyword kw">end</span>
+410:         <span class="ruby-identifier">conn</span>.<span class="ruby-identifier">close</span>
+411:         <span class="ruby-identifier">voidresp</span>
+412:       <span class="ruby-keyword kw">end</span>
+413:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004775">
+                    
+                    <a name="M004775"></a><b>retrlines</b>(cmd)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Puts the connection into ASCII (text) mode, issues the given command, and
+passes the resulting data, one line at a time, to the associated block. If
+no block is given, prints the lines. Note that <tt>cmd</tt> is a server
+command (such as &#8220;RETR myfile&#8221;).
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004775_source')" id="l_M004775_source">show</a>
+                        
+                    </p>
+                    <div id="M004775_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 421</span>
+421:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">retrlines</span>(<span class="ruby-identifier">cmd</span>) <span class="ruby-comment cmt"># :yield: line</span>
+422:       <span class="ruby-identifier">synchronize</span> <span class="ruby-keyword kw">do</span>
+423:         <span class="ruby-identifier">voidcmd</span>(<span class="ruby-value str">&quot;TYPE A&quot;</span>)
+424:         <span class="ruby-identifier">conn</span> = <span class="ruby-identifier">transfercmd</span>(<span class="ruby-identifier">cmd</span>)
+425:         <span class="ruby-identifier">loop</span> <span class="ruby-keyword kw">do</span>
+426:           <span class="ruby-identifier">line</span> = <span class="ruby-identifier">conn</span>.<span class="ruby-identifier">gets</span>
+427:           <span class="ruby-keyword kw">break</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">line</span> <span class="ruby-operator">==</span> <span class="ruby-keyword kw">nil</span>
+428:           <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">line</span>[<span class="ruby-value">-2</span>, <span class="ruby-value">2</span>] <span class="ruby-operator">==</span> <span class="ruby-constant">CRLF</span>
+429:             <span class="ruby-identifier">line</span> = <span class="ruby-identifier">line</span>[<span class="ruby-value">0</span> <span class="ruby-operator">..</span> <span class="ruby-value">-3</span>]
+430:           <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">line</span>[<span class="ruby-value">-1</span>] <span class="ruby-operator">==</span> <span class="ruby-value">?\n</span>
+431:             <span class="ruby-identifier">line</span> = <span class="ruby-identifier">line</span>[<span class="ruby-value">0</span> <span class="ruby-operator">..</span> <span class="ruby-value">-2</span>]
+432:           <span class="ruby-keyword kw">end</span>
+433:           <span class="ruby-keyword kw">yield</span>(<span class="ruby-identifier">line</span>)
+434:         <span class="ruby-keyword kw">end</span>
+435:         <span class="ruby-identifier">conn</span>.<span class="ruby-identifier">close</span>
+436:         <span class="ruby-identifier">voidresp</span>
+437:       <span class="ruby-keyword kw">end</span>
+438:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004755">
+                    
+                    <a name="M004755"></a><b>return_code</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Obsolete
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004755_source')" id="l_M004755_source">show</a>
+                        
+                    </p>
+                    <div id="M004755_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 144</span>
+144:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">return_code</span>
+145:       <span class="ruby-identifier">$stderr</span>.<span class="ruby-identifier">puts</span>(<span class="ruby-value str">&quot;warning: Net::FTP#return_code is obsolete and do nothing&quot;</span>)
+146:       <span class="ruby-keyword kw">return</span> <span class="ruby-value str">&quot;\n&quot;</span>
+147:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004756">
+                    
+                    <a name="M004756"></a><b>return_code=</b>(s)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Obsolete
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004756_source')" id="l_M004756_source">show</a>
+                        
+                    </p>
+                    <div id="M004756_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 150</span>
+150:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">return_code=</span>(<span class="ruby-identifier">s</span>)
+151:       <span class="ruby-identifier">$stderr</span>.<span class="ruby-identifier">puts</span>(<span class="ruby-value str">&quot;warning: Net::FTP#return_code= is obsolete and do nothing&quot;</span>)
+152:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004802">
+                    
+                    <a name="M004802"></a><b>rmdir</b>(dirname)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Removes a remote directory.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004802_source')" id="l_M004802_source">show</a>
+                        
+                    </p>
+                    <div id="M004802_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 718</span>
+718:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">rmdir</span>(<span class="ruby-identifier">dirname</span>)
+719:       <span class="ruby-identifier">voidcmd</span>(<span class="ruby-value str">&quot;RMD &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">dirname</span>)
+720:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004766">
+                    
+                    <a name="M004766"></a><b>sendcmd</b>(cmd)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Sends a command and returns the response.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004766_source')" id="l_M004766_source">show</a>
+                        
+                    </p>
+                    <div id="M004766_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 261</span>
+261:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">sendcmd</span>(<span class="ruby-identifier">cmd</span>)
+262:       <span class="ruby-identifier">synchronize</span> <span class="ruby-keyword kw">do</span>
+263:         <span class="ruby-identifier">putline</span>(<span class="ruby-identifier">cmd</span>)
+264:         <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">getresp</span>
+265:       <span class="ruby-keyword kw">end</span>
+266:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004759">
+                    
+                    <a name="M004759"></a><b>set_socket</b>(sock, get_greeting = true)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+WRITEME or make private
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004759_source')" id="l_M004759_source">show</a>
+                        
+                    </p>
+                    <div id="M004759_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 183</span>
+183:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">set_socket</span>(<span class="ruby-identifier">sock</span>, <span class="ruby-identifier">get_greeting</span> = <span class="ruby-keyword kw">true</span>)
+184:       <span class="ruby-identifier">synchronize</span> <span class="ruby-keyword kw">do</span>
+185:         <span class="ruby-ivar">@sock</span> = <span class="ruby-identifier">sock</span>
+186:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">get_greeting</span>
+187:           <span class="ruby-identifier">voidresp</span>
+188:         <span class="ruby-keyword kw">end</span>
+189:       <span class="ruby-keyword kw">end</span>
+190:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004812">
+                    
+                    <a name="M004812"></a><b>site</b>(arg)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Issues a SITE command.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004812_source')" id="l_M004812_source">show</a>
+                        
+                    </p>
+                    <div id="M004812_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 804</span>
+804:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">site</span>(<span class="ruby-identifier">arg</span>)
+805:       <span class="ruby-identifier">cmd</span> = <span class="ruby-value str">&quot;SITE &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">arg</span>
+806:       <span class="ruby-identifier">voidcmd</span>(<span class="ruby-identifier">cmd</span>)
+807:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004799">
+                    
+                    <a name="M004799"></a><b>size</b>(filename)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the size of the given (remote) filename.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004799_source')" id="l_M004799_source">show</a>
+                        
+                    </p>
+                    <div id="M004799_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 686</span>
+686:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">size</span>(<span class="ruby-identifier">filename</span>)
+687:       <span class="ruby-identifier">voidcmd</span>(<span class="ruby-value str">&quot;TYPE I&quot;</span>)
+688:       <span class="ruby-identifier">resp</span> = <span class="ruby-identifier">sendcmd</span>(<span class="ruby-value str">&quot;SIZE &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">filename</span>)
+689:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">resp</span>[<span class="ruby-value">0</span>, <span class="ruby-value">3</span>] <span class="ruby-operator">!=</span> <span class="ruby-value str">&quot;213&quot;</span> 
+690:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">FTPReplyError</span>, <span class="ruby-identifier">resp</span>
+691:       <span class="ruby-keyword kw">end</span>
+692:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">resp</span>[<span class="ruby-value">3</span><span class="ruby-operator">..</span><span class="ruby-value">-1</span>].<span class="ruby-identifier">strip</span>.<span class="ruby-identifier">to_i</span>
+693:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004807">
+                    
+                    <a name="M004807"></a><b>status</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the status (STAT command).
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004807_source')" id="l_M004807_source">show</a>
+                        
+                    </p>
+                    <div id="M004807_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 759</span>
+759:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">status</span>
+760:       <span class="ruby-identifier">line</span> = <span class="ruby-value str">&quot;STAT&quot;</span> <span class="ruby-operator">+</span> <span class="ruby-constant">CRLF</span>
+761:       <span class="ruby-identifier">print</span> <span class="ruby-value str">&quot;put: STAT\n&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@debug_mode</span>
+762:       <span class="ruby-ivar">@sock</span>.<span class="ruby-identifier">send</span>(<span class="ruby-identifier">line</span>, <span class="ruby-constant">Socket</span><span class="ruby-operator">::</span><span class="ruby-constant">MSG_OOB</span>)
+763:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">getresp</span>
+764:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004776">
+                    
+                    <a name="M004776"></a><b>storbinary</b>(cmd, file, blocksize, rest_offset = nil)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Puts the connection into binary (image) mode, issues the given server-side
+command (such as &#8220;STOR myfile&#8221;), and sends the contents of the
+file named <tt>file</tt> to the server. If the optional block is given, it
+also passes it the data, in chunks of <tt>blocksize</tt> characters.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004776_source')" id="l_M004776_source">show</a>
+                        
+                    </p>
+                    <div id="M004776_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 446</span>
+446:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">storbinary</span>(<span class="ruby-identifier">cmd</span>, <span class="ruby-identifier">file</span>, <span class="ruby-identifier">blocksize</span>, <span class="ruby-identifier">rest_offset</span> = <span class="ruby-keyword kw">nil</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>) <span class="ruby-comment cmt"># :yield: data</span>
+447:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">rest_offset</span>
+448:         <span class="ruby-identifier">file</span>.<span class="ruby-identifier">seek</span>(<span class="ruby-identifier">rest_offset</span>, <span class="ruby-constant">IO</span><span class="ruby-operator">::</span><span class="ruby-constant">SEEK_SET</span>)
+449:       <span class="ruby-keyword kw">end</span>
+450:       <span class="ruby-identifier">synchronize</span> <span class="ruby-keyword kw">do</span>
+451:         <span class="ruby-identifier">voidcmd</span>(<span class="ruby-value str">&quot;TYPE I&quot;</span>)
+452:         <span class="ruby-identifier">conn</span> = <span class="ruby-identifier">transfercmd</span>(<span class="ruby-identifier">cmd</span>, <span class="ruby-identifier">rest_offset</span>)
+453:         <span class="ruby-identifier">loop</span> <span class="ruby-keyword kw">do</span>
+454:           <span class="ruby-identifier">buf</span> = <span class="ruby-identifier">file</span>.<span class="ruby-identifier">read</span>(<span class="ruby-identifier">blocksize</span>)
+455:           <span class="ruby-keyword kw">break</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">buf</span> <span class="ruby-operator">==</span> <span class="ruby-keyword kw">nil</span>
+456:           <span class="ruby-identifier">conn</span>.<span class="ruby-identifier">write</span>(<span class="ruby-identifier">buf</span>)
+457:           <span class="ruby-keyword kw">yield</span>(<span class="ruby-identifier">buf</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">block</span>
+458:         <span class="ruby-keyword kw">end</span>
+459:         <span class="ruby-identifier">conn</span>.<span class="ruby-identifier">close</span>
+460:         <span class="ruby-identifier">voidresp</span>
+461:       <span class="ruby-keyword kw">end</span>
+462:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004777">
+                    
+                    <a name="M004777"></a><b>storlines</b>(cmd, file)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Puts the connection into ASCII (text) mode, issues the given server-side
+command (such as &#8220;STOR myfile&#8221;), and sends the contents of the
+file named <tt>file</tt> to the server, one line at a time. If the optional
+block is given, it also passes it the lines.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004777_source')" id="l_M004777_source">show</a>
+                        
+                    </p>
+                    <div id="M004777_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 470</span>
+470:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">storlines</span>(<span class="ruby-identifier">cmd</span>, <span class="ruby-identifier">file</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>) <span class="ruby-comment cmt"># :yield: line</span>
+471:       <span class="ruby-identifier">synchronize</span> <span class="ruby-keyword kw">do</span>
+472:         <span class="ruby-identifier">voidcmd</span>(<span class="ruby-value str">&quot;TYPE A&quot;</span>)
+473:         <span class="ruby-identifier">conn</span> = <span class="ruby-identifier">transfercmd</span>(<span class="ruby-identifier">cmd</span>)
+474:         <span class="ruby-identifier">loop</span> <span class="ruby-keyword kw">do</span>
+475:           <span class="ruby-identifier">buf</span> = <span class="ruby-identifier">file</span>.<span class="ruby-identifier">gets</span>
+476:           <span class="ruby-keyword kw">break</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">buf</span> <span class="ruby-operator">==</span> <span class="ruby-keyword kw">nil</span>
+477:           <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">buf</span>[<span class="ruby-value">-2</span>, <span class="ruby-value">2</span>] <span class="ruby-operator">!=</span> <span class="ruby-constant">CRLF</span>
+478:             <span class="ruby-identifier">buf</span> = <span class="ruby-identifier">buf</span>.<span class="ruby-identifier">chomp</span> <span class="ruby-operator">+</span> <span class="ruby-constant">CRLF</span>
+479:           <span class="ruby-keyword kw">end</span>
+480:           <span class="ruby-identifier">conn</span>.<span class="ruby-identifier">write</span>(<span class="ruby-identifier">buf</span>)
+481:           <span class="ruby-keyword kw">yield</span>(<span class="ruby-identifier">buf</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">block</span>
+482:         <span class="ruby-keyword kw">end</span>
+483:         <span class="ruby-identifier">conn</span>.<span class="ruby-identifier">close</span>
+484:         <span class="ruby-identifier">voidresp</span>
+485:       <span class="ruby-keyword kw">end</span>
+486:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004805">
+                    
+                    <a name="M004805"></a><b>system</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns system information.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004805_source')" id="l_M004805_source">show</a>
+                        
+                    </p>
+                    <div id="M004805_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 734</span>
+734:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">system</span>
+735:       <span class="ruby-identifier">resp</span> = <span class="ruby-identifier">sendcmd</span>(<span class="ruby-value str">&quot;SYST&quot;</span>)
+736:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">resp</span>[<span class="ruby-value">0</span>, <span class="ruby-value">3</span>] <span class="ruby-operator">!=</span> <span class="ruby-value str">&quot;215&quot;</span>
+737:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">FTPReplyError</span>, <span class="ruby-identifier">resp</span>
+738:       <span class="ruby-keyword kw">end</span>
+739:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">resp</span>[<span class="ruby-value">4</span> <span class="ruby-operator">..</span> <span class="ruby-value">-1</span>]
+740:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004767">
+                    
+                    <a name="M004767"></a><b>voidcmd</b>(cmd)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Sends a command and expect a response beginning with &#8216;2&#8217;.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004767_source')" id="l_M004767_source">show</a>
+                        
+                    </p>
+                    <div id="M004767_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 271</span>
+271:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">voidcmd</span>(<span class="ruby-identifier">cmd</span>)
+272:       <span class="ruby-identifier">synchronize</span> <span class="ruby-keyword kw">do</span>
+273:         <span class="ruby-identifier">putline</span>(<span class="ruby-identifier">cmd</span>)
+274:         <span class="ruby-identifier">voidresp</span>
+275:       <span class="ruby-keyword kw">end</span>
+276:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Private methods</div>
+            
+            <div class="method">
+                <div class="title" id="M004772">
+                    
+                    <a name="M004772"></a><b>getaddress</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004772_source')" id="l_M004772_source">show</a>
+                        
+                    </p>
+                    <div id="M004772_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 348</span>
+348:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">getaddress</span>
+349:       <span class="ruby-identifier">thishost</span> = <span class="ruby-constant">Socket</span>.<span class="ruby-identifier">gethostname</span>
+350:       <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">not</span> <span class="ruby-identifier">thishost</span>.<span class="ruby-identifier">index</span>(<span class="ruby-value str">&quot;.&quot;</span>)
+351:         <span class="ruby-identifier">thishost</span> = <span class="ruby-constant">Socket</span>.<span class="ruby-identifier">gethostbyname</span>(<span class="ruby-identifier">thishost</span>)[<span class="ruby-value">0</span>]
+352:       <span class="ruby-keyword kw">end</span>
+353:       <span class="ruby-keyword kw">if</span> <span class="ruby-constant">ENV</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-value str">&quot;LOGNAME&quot;</span>)
+354:         <span class="ruby-identifier">realuser</span> = <span class="ruby-constant">ENV</span>[<span class="ruby-value str">&quot;LOGNAME&quot;</span>]
+355:       <span class="ruby-keyword kw">elsif</span> <span class="ruby-constant">ENV</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-value str">&quot;USER&quot;</span>)
+356:         <span class="ruby-identifier">realuser</span> = <span class="ruby-constant">ENV</span>[<span class="ruby-value str">&quot;USER&quot;</span>]
+357:       <span class="ruby-keyword kw">else</span>
+358:         <span class="ruby-identifier">realuser</span> = <span class="ruby-value str">&quot;anonymous&quot;</span>
+359:       <span class="ruby-keyword kw">end</span>
+360:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">realuser</span> <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;@&quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">thishost</span>
+361:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004762">
+                    
+                    <a name="M004762"></a><b>getline</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004762_source')" id="l_M004762_source">show</a>
+                        
+                    </p>
+                    <div id="M004762_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 210</span>
+210:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">getline</span>
+211:       <span class="ruby-identifier">line</span> = <span class="ruby-ivar">@sock</span>.<span class="ruby-identifier">readline</span> <span class="ruby-comment cmt"># if get EOF, raise EOFError</span>
+212:       <span class="ruby-identifier">line</span>.<span class="ruby-identifier">sub!</span>(<span class="ruby-regexp re">/(\r\n|\n|\r)\z/n</span>, <span class="ruby-value str">&quot;&quot;</span>)
+213:       <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@debug_mode</span>
+214:         <span class="ruby-identifier">print</span> <span class="ruby-value str">&quot;get: &quot;</span>, <span class="ruby-identifier">sanitize</span>(<span class="ruby-identifier">line</span>), <span class="ruby-value str">&quot;\n&quot;</span>
+215:       <span class="ruby-keyword kw">end</span>
+216:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">line</span>
+217:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004763">
+                    
+                    <a name="M004763"></a><b>getmultiline</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004763_source')" id="l_M004763_source">show</a>
+                        
+                    </p>
+                    <div id="M004763_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 220</span>
+220:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">getmultiline</span>
+221:       <span class="ruby-identifier">line</span> = <span class="ruby-identifier">getline</span>
+222:       <span class="ruby-identifier">buff</span> = <span class="ruby-identifier">line</span>
+223:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">line</span>[<span class="ruby-value">3</span>] <span class="ruby-operator">==</span> <span class="ruby-value">?-</span>
+224:           <span class="ruby-identifier">code</span> = <span class="ruby-identifier">line</span>[<span class="ruby-value">0</span>, <span class="ruby-value">3</span>]
+225:         <span class="ruby-keyword kw">begin</span>
+226:           <span class="ruby-identifier">line</span> = <span class="ruby-identifier">getline</span>
+227:           <span class="ruby-identifier">buff</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;\n&quot;</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">line</span>
+228:         <span class="ruby-keyword kw">end</span> <span class="ruby-keyword kw">until</span> <span class="ruby-identifier">line</span>[<span class="ruby-value">0</span>, <span class="ruby-value">3</span>] <span class="ruby-operator">==</span> <span class="ruby-identifier">code</span> <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">line</span>[<span class="ruby-value">3</span>] <span class="ruby-operator">!=</span> <span class="ruby-value">?-</span>
+229:       <span class="ruby-keyword kw">end</span>
+230:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">buff</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;\n&quot;</span>
+231:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004764">
+                    
+                    <a name="M004764"></a><b>getresp</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004764_source')" id="l_M004764_source">show</a>
+                        
+                    </p>
+                    <div id="M004764_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 234</span>
+234:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">getresp</span>
+235:       <span class="ruby-ivar">@last_response</span> = <span class="ruby-identifier">getmultiline</span>
+236:       <span class="ruby-ivar">@last_response_code</span> = <span class="ruby-ivar">@last_response</span>[<span class="ruby-value">0</span>, <span class="ruby-value">3</span>]
+237:       <span class="ruby-keyword kw">case</span> <span class="ruby-ivar">@last_response_code</span>
+238:       <span class="ruby-keyword kw">when</span> <span class="ruby-regexp re">/\A[123]/</span>
+239:         <span class="ruby-keyword kw">return</span> <span class="ruby-ivar">@last_response</span>
+240:       <span class="ruby-keyword kw">when</span> <span class="ruby-regexp re">/\A4/</span>
+241:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">FTPTempError</span>, <span class="ruby-ivar">@last_response</span>
+242:       <span class="ruby-keyword kw">when</span> <span class="ruby-regexp re">/\A5/</span>
+243:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">FTPPermError</span>, <span class="ruby-ivar">@last_response</span>
+244:       <span class="ruby-keyword kw">else</span>
+245:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">FTPProtoError</span>, <span class="ruby-ivar">@last_response</span>
+246:       <span class="ruby-keyword kw">end</span>
+247:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004770">
+                    
+                    <a name="M004770"></a><b>makepasv</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004770_source')" id="l_M004770_source">show</a>
+                        
+                    </p>
+                    <div id="M004770_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 300</span>
+300:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">makepasv</span>
+301:       <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@sock</span>.<span class="ruby-identifier">peeraddr</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">==</span> <span class="ruby-value str">&quot;AF_INET&quot;</span>
+302:         <span class="ruby-identifier">host</span>, <span class="ruby-identifier">port</span> = <span class="ruby-identifier">parse227</span>(<span class="ruby-identifier">sendcmd</span>(<span class="ruby-value str">&quot;PASV&quot;</span>))
+303:       <span class="ruby-keyword kw">else</span>
+304:         <span class="ruby-identifier">host</span>, <span class="ruby-identifier">port</span> = <span class="ruby-identifier">parse229</span>(<span class="ruby-identifier">sendcmd</span>(<span class="ruby-value str">&quot;EPSV&quot;</span>))
+305:         <span class="ruby-comment cmt">#     host, port = parse228(sendcmd(&quot;LPSV&quot;))</span>
+306:       <span class="ruby-keyword kw">end</span>
+307:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">host</span>, <span class="ruby-identifier">port</span>
+308:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004769">
+                    
+                    <a name="M004769"></a><b>makeport</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004769_source')" id="l_M004769_source">show</a>
+                        
+                    </p>
+                    <div id="M004769_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 291</span>
+291:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">makeport</span>
+292:       <span class="ruby-identifier">sock</span> = <span class="ruby-constant">TCPServer</span>.<span class="ruby-identifier">open</span>(<span class="ruby-ivar">@sock</span>.<span class="ruby-identifier">addr</span>[<span class="ruby-value">3</span>], <span class="ruby-value">0</span>)
+293:       <span class="ruby-identifier">port</span> = <span class="ruby-identifier">sock</span>.<span class="ruby-identifier">addr</span>[<span class="ruby-value">1</span>]
+294:       <span class="ruby-identifier">host</span> = <span class="ruby-identifier">sock</span>.<span class="ruby-identifier">addr</span>[<span class="ruby-value">3</span>]
+295:       <span class="ruby-identifier">resp</span> = <span class="ruby-identifier">sendport</span>(<span class="ruby-identifier">host</span>, <span class="ruby-identifier">port</span>)
+296:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">sock</span>
+297:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004757">
+                    
+                    <a name="M004757"></a><b>open_socket</b>(host, port)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004757_source')" id="l_M004757_source">show</a>
+                        
+                    </p>
+                    <div id="M004757_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 154</span>
+154:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">open_socket</span>(<span class="ruby-identifier">host</span>, <span class="ruby-identifier">port</span>)
+155:       <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">defined?</span> <span class="ruby-constant">SOCKSSocket</span> <span class="ruby-keyword kw">and</span> <span class="ruby-constant">ENV</span>[<span class="ruby-value str">&quot;SOCKS_SERVER&quot;</span>]
+156:         <span class="ruby-ivar">@passive</span> = <span class="ruby-keyword kw">true</span>
+157:         <span class="ruby-keyword kw">return</span> <span class="ruby-constant">SOCKSSocket</span>.<span class="ruby-identifier">open</span>(<span class="ruby-identifier">host</span>, <span class="ruby-identifier">port</span>)
+158:       <span class="ruby-keyword kw">else</span>
+159:         <span class="ruby-keyword kw">return</span> <span class="ruby-constant">TCPSocket</span>.<span class="ruby-identifier">open</span>(<span class="ruby-identifier">host</span>, <span class="ruby-identifier">port</span>)
+160:       <span class="ruby-keyword kw">end</span>
+161:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004815">
+                    
+                    <a name="M004815"></a><b>parse227</b>(resp)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004815_source')" id="l_M004815_source">show</a>
+                        
+                    </p>
+                    <div id="M004815_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 824</span>
+824:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">parse227</span>(<span class="ruby-identifier">resp</span>)
+825:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">resp</span>[<span class="ruby-value">0</span>, <span class="ruby-value">3</span>] <span class="ruby-operator">!=</span> <span class="ruby-value str">&quot;227&quot;</span>
+826:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">FTPReplyError</span>, <span class="ruby-identifier">resp</span>
+827:       <span class="ruby-keyword kw">end</span>
+828:       <span class="ruby-identifier">left</span> = <span class="ruby-identifier">resp</span>.<span class="ruby-identifier">index</span>(<span class="ruby-value str">&quot;(&quot;</span>)
+829:       <span class="ruby-identifier">right</span> = <span class="ruby-identifier">resp</span>.<span class="ruby-identifier">index</span>(<span class="ruby-value str">&quot;)&quot;</span>)
+830:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">left</span> <span class="ruby-operator">==</span> <span class="ruby-keyword kw">nil</span> <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">right</span> <span class="ruby-operator">==</span> <span class="ruby-keyword kw">nil</span>
+831:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">FTPProtoError</span>, <span class="ruby-identifier">resp</span>
+832:       <span class="ruby-keyword kw">end</span>
+833:       <span class="ruby-identifier">numbers</span> = <span class="ruby-identifier">resp</span>[<span class="ruby-identifier">left</span> <span class="ruby-operator">+</span> <span class="ruby-value">1</span> <span class="ruby-operator">..</span> <span class="ruby-identifier">right</span> <span class="ruby-operator">-</span> <span class="ruby-value">1</span>].<span class="ruby-identifier">split</span>(<span class="ruby-value str">&quot;,&quot;</span>)
+834:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">numbers</span>.<span class="ruby-identifier">length</span> <span class="ruby-operator">!=</span> <span class="ruby-value">6</span>
+835:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">FTPProtoError</span>, <span class="ruby-identifier">resp</span>
+836:       <span class="ruby-keyword kw">end</span>
+837:       <span class="ruby-identifier">host</span> = <span class="ruby-identifier">numbers</span>[<span class="ruby-value">0</span>, <span class="ruby-value">4</span>].<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;.&quot;</span>)
+838:       <span class="ruby-identifier">port</span> = (<span class="ruby-identifier">numbers</span>[<span class="ruby-value">4</span>].<span class="ruby-identifier">to_i</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value">8</span>) <span class="ruby-operator">+</span> <span class="ruby-identifier">numbers</span>[<span class="ruby-value">5</span>].<span class="ruby-identifier">to_i</span>
+839:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">host</span>, <span class="ruby-identifier">port</span>
+840:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004816">
+                    
+                    <a name="M004816"></a><b>parse228</b>(resp)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004816_source')" id="l_M004816_source">show</a>
+                        
+                    </p>
+                    <div id="M004816_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 843</span>
+843:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">parse228</span>(<span class="ruby-identifier">resp</span>)
+844:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">resp</span>[<span class="ruby-value">0</span>, <span class="ruby-value">3</span>] <span class="ruby-operator">!=</span> <span class="ruby-value str">&quot;228&quot;</span>
+845:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">FTPReplyError</span>, <span class="ruby-identifier">resp</span>
+846:       <span class="ruby-keyword kw">end</span>
+847:       <span class="ruby-identifier">left</span> = <span class="ruby-identifier">resp</span>.<span class="ruby-identifier">index</span>(<span class="ruby-value str">&quot;(&quot;</span>)
+848:       <span class="ruby-identifier">right</span> = <span class="ruby-identifier">resp</span>.<span class="ruby-identifier">index</span>(<span class="ruby-value str">&quot;)&quot;</span>)
+849:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">left</span> <span class="ruby-operator">==</span> <span class="ruby-keyword kw">nil</span> <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">right</span> <span class="ruby-operator">==</span> <span class="ruby-keyword kw">nil</span>
+850:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">FTPProtoError</span>, <span class="ruby-identifier">resp</span>
+851:       <span class="ruby-keyword kw">end</span>
+852:       <span class="ruby-identifier">numbers</span> = <span class="ruby-identifier">resp</span>[<span class="ruby-identifier">left</span> <span class="ruby-operator">+</span> <span class="ruby-value">1</span> <span class="ruby-operator">..</span> <span class="ruby-identifier">right</span> <span class="ruby-operator">-</span> <span class="ruby-value">1</span>].<span class="ruby-identifier">split</span>(<span class="ruby-value str">&quot;,&quot;</span>)
+853:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">numbers</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">==</span> <span class="ruby-value str">&quot;4&quot;</span>
+854:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">numbers</span>.<span class="ruby-identifier">length</span> <span class="ruby-operator">!=</span> <span class="ruby-value">9</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">numbers</span>[<span class="ruby-value">1</span>] <span class="ruby-operator">!=</span> <span class="ruby-value str">&quot;4&quot;</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">numbers</span>[<span class="ruby-value">2</span> <span class="ruby-operator">+</span> <span class="ruby-value">4</span>] <span class="ruby-operator">!=</span> <span class="ruby-value str">&quot;2&quot;</span>
+855:           <span class="ruby-identifier">raise</span> <span class="ruby-constant">FTPProtoError</span>, <span class="ruby-identifier">resp</span>
+856:         <span class="ruby-keyword kw">end</span>
+857:         <span class="ruby-identifier">host</span> = <span class="ruby-identifier">numbers</span>[<span class="ruby-value">2</span>, <span class="ruby-value">4</span>].<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;.&quot;</span>)
+858:         <span class="ruby-identifier">port</span> = (<span class="ruby-identifier">numbers</span>[<span class="ruby-value">7</span>].<span class="ruby-identifier">to_i</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value">8</span>) <span class="ruby-operator">+</span> <span class="ruby-identifier">numbers</span>[<span class="ruby-value">8</span>].<span class="ruby-identifier">to_i</span>
+859:       <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">numbers</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">==</span> <span class="ruby-value str">&quot;6&quot;</span>
+860:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">numbers</span>.<span class="ruby-identifier">length</span> <span class="ruby-operator">!=</span> <span class="ruby-value">21</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">numbers</span>[<span class="ruby-value">1</span>] <span class="ruby-operator">!=</span> <span class="ruby-value str">&quot;16&quot;</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">numbers</span>[<span class="ruby-value">2</span> <span class="ruby-operator">+</span> <span class="ruby-value">16</span>] <span class="ruby-operator">!=</span> <span class="ruby-value str">&quot;2&quot;</span>
+861:           <span class="ruby-identifier">raise</span> <span class="ruby-constant">FTPProtoError</span>, <span class="ruby-identifier">resp</span>
+862:         <span class="ruby-keyword kw">end</span>
+863:         <span class="ruby-identifier">v6</span> = [<span class="ruby-value str">&quot;&quot;</span>, <span class="ruby-value str">&quot;&quot;</span>, <span class="ruby-value str">&quot;&quot;</span>, <span class="ruby-value str">&quot;&quot;</span>, <span class="ruby-value str">&quot;&quot;</span>, <span class="ruby-value str">&quot;&quot;</span>, <span class="ruby-value str">&quot;&quot;</span>, <span class="ruby-value str">&quot;&quot;</span>]
+864:         <span class="ruby-keyword kw">for</span> <span class="ruby-identifier">i</span> <span class="ruby-keyword kw">in</span> <span class="ruby-value">0</span> <span class="ruby-operator">..</span> <span class="ruby-value">7</span>
+865:           <span class="ruby-identifier">v6</span>[<span class="ruby-identifier">i</span>] = <span class="ruby-identifier">sprintf</span>(<span class="ruby-value str">&quot;%02x%02x&quot;</span>, <span class="ruby-identifier">numbers</span>[(<span class="ruby-identifier">i</span> <span class="ruby-operator">*</span> <span class="ruby-value">2</span>) <span class="ruby-operator">+</span> <span class="ruby-value">2</span>].<span class="ruby-identifier">to_i</span>,
+866:                           <span class="ruby-identifier">numbers</span>[(<span class="ruby-identifier">i</span> <span class="ruby-operator">*</span> <span class="ruby-value">2</span>) <span class="ruby-operator">+</span> <span class="ruby-value">3</span>].<span class="ruby-identifier">to_i</span>)
+867:         <span class="ruby-keyword kw">end</span>
+868:         <span class="ruby-identifier">host</span> = <span class="ruby-identifier">v6</span>[<span class="ruby-value">0</span>, <span class="ruby-value">8</span>].<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;:&quot;</span>)
+869:         <span class="ruby-identifier">port</span> = (<span class="ruby-identifier">numbers</span>[<span class="ruby-value">19</span>].<span class="ruby-identifier">to_i</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value">8</span>) <span class="ruby-operator">+</span> <span class="ruby-identifier">numbers</span>[<span class="ruby-value">20</span>].<span class="ruby-identifier">to_i</span>
+870:       <span class="ruby-keyword kw">end</span> 
+871:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">host</span>, <span class="ruby-identifier">port</span>
+872:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004817">
+                    
+                    <a name="M004817"></a><b>parse229</b>(resp)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004817_source')" id="l_M004817_source">show</a>
+                        
+                    </p>
+                    <div id="M004817_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 875</span>
+875:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">parse229</span>(<span class="ruby-identifier">resp</span>)
+876:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">resp</span>[<span class="ruby-value">0</span>, <span class="ruby-value">3</span>] <span class="ruby-operator">!=</span> <span class="ruby-value str">&quot;229&quot;</span>
+877:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">FTPReplyError</span>, <span class="ruby-identifier">resp</span>
+878:       <span class="ruby-keyword kw">end</span>
+879:       <span class="ruby-identifier">left</span> = <span class="ruby-identifier">resp</span>.<span class="ruby-identifier">index</span>(<span class="ruby-value str">&quot;(&quot;</span>)
+880:       <span class="ruby-identifier">right</span> = <span class="ruby-identifier">resp</span>.<span class="ruby-identifier">index</span>(<span class="ruby-value str">&quot;)&quot;</span>)
+881:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">left</span> <span class="ruby-operator">==</span> <span class="ruby-keyword kw">nil</span> <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">right</span> <span class="ruby-operator">==</span> <span class="ruby-keyword kw">nil</span>
+882:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">FTPProtoError</span>, <span class="ruby-identifier">resp</span>
+883:       <span class="ruby-keyword kw">end</span>
+884:       <span class="ruby-identifier">numbers</span> = <span class="ruby-identifier">resp</span>[<span class="ruby-identifier">left</span> <span class="ruby-operator">+</span> <span class="ruby-value">1</span> <span class="ruby-operator">..</span> <span class="ruby-identifier">right</span> <span class="ruby-operator">-</span> <span class="ruby-value">1</span>].<span class="ruby-identifier">split</span>(<span class="ruby-identifier">resp</span>[<span class="ruby-identifier">left</span> <span class="ruby-operator">+</span> <span class="ruby-value">1</span>, <span class="ruby-value">1</span>])
+885:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">numbers</span>.<span class="ruby-identifier">length</span> <span class="ruby-operator">!=</span> <span class="ruby-value">4</span>
+886:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">FTPProtoError</span>, <span class="ruby-identifier">resp</span>
+887:       <span class="ruby-keyword kw">end</span>
+888:       <span class="ruby-identifier">port</span> = <span class="ruby-identifier">numbers</span>[<span class="ruby-value">3</span>].<span class="ruby-identifier">to_i</span>
+889:       <span class="ruby-identifier">host</span> = (<span class="ruby-ivar">@sock</span>.<span class="ruby-identifier">peeraddr</span>())[<span class="ruby-value">3</span>]
+890:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">host</span>, <span class="ruby-identifier">port</span>
+891:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004860">
+                    
+                    <a name="M004860"></a><b>parse257</b>(resp)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004860_source')" id="l_M004860_source">show</a>
+                        
+                    </p>
+                    <div id="M004860_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 894</span>
+894:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">parse257</span>(<span class="ruby-identifier">resp</span>)
+895:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">resp</span>[<span class="ruby-value">0</span>, <span class="ruby-value">3</span>] <span class="ruby-operator">!=</span> <span class="ruby-value str">&quot;257&quot;</span>
+896:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">FTPReplyError</span>, <span class="ruby-identifier">resp</span>
+897:       <span class="ruby-keyword kw">end</span>
+898:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">resp</span>[<span class="ruby-value">3</span>, <span class="ruby-value">2</span>] <span class="ruby-operator">!=</span> <span class="ruby-value str">' &quot;'</span>
+899:         <span class="ruby-keyword kw">return</span> <span class="ruby-value str">&quot;&quot;</span>
+900:       <span class="ruby-keyword kw">end</span>
+901:       <span class="ruby-identifier">dirname</span> = <span class="ruby-value str">&quot;&quot;</span>
+902:       <span class="ruby-identifier">i</span> = <span class="ruby-value">5</span>
+903:       <span class="ruby-identifier">n</span> = <span class="ruby-identifier">resp</span>.<span class="ruby-identifier">length</span>
+904:       <span class="ruby-keyword kw">while</span> <span class="ruby-identifier">i</span> <span class="ruby-operator">&lt;</span> <span class="ruby-identifier">n</span>
+905:         <span class="ruby-identifier">c</span> = <span class="ruby-identifier">resp</span>[<span class="ruby-identifier">i</span>, <span class="ruby-value">1</span>]
+906:         <span class="ruby-identifier">i</span> = <span class="ruby-identifier">i</span> <span class="ruby-operator">+</span> <span class="ruby-value">1</span>
+907:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">c</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'&quot;'</span>
+908:           <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">i</span> <span class="ruby-operator">&gt;</span> <span class="ruby-identifier">n</span> <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">resp</span>[<span class="ruby-identifier">i</span>, <span class="ruby-value">1</span>] <span class="ruby-operator">!=</span> <span class="ruby-value str">'&quot;'</span>
+909:             <span class="ruby-keyword kw">break</span>
+910:           <span class="ruby-keyword kw">end</span>
+911:           <span class="ruby-identifier">i</span> = <span class="ruby-identifier">i</span> <span class="ruby-operator">+</span> <span class="ruby-value">1</span>
+912:         <span class="ruby-keyword kw">end</span>
+913:         <span class="ruby-identifier">dirname</span> = <span class="ruby-identifier">dirname</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">c</span>
+914:       <span class="ruby-keyword kw">end</span>
+915:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">dirname</span>
+916:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004761">
+                    
+                    <a name="M004761"></a><b>putline</b>(line)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004761_source')" id="l_M004761_source">show</a>
+                        
+                    </p>
+                    <div id="M004761_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 201</span>
+201:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">putline</span>(<span class="ruby-identifier">line</span>)
+202:       <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@debug_mode</span>
+203:         <span class="ruby-identifier">print</span> <span class="ruby-value str">&quot;put: &quot;</span>, <span class="ruby-identifier">sanitize</span>(<span class="ruby-identifier">line</span>), <span class="ruby-value str">&quot;\n&quot;</span>
+204:       <span class="ruby-keyword kw">end</span>
+205:       <span class="ruby-identifier">line</span> = <span class="ruby-identifier">line</span> <span class="ruby-operator">+</span> <span class="ruby-constant">CRLF</span>
+206:       <span class="ruby-ivar">@sock</span>.<span class="ruby-identifier">write</span>(<span class="ruby-identifier">line</span>)
+207:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004760">
+                    
+                    <a name="M004760"></a><b>sanitize</b>(s)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004760_source')" id="l_M004760_source">show</a>
+                        
+                    </p>
+                    <div id="M004760_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 192</span>
+192:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">sanitize</span>(<span class="ruby-identifier">s</span>)
+193:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">s</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/^PASS /i</span>
+194:         <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">s</span>[<span class="ruby-value">0</span>, <span class="ruby-value">5</span>] <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;*&quot;</span> <span class="ruby-operator">*</span> (<span class="ruby-identifier">s</span>.<span class="ruby-identifier">length</span> <span class="ruby-operator">-</span> <span class="ruby-value">5</span>)
+195:       <span class="ruby-keyword kw">else</span>
+196:         <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">s</span>
+197:       <span class="ruby-keyword kw">end</span>
+198:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004768">
+                    
+                    <a name="M004768"></a><b>sendport</b>(host, port)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004768_source')" id="l_M004768_source">show</a>
+                        
+                    </p>
+                    <div id="M004768_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 278</span>
+278:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">sendport</span>(<span class="ruby-identifier">host</span>, <span class="ruby-identifier">port</span>)
+279:       <span class="ruby-identifier">af</span> = (<span class="ruby-ivar">@sock</span>.<span class="ruby-identifier">peeraddr</span>)[<span class="ruby-value">0</span>]
+280:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">af</span> <span class="ruby-operator">==</span> <span class="ruby-value str">&quot;AF_INET&quot;</span>
+281:         <span class="ruby-identifier">cmd</span> = <span class="ruby-value str">&quot;PORT &quot;</span> <span class="ruby-operator">+</span> (<span class="ruby-identifier">host</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">&quot;.&quot;</span>) <span class="ruby-operator">+</span> <span class="ruby-identifier">port</span>.<span class="ruby-identifier">divmod</span>(<span class="ruby-value">256</span>)).<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;,&quot;</span>)
+282:       <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">af</span> <span class="ruby-operator">==</span> <span class="ruby-value str">&quot;AF_INET6&quot;</span>
+283:         <span class="ruby-identifier">cmd</span> = <span class="ruby-identifier">sprintf</span>(<span class="ruby-value str">&quot;EPRT |2|%s|%d|&quot;</span>, <span class="ruby-identifier">host</span>, <span class="ruby-identifier">port</span>)
+284:       <span class="ruby-keyword kw">else</span>
+285:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">FTPProtoError</span>, <span class="ruby-identifier">host</span>
+286:       <span class="ruby-keyword kw">end</span>
+287:       <span class="ruby-identifier">voidcmd</span>(<span class="ruby-identifier">cmd</span>)
+288:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004771">
+                    
+                    <a name="M004771"></a><b>transfercmd</b>(cmd, rest_offset = nil)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004771_source')" id="l_M004771_source">show</a>
+                        
+                    </p>
+                    <div id="M004771_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 311</span>
+311:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">transfercmd</span>(<span class="ruby-identifier">cmd</span>, <span class="ruby-identifier">rest_offset</span> = <span class="ruby-keyword kw">nil</span>)
+312:       <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@passive</span>
+313:         <span class="ruby-identifier">host</span>, <span class="ruby-identifier">port</span> = <span class="ruby-identifier">makepasv</span>
+314:         <span class="ruby-identifier">conn</span> = <span class="ruby-identifier">open_socket</span>(<span class="ruby-identifier">host</span>, <span class="ruby-identifier">port</span>)
+315:         <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@resume</span> <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">rest_offset</span>
+316:           <span class="ruby-identifier">resp</span> = <span class="ruby-identifier">sendcmd</span>(<span class="ruby-value str">&quot;REST &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">rest_offset</span>.<span class="ruby-identifier">to_s</span>) 
+317:           <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">resp</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">!=</span> <span class="ruby-value">?3</span>
+318:             <span class="ruby-identifier">raise</span> <span class="ruby-constant">FTPReplyError</span>, <span class="ruby-identifier">resp</span>
+319:           <span class="ruby-keyword kw">end</span>
+320:         <span class="ruby-keyword kw">end</span>
+321:         <span class="ruby-identifier">resp</span> = <span class="ruby-identifier">sendcmd</span>(<span class="ruby-identifier">cmd</span>)
+322:         <span class="ruby-comment cmt"># skip 2XX for some ftp servers</span>
+323:         <span class="ruby-identifier">resp</span> = <span class="ruby-identifier">getresp</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">resp</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">==</span> <span class="ruby-value">?2</span>
+324:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">resp</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">!=</span> <span class="ruby-value">?1</span>
+325:           <span class="ruby-identifier">raise</span> <span class="ruby-constant">FTPReplyError</span>, <span class="ruby-identifier">resp</span>
+326:         <span class="ruby-keyword kw">end</span>
+327:       <span class="ruby-keyword kw">else</span>
+328:         <span class="ruby-identifier">sock</span> = <span class="ruby-identifier">makeport</span>
+329:         <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@resume</span> <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">rest_offset</span>
+330:           <span class="ruby-identifier">resp</span> = <span class="ruby-identifier">sendcmd</span>(<span class="ruby-value str">&quot;REST &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">rest_offset</span>.<span class="ruby-identifier">to_s</span>) 
+331:           <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">resp</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">!=</span> <span class="ruby-value">?3</span>
+332:             <span class="ruby-identifier">raise</span> <span class="ruby-constant">FTPReplyError</span>, <span class="ruby-identifier">resp</span>
+333:           <span class="ruby-keyword kw">end</span>
+334:         <span class="ruby-keyword kw">end</span>
+335:         <span class="ruby-identifier">resp</span> = <span class="ruby-identifier">sendcmd</span>(<span class="ruby-identifier">cmd</span>)
+336:         <span class="ruby-comment cmt"># skip 2XX for some ftp servers</span>
+337:         <span class="ruby-identifier">resp</span> = <span class="ruby-identifier">getresp</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">resp</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">==</span> <span class="ruby-value">?2</span>
+338:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">resp</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">!=</span> <span class="ruby-value">?1</span>
+339:           <span class="ruby-identifier">raise</span> <span class="ruby-constant">FTPReplyError</span>, <span class="ruby-identifier">resp</span>
+340:         <span class="ruby-keyword kw">end</span>
+341:         <span class="ruby-identifier">conn</span> = <span class="ruby-identifier">sock</span>.<span class="ruby-identifier">accept</span>
+342:         <span class="ruby-identifier">sock</span>.<span class="ruby-identifier">close</span>
+343:       <span class="ruby-keyword kw">end</span>
+344:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">conn</span>
+345:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M004765">
+                    
+                    <a name="M004765"></a><b>voidresp</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M004765_source')" id="l_M004765_source">show</a>
+                        
+                    </p>
+                    <div id="M004765_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/net/ftp.rb, line 250</span>
+250:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">voidresp</span>
+251:       <span class="ruby-identifier">resp</span> = <span class="ruby-identifier">getresp</span>
+252:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">resp</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">!=</span> <span class="ruby-value">?2</span>
+253:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">FTPReplyError</span>, <span class="ruby-identifier">resp</span>
+254:       <span class="ruby-keyword kw">end</span>
+255:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

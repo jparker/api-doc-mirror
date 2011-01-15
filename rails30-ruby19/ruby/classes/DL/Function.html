@@ -1,0 +1,546 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>DL::Function</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            DL::Function 
+            
+                <span class="parent">&lt; 
+                    
+                    parent
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../files/ext/dl/lib/dl/func_rb.html">ext/dl/lib/dl/func.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>B</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007790">bind</a>,</li>
+                
+                <li><a href="#M007795">bind_at_call</a>,</li>
+                
+                <li><a href="#M007794">bound?</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007792">call</a>,</li>
+                
+                <li><a href="#M007788">call</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007787">name</a>,</li>
+                
+                <li><a href="#M007785">new</a>,</li>
+                
+                <li><a href="#M007791">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>T</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007786">to_i</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>U</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007793">unbind</a>,</li>
+                
+                <li><a href="#M007796">unbind_at_call</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>W</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007789">wrap_result</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+    <div class="sectiontitle">Included Modules</div>
+    <ul>
+        
+        <li>
+            
+            <a href="../Kernel.html">Kernel</a>
+            
+            START:includes
+        </li>
+        
+        <li>
+            
+            <a href="../DL.html">DL</a>
+            
+            START:includes
+        </li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M007785">
+                    
+                    <a name="M007785"></a><b>new</b>(cfunc, argtypes, abi = nil, &amp;block)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007785_source')" id="l_M007785_source">show</a>
+                        
+                    </p>
+                    <div id="M007785_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File ext/dl/lib/dl/func.rb, line 14</span>
+14:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span> <span class="ruby-identifier">cfunc</span>, <span class="ruby-identifier">argtypes</span>, <span class="ruby-identifier">abi</span> = <span class="ruby-keyword kw">nil</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>
+15:       <span class="ruby-keyword kw">if</span> <span class="ruby-constant">DL</span>.<span class="ruby-identifier">fiddle?</span>
+16:         <span class="ruby-identifier">abi</span> <span class="ruby-operator">||=</span> <span class="ruby-constant">Fiddle</span><span class="ruby-operator">::</span><span class="ruby-constant">Function</span><span class="ruby-operator">::</span><span class="ruby-constant">DEFAULT</span>
+17:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">block_given?</span>
+18:           <span class="ruby-ivar">@cfunc</span> = <span class="ruby-constant">Class</span>.<span class="ruby-identifier">new</span>(<span class="ruby-constant">Fiddle</span><span class="ruby-operator">::</span><span class="ruby-constant">Closure</span>) {
+19:             <span class="ruby-identifier">define_method</span>(<span class="ruby-identifier">:call</span>, <span class="ruby-identifier">block</span>)
+20:           }.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">cfunc</span>.<span class="ruby-identifier">ctype</span>, <span class="ruby-identifier">argtypes</span>)
+21:         <span class="ruby-keyword kw">else</span>
+22:           <span class="ruby-ivar">@cfunc</span>  = <span class="ruby-identifier">cfunc</span>
+23:         <span class="ruby-keyword kw">end</span>
+24: 
+25:         <span class="ruby-ivar">@args</span>   = <span class="ruby-identifier">argtypes</span>
+26:         <span class="ruby-keyword kw">super</span>(<span class="ruby-ivar">@cfunc</span>, <span class="ruby-ivar">@args</span>.<span class="ruby-identifier">reject</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">x</span><span class="ruby-operator">|</span> <span class="ruby-identifier">x</span> <span class="ruby-operator">==</span> <span class="ruby-constant">TYPE_VOID</span> }, <span class="ruby-identifier">cfunc</span>.<span class="ruby-identifier">ctype</span>, <span class="ruby-identifier">abi</span>)
+27:       <span class="ruby-keyword kw">else</span>
+28:         <span class="ruby-ivar">@cfunc</span> = <span class="ruby-identifier">cfunc</span>
+29:         <span class="ruby-ivar">@stack</span> = <span class="ruby-constant">Stack</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">argtypes</span>.<span class="ruby-identifier">collect</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">ty</span><span class="ruby-operator">|</span> <span class="ruby-identifier">ty</span>.<span class="ruby-identifier">abs</span>})
+30:         <span class="ruby-keyword kw">if</span>( <span class="ruby-ivar">@cfunc</span>.<span class="ruby-identifier">ctype</span> <span class="ruby-operator">&lt;</span> <span class="ruby-value">0</span> )
+31:           <span class="ruby-ivar">@cfunc</span>.<span class="ruby-identifier">ctype</span> = <span class="ruby-ivar">@cfunc</span>.<span class="ruby-identifier">ctype</span>.<span class="ruby-identifier">abs</span>
+32:           <span class="ruby-ivar">@unsigned</span> = <span class="ruby-keyword kw">true</span>
+33:         <span class="ruby-keyword kw">else</span>
+34:           <span class="ruby-ivar">@unsigned</span> = <span class="ruby-keyword kw">false</span>
+35:         <span class="ruby-keyword kw">end</span>
+36:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">block_given?</span>
+37:           <span class="ruby-identifier">bind</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+38:         <span class="ruby-keyword kw">end</span>
+39:       <span class="ruby-keyword kw">end</span>
+40:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007791">
+                    
+                    <a name="M007791"></a><b>new</b>(ctype, args, block)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007791_source')" id="l_M007791_source">show</a>
+                        
+                    </p>
+                    <div id="M007791_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File ext/dl/lib/dl/func.rb, line 80</span>
+80:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span> <span class="ruby-identifier">ctype</span>, <span class="ruby-identifier">args</span>, <span class="ruby-identifier">block</span>
+81:             <span class="ruby-keyword kw">super</span>(<span class="ruby-identifier">ctype</span>, <span class="ruby-identifier">args</span>)
+82:             <span class="ruby-ivar">@block</span> = <span class="ruby-identifier">block</span>
+83:           <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M007790">
+                    
+                    <a name="M007790"></a><b>bind</b>(&amp;block)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007790_source')" id="l_M007790_source">show</a>
+                        
+                    </p>
+                    <div id="M007790_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File ext/dl/lib/dl/func.rb, line 77</span>
+ 77:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">bind</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+ 78:       <span class="ruby-keyword kw">if</span> <span class="ruby-constant">DL</span>.<span class="ruby-identifier">fiddle?</span>
+ 79:         <span class="ruby-ivar">@cfunc</span> = <span class="ruby-constant">Class</span>.<span class="ruby-identifier">new</span>(<span class="ruby-constant">Fiddle</span><span class="ruby-operator">::</span><span class="ruby-constant">Closure</span>) {
+ 80:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span> <span class="ruby-identifier">ctype</span>, <span class="ruby-identifier">args</span>, <span class="ruby-identifier">block</span>
+ 81:             <span class="ruby-keyword kw">super</span>(<span class="ruby-identifier">ctype</span>, <span class="ruby-identifier">args</span>)
+ 82:             <span class="ruby-ivar">@block</span> = <span class="ruby-identifier">block</span>
+ 83:           <span class="ruby-keyword kw">end</span>
+ 84: 
+ 85:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">call</span> <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>
+ 86:             <span class="ruby-ivar">@block</span>.<span class="ruby-identifier">call</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+ 87:           <span class="ruby-keyword kw">end</span>
+ 88:         }.<span class="ruby-identifier">new</span>(<span class="ruby-ivar">@cfunc</span>.<span class="ruby-identifier">ctype</span>, <span class="ruby-ivar">@args</span>, <span class="ruby-identifier">block</span>)
+ 89:       <span class="ruby-keyword kw">else</span>
+ 90:         <span class="ruby-keyword kw">if</span>( <span class="ruby-operator">!</span><span class="ruby-identifier">block</span> )
+ 91:           <span class="ruby-identifier">raise</span>(<span class="ruby-constant">RuntimeError</span>, <span class="ruby-value str">&quot;block must be given.&quot;</span>)
+ 92:         <span class="ruby-keyword kw">end</span>
+ 93:         <span class="ruby-keyword kw">if</span>( <span class="ruby-ivar">@cfunc</span>.<span class="ruby-identifier">ptr</span> <span class="ruby-operator">==</span> <span class="ruby-value">0</span> )
+ 94:           <span class="ruby-identifier">cb</span> = <span class="ruby-constant">Proc</span>.<span class="ruby-identifier">new</span>{<span class="ruby-operator">|</span><span class="ruby-operator">*</span><span class="ruby-identifier">args</span><span class="ruby-operator">|</span>
+ 95:             <span class="ruby-identifier">ary</span> = <span class="ruby-ivar">@stack</span>.<span class="ruby-identifier">unpack</span>(<span class="ruby-identifier">args</span>)
+ 96:             <span class="ruby-ivar">@stack</span>.<span class="ruby-identifier">types</span>.<span class="ruby-identifier">each_with_index</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">ty</span>, <span class="ruby-identifier">idx</span><span class="ruby-operator">|</span>
+ 97:               <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">ty</span>
+ 98:               <span class="ruby-keyword kw">when</span> <span class="ruby-constant">TYPE_VOIDP</span>
+ 99:                 <span class="ruby-identifier">ary</span>[<span class="ruby-identifier">idx</span>] = <span class="ruby-constant">CPtr</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">ary</span>[<span class="ruby-identifier">idx</span>])
+100:               <span class="ruby-keyword kw">end</span>
+101:             }
+102:             <span class="ruby-identifier">r</span> = <span class="ruby-identifier">block</span>.<span class="ruby-identifier">call</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">ary</span>)
+103:             <span class="ruby-identifier">wrap_arg</span>(<span class="ruby-identifier">r</span>, <span class="ruby-ivar">@cfunc</span>.<span class="ruby-identifier">ctype</span>, [])
+104:           }
+105:           <span class="ruby-keyword kw">case</span> <span class="ruby-ivar">@cfunc</span>.<span class="ruby-identifier">calltype</span>
+106:           <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:cdecl</span>
+107:             <span class="ruby-ivar">@cfunc</span>.<span class="ruby-identifier">ptr</span> = <span class="ruby-identifier">set_cdecl_callback</span>(<span class="ruby-ivar">@cfunc</span>.<span class="ruby-identifier">ctype</span>, <span class="ruby-ivar">@stack</span>.<span class="ruby-identifier">size</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">cb</span>)
+108:           <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:stdcall</span>
+109:             <span class="ruby-ivar">@cfunc</span>.<span class="ruby-identifier">ptr</span> = <span class="ruby-identifier">set_stdcall_callback</span>(<span class="ruby-ivar">@cfunc</span>.<span class="ruby-identifier">ctype</span>, <span class="ruby-ivar">@stack</span>.<span class="ruby-identifier">size</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">cb</span>)
+110:           <span class="ruby-keyword kw">else</span>
+111:             <span class="ruby-identifier">raise</span>(<span class="ruby-constant">RuntimeError</span>, <span class="ruby-node">&quot;unsupported calltype: #{@cfunc.calltype}&quot;</span>)
+112:           <span class="ruby-keyword kw">end</span>
+113:           <span class="ruby-keyword kw">if</span>( <span class="ruby-ivar">@cfunc</span>.<span class="ruby-identifier">ptr</span> <span class="ruby-operator">==</span> <span class="ruby-value">0</span> )
+114:             <span class="ruby-identifier">raise</span>(<span class="ruby-constant">RuntimeException</span>, <span class="ruby-value str">&quot;can't bind C function.&quot;</span>)
+115:           <span class="ruby-keyword kw">end</span>
+116:         <span class="ruby-keyword kw">end</span>
+117:       <span class="ruby-keyword kw">end</span>
+118:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007795">
+                    
+                    <a name="M007795"></a><b>bind_at_call</b>(&amp;block)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007795_source')" id="l_M007795_source">show</a>
+                        
+                    </p>
+                    <div id="M007795_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File ext/dl/lib/dl/func.rb, line 138</span>
+138:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">bind_at_call</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+139:       <span class="ruby-identifier">bind</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+140:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007794">
+                    
+                    <a name="M007794"></a><b>bound?</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007794_source')" id="l_M007794_source">show</a>
+                        
+                    </p>
+                    <div id="M007794_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File ext/dl/lib/dl/func.rb, line 134</span>
+134:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">bound?</span>()
+135:       <span class="ruby-ivar">@cfunc</span>.<span class="ruby-identifier">ptr</span> <span class="ruby-operator">!=</span> <span class="ruby-value">0</span>
+136:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007788">
+                    
+                    <a name="M007788"></a><b>call</b>(*args, &amp;block)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007788_source')" id="l_M007788_source">show</a>
+                        
+                    </p>
+                    <div id="M007788_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File ext/dl/lib/dl/func.rb, line 50</span>
+50:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">call</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+51:       <span class="ruby-keyword kw">if</span> <span class="ruby-constant">DL</span>.<span class="ruby-identifier">fiddle?</span>
+52:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">block_given?</span>
+53:           <span class="ruby-identifier">args</span>.<span class="ruby-identifier">find</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">a</span><span class="ruby-operator">|</span> <span class="ruby-constant">DL</span><span class="ruby-operator">::</span><span class="ruby-constant">Function</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">a</span> }.<span class="ruby-identifier">bind_at_call</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+54:         <span class="ruby-keyword kw">end</span>
+55:         <span class="ruby-keyword kw">super</span>
+56:       <span class="ruby-keyword kw">else</span>
+57:         <span class="ruby-identifier">funcs</span> = []
+58:         <span class="ruby-identifier">_args</span> = <span class="ruby-identifier">wrap_args</span>(<span class="ruby-identifier">args</span>, <span class="ruby-ivar">@stack</span>.<span class="ruby-identifier">types</span>, <span class="ruby-identifier">funcs</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+59:         <span class="ruby-identifier">r</span> = <span class="ruby-ivar">@cfunc</span>.<span class="ruby-identifier">call</span>(<span class="ruby-ivar">@stack</span>.<span class="ruby-identifier">pack</span>(<span class="ruby-identifier">_args</span>))
+60:         <span class="ruby-identifier">funcs</span>.<span class="ruby-identifier">each</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">f</span><span class="ruby-operator">|</span> <span class="ruby-identifier">f</span>.<span class="ruby-identifier">unbind_at_call</span>()}
+61:         <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">wrap_result</span>(<span class="ruby-identifier">r</span>)
+62:       <span class="ruby-keyword kw">end</span>
+63:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007792">
+                    
+                    <a name="M007792"></a><b>call</b>(*args)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007792_source')" id="l_M007792_source">show</a>
+                        
+                    </p>
+                    <div id="M007792_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File ext/dl/lib/dl/func.rb, line 85</span>
+85:           <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">call</span> <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>
+86:             <span class="ruby-ivar">@block</span>.<span class="ruby-identifier">call</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+87:           <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007787">
+                    
+                    <a name="M007787"></a><b>name</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007787_source')" id="l_M007787_source">show</a>
+                        
+                    </p>
+                    <div id="M007787_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File ext/dl/lib/dl/func.rb, line 46</span>
+46:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">name</span>
+47:       <span class="ruby-ivar">@cfunc</span>.<span class="ruby-identifier">name</span>
+48:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007786">
+                    
+                    <a name="M007786"></a><b>to_i</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007786_source')" id="l_M007786_source">show</a>
+                        
+                    </p>
+                    <div id="M007786_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File ext/dl/lib/dl/func.rb, line 42</span>
+42:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">to_i</span>()
+43:       <span class="ruby-ivar">@cfunc</span>.<span class="ruby-identifier">to_i</span>
+44:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007793">
+                    
+                    <a name="M007793"></a><b>unbind</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007793_source')" id="l_M007793_source">show</a>
+                        
+                    </p>
+                    <div id="M007793_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File ext/dl/lib/dl/func.rb, line 120</span>
+120:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">unbind</span>()
+121:       <span class="ruby-keyword kw">if</span>( <span class="ruby-ivar">@cfunc</span>.<span class="ruby-identifier">ptr</span> <span class="ruby-operator">!=</span> <span class="ruby-value">0</span> )
+122:         <span class="ruby-keyword kw">case</span> <span class="ruby-ivar">@cfunc</span>.<span class="ruby-identifier">calltype</span>
+123:         <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:cdecl</span>
+124:           <span class="ruby-identifier">remove_cdecl_callback</span>(<span class="ruby-ivar">@cfunc</span>.<span class="ruby-identifier">ptr</span>, <span class="ruby-ivar">@cfunc</span>.<span class="ruby-identifier">ctype</span>)
+125:         <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:stdcall</span>
+126:           <span class="ruby-identifier">remove_stdcall_callback</span>(<span class="ruby-ivar">@cfunc</span>.<span class="ruby-identifier">ptr</span>, <span class="ruby-ivar">@cfunc</span>.<span class="ruby-identifier">ctype</span>)
+127:         <span class="ruby-keyword kw">else</span>
+128:           <span class="ruby-identifier">raise</span>(<span class="ruby-constant">RuntimeError</span>, <span class="ruby-node">&quot;unsupported calltype: #{@cfunc.calltype}&quot;</span>)
+129:         <span class="ruby-keyword kw">end</span>
+130:         <span class="ruby-ivar">@cfunc</span>.<span class="ruby-identifier">ptr</span> = <span class="ruby-value">0</span>
+131:       <span class="ruby-keyword kw">end</span>
+132:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007796">
+                    
+                    <a name="M007796"></a><b>unbind_at_call</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007796_source')" id="l_M007796_source">show</a>
+                        
+                    </p>
+                    <div id="M007796_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File ext/dl/lib/dl/func.rb, line 142</span>
+142:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">unbind_at_call</span>()
+143:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007789">
+                    
+                    <a name="M007789"></a><b>wrap_result</b>(r)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007789_source')" id="l_M007789_source">show</a>
+                        
+                    </p>
+                    <div id="M007789_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File ext/dl/lib/dl/func.rb, line 65</span>
+65:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">wrap_result</span>(<span class="ruby-identifier">r</span>)
+66:       <span class="ruby-keyword kw">case</span> <span class="ruby-ivar">@cfunc</span>.<span class="ruby-identifier">ctype</span>
+67:       <span class="ruby-keyword kw">when</span> <span class="ruby-constant">TYPE_VOIDP</span>
+68:         <span class="ruby-identifier">r</span> = <span class="ruby-constant">CPtr</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">r</span>)
+69:       <span class="ruby-keyword kw">else</span>
+70:         <span class="ruby-keyword kw">if</span>( <span class="ruby-ivar">@unsigned</span> )
+71:           <span class="ruby-identifier">r</span> = <span class="ruby-identifier">unsigned_value</span>(<span class="ruby-identifier">r</span>, <span class="ruby-ivar">@cfunc</span>.<span class="ruby-identifier">ctype</span>)
+72:         <span class="ruby-keyword kw">end</span>
+73:       <span class="ruby-keyword kw">end</span>
+74:       <span class="ruby-identifier">r</span>
+75:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

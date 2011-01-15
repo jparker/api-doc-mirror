@@ -1,0 +1,529 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Logger::LogDevice</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            Logger::LogDevice 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../files/lib/logger_rb.html">lib/logger.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>A</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005946">add_log_header</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005947">check_shift_log</a>,</li>
+                
+                <li><a href="#M005943">close</a>,</li>
+                
+                <li><a href="#M005945">create_logfile</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005951">eod</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005937">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>O</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005944">open_logfile</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>P</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005950">previous_period_end</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005948">shift_log_age</a>,</li>
+                
+                <li><a href="#M005949">shift_log_period</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>W</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005942">write</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Classes and Modules</div>
+    <ul>
+        
+        <li><span class="type">CLASS</span> <a href="LogDevice/LogDeviceMutex.html">Logger::LogDevice::LogDeviceMutex</a></li>
+        
+    </ul>
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">SiD</td>
+            <td>=</td>
+            <td class="attr-value">24 * 60 * 60</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+    <div class="sectiontitle">Attributes</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>dev</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>filename</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+    </table>
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005937">
+                    
+                    <a name="M005937"></a><b>new</b>(log = nil, opt = {})
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005937_source')" id="l_M005937_source">show</a>
+                        
+                    </p>
+                    <div id="M005937_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/logger.rb, line 481</span>
+481:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">log</span> = <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">opt</span> = {})
+482:       <span class="ruby-ivar">@dev</span> = <span class="ruby-ivar">@filename</span> = <span class="ruby-ivar">@shift_age</span> = <span class="ruby-ivar">@shift_size</span> = <span class="ruby-keyword kw">nil</span>
+483:       <span class="ruby-ivar">@mutex</span> = <span class="ruby-constant">LogDeviceMutex</span>.<span class="ruby-identifier">new</span>
+484:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">log</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">:write</span>) <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">log</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">:close</span>)
+485:         <span class="ruby-ivar">@dev</span> = <span class="ruby-identifier">log</span>
+486:       <span class="ruby-keyword kw">else</span>
+487:         <span class="ruby-ivar">@dev</span> = <span class="ruby-identifier">open_logfile</span>(<span class="ruby-identifier">log</span>)
+488:         <span class="ruby-ivar">@dev</span>.<span class="ruby-identifier">sync</span> = <span class="ruby-keyword kw">true</span>
+489:         <span class="ruby-ivar">@filename</span> = <span class="ruby-identifier">log</span>
+490:         <span class="ruby-ivar">@shift_age</span> = <span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:shift_age</span>] <span class="ruby-operator">||</span> <span class="ruby-value">7</span>
+491:         <span class="ruby-ivar">@shift_size</span> = <span class="ruby-identifier">opt</span>[<span class="ruby-identifier">:shift_size</span>] <span class="ruby-operator">||</span> <span class="ruby-value">1048576</span>
+492:       <span class="ruby-keyword kw">end</span>
+493:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005943">
+                    
+                    <a name="M005943"></a><b>close</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005943_source')" id="l_M005943_source">show</a>
+                        
+                    </p>
+                    <div id="M005943_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/logger.rb, line 508</span>
+508:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">close</span>
+509:       <span class="ruby-ivar">@mutex</span>.<span class="ruby-identifier">synchronize</span> <span class="ruby-keyword kw">do</span>
+510:         <span class="ruby-ivar">@dev</span>.<span class="ruby-identifier">close</span>
+511:       <span class="ruby-keyword kw">end</span>
+512:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005942">
+                    
+                    <a name="M005942"></a><b>write</b>(message)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005942_source')" id="l_M005942_source">show</a>
+                        
+                    </p>
+                    <div id="M005942_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/logger.rb, line 495</span>
+495:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">write</span>(<span class="ruby-identifier">message</span>)
+496:       <span class="ruby-ivar">@mutex</span>.<span class="ruby-identifier">synchronize</span> <span class="ruby-keyword kw">do</span>
+497:         <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@shift_age</span> <span class="ruby-keyword kw">and</span> <span class="ruby-ivar">@dev</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">:stat</span>)
+498:           <span class="ruby-keyword kw">begin</span>
+499:             <span class="ruby-identifier">check_shift_log</span>
+500:           <span class="ruby-keyword kw">rescue</span>
+501:             <span class="ruby-identifier">raise</span> <span class="ruby-constant">Logger</span><span class="ruby-operator">::</span><span class="ruby-constant">ShiftingError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-node">&quot;Shifting failed. #{$!}&quot;</span>)
+502:           <span class="ruby-keyword kw">end</span>
+503:         <span class="ruby-keyword kw">end</span>
+504:         <span class="ruby-ivar">@dev</span>.<span class="ruby-identifier">write</span>(<span class="ruby-identifier">message</span>)
+505:       <span class="ruby-keyword kw">end</span>
+506:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Private methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005946">
+                    
+                    <a name="M005946"></a><b>add_log_header</b>(file)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005946_source')" id="l_M005946_source">show</a>
+                        
+                    </p>
+                    <div id="M005946_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/logger.rb, line 531</span>
+531:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">add_log_header</span>(<span class="ruby-identifier">file</span>)
+532:       <span class="ruby-identifier">file</span>.<span class="ruby-identifier">write</span>(
+533:         <span class="ruby-value str">&quot;# Logfile created on %s by %s\n&quot;</span> <span class="ruby-operator">%</span> [<span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span>.<span class="ruby-identifier">to_s</span>, <span class="ruby-constant">Logger</span><span class="ruby-operator">::</span><span class="ruby-constant">ProgName</span>]
+534:     )
+535:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005947">
+                    
+                    <a name="M005947"></a><b>check_shift_log</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005947_source')" id="l_M005947_source">show</a>
+                        
+                    </p>
+                    <div id="M005947_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/logger.rb, line 539</span>
+539:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">check_shift_log</span>
+540:       <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@shift_age</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Integer</span>)
+541:         <span class="ruby-comment cmt"># Note: always returns false if '0'.</span>
+542:         <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@filename</span> <span class="ruby-operator">&amp;&amp;</span> (<span class="ruby-ivar">@shift_age</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>) <span class="ruby-operator">&amp;&amp;</span> (<span class="ruby-ivar">@dev</span>.<span class="ruby-identifier">stat</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">&gt;</span> <span class="ruby-ivar">@shift_size</span>)
+543:           <span class="ruby-identifier">shift_log_age</span>
+544:         <span class="ruby-keyword kw">end</span>
+545:       <span class="ruby-keyword kw">else</span>
+546:         <span class="ruby-identifier">now</span> = <span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span>
+547:         <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@dev</span>.<span class="ruby-identifier">stat</span>.<span class="ruby-identifier">mtime</span> <span class="ruby-operator">&lt;=</span> <span class="ruby-identifier">previous_period_end</span>(<span class="ruby-identifier">now</span>)
+548:           <span class="ruby-identifier">shift_log_period</span>(<span class="ruby-identifier">now</span>)
+549:         <span class="ruby-keyword kw">end</span>
+550:       <span class="ruby-keyword kw">end</span>
+551:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005945">
+                    
+                    <a name="M005945"></a><b>create_logfile</b>(filename)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005945_source')" id="l_M005945_source">show</a>
+                        
+                    </p>
+                    <div id="M005945_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/logger.rb, line 524</span>
+524:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">create_logfile</span>(<span class="ruby-identifier">filename</span>)
+525:       <span class="ruby-identifier">logdev</span> = <span class="ruby-identifier">open</span>(<span class="ruby-identifier">filename</span>, (<span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-constant">WRONLY</span> <span class="ruby-operator">|</span> <span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-constant">APPEND</span> <span class="ruby-operator">|</span> <span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-constant">CREAT</span>))
+526:       <span class="ruby-identifier">logdev</span>.<span class="ruby-identifier">sync</span> = <span class="ruby-keyword kw">true</span>
+527:       <span class="ruby-identifier">add_log_header</span>(<span class="ruby-identifier">logdev</span>)
+528:       <span class="ruby-identifier">logdev</span>
+529:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005951">
+                    
+                    <a name="M005951"></a><b>eod</b>(t)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005951_source')" id="l_M005951_source">show</a>
+                        
+                    </p>
+                    <div id="M005951_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/logger.rb, line 590</span>
+590:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">eod</span>(<span class="ruby-identifier">t</span>)
+591:       <span class="ruby-constant">Time</span>.<span class="ruby-identifier">mktime</span>(<span class="ruby-identifier">t</span>.<span class="ruby-identifier">year</span>, <span class="ruby-identifier">t</span>.<span class="ruby-identifier">month</span>, <span class="ruby-identifier">t</span>.<span class="ruby-identifier">mday</span>, <span class="ruby-value">23</span>, <span class="ruby-value">59</span>, <span class="ruby-value">59</span>)
+592:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005944">
+                    
+                    <a name="M005944"></a><b>open_logfile</b>(filename)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005944_source')" id="l_M005944_source">show</a>
+                        
+                    </p>
+                    <div id="M005944_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/logger.rb, line 516</span>
+516:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">open_logfile</span>(<span class="ruby-identifier">filename</span>)
+517:       <span class="ruby-keyword kw">if</span> (<span class="ruby-constant">FileTest</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">filename</span>))
+518:         <span class="ruby-identifier">open</span>(<span class="ruby-identifier">filename</span>, (<span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-constant">WRONLY</span> <span class="ruby-operator">|</span> <span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-constant">APPEND</span>))
+519:       <span class="ruby-keyword kw">else</span>
+520:         <span class="ruby-identifier">create_logfile</span>(<span class="ruby-identifier">filename</span>)
+521:       <span class="ruby-keyword kw">end</span>
+522:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005950">
+                    
+                    <a name="M005950"></a><b>previous_period_end</b>(now)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005950_source')" id="l_M005950_source">show</a>
+                        
+                    </p>
+                    <div id="M005950_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/logger.rb, line 577</span>
+577:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">previous_period_end</span>(<span class="ruby-identifier">now</span>)
+578:       <span class="ruby-keyword kw">case</span> <span class="ruby-ivar">@shift_age</span>
+579:       <span class="ruby-keyword kw">when</span> <span class="ruby-regexp re">/^daily$/</span>
+580:         <span class="ruby-identifier">eod</span>(<span class="ruby-identifier">now</span> <span class="ruby-operator">-</span> <span class="ruby-value">1</span> <span class="ruby-operator">*</span> <span class="ruby-constant">SiD</span>)
+581:       <span class="ruby-keyword kw">when</span> <span class="ruby-regexp re">/^weekly$/</span>
+582:         <span class="ruby-identifier">eod</span>(<span class="ruby-identifier">now</span> <span class="ruby-operator">-</span> ((<span class="ruby-identifier">now</span>.<span class="ruby-identifier">wday</span> <span class="ruby-operator">+</span> <span class="ruby-value">1</span>) <span class="ruby-operator">*</span> <span class="ruby-constant">SiD</span>))
+583:       <span class="ruby-keyword kw">when</span> <span class="ruby-regexp re">/^monthly$/</span>
+584:         <span class="ruby-identifier">eod</span>(<span class="ruby-identifier">now</span> <span class="ruby-operator">-</span> <span class="ruby-identifier">now</span>.<span class="ruby-identifier">mday</span> <span class="ruby-operator">*</span> <span class="ruby-constant">SiD</span>)
+585:       <span class="ruby-keyword kw">else</span>
+586:         <span class="ruby-identifier">now</span>
+587:       <span class="ruby-keyword kw">end</span>
+588:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005948">
+                    
+                    <a name="M005948"></a><b>shift_log_age</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005948_source')" id="l_M005948_source">show</a>
+                        
+                    </p>
+                    <div id="M005948_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/logger.rb, line 553</span>
+553:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">shift_log_age</span>
+554:       (<span class="ruby-ivar">@shift_age</span><span class="ruby-operator">-</span><span class="ruby-value">3</span>).<span class="ruby-identifier">downto</span>(<span class="ruby-value">0</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">i</span><span class="ruby-operator">|</span>
+555:         <span class="ruby-keyword kw">if</span> <span class="ruby-constant">FileTest</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-node">&quot;#{@filename}.#{i}&quot;</span>)
+556:           <span class="ruby-constant">File</span>.<span class="ruby-identifier">rename</span>(<span class="ruby-node">&quot;#{@filename}.#{i}&quot;</span>, <span class="ruby-node">&quot;#{@filename}.#{i+1}&quot;</span>)
+557:         <span class="ruby-keyword kw">end</span>
+558:       <span class="ruby-keyword kw">end</span>
+559:       <span class="ruby-ivar">@dev</span>.<span class="ruby-identifier">close</span>
+560:       <span class="ruby-constant">File</span>.<span class="ruby-identifier">rename</span>(<span class="ruby-node">&quot;#{@filename}&quot;</span>, <span class="ruby-node">&quot;#{@filename}.0&quot;</span>)
+561:       <span class="ruby-ivar">@dev</span> = <span class="ruby-identifier">create_logfile</span>(<span class="ruby-ivar">@filename</span>)
+562:       <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">true</span>
+563:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005949">
+                    
+                    <a name="M005949"></a><b>shift_log_period</b>(now)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005949_source')" id="l_M005949_source">show</a>
+                        
+                    </p>
+                    <div id="M005949_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/logger.rb, line 565</span>
+565:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">shift_log_period</span>(<span class="ruby-identifier">now</span>)
+566:       <span class="ruby-identifier">postfix</span> = <span class="ruby-identifier">previous_period_end</span>(<span class="ruby-identifier">now</span>).<span class="ruby-identifier">strftime</span>(<span class="ruby-value str">&quot;%Y%m%d&quot;</span>)     <span class="ruby-comment cmt"># YYYYMMDD</span>
+567:       <span class="ruby-identifier">age_file</span> = <span class="ruby-node">&quot;#{@filename}.#{postfix}&quot;</span>
+568:       <span class="ruby-keyword kw">if</span> <span class="ruby-constant">FileTest</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">age_file</span>)
+569:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">RuntimeError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-node">&quot;'#{ age_file }' already exists.&quot;</span>)
+570:       <span class="ruby-keyword kw">end</span>
+571:       <span class="ruby-ivar">@dev</span>.<span class="ruby-identifier">close</span>
+572:       <span class="ruby-constant">File</span>.<span class="ruby-identifier">rename</span>(<span class="ruby-node">&quot;#{@filename}&quot;</span>, <span class="ruby-identifier">age_file</span>)
+573:       <span class="ruby-ivar">@dev</span> = <span class="ruby-identifier">create_logfile</span>(<span class="ruby-ivar">@filename</span>)
+574:       <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">true</span>
+575:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

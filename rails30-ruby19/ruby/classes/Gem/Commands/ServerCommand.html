@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Gem::Commands::ServerCommand</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            Gem::Commands::ServerCommand 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../Command.html">Gem::Command</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../../files/lib/rubygems/commands/server_command_rb.html">lib/rubygems/commands/server_command.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005183">execute</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005180">new</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005180">
+                    
+                    <a name="M005180"></a><b>new</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005180_source')" id="l_M005180_source">show</a>
+                        
+                    </p>
+                    <div id="M005180_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/rubygems/commands/server_command.rb, line 6</span>
+ 6:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>
+ 7:     <span class="ruby-keyword kw">super</span> <span class="ruby-value str">'server'</span>, <span class="ruby-value str">'Documentation and gem repository HTTP server'</span>,
+ 8:           <span class="ruby-identifier">:port</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">8808</span>, <span class="ruby-identifier">:gemdir</span> =<span class="ruby-operator">&gt;</span> [], <span class="ruby-identifier">:daemon</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>
+ 9: 
+10:     <span class="ruby-constant">OptionParser</span>.<span class="ruby-identifier">accept</span> <span class="ruby-identifier">:Port</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">port</span><span class="ruby-operator">|</span>
+11:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">port</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/\A\d+\z/</span> <span class="ruby-keyword kw">then</span>
+12:         <span class="ruby-identifier">port</span> = <span class="ruby-constant">Integer</span> <span class="ruby-identifier">port</span>
+13:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">OptionParser</span><span class="ruby-operator">::</span><span class="ruby-constant">InvalidArgument</span>, <span class="ruby-node">&quot;#{port}: not a port number&quot;</span> <span class="ruby-keyword kw">if</span>
+14:           <span class="ruby-identifier">port</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">65535</span>
+15: 
+16:         <span class="ruby-identifier">port</span>
+17:       <span class="ruby-keyword kw">else</span>
+18:         <span class="ruby-keyword kw">begin</span>
+19:           <span class="ruby-constant">Socket</span>.<span class="ruby-identifier">getservbyname</span> <span class="ruby-identifier">port</span>
+20:         <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">SocketError</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+21:           <span class="ruby-identifier">raise</span> <span class="ruby-constant">OptionParser</span><span class="ruby-operator">::</span><span class="ruby-constant">InvalidArgument</span>, <span class="ruby-node">&quot;#{port}: no such named service&quot;</span>
+22:         <span class="ruby-keyword kw">end</span>
+23:       <span class="ruby-keyword kw">end</span>
+24:     <span class="ruby-keyword kw">end</span>
+25: 
+26:     <span class="ruby-identifier">add_option</span> <span class="ruby-value str">'-p'</span>, <span class="ruby-value str">'--port=PORT'</span>, <span class="ruby-identifier">:Port</span>,
+27:                <span class="ruby-value str">'port to listen on'</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">port</span>, <span class="ruby-identifier">options</span><span class="ruby-operator">|</span>
+28:       <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:port</span>] = <span class="ruby-identifier">port</span>
+29:     <span class="ruby-keyword kw">end</span>
+30: 
+31:     <span class="ruby-identifier">add_option</span> <span class="ruby-value str">'-d'</span>, <span class="ruby-value str">'--dir=GEMDIR'</span>,
+32:                <span class="ruby-value str">'directories from which to serve gems'</span>,
+33:                <span class="ruby-value str">'multiple directories may be provided'</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">gemdir</span>, <span class="ruby-identifier">options</span><span class="ruby-operator">|</span>
+34:       <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:gemdir</span>] <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-identifier">gemdir</span>)
+35:     <span class="ruby-keyword kw">end</span>
+36: 
+37:     <span class="ruby-identifier">add_option</span> <span class="ruby-value str">'--[no-]daemon'</span>, <span class="ruby-value str">'run as a daemon'</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">daemon</span>, <span class="ruby-identifier">options</span><span class="ruby-operator">|</span>
+38:       <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:daemon</span>] = <span class="ruby-identifier">daemon</span>
+39:     <span class="ruby-keyword kw">end</span>
+40: 
+41:     <span class="ruby-identifier">add_option</span> <span class="ruby-value str">'-b'</span>, <span class="ruby-value str">'--bind=HOST,HOST'</span>,
+42:                <span class="ruby-value str">'addresses to bind'</span>, <span class="ruby-constant">Array</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">address</span>, <span class="ruby-identifier">options</span><span class="ruby-operator">|</span>
+43:       <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:addresses</span>] <span class="ruby-operator">||=</span> []
+44:       <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:addresses</span>].<span class="ruby-identifier">push</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">address</span>)
+45:     <span class="ruby-keyword kw">end</span>
+46:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005183">
+                    
+                    <a name="M005183"></a><b>execute</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005183_source')" id="l_M005183_source">show</a>
+                        
+                    </p>
+                    <div id="M005183_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/rubygems/commands/server_command.rb, line 73</span>
+73:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">execute</span>
+74:     <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:gemdir</span>] <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">dir</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:gemdir</span>].<span class="ruby-identifier">empty?</span>
+75:     <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">Server</span>.<span class="ruby-identifier">run</span> <span class="ruby-identifier">options</span>
+76:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

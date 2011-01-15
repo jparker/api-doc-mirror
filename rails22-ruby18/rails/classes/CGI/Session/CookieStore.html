@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>CGI::Session::CookieStore</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            CGI::Session::CookieStore 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../../Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../../files/actionpack/lib/action_controller/session/cookie_store_rb.html">actionpack/lib/action_controller/session/cookie_store.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+This cookie-based session store is the <a href="../../Rails.html">Rails</a>
+default. Sessions typically contain at most a user_id and flash message;
+both fit within the 4K cookie size limit. Cookie-based sessions are
+dramatically faster than the alternatives.
+</p>
+<p>
+If you have more than 4K of session data or don&#8217;t want your data to
+be visible to the user, pick another session store.
+</p>
+<p>
+<a href="CookieStore/CookieOverflow.html">CookieOverflow</a> is raised if
+you attempt to store more than 4K of data. <a
+href="CookieStore/TamperedWithCookie.html">TamperedWithCookie</a> is raised
+if the data integrity check fails.
+</p>
+<p>
+A message digest is included with the cookie to ensure data integrity: a
+user cannot alter his <tt>user_id</tt> without knowing the secret key
+included in the hash. New apps are generated with a pregenerated secret in
+config/environment.rb. Set your own for old apps you&#8217;re upgrading.
+</p>
+<p>
+<a href="../Session.html">Session</a> options:
+</p>
+<ul>
+<li><tt>:secret</tt>: An application-wide key string or block returning a
+string called per generated digest. The block is called with the
+CGI::Session instance as an argument. It&#8217;s important that the secret
+is not vulnerable to a dictionary attack. Therefore, you should choose a
+secret consisting of random numbers and letters and more than 30
+characters. Examples:
+
+<pre>
+  :secret =&gt; '449fe2e7daee471bffae2fd8dc02313d'
+  :secret =&gt; Proc.new { User.current_user.secret_key }
+</pre>
+</li>
+<li><tt>:digest</tt>: The message digest algorithm used to verify session
+integrity defaults to &#8216;SHA1&#8217; but may be any digest provided by
+OpenSSL, such as &#8216;MD5&#8217;, &#8216;RIPEMD160&#8217;,
+&#8216;SHA256&#8217;, etc.
+
+</li>
+</ul>
+<p>
+To generate a secret key for an existing application, run &#8220;rake
+secret&#8221; and set the key in config/environment.rb.
+</p>
+<p>
+Note that changing digest or secret invalidates all existing sessions!
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001513">close</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>D</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001514">delete</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001510">ensure_secret_secure</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>G</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001515">generate_digest</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001509">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>R</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001511">restore</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>U</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001512">update</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Classes and Modules</div>
+    <ul>
+        
+        <li><span class="type">CLASS</span> <a href="CookieStore/CookieOverflow.html">CGI::Session::CookieStore::CookieOverflow</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="CookieStore/TamperedWithCookie.html">CGI::Session::CookieStore::TamperedWithCookie</a></li>
+        
+    </ul>
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">MAX</td>
+            <td>=</td>
+            <td class="attr-value">4096</td>
+        </tr>
+        
+        <tr valign='top'>
+            <td>&nbsp;</td>
+            <td colspan="2" class="attr-desc"><p>
+Cookies can typically store 4096 bytes.
+</p>
+</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">SECRET_MIN_LENGTH</td>
+            <td>=</td>
+            <td class="attr-value">30</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M001509">
+                    
+                    <a name="M001509"></a><b>new</b>(session, options = {})
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Called from CGI::Session only.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001509_source')" id="l_M001509_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/7ecb9689b03335ec28958c506b083390f4212d45/actionpack/lib/action_controller/session/cookie_store.rb#L52" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M001509_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File actionpack/lib/action_controller/session/cookie_store.rb, line 52</span>
+52:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">session</span>, <span class="ruby-identifier">options</span> = {})
+53:     <span class="ruby-comment cmt"># The session_key option is required.</span>
+54:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-value str">'session_key'</span>].<span class="ruby-identifier">blank?</span>
+55:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-value str">'A session_key is required to write a cookie containing the session data. Use config.action_controller.session = { :session_key =&gt; &quot;_myapp_session&quot;, :secret =&gt; &quot;some secret phrase&quot; } in config/environment.rb'</span>
+56:     <span class="ruby-keyword kw">end</span>
+57: 
+58:     <span class="ruby-comment cmt"># The secret option is required.</span>
+59:     <span class="ruby-identifier">ensure_secret_secure</span>(<span class="ruby-identifier">options</span>[<span class="ruby-value str">'secret'</span>])
+60: 
+61:     <span class="ruby-comment cmt"># Keep the session and its secret on hand so we can read and write cookies.</span>
+62:     <span class="ruby-ivar">@session</span>, <span class="ruby-ivar">@secret</span> = <span class="ruby-identifier">session</span>, <span class="ruby-identifier">options</span>[<span class="ruby-value str">'secret'</span>]
+63: 
+64:     <span class="ruby-comment cmt"># Message digest defaults to SHA1.</span>
+65:     <span class="ruby-ivar">@digest</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value str">'digest'</span>] <span class="ruby-operator">||</span> <span class="ruby-value str">'SHA1'</span>
+66: 
+67:     <span class="ruby-comment cmt"># Default cookie options derived from session settings.</span>
+68:     <span class="ruby-ivar">@cookie_options</span> = {
+69:       <span class="ruby-value str">'name'</span>    =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">options</span>[<span class="ruby-value str">'session_key'</span>],
+70:       <span class="ruby-value str">'path'</span>    =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">options</span>[<span class="ruby-value str">'session_path'</span>],
+71:       <span class="ruby-value str">'domain'</span>  =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">options</span>[<span class="ruby-value str">'session_domain'</span>],
+72:       <span class="ruby-value str">'expires'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">options</span>[<span class="ruby-value str">'session_expires'</span>],
+73:       <span class="ruby-value str">'secure'</span>  =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">options</span>[<span class="ruby-value str">'session_secure'</span>],
+74:       <span class="ruby-value str">'http_only'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">options</span>[<span class="ruby-value str">'session_http_only'</span>]
+75:     }
+76: 
+77:     <span class="ruby-comment cmt"># Set no_hidden and no_cookies since the session id is unused and we</span>
+78:     <span class="ruby-comment cmt"># set our own data cookie.</span>
+79:     <span class="ruby-identifier">options</span>[<span class="ruby-value str">'no_hidden'</span>] = <span class="ruby-keyword kw">true</span>
+80:     <span class="ruby-identifier">options</span>[<span class="ruby-value str">'no_cookies'</span>] = <span class="ruby-keyword kw">true</span>
+81:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M001513">
+                    
+                    <a name="M001513"></a><b>close</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Write the session data cookie if it was loaded and has changed.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001513_source')" id="l_M001513_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/7ecb9689b03335ec28958c506b083390f4212d45/actionpack/lib/action_controller/session/cookie_store.rb#L109" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M001513_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File actionpack/lib/action_controller/session/cookie_store.rb, line 109</span>
+109:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">close</span>
+110:     <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">defined?</span>(<span class="ruby-ivar">@data</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-ivar">@data</span>.<span class="ruby-identifier">blank?</span>
+111:       <span class="ruby-identifier">updated</span> = <span class="ruby-identifier">marshal</span>(<span class="ruby-ivar">@data</span>)
+112:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">CookieOverflow</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">updated</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">&gt;</span> <span class="ruby-constant">MAX</span>
+113:       <span class="ruby-identifier">write_cookie</span>(<span class="ruby-value str">'value'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">updated</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">updated</span> <span class="ruby-operator">==</span> <span class="ruby-ivar">@original</span>
+114:     <span class="ruby-keyword kw">end</span>
+115:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001514">
+                    
+                    <a name="M001514"></a><b>delete</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Delete the session data by setting an expired cookie with no data.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001514_source')" id="l_M001514_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/7ecb9689b03335ec28958c506b083390f4212d45/actionpack/lib/action_controller/session/cookie_store.rb#L118" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M001514_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File actionpack/lib/action_controller/session/cookie_store.rb, line 118</span>
+118:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">delete</span>
+119:     <span class="ruby-ivar">@data</span> = <span class="ruby-keyword kw">nil</span>
+120:     <span class="ruby-identifier">clear_old_cookie_value</span>
+121:     <span class="ruby-identifier">write_cookie</span>(<span class="ruby-value str">'value'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">nil</span>, <span class="ruby-value str">'expires'</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>.<span class="ruby-identifier">year</span>.<span class="ruby-identifier">ago</span>)
+122:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001510">
+                    
+                    <a name="M001510"></a><b>ensure_secret_secure</b>(secret)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+To prevent users from using something insecure like &#8220;Password&#8221;
+we make sure that the secret they&#8217;ve provided is at least 30
+characters in length.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001510_source')" id="l_M001510_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/7ecb9689b03335ec28958c506b083390f4212d45/actionpack/lib/action_controller/session/cookie_store.rb#L85" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M001510_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File actionpack/lib/action_controller/session/cookie_store.rb, line 85</span>
+85:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">ensure_secret_secure</span>(<span class="ruby-identifier">secret</span>)
+86:     <span class="ruby-comment cmt"># There's no way we can do this check if they've provided a proc for the</span>
+87:     <span class="ruby-comment cmt"># secret.</span>
+88:     <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">true</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">secret</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Proc</span>)
+89: 
+90:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">secret</span>.<span class="ruby-identifier">blank?</span>
+91:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">%Q{A secret is required to generate an integrity hash for cookie session data. Use config.action_controller.session = { :session_key =&gt; &quot;_myapp_session&quot;, :secret =&gt; &quot;some secret phrase of at least #{SECRET_MIN_LENGTH} characters&quot; } in config/environment.rb}</span>
+92:     <span class="ruby-keyword kw">end</span>
+93: 
+94:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">secret</span>.<span class="ruby-identifier">length</span> <span class="ruby-operator">&lt;</span> <span class="ruby-constant">SECRET_MIN_LENGTH</span>
+95:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">%Q{Secret should be something secure, like &quot;#{CGI::Session.generate_unique_id}&quot;.  The value you provided, &quot;#{secret}&quot;, is shorter than the minimum length of #{SECRET_MIN_LENGTH} characters}</span>
+96:     <span class="ruby-keyword kw">end</span>
+97:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001515">
+                    
+                    <a name="M001515"></a><b>generate_digest</b>(data)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Generate the HMAC keyed message digest. Uses SHA1 by default.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001515_source')" id="l_M001515_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/7ecb9689b03335ec28958c506b083390f4212d45/actionpack/lib/action_controller/session/cookie_store.rb#L125" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M001515_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File actionpack/lib/action_controller/session/cookie_store.rb, line 125</span>
+125:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">generate_digest</span>(<span class="ruby-identifier">data</span>)
+126:     <span class="ruby-identifier">key</span> = <span class="ruby-ivar">@secret</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">:call</span>) <span class="ruby-operator">?</span> <span class="ruby-ivar">@secret</span>.<span class="ruby-identifier">call</span>(<span class="ruby-ivar">@session</span>) <span class="ruby-operator">:</span> <span class="ruby-ivar">@secret</span>
+127:     <span class="ruby-constant">OpenSSL</span><span class="ruby-operator">::</span><span class="ruby-constant">HMAC</span>.<span class="ruby-identifier">hexdigest</span>(<span class="ruby-constant">OpenSSL</span><span class="ruby-operator">::</span><span class="ruby-constant">Digest</span><span class="ruby-operator">::</span><span class="ruby-constant">Digest</span>.<span class="ruby-identifier">new</span>(<span class="ruby-ivar">@digest</span>), <span class="ruby-identifier">key</span>, <span class="ruby-identifier">data</span>)
+128:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001511">
+                    
+                    <a name="M001511"></a><b>restore</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Restore session data from the cookie.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001511_source')" id="l_M001511_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/7ecb9689b03335ec28958c506b083390f4212d45/actionpack/lib/action_controller/session/cookie_store.rb#L100" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M001511_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File actionpack/lib/action_controller/session/cookie_store.rb, line 100</span>
+100:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">restore</span>
+101:     <span class="ruby-ivar">@original</span> = <span class="ruby-identifier">read_cookie</span>
+102:     <span class="ruby-ivar">@data</span> = <span class="ruby-identifier">unmarshal</span>(<span class="ruby-ivar">@original</span>) <span class="ruby-operator">||</span> {}
+103:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001512">
+                    
+                    <a name="M001512"></a><b>update</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Wait until close to write the session data cookie.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001512_source')" id="l_M001512_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/7ecb9689b03335ec28958c506b083390f4212d45/actionpack/lib/action_controller/session/cookie_store.rb#L106" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M001512_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File actionpack/lib/action_controller/session/cookie_store.rb, line 106</span>
+106:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">update</span>; <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

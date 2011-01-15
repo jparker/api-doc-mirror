@@ -1,0 +1,53 @@
+  <div id="fileHeader">
+    <h1>sqlite3_adapter.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activerecord/lib/active_record/connection_adapters/sqlite3_adapter.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>require 'active_record/connection_adapters/sqlite_adapter'
+
+module ActiveRecord
+  class Base
+    # sqlite3 adapter reuses sqlite_connection.
+    def self.sqlite3_connection(config) # :nodoc:
+      parse_sqlite_config!(config)
+
+      unless self.class.const_defined?(:SQLite3)
+        require_library_or_gem(config[:adapter])
+      end
+
+      db = SQLite3::Database.new(
+        config[:database],
+        :results_as_hash =&gt; true,
+        :type_translation =&gt; false
+      )
+
+      db.busy_timeout(config[:timeout]) unless config[:timeout].nil?
+
+      ConnectionAdapters::SQLite3Adapter.new(db, logger)
+    end
+  end
+
+  module ConnectionAdapters #:nodoc:
+    class SQLite3Adapter &lt; SQLiteAdapter # :nodoc:
+      def table_structure(table_name)
+        returning structure = @connection.table_info(quote_table_name(table_name)) do
+          raise(ActiveRecord::StatementInvalid, &quot;Could not find table '#{table_name}'&quot;) if structure.empty?
+        end
+      end
+    end
+  end
+end
+</pre>
+    </div>

@@ -1,0 +1,106 @@
+  <div id="C00000151">
+<div class='banner'>
+  <span class="file-title-prefix">Class</span><br />PositionalArguments<br/>
+  In:
+<a href="#" onclick="jsHref('files/actionpack/lib/action_controller/routing/optimisations_rb.html');">actionpack/lib/action_controller/routing/optimisations.rb</a>
+
+Parent:&nbsp;
+        <a href="#" onclick="jsHref('classes/ActionController/Routing/Optimisation/Optimiser.html');">
+Optimiser
+         </a>
+</div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+      <div id="content">
+
+  <div class="description"><p>
+Given a route
+</p>
+<pre>
+  map.person '/people/:id'
+</pre>
+<p>
+If the user calls <tt>person_url(@person)</tt>, we can simply return a
+string like &quot;/people/#{@person.to_param}&quot; rather than triggering
+the expensive logic in <tt>url_for</tt>.
+</p>
+</div>
+
+
+
+  <div class="sectiontitle">Methods</div>
+  <ul>
+  <li><a href="index.html?a=M000341&name=generation_code" >generation_code</a></li>
+  <li><a href="index.html?a=M000340&name=guard_condition" >guard_condition</a></li>
+  </ul>
+
+
+
+
+
+
+<div class="sectiontitle">Public Instance methods</div>
+<div id="M000341" class="method">
+  <div id="M000341_title" class="title">
+    <b>generation_code</b>()
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000341_source')" id="l_M000341_source">show source</a> ]</p>
+  <div id="M000341_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File actionpack/lib/action_controller/routing/optimisations.rb, line 70</span>
+70:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">generation_code</span>
+71:           <span class="ruby-identifier">elements</span> = []
+72:           <span class="ruby-identifier">idx</span> = <span class="ruby-value">0</span>
+73: 
+74:           <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">kind</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">:url</span>
+75:             <span class="ruby-identifier">elements</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">'#{request.protocol}'</span>
+76:             <span class="ruby-identifier">elements</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">'#{request.host_with_port}'</span>
+77:           <span class="ruby-keyword kw">end</span>
+78: 
+79:           <span class="ruby-identifier">elements</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">'#{request.relative_url_root if request.relative_url_root}'</span>
+80: 
+81:           <span class="ruby-comment cmt"># The last entry in &lt;tt&gt;route.segments&lt;/tt&gt; appears to *always* be a</span>
+82:           <span class="ruby-comment cmt"># 'divider segment' for '/' but we have assertions to ensure that</span>
+83:           <span class="ruby-comment cmt"># we don't include the trailing slashes, so skip them.</span>
+84:           (<span class="ruby-identifier">route</span>.<span class="ruby-identifier">segments</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-value">1</span> <span class="ruby-operator">?</span> <span class="ruby-identifier">route</span>.<span class="ruby-identifier">segments</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">route</span>.<span class="ruby-identifier">segments</span>[<span class="ruby-value">0</span><span class="ruby-operator">..</span><span class="ruby-value">-2</span>]).<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">segment</span><span class="ruby-operator">|</span>
+85:             <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">segment</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">DynamicSegment</span>)
+86:               <span class="ruby-identifier">elements</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">segment</span>.<span class="ruby-identifier">interpolation_chunk</span>(<span class="ruby-node">&quot;args[#{idx}].to_param&quot;</span>)
+87:               <span class="ruby-identifier">idx</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
+88:             <span class="ruby-keyword kw">else</span>
+89:               <span class="ruby-identifier">elements</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">segment</span>.<span class="ruby-identifier">interpolation_chunk</span>
+90:             <span class="ruby-keyword kw">end</span>
+91:           <span class="ruby-keyword kw">end</span>
+92:           <span class="ruby-node">%(&quot;#{elements * ''}&quot;)</span>
+93:         <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000340" class="method">
+  <div id="M000340_title" class="title">
+    <b>guard_condition</b>()
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000340_source')" id="l_M000340_source">show source</a> ]</p>
+  <div id="M000340_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File actionpack/lib/action_controller/routing/optimisations.rb, line 59</span>
+59:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">guard_condition</span>
+60:           <span class="ruby-identifier">number_of_arguments</span> = <span class="ruby-identifier">route</span>.<span class="ruby-identifier">segment_keys</span>.<span class="ruby-identifier">size</span>
+61:           <span class="ruby-comment cmt"># if they're using foo_url(:id=&gt;2) it's one </span>
+62:           <span class="ruby-comment cmt"># argument, but we don't want to generate /foos/id2</span>
+63:           <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">number_of_arguments</span> <span class="ruby-operator">==</span> <span class="ruby-value">1</span>
+64:             <span class="ruby-value str">&quot;(!defined?(default_url_options) || default_url_options.blank?) &amp;&amp; defined?(request) &amp;&amp; request &amp;&amp; args.size == 1 &amp;&amp; !args.first.is_a?(Hash)&quot;</span>
+65:           <span class="ruby-keyword kw">else</span>
+66:             <span class="ruby-node">&quot;(!defined?(default_url_options) || default_url_options.blank?) &amp;&amp; defined?(request) &amp;&amp; request &amp;&amp; args.size == #{number_of_arguments}&quot;</span>
+67:           <span class="ruby-keyword kw">end</span>
+68:         <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+</div>
+
+  </div>

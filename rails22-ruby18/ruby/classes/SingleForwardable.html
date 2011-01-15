@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>SingleForwardable</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Module</span> 
+            SingleForwardable 
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/lib/forwardable_rb.html">lib/forwardable.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+The <a href="SingleForwardable.html">SingleForwardable</a> module provides
+delegation of specified methods to a designated object, using the methods
+<a href="SingleForwardable.html#M005754">def_delegator</a> and <a
+href="SingleForwardable.html#M005753">def_delegators</a>. This module is
+similar to <a href="Forwardable.html">Forwardable</a>, but it works on
+objects themselves, instead of their defining classes.
+</p>
+<p>
+Also see the example at forwardable.rb.
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>D</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005754">def_delegator</a>,</li>
+                
+                <li><a href="#M005753">def_delegators</a>,</li>
+                
+                <li><a href="#M005752">def_singleton_delegator</a>,</li>
+                
+                <li><a href="#M005751">def_singleton_delegators</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005754">
+                    
+                    <a name="M005754"></a><b>def_delegator</b>(accessor, method, ali = method)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a
+href="SingleForwardable.html#M005752">def_singleton_delegator</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005753">
+                    
+                    <a name="M005753"></a><b>def_delegators</b>(accessor, *methods)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a
+href="SingleForwardable.html#M005751">def_singleton_delegators</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005752">
+                    
+                    <a name="M005752"></a><b>def_singleton_delegator</b>(accessor, method, ali = method)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Defines a method <em>method</em> which delegates to <em>obj</em> (i.e. it
+calls the method of the same name in <em>obj</em>). If <em>new_name</em> is
+provided, it is used as the name for the delegate method.
+</p>
+<p>
+See the example at forwardable.rb.
+</p>
+
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="SingleForwardable.html#M005754">def_delegator</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005752_source')" id="l_M005752_source">show</a>
+                        
+                    </p>
+                    <div id="M005752_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/forwardable.rb, line 200</span>
+200:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">def_singleton_delegator</span>(<span class="ruby-identifier">accessor</span>, <span class="ruby-identifier">method</span>, <span class="ruby-identifier">ali</span> = <span class="ruby-identifier">method</span>)
+201:     <span class="ruby-identifier">accessor</span> = <span class="ruby-identifier">accessor</span>.<span class="ruby-identifier">id2name</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">accessor</span>.<span class="ruby-identifier">kind_of?</span>(<span class="ruby-constant">Integer</span>)
+202:     <span class="ruby-identifier">method</span> = <span class="ruby-identifier">method</span>.<span class="ruby-identifier">id2name</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">method</span>.<span class="ruby-identifier">kind_of?</span>(<span class="ruby-constant">Integer</span>)
+203:     <span class="ruby-identifier">ali</span> = <span class="ruby-identifier">ali</span>.<span class="ruby-identifier">id2name</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">ali</span>.<span class="ruby-identifier">kind_of?</span>(<span class="ruby-constant">Integer</span>)
+204: 
+205:     <span class="ruby-identifier">instance_eval</span>(<span class="ruby-value str">&quot;def \#{ali}(*args, &amp;block)\nbegin\n\#{accessor}.__send__(:\#{method}, *args,&amp;block)\nrescue Exception\n$@.delete_if{|s| /^\\\\(__FORWARDABLE__\\\\):/ =~ s} unless Forwardable::debug\nKernel::raise\nend\nend\n&quot;</span>, <span class="ruby-value str">&quot;(__FORWARDABLE__)&quot;</span>, <span class="ruby-value">1</span>)
+206:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005751">
+                    
+                    <a name="M005751"></a><b>def_singleton_delegators</b>(accessor, *methods)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Shortcut for defining multiple delegator methods, but with no provision for
+using a different name. The following two code samples have the same
+effect:
+</p>
+<pre>
+  single_forwardable.def_delegators :@records, :size, :&lt;&lt;, :map
+
+  single_forwardable.def_delegator :@records, :size
+  single_forwardable.def_delegator :@records, :&lt;&lt;
+  single_forwardable.def_delegator :@records, :map
+</pre>
+<p>
+See the example at forwardable.rb.
+</p>
+
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="SingleForwardable.html#M005753">def_delegators</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005751_source')" id="l_M005751_source">show</a>
+                        
+                    </p>
+                    <div id="M005751_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/forwardable.rb, line 187</span>
+187:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">def_singleton_delegators</span>(<span class="ruby-identifier">accessor</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">methods</span>)
+188:     <span class="ruby-keyword kw">for</span> <span class="ruby-identifier">method</span> <span class="ruby-keyword kw">in</span> <span class="ruby-identifier">methods</span>
+189:       <span class="ruby-identifier">def_singleton_delegator</span>(<span class="ruby-identifier">accessor</span>, <span class="ruby-identifier">method</span>)
+190:     <span class="ruby-keyword kw">end</span>
+191:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

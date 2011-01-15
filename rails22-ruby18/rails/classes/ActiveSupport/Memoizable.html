@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>ActiveSupport::Memoizable</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Module</span> 
+            ActiveSupport::Memoizable 
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../files/activesupport/lib/active_support/memoizable_rb.html">activesupport/lib/active_support/memoizable.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>M</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002394">memoize</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Classes and Modules</div>
+    <ul>
+        
+        <li><span class="type">MODULE</span> <a href="Memoizable/Freezable.html">ActiveSupport::Memoizable::Freezable</a></li>
+        
+    </ul>
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">MEMOIZED_IVAR</td>
+            <td>=</td>
+            <td class="attr-value">Proc.new do |symbol|       &quot;@_memoized_#{symbol.to_s.sub(/\?\Z/, '_query').sub(/!\Z/, '_bang')}&quot;.to_sym     end</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+
+    
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M002394">
+                    
+                    <a name="M002394"></a><b>memoize</b>(*symbols)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002394_source')" id="l_M002394_source">show</a>
+                        
+                        | <a href="http://github.com/rails/rails/blob/8603813ac6e1bff8d3addad58d0a56b33baafc59/activesupport/lib/active_support/memoizable.rb#L44" target="_blank" class="github_url">on GitHub</a>
+                        
+                    </p>
+                    <div id="M002394_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File activesupport/lib/active_support/memoizable.rb, line 44</span>
+44:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">memoize</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">symbols</span>)
+45:       <span class="ruby-identifier">symbols</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">symbol</span><span class="ruby-operator">|</span>
+46:         <span class="ruby-identifier">original_method</span> = <span class="ruby-identifier">:&quot;_unmemoized_#{symbol}&quot;</span>
+47:         <span class="ruby-identifier">memoized_ivar</span> = <span class="ruby-constant">MEMOIZED_IVAR</span>.<span class="ruby-identifier">call</span>(<span class="ruby-identifier">symbol</span>)
+48: 
+49:         <span class="ruby-identifier">class_eval</span> <span class="ruby-value str">&quot;include Freezable\n\nraise \&quot;Already memoized \#{symbol}\&quot; if method_defined?(:\#{original_method})\nalias \#{original_method} \#{symbol}\n\nif instance_method(:\#{symbol}).arity == 0\ndef \#{symbol}(reload = false)\nif reload || !defined?(\#{memoized_ivar}) || \#{memoized_ivar}.empty?\n\#{memoized_ivar} = [\#{original_method}.freeze]\nend\n\#{memoized_ivar}[0]\nend\nelse\ndef \#{symbol}(*args)\n\#{memoized_ivar} ||= {} unless frozen?\nreload = args.pop if args.last == true || args.last == :reload\n\nif defined?(\#{memoized_ivar}) &amp;&amp; \#{memoized_ivar}\nif !reload &amp;&amp; \#{memoized_ivar}.has_key?(args)\n\#{memoized_ivar}[args]\nelsif \#{memoized_ivar}\n\#{memoized_ivar}[args] = \#{original_method}(*args).freeze\nend\nelse\n\#{original_method}(*args)\nend\nend\nend\n&quot;</span>, <span class="ruby-keyword kw">__FILE__</span>, <span class="ruby-keyword kw">__LINE__</span>
+50:       <span class="ruby-keyword kw">end</span>
+51:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Gem::Package::TarWriter::BoundedStream</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            Gem::Package::TarWriter::BoundedStream 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../../../Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../../../files/lib/rubygems/package/tar_writer_rb.html">lib/rubygems/package/tar_writer.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+<a href="../../../IO.html">IO</a> wrapper that allows writing a limited
+amount of data
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005735">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>W</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005736">write</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Attributes</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>limit</td>
+            <td class='attr-desc'><p>
+Maximum number of bytes that can be written
+</p></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>written</td>
+            <td class='attr-desc'><p>
+Number of bytes written
+</p></td>
+        </tr>
+        
+    </table>
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005735">
+                    
+                    <a name="M005735"></a><b>new</b>(io, limit)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Wraps <tt>io</tt> and allows up to <tt>limit</tt> bytes to be written
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005735_source')" id="l_M005735_source">show</a>
+                        
+                    </p>
+                    <div id="M005735_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/rubygems/package/tar_writer.rb, line 32</span>
+32:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">io</span>, <span class="ruby-identifier">limit</span>)
+33:       <span class="ruby-ivar">@io</span> = <span class="ruby-identifier">io</span>
+34:       <span class="ruby-ivar">@limit</span> = <span class="ruby-identifier">limit</span>
+35:       <span class="ruby-ivar">@written</span> = <span class="ruby-value">0</span>
+36:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005736">
+                    
+                    <a name="M005736"></a><b>write</b>(data)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Writes <tt>data</tt> onto the <a href="../../../IO.html">IO</a>, raising a
+<a href="FileOverflow.html">FileOverflow</a> exception if the number of
+bytes will be more than <a href="BoundedStream.html#limit">limit</a>
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005736_source')" id="l_M005736_source">show</a>
+                        
+                    </p>
+                    <div id="M005736_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/rubygems/package/tar_writer.rb, line 42</span>
+42:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">write</span>(<span class="ruby-identifier">data</span>)
+43:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">data</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">+</span> <span class="ruby-ivar">@written</span> <span class="ruby-operator">&gt;</span> <span class="ruby-ivar">@limit</span>
+44:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">FileOverflow</span>, <span class="ruby-value str">&quot;You tried to feed more data than fits in the file.&quot;</span>
+45:       <span class="ruby-keyword kw">end</span>
+46:       <span class="ruby-ivar">@io</span>.<span class="ruby-identifier">write</span> <span class="ruby-identifier">data</span>
+47:       <span class="ruby-ivar">@written</span> <span class="ruby-operator">+=</span> <span class="ruby-identifier">data</span>.<span class="ruby-identifier">size</span>
+48:       <span class="ruby-identifier">data</span>.<span class="ruby-identifier">size</span>
+49:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

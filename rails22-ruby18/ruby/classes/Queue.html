@@ -1,0 +1,836 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Queue</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            Queue 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/lib/thread_rb.html">lib/thread.rb</a></li>
+            
+            <li><a href="../files/ext/thread/thread_c.html">ext/thread/thread.c</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+This class provides a way to synchronize communication between threads.
+</p>
+<p>
+Example:
+</p>
+<pre>
+  require 'thread'
+
+  queue = Queue.new
+
+  producer = Thread.new do
+    5.times do |i|
+      sleep rand(i) # simulate expense
+      queue &lt;&lt; i
+      puts &quot;#{i} produced&quot;
+    end
+  end
+
+  consumer = Thread.new do
+    5.times do |i|
+      value = queue.pop
+      sleep rand(i/2) # simulate expense
+      puts &quot;consumed #{value}&quot;
+    end
+  end
+
+  consumer.join
+</pre>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>#</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001802"><<</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001808">clear</a>,</li>
+                
+                <li><a href="#M006855">clear</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>D</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001806">deq</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001807">empty?</a>,</li>
+                
+                <li><a href="#M006856">empty?</a>,</li>
+                
+                <li><a href="#M001803">enq</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>L</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006857">length</a>,</li>
+                
+                <li><a href="#M001809">length</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001776">new</a>,</li>
+                
+                <li><a href="#M006858">num_waiting</a>,</li>
+                
+                <li><a href="#M001811">num_waiting</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>P</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001804">pop</a>,</li>
+                
+                <li><a href="#M006859">pop</a>,</li>
+                
+                <li><a href="#M006860">push</a>,</li>
+                
+                <li><a href="#M001801">push</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001805">shift</a>,</li>
+                
+                <li><a href="#M001810">size</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M001776">
+                    
+                    <a name="M001776"></a><b>new</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Creates a new queue.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001776_source')" id="l_M001776_source">show</a>
+                        
+                    </p>
+                    <div id="M001776_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/thread.rb, line 266</span>
+266:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>
+267:     <span class="ruby-ivar">@que</span> = []
+268:     <span class="ruby-ivar">@waiting</span> = []
+269:     <span class="ruby-ivar">@que</span>.<span class="ruby-identifier">taint</span>          <span class="ruby-comment cmt"># enable tainted comunication</span>
+270:     <span class="ruby-ivar">@waiting</span>.<span class="ruby-identifier">taint</span>
+271:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">taint</span>
+272:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M001802">
+                    
+                    <a name="M001802"></a><b>&lt;&lt;</b>(obj)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a href="Queue.html#M001801">push</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006855">
+                    
+                    <a name="M006855"></a><b> clear
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Removes all objects from the queue.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006855_source')" id="l_M006855_source">show</a>
+                        
+                    </p>
+                    <div id="M006855_source" class="dyn-source">
+                        <pre>static VALUE
+rb_queue_clear(VALUE self)
+{
+    Queue *queue;
+    Data_Get_Struct(self, Queue, queue);
+
+    lock_mutex(&amp;queue-&gt;mutex);
+    clear_list(&amp;queue-&gt;values);
+    signal_condvar(&amp;queue-&gt;space_available);
+    unlock_mutex(&amp;queue-&gt;mutex);
+
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001808">
+                    
+                    <a name="M001808"></a><b>clear</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Removes all objects from the queue.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001808_source')" id="l_M001808_source">show</a>
+                        
+                    </p>
+                    <div id="M001808_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/thread.rb, line 340</span>
+340:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">clear</span>
+341:     <span class="ruby-ivar">@que</span>.<span class="ruby-identifier">clear</span>
+342:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001806">
+                    
+                    <a name="M001806"></a><b>deq</b>(non_block=false)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a href="Queue.html#M001804">pop</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001807">
+                    
+                    <a name="M001807"></a><b>empty?</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns <tt>true</tt> is the queue is empty.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001807_source')" id="l_M001807_source">show</a>
+                        
+                    </p>
+                    <div id="M001807_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/thread.rb, line 333</span>
+333:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">empty?</span>
+334:     <span class="ruby-ivar">@que</span>.<span class="ruby-identifier">empty?</span>
+335:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006856">
+                    
+                    <a name="M006856"></a><b> empty?
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns <tt>true</tt> if the queue is empty.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006856_source')" id="l_M006856_source">show</a>
+                        
+                    </p>
+                    <div id="M006856_source" class="dyn-source">
+                        <pre>static VALUE
+rb_queue_empty_p(VALUE self)
+{
+    Queue *queue;
+    VALUE result;
+    Data_Get_Struct(self, Queue, queue);
+
+    lock_mutex(&amp;queue-&gt;mutex);
+    result = queue-&gt;values.size == 0 ? Qtrue : Qfalse;
+    unlock_mutex(&amp;queue-&gt;mutex);
+
+    return result;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001803">
+                    
+                    <a name="M001803"></a><b>enq</b>(obj)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a href="Queue.html#M001801">push</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006857">
+                    
+                    <a name="M006857"></a><b> length
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the length of the queue.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006857_source')" id="l_M006857_source">show</a>
+                        
+                    </p>
+                    <div id="M006857_source" class="dyn-source">
+                        <pre>static VALUE
+rb_queue_length(VALUE self)
+{
+    Queue *queue;
+    VALUE result;
+    Data_Get_Struct(self, Queue, queue);
+
+    lock_mutex(&amp;queue-&gt;mutex);
+    result = ULONG2NUM(queue-&gt;values.size);
+    unlock_mutex(&amp;queue-&gt;mutex);
+
+    return result;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001809">
+                    
+                    <a name="M001809"></a><b>length</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the length of the queue.
+</p>
+
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="Queue.html#M001810">size</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001809_source')" id="l_M001809_source">show</a>
+                        
+                    </p>
+                    <div id="M001809_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/thread.rb, line 347</span>
+347:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">length</span>
+348:     <span class="ruby-ivar">@que</span>.<span class="ruby-identifier">length</span>
+349:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006858">
+                    
+                    <a name="M006858"></a><b> num_waiting
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the number of threads waiting on the queue.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006858_source')" id="l_M006858_source">show</a>
+                        
+                    </p>
+                    <div id="M006858_source" class="dyn-source">
+                        <pre>static VALUE
+rb_queue_num_waiting(VALUE self)
+{
+    Queue *queue;
+    VALUE result;
+    Data_Get_Struct(self, Queue, queue);
+
+    lock_mutex(&amp;queue-&gt;mutex);
+    result = ULONG2NUM(queue-&gt;value_available.waiting.size +
+      queue-&gt;space_available.waiting.size);
+    unlock_mutex(&amp;queue-&gt;mutex);
+
+    return result;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001811">
+                    
+                    <a name="M001811"></a><b>num_waiting</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the number of threads waiting on the queue.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001811_source')" id="l_M001811_source">show</a>
+                        
+                    </p>
+                    <div id="M001811_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/thread.rb, line 359</span>
+359:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">num_waiting</span>
+360:     <span class="ruby-ivar">@waiting</span>.<span class="ruby-identifier">size</span>
+361:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001804">
+                    
+                    <a name="M001804"></a><b>pop</b>(non_block=false)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Retrieves data from the queue. If the queue is empty, the calling thread is
+suspended until data is pushed onto the queue. If <tt>non_block</tt> is
+true, the thread isn&#8217;t suspended, and an exception is raised.
+</p>
+
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="Queue.html#M001805">shift</a>
+                    
+                    <a href="Queue.html#M001806">deq</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001804_source')" id="l_M001804_source">show</a>
+                        
+                    </p>
+                    <div id="M001804_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/thread.rb, line 309</span>
+309:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">pop</span>(<span class="ruby-identifier">non_block</span>=<span class="ruby-keyword kw">false</span>)
+310:     <span class="ruby-keyword kw">while</span> (<span class="ruby-constant">Thread</span>.<span class="ruby-identifier">critical</span> = <span class="ruby-keyword kw">true</span>; <span class="ruby-ivar">@que</span>.<span class="ruby-identifier">empty?</span>)
+311:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">ThreadError</span>, <span class="ruby-value str">&quot;queue empty&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">non_block</span>
+312:       <span class="ruby-ivar">@waiting</span>.<span class="ruby-identifier">push</span> <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>
+313:       <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">stop</span>
+314:     <span class="ruby-keyword kw">end</span>
+315:     <span class="ruby-ivar">@que</span>.<span class="ruby-identifier">shift</span>
+316:   <span class="ruby-keyword kw">ensure</span>
+317:     <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">critical</span> = <span class="ruby-keyword kw">false</span>
+318:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006859">
+                    
+                    <a name="M006859"></a><b>pop</b>(...)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call_seq: pop(non_block=false)
+</p>
+<p>
+Retrieves data from the queue. If the queue is empty, the calling thread is
+suspended until data is pushed onto the queue. If <tt>non_block</tt> is
+true, the thread isn&#8217;t suspended, and an exception is raised.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006859_source')" id="l_M006859_source">show</a>
+                        
+                    </p>
+                    <div id="M006859_source" class="dyn-source">
+                        <pre>static VALUE
+rb_queue_pop(int argc, VALUE *argv, VALUE self)
+{
+    Queue *queue;
+    int should_block;
+    Data_Get_Struct(self, Queue, queue);
+
+    if (argc == 0) {
+        should_block = 1;
+    } else if (argc == 1) {
+        should_block = !RTEST(argv[0]);
+    } else {
+        rb_raise(rb_eArgError, &quot;wrong number of arguments (%d for 1)&quot;, argc);
+    }
+
+    lock_mutex(&amp;queue-&gt;mutex);
+    if (!queue-&gt;values.entries &amp;&amp; !should_block) {
+        unlock_mutex(&amp;queue-&gt;mutex);
+        rb_raise(rb_eThreadError, &quot;queue empty&quot;);
+    }
+
+    while (!queue-&gt;values.entries) {
+        wait_queue(&amp;queue-&gt;value_available, &amp;queue-&gt;mutex);
+    }
+
+    return rb_ensure(queue_pop_inner, (VALUE)queue,
+                     unlock_mutex_call, (VALUE)&amp;queue-&gt;mutex);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006860">
+                    
+                    <a name="M006860"></a><b> push(obj)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Pushes <tt>obj</tt> to the queue.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006860_source')" id="l_M006860_source">show</a>
+                        
+                    </p>
+                    <div id="M006860_source" class="dyn-source">
+                        <pre>static VALUE
+rb_queue_push(VALUE self, VALUE value)
+{
+    Queue *queue;
+    Data_Get_Struct(self, Queue, queue);
+
+    lock_mutex(&amp;queue-&gt;mutex);
+    while (queue-&gt;capacity &amp;&amp; queue-&gt;values.size &gt;= queue-&gt;capacity) {
+        wait_queue(&amp;queue-&gt;space_available, &amp;queue-&gt;mutex);
+    }
+    push_list(&amp;queue-&gt;values, value);
+    rb_ensure(signal_condvar_call, (VALUE)&amp;queue-&gt;value_available,
+              unlock_mutex_call, (VALUE)&amp;queue-&gt;mutex);
+
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001801">
+                    
+                    <a name="M001801"></a><b>push</b>(obj)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Pushes <tt>obj</tt> to the queue.
+</p>
+
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="Queue.html#M001802">&lt;&lt;</a>
+                    
+                    <a href="Queue.html#M001803">enq</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001801_source')" id="l_M001801_source">show</a>
+                        
+                    </p>
+                    <div id="M001801_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/thread.rb, line 277</span>
+277:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">push</span>(<span class="ruby-identifier">obj</span>)
+278:     <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">critical</span> = <span class="ruby-keyword kw">true</span>
+279:     <span class="ruby-ivar">@que</span>.<span class="ruby-identifier">push</span> <span class="ruby-identifier">obj</span>
+280:     <span class="ruby-keyword kw">begin</span>
+281:       <span class="ruby-identifier">t</span> = <span class="ruby-ivar">@waiting</span>.<span class="ruby-identifier">shift</span>
+282:       <span class="ruby-identifier">t</span>.<span class="ruby-identifier">wakeup</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">t</span>
+283:     <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">ThreadError</span>
+284:       <span class="ruby-keyword kw">retry</span>
+285:     <span class="ruby-keyword kw">ensure</span>
+286:       <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">critical</span> = <span class="ruby-keyword kw">false</span>
+287:     <span class="ruby-keyword kw">end</span>
+288:     <span class="ruby-keyword kw">begin</span>
+289:       <span class="ruby-identifier">t</span>.<span class="ruby-identifier">run</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">t</span>
+290:     <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">ThreadError</span>
+291:     <span class="ruby-keyword kw">end</span>
+292:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001805">
+                    
+                    <a name="M001805"></a><b>shift</b>(non_block=false)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a href="Queue.html#M001804">pop</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001810">
+                    
+                    <a name="M001810"></a><b>size</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a href="Queue.html#M001809">length</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

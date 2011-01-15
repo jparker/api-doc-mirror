@@ -1,0 +1,1174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Gem::Installer</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            Gem::Installer 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../files/lib/rubygems/installer_rb.html">lib/rubygems/installer.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+The installer class processes RubyGem .gem files and installs the files
+contained in the .gem into the <a href="../Gem.html#M004611">Gem.path</a>.
+</p>
+<p>
+<a href="Installer.html">Gem::Installer</a> does the work of putting files
+in all the right places on the filesystem including unpacking the gem into
+its gem dir, installing the gemspec in the specifications dir, storing the
+cached gem in the cache dir, and installing either wrappers or symlinks for
+executables.
+</p>
+<p>
+The installer fires pre and post install hooks. Hooks can be added either
+through a rubygems_plugin.rb file in an installed gem or via a
+rubygems/defaults/#{RUBY_ENGINE}.rb or
+rubygems/defaults/operating_system.rb file. See <a
+href="../Gem.html#M004616">Gem.pre_install</a> and <a
+href="../Gem.html#M004614">Gem.post_install</a> for details.
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>A</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005321">app_script_text</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>B</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005323">build_extensions</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005312">ensure_dependency</a>,</li>
+                
+                <li><a href="#M005309">exec_format</a>,</li>
+                
+                <li><a href="#M005324">extract_files</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>F</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005325">formatted_program_filename</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>G</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005317">generate_bin</a>,</li>
+                
+                <li><a href="#M005318">generate_bin_script</a>,</li>
+                
+                <li><a href="#M005319">generate_bin_symlink</a>,</li>
+                
+                <li><a href="#M005316">generate_windows_script</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>I</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005311">install</a>,</li>
+                
+                <li><a href="#M005313">installation_satisfies_dependency?</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005310">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005320">shebang</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>U</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005314">unpack</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>W</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005322">windows_stub_script</a>,</li>
+                
+                <li><a href="#M005315">write_spec</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+    <div class="sectiontitle">Included Modules</div>
+    <ul>
+        
+        <li>
+            
+            <a href="../Kernel.html">Kernel</a>
+            
+            START:includes
+        </li>
+        
+        <li>
+            
+            <a href="../Kernel.html">Kernel</a>
+            
+            START:includes
+        </li>
+        
+    </ul>
+    
+
+    
+
+    
+    <div class="sectiontitle">Classes and Modules</div>
+    <ul>
+        
+        <li><span class="type">CLASS</span> <a href="Installer/ExtensionBuildError.html">Gem::Installer::ExtensionBuildError</a></li>
+        
+    </ul>
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">ENV_PATHS</td>
+            <td>=</td>
+            <td class="attr-value">%w[/usr/bin/env /bin/env]</td>
+        </tr>
+        
+        <tr valign='top'>
+            <td>&nbsp;</td>
+            <td colspan="2" class="attr-desc"><p>
+Paths where env(1) might live. Some systems are broken and have it in /bin
+</p>
+</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+    <div class="sectiontitle">Attributes</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>bin_dir</td>
+            <td class='attr-desc'><p>
+The directory a gem&#8217;s executables will be installed into
+</p></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>gem_home</td>
+            <td class='attr-desc'><p>
+The gem repository the gem will be installed into
+</p></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>spec</td>
+            <td class='attr-desc'><p>
+The <a href="Specification.html">Gem::Specification</a> for the gem being
+installed
+</p></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [RW]
+            </td>
+            <td class='attr-name'>path_warning</td>
+            <td class='attr-desc'><p>
+True if we&#8217;ve warned about PATH not including <a
+href="../Gem.html#M004579">Gem.bindir</a>
+</p></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [W]
+            </td>
+            <td class='attr-name'>exec_format</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+    </table>
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005309">
+                    
+                    <a name="M005309"></a><b>exec_format</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Defaults to use Ruby&#8217;s program prefix and suffix.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005309_source')" id="l_M005309_source">show</a>
+                        
+                    </p>
+                    <div id="M005309_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/rubygems/installer.rb, line 72</span>
+72:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">exec_format</span>
+73:       <span class="ruby-ivar">@exec_format</span> <span class="ruby-operator">||=</span> <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">default_exec_format</span>
+74:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005310">
+                    
+                    <a name="M005310"></a><b>new</b>(gem, options={})
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Constructs an <a href="Installer.html">Installer</a> instance that will
+install the gem located at <tt>gem</tt>. <tt>options</tt> is a <a
+href="../Hash.html">Hash</a> with the following keys:
+</p>
+<table>
+<tr><td valign="top">:env_shebang:</td><td>Use /usr/bin/env in bin wrappers.
+
+</td></tr>
+<tr><td valign="top">:force:</td><td>Overrides all version checks and security policy checks, except for a
+signed-gems-only policy.
+
+</td></tr>
+<tr><td valign="top">:ignore_dependencies:</td><td>Don&#8217;t raise if a dependency is missing.
+
+</td></tr>
+<tr><td valign="top">:install_dir:</td><td>The directory to install the gem into.
+
+</td></tr>
+<tr><td valign="top">:format_executable:</td><td><a href="Format.html">Format</a> the executable the same as the ruby
+executable. If your ruby is ruby18, foo_exec will be installed as
+foo_exec18.
+
+</td></tr>
+<tr><td valign="top">:security_policy:</td><td>Use the specified security policy. See <a
+href="Security.html">Gem::Security</a>
+
+</td></tr>
+<tr><td valign="top">:wrappers:</td><td>Install wrappers if true, symlinks if false.
+
+</td></tr>
+</table>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005310_source')" id="l_M005310_source">show</a>
+                        
+                    </p>
+                    <div id="M005310_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/installer.rb, line 93</span>
+ 93:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">gem</span>, <span class="ruby-identifier">options</span>={})
+ 94:     <span class="ruby-ivar">@gem</span> = <span class="ruby-identifier">gem</span>
+ 95: 
+ 96:     <span class="ruby-identifier">options</span> = {
+ 97:       <span class="ruby-identifier">:bin_dir</span>      =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">nil</span>,
+ 98:       <span class="ruby-identifier">:env_shebang</span>  =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>,
+ 99:       <span class="ruby-identifier">:exec_format</span>  =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>,
+100:       <span class="ruby-identifier">:force</span>        =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>,
+101:       <span class="ruby-identifier">:install_dir</span>  =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">dir</span>,
+102:       <span class="ruby-identifier">:source_index</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">source_index</span>,
+103:     }.<span class="ruby-identifier">merge</span> <span class="ruby-identifier">options</span>
+104: 
+105:     <span class="ruby-ivar">@env_shebang</span>         = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:env_shebang</span>]
+106:     <span class="ruby-ivar">@force</span>               = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:force</span>]
+107:     <span class="ruby-identifier">gem_home</span>             = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:install_dir</span>]
+108:     <span class="ruby-ivar">@gem_home</span>            = <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-identifier">gem_home</span>)
+109:     <span class="ruby-ivar">@ignore_dependencies</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:ignore_dependencies</span>]
+110:     <span class="ruby-ivar">@format_executable</span>   = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:format_executable</span>]
+111:     <span class="ruby-ivar">@security_policy</span>     = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:security_policy</span>]
+112:     <span class="ruby-ivar">@wrappers</span>            = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:wrappers</span>]
+113:     <span class="ruby-ivar">@bin_dir</span>             = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:bin_dir</span>]
+114:     <span class="ruby-ivar">@development</span>         = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:development</span>]
+115:     <span class="ruby-ivar">@source_index</span>        = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:source_index</span>]
+116: 
+117:     <span class="ruby-keyword kw">begin</span>
+118:       <span class="ruby-ivar">@format</span> = <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">Format</span>.<span class="ruby-identifier">from_file_by_path</span> <span class="ruby-ivar">@gem</span>, <span class="ruby-ivar">@security_policy</span>
+119:     <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">Package</span><span class="ruby-operator">::</span><span class="ruby-constant">FormatError</span>
+120:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">InstallError</span>, <span class="ruby-node">&quot;invalid gem format for #{@gem}&quot;</span>
+121:     <span class="ruby-keyword kw">end</span>
+122: 
+123:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:user_install</span>] <span class="ruby-keyword kw">and</span> <span class="ruby-keyword kw">not</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:unpack</span>] <span class="ruby-keyword kw">then</span>
+124:       <span class="ruby-ivar">@gem_home</span> = <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">user_dir</span>
+125: 
+126:       <span class="ruby-identifier">user_bin_dir</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-ivar">@gem_home</span>, <span class="ruby-value str">'bin'</span>)
+127:       <span class="ruby-keyword kw">unless</span> <span class="ruby-constant">ENV</span>[<span class="ruby-value str">'PATH'</span>].<span class="ruby-identifier">split</span>(<span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-constant">PATH_SEPARATOR</span>).<span class="ruby-identifier">include?</span> <span class="ruby-identifier">user_bin_dir</span> <span class="ruby-keyword kw">then</span>
+128:         <span class="ruby-keyword kw">unless</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">path_warning</span> <span class="ruby-keyword kw">then</span>
+129:           <span class="ruby-identifier">alert_warning</span> <span class="ruby-node">&quot;You don't have #{user_bin_dir} in your PATH,\n\t  gem executables will not run.&quot;</span>
+130:           <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">path_warning</span> = <span class="ruby-keyword kw">true</span>
+131:         <span class="ruby-keyword kw">end</span>
+132:       <span class="ruby-keyword kw">end</span>
+133:     <span class="ruby-keyword kw">end</span>
+134: 
+135:     <span class="ruby-constant">FileUtils</span>.<span class="ruby-identifier">mkdir_p</span> <span class="ruby-ivar">@gem_home</span>
+136:     <span class="ruby-identifier">raise</span> <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">FilePermissionError</span>, <span class="ruby-ivar">@gem_home</span> <span class="ruby-keyword kw">unless</span>
+137:       <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:unpack</span>] <span class="ruby-keyword kw">or</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">writable?</span> <span class="ruby-ivar">@gem_home</span>
+138: 
+139:     <span class="ruby-ivar">@spec</span> = <span class="ruby-ivar">@format</span>.<span class="ruby-identifier">spec</span>
+140: 
+141:     <span class="ruby-ivar">@gem_dir</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-ivar">@gem_home</span>, <span class="ruby-value str">&quot;gems&quot;</span>, <span class="ruby-ivar">@spec</span>.<span class="ruby-identifier">full_name</span>).<span class="ruby-identifier">untaint</span>
+142:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005321">
+                    
+                    <a name="M005321"></a><b>app_script_text</b>(bin_file_name)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Return the text for an application file.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005321_source')" id="l_M005321_source">show</a>
+                        
+                    </p>
+                    <div id="M005321_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/installer.rb, line 397</span>
+397:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">app_script_text</span>(<span class="ruby-identifier">bin_file_name</span>)
+398:     <span class="ruby-value str">&quot;\#{shebang bin_file_name}\n#\n# This file was generated by RubyGems.\n#\n# The application '\#{@spec.name}' is installed as part of a gem, and\n# this file is here to facilitate running it.\n#\n\nrequire 'rubygems'\n\nversion = \&quot;\#{Gem::Requirement.default}\&quot;\n\nif ARGV.first =~ /^_(.*)_$/ and Gem::Version.correct? $1 then\nversion = $1\nARGV.shift\nend\n\ngem '\#{@spec.name}', version\nload Gem.bin_path('\#{@spec.name}', '\#{bin_file_name}', version)\n&quot;</span>
+399:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005323">
+                    
+                    <a name="M005323"></a><b>build_extensions</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Builds extensions. Valid types of extensions are extconf.rb files,
+configure scripts and rakefiles or mkrf_conf files.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005323_source')" id="l_M005323_source">show</a>
+                        
+                    </p>
+                    <div id="M005323_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/installer.rb, line 441</span>
+441:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">build_extensions</span>
+442:     <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@spec</span>.<span class="ruby-identifier">extensions</span>.<span class="ruby-identifier">empty?</span>
+443:     <span class="ruby-identifier">say</span> <span class="ruby-value str">&quot;Building native extensions.  This could take a while...&quot;</span>
+444:     <span class="ruby-identifier">start_dir</span> = <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">pwd</span>
+445:     <span class="ruby-identifier">dest_path</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span> <span class="ruby-ivar">@gem_dir</span>, <span class="ruby-ivar">@spec</span>.<span class="ruby-identifier">require_paths</span>.<span class="ruby-identifier">first</span>
+446:     <span class="ruby-identifier">ran_rake</span> = <span class="ruby-keyword kw">false</span> <span class="ruby-comment cmt"># only run rake once</span>
+447: 
+448:     <span class="ruby-ivar">@spec</span>.<span class="ruby-identifier">extensions</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">extension</span><span class="ruby-operator">|</span>
+449:       <span class="ruby-keyword kw">break</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">ran_rake</span>
+450:       <span class="ruby-identifier">results</span> = []
+451: 
+452:       <span class="ruby-identifier">builder</span> = <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">extension</span>
+453:                 <span class="ruby-keyword kw">when</span> <span class="ruby-regexp re">/extconf/</span> <span class="ruby-keyword kw">then</span>
+454:                   <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">Ext</span><span class="ruby-operator">::</span><span class="ruby-constant">ExtConfBuilder</span>
+455:                 <span class="ruby-keyword kw">when</span> <span class="ruby-regexp re">/configure/</span> <span class="ruby-keyword kw">then</span>
+456:                   <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">Ext</span><span class="ruby-operator">::</span><span class="ruby-constant">ConfigureBuilder</span>
+457:                 <span class="ruby-keyword kw">when</span> <span class="ruby-regexp re">/rakefile/i</span>, <span class="ruby-regexp re">/mkrf_conf/i</span> <span class="ruby-keyword kw">then</span>
+458:                   <span class="ruby-identifier">ran_rake</span> = <span class="ruby-keyword kw">true</span>
+459:                   <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">Ext</span><span class="ruby-operator">::</span><span class="ruby-constant">RakeBuilder</span>
+460:                 <span class="ruby-keyword kw">else</span>
+461:                   <span class="ruby-identifier">results</span> = [<span class="ruby-node">&quot;No builder for extension '#{extension}'&quot;</span>]
+462:                   <span class="ruby-keyword kw">nil</span>
+463:                 <span class="ruby-keyword kw">end</span>
+464: 
+465:       <span class="ruby-keyword kw">begin</span>
+466:         <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">chdir</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-ivar">@gem_dir</span>, <span class="ruby-constant">File</span>.<span class="ruby-identifier">dirname</span>(<span class="ruby-identifier">extension</span>))
+467:         <span class="ruby-identifier">results</span> = <span class="ruby-identifier">builder</span>.<span class="ruby-identifier">build</span>(<span class="ruby-identifier">extension</span>, <span class="ruby-ivar">@gem_dir</span>, <span class="ruby-identifier">dest_path</span>, <span class="ruby-identifier">results</span>)
+468: 
+469:         <span class="ruby-identifier">say</span> <span class="ruby-identifier">results</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;\n&quot;</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">configuration</span>.<span class="ruby-identifier">really_verbose</span>
+470: 
+471:       <span class="ruby-keyword kw">rescue</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">ex</span>
+472:         <span class="ruby-identifier">results</span> = <span class="ruby-identifier">results</span>.<span class="ruby-identifier">join</span> <span class="ruby-value str">&quot;\n&quot;</span>
+473: 
+474:         <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-value str">'gem_make.out'</span>, <span class="ruby-value str">'wb'</span>) { <span class="ruby-operator">|</span><span class="ruby-identifier">f</span><span class="ruby-operator">|</span> <span class="ruby-identifier">f</span>.<span class="ruby-identifier">puts</span> <span class="ruby-identifier">results</span> }
+475: 
+476:         <span class="ruby-identifier">message</span> = <span class="ruby-value str">&quot;ERROR: Failed to build gem native extension.\n\n\#{results}\n\nGem files will remain installed in \#{@gem_dir} for inspection.\nResults logged to \#{File.join(Dir.pwd, 'gem_make.out')}\n&quot;</span>
+477: 
+478:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">ExtensionBuildError</span>, <span class="ruby-identifier">message</span>
+479:       <span class="ruby-keyword kw">ensure</span>
+480:         <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">chdir</span> <span class="ruby-identifier">start_dir</span>
+481:       <span class="ruby-keyword kw">end</span>
+482:     <span class="ruby-keyword kw">end</span>
+483:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005312">
+                    
+                    <a name="M005312"></a><b>ensure_dependency</b>(spec, dependency)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Ensure that the dependency is satisfied by the current installation of gem.
+If it is not an exception is raised.
+</p>
+<table>
+<tr><td valign="top">spec       :</td><td><a href="Specification.html">Gem::Specification</a>
+
+</td></tr>
+<tr><td valign="top">dependency :</td><td><a href="Dependency.html">Gem::Dependency</a>
+
+</td></tr>
+</table>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005312_source')" id="l_M005312_source">show</a>
+                        
+                    </p>
+                    <div id="M005312_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/installer.rb, line 231</span>
+231:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">ensure_dependency</span>(<span class="ruby-identifier">spec</span>, <span class="ruby-identifier">dependency</span>)
+232:     <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">installation_satisfies_dependency?</span> <span class="ruby-identifier">dependency</span> <span class="ruby-keyword kw">then</span>
+233:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">InstallError</span>, <span class="ruby-node">&quot;#{spec.name} requires #{dependency}&quot;</span>
+234:     <span class="ruby-keyword kw">end</span>
+235: 
+236:     <span class="ruby-keyword kw">true</span>
+237:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005324">
+                    
+                    <a name="M005324"></a><b>extract_files</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Reads the file index and extracts each file into the gem directory.
+</p>
+<p>
+Ensures that files can&#8217;t be installed outside the gem directory.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005324_source')" id="l_M005324_source">show</a>
+                        
+                    </p>
+                    <div id="M005324_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/installer.rb, line 498</span>
+498:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">extract_files</span>
+499:     <span class="ruby-ivar">@gem_dir</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span> <span class="ruby-ivar">@gem_dir</span>
+500: 
+501:     <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-value str">&quot;format required to extract from&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@format</span>.<span class="ruby-identifier">nil?</span>
+502: 
+503:     <span class="ruby-ivar">@format</span>.<span class="ruby-identifier">file_entries</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">entry</span>, <span class="ruby-identifier">file_data</span><span class="ruby-operator">|</span>
+504:       <span class="ruby-identifier">path</span> = <span class="ruby-identifier">entry</span>[<span class="ruby-value str">'path'</span>].<span class="ruby-identifier">untaint</span>
+505: 
+506:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">path</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/\A\//</span> <span class="ruby-keyword kw">then</span> <span class="ruby-comment cmt"># for extra sanity</span>
+507:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">InstallError</span>,
+508:               <span class="ruby-node">&quot;attempt to install file into #{entry['path'].inspect}&quot;</span>
+509:       <span class="ruby-keyword kw">end</span>
+510: 
+511:       <span class="ruby-identifier">path</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-ivar">@gem_dir</span>, <span class="ruby-identifier">path</span>)
+512: 
+513:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">path</span> <span class="ruby-operator">!~</span> <span class="ruby-node">/\A#{Regexp.escape @gem_dir}/</span> <span class="ruby-keyword kw">then</span>
+514:         <span class="ruby-identifier">msg</span> = <span class="ruby-value str">&quot;attempt to install file into %p under %p&quot;</span> <span class="ruby-operator">%</span>
+515:                 [<span class="ruby-identifier">entry</span>[<span class="ruby-value str">'path'</span>], <span class="ruby-ivar">@gem_dir</span>]
+516:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">InstallError</span>, <span class="ruby-identifier">msg</span>
+517:       <span class="ruby-keyword kw">end</span>
+518: 
+519:       <span class="ruby-constant">FileUtils</span>.<span class="ruby-identifier">rm_rf</span>(<span class="ruby-identifier">path</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exists?</span>(<span class="ruby-identifier">path</span>)
+520:       <span class="ruby-constant">FileUtils</span>.<span class="ruby-identifier">mkdir_p</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">dirname</span>(<span class="ruby-identifier">path</span>)
+521: 
+522:       <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-identifier">path</span>, <span class="ruby-value str">&quot;wb&quot;</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">out</span><span class="ruby-operator">|</span>
+523:         <span class="ruby-identifier">out</span>.<span class="ruby-identifier">write</span> <span class="ruby-identifier">file_data</span>
+524:       <span class="ruby-keyword kw">end</span>
+525: 
+526:       <span class="ruby-constant">FileUtils</span>.<span class="ruby-identifier">chmod</span> <span class="ruby-identifier">entry</span>[<span class="ruby-value str">'mode'</span>], <span class="ruby-identifier">path</span>
+527: 
+528:       <span class="ruby-identifier">say</span> <span class="ruby-identifier">path</span> <span class="ruby-keyword kw">if</span> <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">configuration</span>.<span class="ruby-identifier">really_verbose</span>
+529:     <span class="ruby-keyword kw">end</span>
+530:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005325">
+                    
+                    <a name="M005325"></a><b>formatted_program_filename</b>(filename)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Prefix and suffix the program filename the same as ruby.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005325_source')" id="l_M005325_source">show</a>
+                        
+                    </p>
+                    <div id="M005325_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/installer.rb, line 535</span>
+535:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">formatted_program_filename</span>(<span class="ruby-identifier">filename</span>)
+536:     <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@format_executable</span> <span class="ruby-keyword kw">then</span>
+537:       <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">exec_format</span> <span class="ruby-operator">%</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">basename</span>(<span class="ruby-identifier">filename</span>)
+538:     <span class="ruby-keyword kw">else</span>
+539:       <span class="ruby-identifier">filename</span>
+540:     <span class="ruby-keyword kw">end</span>
+541:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005317">
+                    
+                    <a name="M005317"></a><b>generate_bin</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005317_source')" id="l_M005317_source">show</a>
+                        
+                    </p>
+                    <div id="M005317_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/installer.rb, line 286</span>
+286:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">generate_bin</span>
+287:     <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@spec</span>.<span class="ruby-identifier">executables</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-keyword kw">or</span> <span class="ruby-ivar">@spec</span>.<span class="ruby-identifier">executables</span>.<span class="ruby-identifier">empty?</span>
+288: 
+289:     <span class="ruby-comment cmt"># If the user has asked for the gem to be installed in a directory that is</span>
+290:     <span class="ruby-comment cmt"># the system gem directory, then use the system bin directory, else create</span>
+291:     <span class="ruby-comment cmt"># (or use) a new bin dir under the gem_home.</span>
+292:     <span class="ruby-identifier">bindir</span> = <span class="ruby-ivar">@bin_dir</span> <span class="ruby-operator">?</span> <span class="ruby-ivar">@bin_dir</span> <span class="ruby-operator">:</span> <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">bindir</span>(<span class="ruby-ivar">@gem_home</span>)
+293: 
+294:     <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">mkdir</span> <span class="ruby-identifier">bindir</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span> <span class="ruby-identifier">bindir</span>
+295:     <span class="ruby-identifier">raise</span> <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">FilePermissionError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">bindir</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">writable?</span> <span class="ruby-identifier">bindir</span>
+296: 
+297:     <span class="ruby-ivar">@spec</span>.<span class="ruby-identifier">executables</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">filename</span><span class="ruby-operator">|</span>
+298:       <span class="ruby-identifier">filename</span>.<span class="ruby-identifier">untaint</span>
+299:       <span class="ruby-identifier">bin_path</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span> <span class="ruby-node">&quot;#{@spec.bindir}/#{filename}&quot;</span>, <span class="ruby-ivar">@gem_dir</span>
+300:       <span class="ruby-identifier">mode</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">stat</span>(<span class="ruby-identifier">bin_path</span>).<span class="ruby-identifier">mode</span> <span class="ruby-operator">|</span> <span class="ruby-value">0111</span>
+301:       <span class="ruby-constant">File</span>.<span class="ruby-identifier">chmod</span> <span class="ruby-identifier">mode</span>, <span class="ruby-identifier">bin_path</span>
+302: 
+303:       <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@wrappers</span> <span class="ruby-keyword kw">then</span>
+304:         <span class="ruby-identifier">generate_bin_script</span> <span class="ruby-identifier">filename</span>, <span class="ruby-identifier">bindir</span>
+305:       <span class="ruby-keyword kw">else</span>
+306:         <span class="ruby-identifier">generate_bin_symlink</span> <span class="ruby-identifier">filename</span>, <span class="ruby-identifier">bindir</span>
+307:       <span class="ruby-keyword kw">end</span>
+308:     <span class="ruby-keyword kw">end</span>
+309:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005318">
+                    
+                    <a name="M005318"></a><b>generate_bin_script</b>(filename, bindir)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Creates the scripts to run the applications in the gem.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005318_source')" id="l_M005318_source">show</a>
+                        
+                    </p>
+                    <div id="M005318_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/installer.rb, line 318</span>
+318:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">generate_bin_script</span>(<span class="ruby-identifier">filename</span>, <span class="ruby-identifier">bindir</span>)
+319:     <span class="ruby-identifier">bin_script_path</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span> <span class="ruby-identifier">bindir</span>, <span class="ruby-identifier">formatted_program_filename</span>(<span class="ruby-identifier">filename</span>)
+320: 
+321:     <span class="ruby-identifier">exec_path</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span> <span class="ruby-ivar">@gem_dir</span>, <span class="ruby-ivar">@spec</span>.<span class="ruby-identifier">bindir</span>, <span class="ruby-identifier">filename</span>
+322: 
+323:     <span class="ruby-comment cmt"># HACK some gems don't have #! in their executables, restore 2008/06</span>
+324:     <span class="ruby-comment cmt">#if File.read(exec_path, 2) == '#!' then</span>
+325:       <span class="ruby-constant">FileUtils</span>.<span class="ruby-identifier">rm_f</span> <span class="ruby-identifier">bin_script_path</span> <span class="ruby-comment cmt"># prior install may have been --no-wrappers</span>
+326: 
+327:       <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span> <span class="ruby-identifier">bin_script_path</span>, <span class="ruby-value str">'w'</span>, <span class="ruby-value">0755</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">file</span><span class="ruby-operator">|</span>
+328:         <span class="ruby-identifier">file</span>.<span class="ruby-identifier">print</span> <span class="ruby-identifier">app_script_text</span>(<span class="ruby-identifier">filename</span>)
+329:       <span class="ruby-keyword kw">end</span>
+330: 
+331:       <span class="ruby-identifier">say</span> <span class="ruby-identifier">bin_script_path</span> <span class="ruby-keyword kw">if</span> <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">configuration</span>.<span class="ruby-identifier">really_verbose</span>
+332: 
+333:       <span class="ruby-identifier">generate_windows_script</span> <span class="ruby-identifier">filename</span>, <span class="ruby-identifier">bindir</span>
+334:     <span class="ruby-comment cmt">#else</span>
+335:     <span class="ruby-comment cmt">#  FileUtils.rm_f bin_script_path</span>
+336:     <span class="ruby-comment cmt">#  FileUtils.cp exec_path, bin_script_path,</span>
+337:     <span class="ruby-comment cmt">#               :verbose =&gt; Gem.configuration.really_verbose</span>
+338:     <span class="ruby-comment cmt">#end</span>
+339:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005319">
+                    
+                    <a name="M005319"></a><b>generate_bin_symlink</b>(filename, bindir)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Creates the symlinks to run the applications in the gem. Moves the symlink
+if the gem being installed has a newer version.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005319_source')" id="l_M005319_source">show</a>
+                        
+                    </p>
+                    <div id="M005319_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/installer.rb, line 345</span>
+345:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">generate_bin_symlink</span>(<span class="ruby-identifier">filename</span>, <span class="ruby-identifier">bindir</span>)
+346:     <span class="ruby-keyword kw">if</span> <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">win_platform?</span> <span class="ruby-keyword kw">then</span>
+347:       <span class="ruby-identifier">alert_warning</span> <span class="ruby-value str">&quot;Unable to use symlinks on Windows, installing wrapper&quot;</span>
+348:       <span class="ruby-identifier">generate_bin_script</span> <span class="ruby-identifier">filename</span>, <span class="ruby-identifier">bindir</span>
+349:       <span class="ruby-keyword kw">return</span>
+350:     <span class="ruby-keyword kw">end</span>
+351: 
+352:     <span class="ruby-identifier">src</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span> <span class="ruby-ivar">@gem_dir</span>, <span class="ruby-value str">'bin'</span>, <span class="ruby-identifier">filename</span>
+353:     <span class="ruby-identifier">dst</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span> <span class="ruby-identifier">bindir</span>, <span class="ruby-identifier">formatted_program_filename</span>(<span class="ruby-identifier">filename</span>)
+354: 
+355:     <span class="ruby-keyword kw">if</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span> <span class="ruby-identifier">dst</span> <span class="ruby-keyword kw">then</span>
+356:       <span class="ruby-keyword kw">if</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">symlink?</span> <span class="ruby-identifier">dst</span> <span class="ruby-keyword kw">then</span>
+357:         <span class="ruby-identifier">link</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">readlink</span>(<span class="ruby-identifier">dst</span>).<span class="ruby-identifier">split</span> <span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-constant">SEPARATOR</span>
+358:         <span class="ruby-identifier">cur_version</span> = <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">Version</span>.<span class="ruby-identifier">create</span>(<span class="ruby-identifier">link</span>[<span class="ruby-value">-3</span>].<span class="ruby-identifier">sub</span>(<span class="ruby-regexp re">/^.*-/</span>, <span class="ruby-value str">''</span>))
+359:         <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@spec</span>.<span class="ruby-identifier">version</span> <span class="ruby-operator">&lt;</span> <span class="ruby-identifier">cur_version</span>
+360:       <span class="ruby-keyword kw">end</span>
+361:       <span class="ruby-constant">File</span>.<span class="ruby-identifier">unlink</span> <span class="ruby-identifier">dst</span>
+362:     <span class="ruby-keyword kw">end</span>
+363: 
+364:     <span class="ruby-constant">FileUtils</span>.<span class="ruby-identifier">symlink</span> <span class="ruby-identifier">src</span>, <span class="ruby-identifier">dst</span>, <span class="ruby-identifier">:verbose</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">configuration</span>.<span class="ruby-identifier">really_verbose</span>
+365:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005316">
+                    
+                    <a name="M005316"></a><b>generate_windows_script</b>(filename, bindir)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Creates windows .bat files for easy running of commands
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005316_source')" id="l_M005316_source">show</a>
+                        
+                    </p>
+                    <div id="M005316_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/installer.rb, line 274</span>
+274:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">generate_windows_script</span>(<span class="ruby-identifier">filename</span>, <span class="ruby-identifier">bindir</span>)
+275:     <span class="ruby-keyword kw">if</span> <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">win_platform?</span> <span class="ruby-keyword kw">then</span>
+276:       <span class="ruby-identifier">script_name</span> = <span class="ruby-identifier">filename</span> <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;.bat&quot;</span>
+277:       <span class="ruby-identifier">script_path</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span> <span class="ruby-identifier">bindir</span>, <span class="ruby-constant">File</span>.<span class="ruby-identifier">basename</span>(<span class="ruby-identifier">script_name</span>)
+278:       <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span> <span class="ruby-identifier">script_path</span>, <span class="ruby-value str">'w'</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">file</span><span class="ruby-operator">|</span>
+279:         <span class="ruby-identifier">file</span>.<span class="ruby-identifier">puts</span> <span class="ruby-identifier">windows_stub_script</span>(<span class="ruby-identifier">bindir</span>, <span class="ruby-identifier">filename</span>)
+280:       <span class="ruby-keyword kw">end</span>
+281: 
+282:       <span class="ruby-identifier">say</span> <span class="ruby-identifier">script_path</span> <span class="ruby-keyword kw">if</span> <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">configuration</span>.<span class="ruby-identifier">really_verbose</span>
+283:     <span class="ruby-keyword kw">end</span>
+284:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005311">
+                    
+                    <a name="M005311"></a><b>install</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Installs the gem and returns a loaded <a
+href="Specification.html">Gem::Specification</a> for the installed gem.
+</p>
+<p>
+The gem will be installed with the following structure:
+</p>
+<pre>
+  @gem_home/
+    cache/&lt;gem-version&gt;.gem #=&gt; a cached copy of the installed gem
+    gems/&lt;gem-version&gt;/... #=&gt; extracted files
+    specifications/&lt;gem-version&gt;.gemspec #=&gt; the Gem::Specification
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005311_source')" id="l_M005311_source">show</a>
+                        
+                    </p>
+                    <div id="M005311_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/installer.rb, line 155</span>
+155:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">install</span>
+156:     <span class="ruby-comment cmt"># If we're forcing the install then disable security unless the security</span>
+157:     <span class="ruby-comment cmt"># policy says that we only install singed gems.</span>
+158:     <span class="ruby-ivar">@security_policy</span> = <span class="ruby-keyword kw">nil</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@force</span> <span class="ruby-keyword kw">and</span> <span class="ruby-ivar">@security_policy</span> <span class="ruby-keyword kw">and</span>
+159:                               <span class="ruby-keyword kw">not</span> <span class="ruby-ivar">@security_policy</span>.<span class="ruby-identifier">only_signed</span>
+160: 
+161:     <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@force</span> <span class="ruby-keyword kw">then</span>
+162:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">rrv</span> = <span class="ruby-ivar">@spec</span>.<span class="ruby-identifier">required_ruby_version</span> <span class="ruby-keyword kw">then</span>
+163:         <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">rrv</span>.<span class="ruby-identifier">satisfied_by?</span> <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">ruby_version</span> <span class="ruby-keyword kw">then</span>
+164:           <span class="ruby-identifier">raise</span> <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">InstallError</span>, <span class="ruby-node">&quot;#{@spec.name} requires Ruby version #{rrv}.&quot;</span>
+165:         <span class="ruby-keyword kw">end</span>
+166:       <span class="ruby-keyword kw">end</span>
+167: 
+168:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">rrgv</span> = <span class="ruby-ivar">@spec</span>.<span class="ruby-identifier">required_rubygems_version</span> <span class="ruby-keyword kw">then</span>
+169:         <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">rrgv</span>.<span class="ruby-identifier">satisfied_by?</span> <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">Version</span>.<span class="ruby-identifier">new</span>(<span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">VERSION</span>) <span class="ruby-keyword kw">then</span>
+170:           <span class="ruby-identifier">raise</span> <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">InstallError</span>,
+171:             <span class="ruby-node">&quot;#{@spec.name} requires RubyGems version #{rrgv}. &quot;</span> <span class="ruby-operator">+</span>
+172:             <span class="ruby-value str">&quot;Try 'gem update --system' to update RubyGems itself.&quot;</span>
+173:         <span class="ruby-keyword kw">end</span>
+174:       <span class="ruby-keyword kw">end</span>
+175: 
+176:       <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@ignore_dependencies</span> <span class="ruby-keyword kw">then</span>
+177:         <span class="ruby-identifier">deps</span> = <span class="ruby-ivar">@spec</span>.<span class="ruby-identifier">runtime_dependencies</span>
+178:         <span class="ruby-identifier">deps</span> <span class="ruby-operator">|=</span> <span class="ruby-ivar">@spec</span>.<span class="ruby-identifier">development_dependencies</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@development</span>
+179: 
+180:         <span class="ruby-identifier">deps</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">dep_gem</span><span class="ruby-operator">|</span>
+181:           <span class="ruby-identifier">ensure_dependency</span> <span class="ruby-ivar">@spec</span>, <span class="ruby-identifier">dep_gem</span>
+182:         <span class="ruby-keyword kw">end</span>
+183:       <span class="ruby-keyword kw">end</span>
+184:     <span class="ruby-keyword kw">end</span>
+185: 
+186:     <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">pre_install_hooks</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">hook</span><span class="ruby-operator">|</span>
+187:       <span class="ruby-identifier">hook</span>.<span class="ruby-identifier">call</span> <span class="ruby-keyword kw">self</span>
+188:     <span class="ruby-keyword kw">end</span>
+189: 
+190:     <span class="ruby-constant">FileUtils</span>.<span class="ruby-identifier">mkdir_p</span> <span class="ruby-ivar">@gem_home</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">directory?</span> <span class="ruby-ivar">@gem_home</span>
+191: 
+192:     <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">ensure_gem_subdirectories</span> <span class="ruby-ivar">@gem_home</span>
+193: 
+194:     <span class="ruby-constant">FileUtils</span>.<span class="ruby-identifier">mkdir_p</span> <span class="ruby-ivar">@gem_dir</span>
+195: 
+196:     <span class="ruby-identifier">extract_files</span>
+197:     <span class="ruby-identifier">generate_bin</span>
+198:     <span class="ruby-identifier">build_extensions</span>
+199:     <span class="ruby-identifier">write_spec</span>
+200: 
+201:     <span class="ruby-identifier">write_require_paths_file_if_needed</span>
+202: 
+203:     <span class="ruby-comment cmt"># HACK remove?  Isn't this done in multiple places?</span>
+204:     <span class="ruby-identifier">cached_gem</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span> <span class="ruby-ivar">@gem_home</span>, <span class="ruby-value str">&quot;cache&quot;</span>, <span class="ruby-ivar">@gem</span>.<span class="ruby-identifier">split</span>(<span class="ruby-regexp re">/\//</span>).<span class="ruby-identifier">pop</span>
+205:     <span class="ruby-keyword kw">unless</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span> <span class="ruby-identifier">cached_gem</span> <span class="ruby-keyword kw">then</span>
+206:       <span class="ruby-constant">FileUtils</span>.<span class="ruby-identifier">cp</span> <span class="ruby-ivar">@gem</span>, <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-ivar">@gem_home</span>, <span class="ruby-value str">&quot;cache&quot;</span>)
+207:     <span class="ruby-keyword kw">end</span>
+208: 
+209:     <span class="ruby-identifier">say</span> <span class="ruby-ivar">@spec</span>.<span class="ruby-identifier">post_install_message</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@spec</span>.<span class="ruby-identifier">post_install_message</span>.<span class="ruby-identifier">nil?</span>
+210: 
+211:     <span class="ruby-ivar">@spec</span>.<span class="ruby-identifier">loaded_from</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-ivar">@gem_home</span>, <span class="ruby-value str">'specifications'</span>, <span class="ruby-ivar">@spec</span>.<span class="ruby-identifier">spec_name</span>)
+212: 
+213:     <span class="ruby-ivar">@source_index</span>.<span class="ruby-identifier">add_spec</span> <span class="ruby-ivar">@spec</span>
+214: 
+215:     <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">post_install_hooks</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">hook</span><span class="ruby-operator">|</span>
+216:       <span class="ruby-identifier">hook</span>.<span class="ruby-identifier">call</span> <span class="ruby-keyword kw">self</span>
+217:     <span class="ruby-keyword kw">end</span>
+218: 
+219:     <span class="ruby-keyword kw">return</span> <span class="ruby-ivar">@spec</span>
+220:   <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Zlib</span><span class="ruby-operator">::</span><span class="ruby-constant">GzipFile</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>
+221:     <span class="ruby-identifier">raise</span> <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">InstallError</span>, <span class="ruby-node">&quot;gzip error installing #{@gem}&quot;</span>
+222:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005313">
+                    
+                    <a name="M005313"></a><b>installation_satisfies_dependency?</b>(dependency)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+True if the gems in the source_index satisfy <tt>dependency</tt>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005313_source')" id="l_M005313_source">show</a>
+                        
+                    </p>
+                    <div id="M005313_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/installer.rb, line 242</span>
+242:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">installation_satisfies_dependency?</span>(<span class="ruby-identifier">dependency</span>)
+243:     <span class="ruby-ivar">@source_index</span>.<span class="ruby-identifier">find_name</span>(<span class="ruby-identifier">dependency</span>.<span class="ruby-identifier">name</span>, <span class="ruby-identifier">dependency</span>.<span class="ruby-identifier">requirement</span>).<span class="ruby-identifier">size</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>
+244:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005320">
+                    
+                    <a name="M005320"></a><b>shebang</b>(bin_file_name)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Generates a #! line for <tt>bin_file_name</tt>&#8217;s wrapper copying
+arguments if necessary.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005320_source')" id="l_M005320_source">show</a>
+                        
+                    </p>
+                    <div id="M005320_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/installer.rb, line 371</span>
+371:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">shebang</span>(<span class="ruby-identifier">bin_file_name</span>)
+372:     <span class="ruby-identifier">ruby_name</span> = <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">ConfigMap</span>[<span class="ruby-identifier">:ruby_install_name</span>] <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@env_shebang</span>
+373:     <span class="ruby-identifier">path</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span> <span class="ruby-ivar">@gem_dir</span>, <span class="ruby-ivar">@spec</span>.<span class="ruby-identifier">bindir</span>, <span class="ruby-identifier">bin_file_name</span>
+374:     <span class="ruby-identifier">first_line</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-identifier">path</span>, <span class="ruby-value str">&quot;rb&quot;</span>) {<span class="ruby-operator">|</span><span class="ruby-identifier">file</span><span class="ruby-operator">|</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">gets</span>}
+375: 
+376:     <span class="ruby-keyword kw">if</span> <span class="ruby-regexp re">/\A#!/</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">first_line</span> <span class="ruby-keyword kw">then</span>
+377:       <span class="ruby-comment cmt"># Preserve extra words on shebang line, like &quot;-w&quot;.  Thanks RPA.</span>
+378:       <span class="ruby-identifier">shebang</span> = <span class="ruby-identifier">first_line</span>.<span class="ruby-identifier">sub</span>(<span class="ruby-regexp re">/\A\#!.*?ruby\S*(?=(\s+\S+))/</span>, <span class="ruby-node">&quot;#!#{Gem.ruby}&quot;</span>)
+379:       <span class="ruby-identifier">opts</span> = <span class="ruby-identifier">$1</span>
+380:       <span class="ruby-identifier">shebang</span>.<span class="ruby-identifier">strip!</span> <span class="ruby-comment cmt"># Avoid nasty ^M issues.</span>
+381:     <span class="ruby-keyword kw">end</span>
+382: 
+383:     <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">not</span> <span class="ruby-identifier">ruby_name</span> <span class="ruby-keyword kw">then</span>
+384:       <span class="ruby-node">&quot;#!#{Gem.ruby}#{opts}&quot;</span>
+385:     <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">opts</span> <span class="ruby-keyword kw">then</span>
+386:       <span class="ruby-node">&quot;#!/bin/sh\n'exec' #{ruby_name.dump} '-x' \&quot;$0\&quot; \&quot;$@\&quot;\n#{shebang}&quot;</span>
+387:     <span class="ruby-keyword kw">else</span>
+388:       <span class="ruby-comment cmt"># Create a plain shebang line.</span>
+389:       <span class="ruby-ivar">@env_path</span> <span class="ruby-operator">||=</span> <span class="ruby-constant">ENV_PATHS</span>.<span class="ruby-identifier">find</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">env_path</span><span class="ruby-operator">|</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">executable?</span> <span class="ruby-identifier">env_path</span> }
+390:       <span class="ruby-node">&quot;#!#{@env_path} #{ruby_name}&quot;</span>
+391:     <span class="ruby-keyword kw">end</span>
+392:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005314">
+                    
+                    <a name="M005314"></a><b>unpack</b>(directory)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Unpacks the gem into the given directory.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005314_source')" id="l_M005314_source">show</a>
+                        
+                    </p>
+                    <div id="M005314_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/installer.rb, line 249</span>
+249:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">unpack</span>(<span class="ruby-identifier">directory</span>)
+250:     <span class="ruby-ivar">@gem_dir</span> = <span class="ruby-identifier">directory</span>
+251:     <span class="ruby-ivar">@format</span> = <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">Format</span>.<span class="ruby-identifier">from_file_by_path</span> <span class="ruby-ivar">@gem</span>, <span class="ruby-ivar">@security_policy</span>
+252:     <span class="ruby-identifier">extract_files</span>
+253:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005322">
+                    
+                    <a name="M005322"></a><b>windows_stub_script</b>(bindir, bin_file_name)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+return the stub script text used to launch the true ruby script
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005322_source')" id="l_M005322_source">show</a>
+                        
+                    </p>
+                    <div id="M005322_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/installer.rb, line 425</span>
+425:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">windows_stub_script</span>(<span class="ruby-identifier">bindir</span>, <span class="ruby-identifier">bin_file_name</span>)
+426:     <span class="ruby-value str">&quot;@ECHO OFF\nIF NOT \&quot;%~f0\&quot; == \&quot;~f0\&quot; GOTO :WinNT\n@\&quot;\#{File.basename(Gem.ruby).chomp('\&quot;')}\&quot; \&quot;\#{File.join(bindir, bin_file_name)}\&quot; %1 %2 %3 %4 %5 %6 %7 %8 %9\nGOTO :EOF\n:WinNT\n@\&quot;\#{File.basename(Gem.ruby).chomp('\&quot;')}\&quot; \&quot;%~dpn0\&quot; %*\n&quot;</span>
+427:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005315">
+                    
+                    <a name="M005315"></a><b>write_spec</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Writes the .gemspec specification (in Ruby) to the gem home&#8217;s
+specifications directory.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005315_source')" id="l_M005315_source">show</a>
+                        
+                    </p>
+                    <div id="M005315_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/installer.rb, line 259</span>
+259:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">write_spec</span>
+260:     <span class="ruby-identifier">rubycode</span> = <span class="ruby-ivar">@spec</span>.<span class="ruby-identifier">to_ruby</span>
+261: 
+262:     <span class="ruby-identifier">file_name</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span> <span class="ruby-ivar">@gem_home</span>, <span class="ruby-value str">'specifications'</span>, <span class="ruby-ivar">@spec</span>.<span class="ruby-identifier">spec_name</span>
+263: 
+264:     <span class="ruby-identifier">file_name</span>.<span class="ruby-identifier">untaint</span>
+265: 
+266:     <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-identifier">file_name</span>, <span class="ruby-value str">&quot;w&quot;</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">file</span><span class="ruby-operator">|</span>
+267:       <span class="ruby-identifier">file</span>.<span class="ruby-identifier">puts</span> <span class="ruby-identifier">rubycode</span>
+268:     <span class="ruby-keyword kw">end</span>
+269:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

@@ -1,0 +1,46 @@
+  <div id="fileHeader">
+    <h1>builder.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionpack/lib/action_view/template_handlers/builder.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:04 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>require 'builder'
+
+module ActionView
+  module TemplateHandlers
+    class Builder &lt; TemplateHandler
+      include Compilable
+
+      def self.line_offset
+        2
+      end
+
+      def compile(template)
+        content_type_handler = (@view.send!(:controller).respond_to?(:response) ? &quot;controller.response&quot; : &quot;controller&quot;)
+        &quot;#{content_type_handler}.content_type ||= Mime::XML\n&quot; +
+        &quot;xml = ::Builder::XmlMarkup.new(:indent =&gt; 2)\n&quot; +
+        template.source +
+        &quot;\nxml.target!\n&quot;
+      end
+
+      def cache_fragment(block, name = {}, options = nil)
+        @view.fragment_for(block, name, options) do
+          eval('xml.target!', block.binding)
+        end
+      end
+    end
+  end
+end
+</pre>
+    </div>

@@ -1,0 +1,115 @@
+  <div id="C00000190">
+<div class='banner'>
+  <span class="file-title-prefix">Class</span><br />IntegrationTest<br/>
+  In:
+<a href="#" onclick="jsHref('files/actionpack/lib/action_controller/integration_rb.html');">actionpack/lib/action_controller/integration.rb</a>
+
+Parent:&nbsp;
+Test::Unit::TestCase
+</div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+      <div id="content">
+
+  <div class="description"><p>
+An <a
+href="index.html?a=C00000190&name=IntegrationTest">IntegrationTest</a> is
+one that spans multiple controllers and actions, tying them all together to
+ensure they work together as expected. It tests more completely than either
+unit or functional tests do, exercising the entire stack, from the
+dispatcher to the database.
+</p>
+<p>
+At its simplest, you simply extend <a
+href="index.html?a=C00000190&name=IntegrationTest">IntegrationTest</a> and
+write your tests using the get/post methods:
+</p>
+<pre>
+  require &quot;#{File.dirname(__FILE__)}/test_helper&quot;
+
+  class ExampleTest &lt; ActionController::IntegrationTest
+    fixtures :people
+
+    def test_login
+      # get the login page
+      get &quot;/login&quot;
+      assert_equal 200, status
+
+      # post the login and follow through to the home page
+      post &quot;/login&quot;, :username =&gt; people(:jamis).username,
+        :password =&gt; people(:jamis).password
+      follow_redirect!
+      assert_equal 200, status
+      assert_equal &quot;/home&quot;, path
+    end
+  end
+</pre>
+<p>
+However, you can also have multiple session instances open per test, and
+even extend those instances with assertions and methods to create a very
+powerful testing DSL that is specific for your application. You can even
+reference any named routes you happen to have defined!
+</p>
+<pre>
+  require &quot;#{File.dirname(__FILE__)}/test_helper&quot;
+
+  class AdvancedTest &lt; ActionController::IntegrationTest
+    fixtures :people, :rooms
+
+    def test_login_and_speak
+      jamis, david = login(:jamis), login(:david)
+      room = rooms(:office)
+
+      jamis.enter(room)
+      jamis.speak(room, &quot;anybody home?&quot;)
+
+      david.enter(room)
+      david.speak(room, &quot;hello!&quot;)
+    end
+
+    private
+
+      module CustomAssertions
+        def enter(room)
+          # reference a named route, for maximum internal consistency!
+          get(room_url(:id =&gt; room.id))
+          assert(...)
+          ...
+        end
+
+        def speak(room, message)
+          xml_http_request &quot;/say/#{room.id}&quot;, :message =&gt; message
+          assert(...)
+          ...
+        end
+      end
+
+      def login(who)
+        open_session do |sess|
+          sess.extend(CustomAssertions)
+          who = people(who)
+          sess.post &quot;/login&quot;, :username =&gt; who.username,
+            :password =&gt; who.password
+          assert(...)
+        end
+      end
+  end
+</pre>
+</div>
+
+
+
+
+<div class="sectiontitle">Included Modules</div>
+<ul>
+  <li><a href="#" onclick="jsHref('classes/ActionController/Integration/Runner.html');">Integration::Runner</a></li>
+</ul>
+
+
+
+
+
+</div>
+
+  </div>

@@ -1,0 +1,350 @@
+  <div id="C00000703">
+<div class='banner'>
+  <span class="file-title-prefix">Module</span><br />ActiveRecordHelper<br/>
+  In:
+<a href="#" onclick="jsHref('files/actionpack/lib/action_view/helpers/active_record_helper_rb.html');">actionpack/lib/action_view/helpers/active_record_helper.rb</a>
+
+</div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+      <div id="content">
+
+  <div class="description"><p>
+The Active Record Helper makes it easier to create forms for records kept
+in instance variables. The most far-reaching is the <tt>form</tt> method
+that creates a complete form for all the basic content types of the record
+(not associations or aggregations, though). This is a great way of making
+the record quickly available for editing, but likely to prove lackluster
+for a complicated real-world form. In that case, it&#8217;s better to use
+the <tt>input</tt> method and the specialized <tt>form</tt> methods in <a
+href="classes/ActionView/Helpers/FormHelper.html"
+target="_blank">link:classes/ActionView/Helpers/FormHelper.html</a>
+</p>
+</div>
+
+
+
+  <div class="sectiontitle">Methods</div>
+  <ul>
+  <li><a href="index.html?a=M001982&name=error_message_on" >error_message_on</a></li>
+  <li><a href="index.html?a=M001983&name=error_messages_for" >error_messages_for</a></li>
+  <li><a href="index.html?a=M001981&name=form" >form</a></li>
+  <li><a href="index.html?a=M001980&name=input" >input</a></li>
+  </ul>
+
+
+
+
+
+
+<div class="sectiontitle">Public Instance methods</div>
+<div id="M001982" class="method">
+  <div id="M001982_title" class="title">
+    <b>error_message_on</b>(object, method, prepend_text = &quot;&quot;, append_text = &quot;&quot;, css_class = &quot;formError&quot;)
+  </div>
+  <div class="description">
+  <p>
+Returns a string containing the error message attached to the
+<tt>method</tt> on the <tt>object</tt> if one exists. This error message is
+wrapped in a <tt>DIV</tt> tag, which can be extended to include a
+<tt>prepend_text</tt> and/or <tt>append_text</tt> (to properly explain the
+error), and a <tt>css_class</tt> to style it accordingly. <tt>object</tt>
+should either be the name of an instance variable or the actual object. As
+an example, let&#8217;s say you have a model <tt>@post</tt> that has an
+error message on the <tt>title</tt> attribute:
+</p>
+<pre>
+  &lt;%= error_message_on &quot;post&quot;, &quot;title&quot; %&gt;
+  # =&gt; &lt;div class=&quot;formError&quot;&gt;can't be empty&lt;/div&gt;
+
+  &lt;%= error_message_on @post, &quot;title&quot; %&gt;
+  # =&gt; &lt;div class=&quot;formError&quot;&gt;can't be empty&lt;/div&gt;
+
+  &lt;%= error_message_on &quot;post&quot;, &quot;title&quot;, &quot;Title simply &quot;, &quot; (or it won't work).&quot;, &quot;inputError&quot; %&gt;
+  # =&gt; &lt;div class=&quot;inputError&quot;&gt;Title simply can't be empty (or it won't work).&lt;/div&gt;
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001982_source')" id="l_M001982_source">show source</a> ]</p>
+  <div id="M001982_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File actionpack/lib/action_view/helpers/active_record_helper.rb, line 105</span>
+105:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">error_message_on</span>(<span class="ruby-identifier">object</span>, <span class="ruby-identifier">method</span>, <span class="ruby-identifier">prepend_text</span> = <span class="ruby-value str">&quot;&quot;</span>, <span class="ruby-identifier">append_text</span> = <span class="ruby-value str">&quot;&quot;</span>, <span class="ruby-identifier">css_class</span> = <span class="ruby-value str">&quot;formError&quot;</span>)
+106:         <span class="ruby-keyword kw">if</span> (<span class="ruby-identifier">obj</span> = (<span class="ruby-identifier">object</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-identifier">:errors</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">object</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">instance_variable_get</span>(<span class="ruby-node">&quot;@#{object}&quot;</span>))) <span class="ruby-operator">&amp;&amp;</span>
+107:           (<span class="ruby-identifier">errors</span> = <span class="ruby-identifier">obj</span>.<span class="ruby-identifier">errors</span>.<span class="ruby-identifier">on</span>(<span class="ruby-identifier">method</span>))
+108:           <span class="ruby-identifier">content_tag</span>(<span class="ruby-value str">&quot;div&quot;</span>, <span class="ruby-node">&quot;#{prepend_text}#{errors.is_a?(Array) ? errors.first : errors}#{append_text}&quot;</span>, <span class="ruby-identifier">:class</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">css_class</span>)
+109:         <span class="ruby-keyword kw">else</span> 
+110:           <span class="ruby-value str">''</span>
+111:         <span class="ruby-keyword kw">end</span>
+112:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M001983" class="method">
+  <div id="M001983_title" class="title">
+    <b>error_messages_for</b>(*params)
+  </div>
+  <div class="description">
+  <p>
+Returns a string with a <tt>DIV</tt> containing all of the error messages
+for the objects located as instance variables by the names given. If more
+than one object is specified, the errors for the objects are displayed in
+the order that the object names are provided.
+</p>
+<p>
+This <tt>DIV</tt> can be tailored by the following options:
+</p>
+<ul>
+<li><tt>:header_tag</tt> - Used for the header of the error div (default:
+&quot;h2&quot;).
+
+</li>
+<li><tt>:id</tt> - The id of the error div (default:
+&quot;errorExplanation&quot;).
+
+</li>
+<li><tt>:class</tt> - The class of the error div (default:
+&quot;errorExplanation&quot;).
+
+</li>
+<li><tt>:object</tt> - The object (or array of objects) for which to display
+errors, if you need to escape the instance variable convention.
+
+</li>
+<li><tt>:object_name</tt> - The object name to use in the header, or any text
+that you prefer. If <tt>:object_name</tt> is not set, the name of the first
+object will be used.
+
+</li>
+<li><tt>:header_message</tt> - The message in the header of the error div. Pass
+<tt>nil</tt> or an empty string to avoid the header message altogether.
+(Default: &quot;X errors prohibited this object from being saved&quot;).
+
+</li>
+<li><tt>:message</tt> - The explanation message after the header message and
+before the error list. Pass <tt>nil</tt> or an empty string to avoid the
+explanation message altogether. (Default: &quot;There were problems with
+the following fields:&quot;).
+
+</li>
+</ul>
+<p>
+To specify the display for one object, you simply provide its name as a
+parameter. For example, for the <tt>@user</tt> model:
+</p>
+<pre>
+  error_messages_for 'user'
+</pre>
+<p>
+To specify more than one object, you simply list them; optionally, you can
+add an extra <tt>:object_name</tt> parameter, which will be the name used
+in the header message:
+</p>
+<pre>
+  error_messages_for 'user_common', 'user', :object_name =&gt; 'user'
+</pre>
+<p>
+If the objects cannot be located as instance variables, you can add an
+extra <tt>:object</tt> paremeter which gives the actual object (or array of
+objects to use):
+</p>
+<pre>
+  error_messages_for 'user', :object =&gt; @question.user
+</pre>
+<p>
+NOTE: This is a pre-packaged presentation of the errors with embedded
+strings and a certain HTML structure. If what you need is significantly
+different from the default presentation, it makes plenty of sense to access
+the <tt>object.errors</tt> instance yourself and set it up. View the source
+of this method to see how easy it is.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001983_source')" id="l_M001983_source">show source</a> ]</p>
+  <div id="M001983_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File actionpack/lib/action_view/helpers/active_record_helper.rb, line 152</span>
+152:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">error_messages_for</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">params</span>)
+153:         <span class="ruby-identifier">options</span> = <span class="ruby-identifier">params</span>.<span class="ruby-identifier">extract_options!</span>.<span class="ruby-identifier">symbolize_keys</span>
+154:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">object</span> = <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">:object</span>)
+155:           <span class="ruby-identifier">objects</span> = [<span class="ruby-identifier">object</span>].<span class="ruby-identifier">flatten</span>
+156:         <span class="ruby-keyword kw">else</span>
+157:           <span class="ruby-identifier">objects</span> = <span class="ruby-identifier">params</span>.<span class="ruby-identifier">collect</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">object_name</span><span class="ruby-operator">|</span> <span class="ruby-identifier">instance_variable_get</span>(<span class="ruby-node">&quot;@#{object_name}&quot;</span>) }.<span class="ruby-identifier">compact</span>
+158:         <span class="ruby-keyword kw">end</span>
+159:         <span class="ruby-identifier">count</span>   = <span class="ruby-identifier">objects</span>.<span class="ruby-identifier">inject</span>(<span class="ruby-value">0</span>) {<span class="ruby-operator">|</span><span class="ruby-identifier">sum</span>, <span class="ruby-identifier">object</span><span class="ruby-operator">|</span> <span class="ruby-identifier">sum</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">object</span>.<span class="ruby-identifier">errors</span>.<span class="ruby-identifier">count</span> }
+160:         <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">count</span>.<span class="ruby-identifier">zero?</span>
+161:           <span class="ruby-identifier">html</span> = {}
+162:           [<span class="ruby-identifier">:id</span>, <span class="ruby-identifier">:class</span>].<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">key</span><span class="ruby-operator">|</span>
+163:             <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">key</span>)
+164:               <span class="ruby-identifier">value</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">key</span>]
+165:               <span class="ruby-identifier">html</span>[<span class="ruby-identifier">key</span>] = <span class="ruby-identifier">value</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">blank?</span>
+166:             <span class="ruby-keyword kw">else</span>
+167:               <span class="ruby-identifier">html</span>[<span class="ruby-identifier">key</span>] = <span class="ruby-value str">'errorExplanation'</span>
+168:             <span class="ruby-keyword kw">end</span>
+169:           <span class="ruby-keyword kw">end</span>
+170:           <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:object_name</span>] <span class="ruby-operator">||=</span> <span class="ruby-identifier">params</span>.<span class="ruby-identifier">first</span>
+171:           <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:header_message</span>] = <span class="ruby-node">&quot;#{pluralize(count, 'error')} prohibited this #{options[:object_name].to_s.gsub('_', ' ')} from being saved&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">:header_message</span>)
+172:           <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:message</span>] <span class="ruby-operator">||=</span> <span class="ruby-value str">'There were problems with the following fields:'</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">:message</span>)
+173:           <span class="ruby-identifier">error_messages</span> = <span class="ruby-identifier">objects</span>.<span class="ruby-identifier">sum</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">object</span><span class="ruby-operator">|</span> <span class="ruby-identifier">object</span>.<span class="ruby-identifier">errors</span>.<span class="ruby-identifier">full_messages</span>.<span class="ruby-identifier">map</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">msg</span><span class="ruby-operator">|</span> <span class="ruby-identifier">content_tag</span>(<span class="ruby-identifier">:li</span>, <span class="ruby-identifier">msg</span>) } }.<span class="ruby-identifier">join</span>
+174: 
+175:           <span class="ruby-identifier">contents</span> = <span class="ruby-value str">''</span>
+176:           <span class="ruby-identifier">contents</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">content_tag</span>(<span class="ruby-identifier">options</span>[<span class="ruby-identifier">:header_tag</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">:h2</span>, <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:header_message</span>]) <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:header_message</span>].<span class="ruby-identifier">blank?</span>
+177:           <span class="ruby-identifier">contents</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">content_tag</span>(<span class="ruby-identifier">:p</span>, <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:message</span>]) <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:message</span>].<span class="ruby-identifier">blank?</span>
+178:           <span class="ruby-identifier">contents</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">content_tag</span>(<span class="ruby-identifier">:ul</span>, <span class="ruby-identifier">error_messages</span>)
+179: 
+180:           <span class="ruby-identifier">content_tag</span>(<span class="ruby-identifier">:div</span>, <span class="ruby-identifier">contents</span>, <span class="ruby-identifier">html</span>)
+181:         <span class="ruby-keyword kw">else</span>
+182:           <span class="ruby-value str">''</span>
+183:         <span class="ruby-keyword kw">end</span>
+184:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M001981" class="method">
+  <div id="M001981_title" class="title">
+    <b>form</b>(record_name, options = {}) {|contents if block_given?| ...}
+  </div>
+  <div class="description">
+  <p>
+Returns an entire form with all needed input tags for a specified Active
+Record object. For example, if <tt>@post</tt> has attributes named
+<tt>title</tt> of type <tt>VARCHAR</tt> and <tt>body</tt> of type
+<tt>TEXT</tt> then
+</p>
+<pre>
+  form(&quot;post&quot;)
+</pre>
+<p>
+would yield a form like the following (modulus formatting):
+</p>
+<pre>
+  &lt;form action='/posts/create' method='post'&gt;
+    &lt;p&gt;
+      &lt;label for=&quot;post_title&quot;&gt;Title&lt;/label&gt;&lt;br /&gt;
+      &lt;input id=&quot;post_title&quot; name=&quot;post[title]&quot; size=&quot;30&quot; type=&quot;text&quot; value=&quot;Hello World&quot; /&gt;
+    &lt;/p&gt;
+    &lt;p&gt;
+      &lt;label for=&quot;post_body&quot;&gt;Body&lt;/label&gt;&lt;br /&gt;
+      &lt;textarea cols=&quot;40&quot; id=&quot;post_body&quot; name=&quot;post[body]&quot; rows=&quot;20&quot;&gt;&lt;/textarea&gt;
+    &lt;/p&gt;
+    &lt;input name=&quot;commit&quot; type=&quot;submit&quot; value=&quot;Create&quot; /&gt;
+  &lt;/form&gt;
+</pre>
+<p>
+It&#8217;s possible to specialize the form builder by using a different
+action name and by supplying another block renderer. For example, if
+<tt>@entry</tt> has an attribute <tt>message</tt> of type <tt>VARCHAR</tt>
+then
+</p>
+<pre>
+  form(&quot;entry&quot;,
+    :action =&gt; &quot;sign&quot;,
+    :input_block =&gt; Proc.new { |record, column|
+      &quot;#{column.human_name}: #{input(record, column.name)}&lt;br /&gt;&quot;
+  })
+</pre>
+<p>
+would yield a form like the following (modulus formatting):
+</p>
+<pre>
+  &lt;form action=&quot;/entries/sign&quot; method=&quot;post&quot;&gt;
+    Message:
+    &lt;input id=&quot;entry_message&quot; name=&quot;entry[message]&quot; size=&quot;30&quot; type=&quot;text&quot; /&gt;&lt;br /&gt;
+    &lt;input name=&quot;commit&quot; type=&quot;submit&quot; value=&quot;Sign&quot; /&gt;
+  &lt;/form&gt;
+</pre>
+<p>
+It&#8217;s also possible to add additional content to the form by giving it
+a block, such as:
+</p>
+<pre>
+  form(&quot;entry&quot;, :action =&gt; &quot;sign&quot;) do |form|
+    form &lt;&lt; content_tag(&quot;b&quot;, &quot;Department&quot;)
+    form &lt;&lt; collection_select(&quot;department&quot;, &quot;id&quot;, @departments, &quot;id&quot;, &quot;name&quot;)
+  end
+</pre>
+<p>
+The following options are available:
+</p>
+<ul>
+<li><tt>:action</tt> - The action used when submitting the form (default:
+<tt>create</tt> if a new record, otherwise <tt>update</tt>).
+
+</li>
+<li><tt>:input_block</tt> - Specialize the output using a different block, see
+above.
+
+</li>
+<li><tt>:method</tt> - The method used when submitting the form (default:
+<tt>post</tt>).
+
+</li>
+<li><tt>:multipart</tt> - Whether to change the enctype of the form to
+&quot;multipart/form-data&quot;, used when uploading a file (default:
+<tt>false</tt>).
+
+</li>
+<li><tt>:submit_value</tt> - The text of the submit button (default:
+&quot;Create&quot; if a new record, otherwise &quot;Update&quot;).
+
+</li>
+</ul>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001981_source')" id="l_M001981_source">show source</a> ]</p>
+  <div id="M001981_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File actionpack/lib/action_view/helpers/active_record_helper.rb, line 75</span>
+75:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">form</span>(<span class="ruby-identifier">record_name</span>, <span class="ruby-identifier">options</span> = {})
+76:         <span class="ruby-identifier">record</span> = <span class="ruby-identifier">instance_variable_get</span>(<span class="ruby-node">&quot;@#{record_name}&quot;</span>)
+77: 
+78:         <span class="ruby-identifier">options</span> = <span class="ruby-identifier">options</span>.<span class="ruby-identifier">symbolize_keys</span>
+79:         <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:action</span>] <span class="ruby-operator">||=</span> <span class="ruby-identifier">record</span>.<span class="ruby-identifier">new_record?</span> <span class="ruby-value">? </span><span class="ruby-value str">&quot;create&quot;</span> <span class="ruby-operator">:</span> <span class="ruby-value str">&quot;update&quot;</span>
+80:         <span class="ruby-identifier">action</span> = <span class="ruby-identifier">url_for</span>(<span class="ruby-identifier">:action</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:action</span>], <span class="ruby-identifier">:id</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">record</span>)
+81: 
+82:         <span class="ruby-identifier">submit_value</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:submit_value</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:action</span>].<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/[^\w]/</span>, <span class="ruby-value str">''</span>).<span class="ruby-identifier">capitalize</span>
+83: 
+84:         <span class="ruby-identifier">contents</span> = <span class="ruby-identifier">form_tag</span>({<span class="ruby-identifier">:action</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">action</span>}, <span class="ruby-identifier">:method</span> =<span class="ruby-operator">&gt;</span>(<span class="ruby-identifier">options</span>[<span class="ruby-identifier">:method</span>] <span class="ruby-operator">||</span> <span class="ruby-value str">'post'</span>), <span class="ruby-identifier">:enctype</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:multipart</span>] <span class="ruby-operator">?</span> <span class="ruby-value str">'multipart/form-data'</span><span class="ruby-operator">:</span> <span class="ruby-keyword kw">nil</span>)
+85:         <span class="ruby-identifier">contents</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">hidden_field</span>(<span class="ruby-identifier">record_name</span>, <span class="ruby-identifier">:id</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">record</span>.<span class="ruby-identifier">new_record?</span>
+86:         <span class="ruby-identifier">contents</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">all_input_tags</span>(<span class="ruby-identifier">record</span>, <span class="ruby-identifier">record_name</span>, <span class="ruby-identifier">options</span>)
+87:         <span class="ruby-keyword kw">yield</span> <span class="ruby-identifier">contents</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">block_given?</span>
+88:         <span class="ruby-identifier">contents</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">submit_tag</span>(<span class="ruby-identifier">submit_value</span>)
+89:         <span class="ruby-identifier">contents</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">'&lt;/form&gt;'</span>
+90:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M001980" class="method">
+  <div id="M001980_title" class="title">
+    <b>input</b>(record_name, method, options = {})
+  </div>
+  <div class="description">
+  <p>
+Returns a default input tag for the type of object returned by the method.
+For example, if <tt>@post</tt> has an attribute <tt>title</tt> mapped to a
+<tt>VARCHAR</tt> column that holds &quot;Hello World&quot;:
+</p>
+<pre>
+  input(&quot;post&quot;, &quot;title&quot;)
+  # =&gt; &lt;input id=&quot;post_title&quot; name=&quot;post[title]&quot; size=&quot;30&quot; type=&quot;text&quot; value=&quot;Hello World&quot; /&gt;
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001980_source')" id="l_M001980_source">show source</a> ]</p>
+  <div id="M001980_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File actionpack/lib/action_view/helpers/active_record_helper.rb, line 21</span>
+21:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">input</span>(<span class="ruby-identifier">record_name</span>, <span class="ruby-identifier">method</span>, <span class="ruby-identifier">options</span> = {})
+22:         <span class="ruby-constant">InstanceTag</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">record_name</span>, <span class="ruby-identifier">method</span>, <span class="ruby-keyword kw">self</span>).<span class="ruby-identifier">to_tag</span>(<span class="ruby-identifier">options</span>)
+23:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+</div>
+
+  </div>

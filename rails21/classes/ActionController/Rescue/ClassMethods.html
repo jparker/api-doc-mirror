@@ -1,0 +1,102 @@
+  <div id="C00000088">
+<div class='banner'>
+  <span class="file-title-prefix">Module</span><br />ClassMethods<br/>
+  In:
+<a href="#" onclick="jsHref('files/actionpack/lib/action_controller/rescue_rb.html');">actionpack/lib/action_controller/rescue.rb</a>
+
+</div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+      <div id="content">
+
+
+
+
+  <div class="sectiontitle">Methods</div>
+  <ul>
+  <li><a href="index.html?a=M000232&name=rescue_from" >rescue_from</a></li>
+  </ul>
+
+
+
+
+
+
+<div class="sectiontitle">Public Instance methods</div>
+<div id="M000232" class="method">
+  <div id="M000232_title" class="title">
+    <b>rescue_from</b>(*klasses, &amp;block)
+  </div>
+  <div class="description">
+  <p>
+<a href="index.html?a=C00000087&name=Rescue">Rescue</a> exceptions raised
+in controller actions.
+</p>
+<p>
+<tt><a href="index.html?a=M000232&name=rescue_from">rescue_from</a></tt>
+receives a series of exception classes or class names, and a trailing
+<tt>:with</tt> option with the name of a method or a Proc object to be
+called to handle them. Alternatively a block can be given.
+</p>
+<p>
+Handlers that take one argument will be called with the exception, so that
+the exception can be inspected when dealing with it.
+</p>
+<p>
+Handlers are inherited. They are searched from right to left, from bottom
+to top, and up the hierarchy. The handler of the first class for which
+<tt>exception.is_a?(klass)</tt> holds true is the one invoked, if any.
+</p>
+<pre>
+  class ApplicationController &lt; ActionController::Base
+    rescue_from User::NotAuthorized, :with =&gt; :deny_access # self defined exception
+    rescue_from ActiveRecord::RecordInvalid, :with =&gt; :show_errors
+
+    rescue_from 'MyAppError::Base' do |exception|
+      render :xml =&gt; exception, :status =&gt; 500
+    end
+
+    protected
+      def deny_access
+        ...
+      end
+
+      def show_errors(exception)
+        exception.record.new_record? ? ...
+      end
+  end
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000232_source')" id="l_M000232_source">show source</a> ]</p>
+  <div id="M000232_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File actionpack/lib/action_controller/rescue.rb, line 90</span>
+ 90:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">rescue_from</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">klasses</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+ 91:         <span class="ruby-identifier">options</span> = <span class="ruby-identifier">klasses</span>.<span class="ruby-identifier">extract_options!</span>
+ 92:         <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-identifier">:with</span>)
+ 93:           <span class="ruby-identifier">block_given?</span> <span class="ruby-value">? </span><span class="ruby-identifier">options</span>[<span class="ruby-identifier">:with</span>] = <span class="ruby-identifier">block</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">raise</span>(<span class="ruby-constant">ArgumentError</span>, <span class="ruby-value str">&quot;Need a handler. Supply an options hash that has a :with key as the last argument.&quot;</span>)
+ 94:         <span class="ruby-keyword kw">end</span>
+ 95: 
+ 96:         <span class="ruby-identifier">klasses</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">klass</span><span class="ruby-operator">|</span>
+ 97:           <span class="ruby-identifier">key</span> = <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">klass</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Class</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">klass</span> <span class="ruby-operator">&lt;=</span> <span class="ruby-constant">Exception</span>
+ 98:             <span class="ruby-identifier">klass</span>.<span class="ruby-identifier">name</span>
+ 99:           <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">klass</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">String</span>)
+100:             <span class="ruby-identifier">klass</span>
+101:           <span class="ruby-keyword kw">else</span>
+102:             <span class="ruby-identifier">raise</span>(<span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;#{klass} is neither an Exception nor a String&quot;</span>)
+103:           <span class="ruby-keyword kw">end</span>
+104: 
+105:           <span class="ruby-comment cmt"># Order is important, we put the pair at the end. When dealing with an</span>
+106:           <span class="ruby-comment cmt"># exception we will follow the documented order going from right to left.</span>
+107:           <span class="ruby-identifier">rescue_handlers</span> <span class="ruby-operator">&lt;&lt;</span> [<span class="ruby-identifier">key</span>, <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:with</span>]]
+108:         <span class="ruby-keyword kw">end</span>
+109:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+</div>
+
+  </div>

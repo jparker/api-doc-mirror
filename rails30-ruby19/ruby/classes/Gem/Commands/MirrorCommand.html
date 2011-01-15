@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Gem::Commands::MirrorCommand</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            Gem::Commands::MirrorCommand 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../Command.html">Gem::Command</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../../files/lib/rubygems/commands/mirror_command_rb.html">lib/rubygems/commands/mirror_command.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005257">execute</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005255">new</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005255">
+                    
+                    <a name="M005255"></a><b>new</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005255_source')" id="l_M005255_source">show</a>
+                        
+                    </p>
+                    <div id="M005255_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/rubygems/commands/mirror_command.rb, line 9</span>
+ 9:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>
+10:     <span class="ruby-keyword kw">super</span> <span class="ruby-value str">'mirror'</span>, <span class="ruby-value str">'Mirror a gem repository'</span>
+11:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005257">
+                    
+                    <a name="M005257"></a><b>execute</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005257_source')" id="l_M005257_source">show</a>
+                        
+                    </p>
+                    <div id="M005257_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/commands/mirror_command.rb, line 28</span>
+ 28:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">execute</span>
+ 29:     <span class="ruby-identifier">config_file</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span> <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">user_home</span>, <span class="ruby-value str">'.gemmirrorrc'</span>
+ 30: 
+ 31:     <span class="ruby-identifier">raise</span> <span class="ruby-node">&quot;Config file #{config_file} not found&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span> <span class="ruby-identifier">config_file</span>
+ 32: 
+ 33:     <span class="ruby-identifier">mirrors</span> = <span class="ruby-constant">YAML</span>.<span class="ruby-identifier">load_file</span> <span class="ruby-identifier">config_file</span>
+ 34: 
+ 35:     <span class="ruby-identifier">raise</span> <span class="ruby-node">&quot;Invalid config file #{config_file}&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">mirrors</span>.<span class="ruby-identifier">respond_to?</span> <span class="ruby-identifier">:each</span>
+ 36: 
+ 37:     <span class="ruby-identifier">mirrors</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">mir</span><span class="ruby-operator">|</span>
+ 38:       <span class="ruby-identifier">raise</span> <span class="ruby-value str">&quot;mirror missing 'from' field&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">mir</span>.<span class="ruby-identifier">has_key?</span> <span class="ruby-value str">'from'</span>
+ 39:       <span class="ruby-identifier">raise</span> <span class="ruby-value str">&quot;mirror missing 'to' field&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">mir</span>.<span class="ruby-identifier">has_key?</span> <span class="ruby-value str">'to'</span>
+ 40: 
+ 41:       <span class="ruby-identifier">get_from</span> = <span class="ruby-identifier">mir</span>[<span class="ruby-value str">'from'</span>]
+ 42:       <span class="ruby-identifier">save_to</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span> <span class="ruby-identifier">mir</span>[<span class="ruby-value str">'to'</span>]
+ 43: 
+ 44:       <span class="ruby-identifier">raise</span> <span class="ruby-node">&quot;Directory not found: #{save_to}&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span> <span class="ruby-identifier">save_to</span>
+ 45:       <span class="ruby-identifier">raise</span> <span class="ruby-node">&quot;Not a directory: #{save_to}&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">directory?</span> <span class="ruby-identifier">save_to</span>
+ 46: 
+ 47:       <span class="ruby-identifier">gems_dir</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span> <span class="ruby-identifier">save_to</span>, <span class="ruby-value str">&quot;gems&quot;</span>
+ 48: 
+ 49:       <span class="ruby-keyword kw">if</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span> <span class="ruby-identifier">gems_dir</span> <span class="ruby-keyword kw">then</span>
+ 50:         <span class="ruby-identifier">raise</span> <span class="ruby-node">&quot;Not a directory: #{gems_dir}&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">directory?</span> <span class="ruby-identifier">gems_dir</span>
+ 51:       <span class="ruby-keyword kw">else</span>
+ 52:         <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">mkdir</span> <span class="ruby-identifier">gems_dir</span>
+ 53:       <span class="ruby-keyword kw">end</span>
+ 54: 
+ 55:       <span class="ruby-identifier">source_index_data</span> = <span class="ruby-value str">''</span>
+ 56: 
+ 57:       <span class="ruby-identifier">say</span> <span class="ruby-node">&quot;fetching: #{get_from}/Marshal.#{Gem.marshal_version}.Z&quot;</span>
+ 58: 
+ 59:       <span class="ruby-identifier">get_from</span> = <span class="ruby-constant">URI</span>.<span class="ruby-identifier">parse</span> <span class="ruby-identifier">get_from</span>
+ 60: 
+ 61:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">get_from</span>.<span class="ruby-identifier">scheme</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-keyword kw">then</span>
+ 62:         <span class="ruby-identifier">get_from</span> = <span class="ruby-identifier">get_from</span>.<span class="ruby-identifier">to_s</span>
+ 63:       <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">get_from</span>.<span class="ruby-identifier">scheme</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'file'</span> <span class="ruby-keyword kw">then</span>
+ 64:         <span class="ruby-comment cmt"># check if specified URI contains a drive letter (file:/D:/Temp)</span>
+ 65:         <span class="ruby-identifier">get_from</span> = <span class="ruby-identifier">get_from</span>.<span class="ruby-identifier">to_s</span>
+ 66:         <span class="ruby-identifier">get_from</span> = <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">get_from</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/^file:.*[a-z]:/i</span> <span class="ruby-keyword kw">then</span>
+ 67:                      <span class="ruby-identifier">get_from</span>[<span class="ruby-value">6</span><span class="ruby-operator">..</span><span class="ruby-value">-1</span>]
+ 68:                    <span class="ruby-keyword kw">else</span>
+ 69:                      <span class="ruby-identifier">get_from</span>[<span class="ruby-value">5</span><span class="ruby-operator">..</span><span class="ruby-value">-1</span>]
+ 70:                    <span class="ruby-keyword kw">end</span>
+ 71:       <span class="ruby-keyword kw">end</span>
+ 72: 
+ 73:       <span class="ruby-identifier">open</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-identifier">get_from</span>.<span class="ruby-identifier">to_s</span>, <span class="ruby-node">&quot;Marshal.#{Gem.marshal_version}.Z&quot;</span>), <span class="ruby-value str">&quot;rb&quot;</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">y</span><span class="ruby-operator">|</span>
+ 74:         <span class="ruby-identifier">source_index_data</span> = <span class="ruby-constant">Zlib</span><span class="ruby-operator">::</span><span class="ruby-constant">Inflate</span>.<span class="ruby-identifier">inflate</span> <span class="ruby-identifier">y</span>.<span class="ruby-identifier">read</span>
+ 75:         <span class="ruby-identifier">open</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-identifier">save_to</span>, <span class="ruby-node">&quot;Marshal.#{Gem.marshal_version}&quot;</span>), <span class="ruby-value str">&quot;wb&quot;</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">out</span><span class="ruby-operator">|</span>
+ 76:           <span class="ruby-identifier">out</span>.<span class="ruby-identifier">write</span> <span class="ruby-identifier">source_index_data</span>
+ 77:         <span class="ruby-keyword kw">end</span>
+ 78:       <span class="ruby-keyword kw">end</span>
+ 79: 
+ 80:       <span class="ruby-identifier">source_index</span> = <span class="ruby-constant">Marshal</span>.<span class="ruby-identifier">load</span> <span class="ruby-identifier">source_index_data</span>
+ 81: 
+ 82:       <span class="ruby-identifier">progress</span> = <span class="ruby-identifier">ui</span>.<span class="ruby-identifier">progress_reporter</span> <span class="ruby-identifier">source_index</span>.<span class="ruby-identifier">size</span>,
+ 83:                                       <span class="ruby-node">&quot;Fetching #{source_index.size} gems&quot;</span>
+ 84:       <span class="ruby-identifier">source_index</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">fullname</span>, <span class="ruby-identifier">gem</span><span class="ruby-operator">|</span>
+ 85:         <span class="ruby-identifier">gem_file</span> = <span class="ruby-identifier">gem</span>.<span class="ruby-identifier">file_name</span>
+ 86:         <span class="ruby-identifier">gem_dest</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span> <span class="ruby-identifier">gems_dir</span>, <span class="ruby-identifier">gem_file</span>
+ 87: 
+ 88:         <span class="ruby-keyword kw">unless</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span> <span class="ruby-identifier">gem_dest</span> <span class="ruby-keyword kw">then</span>
+ 89:           <span class="ruby-keyword kw">begin</span>
+ 90:             <span class="ruby-identifier">open</span> <span class="ruby-node">&quot;#{get_from}/gems/#{gem_file}&quot;</span>, <span class="ruby-value str">&quot;rb&quot;</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">g</span><span class="ruby-operator">|</span>
+ 91:               <span class="ruby-identifier">contents</span> = <span class="ruby-identifier">g</span>.<span class="ruby-identifier">read</span>
+ 92:               <span class="ruby-identifier">open</span> <span class="ruby-identifier">gem_dest</span>, <span class="ruby-value str">&quot;wb&quot;</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">out</span><span class="ruby-operator">|</span>
+ 93:                 <span class="ruby-identifier">out</span>.<span class="ruby-identifier">write</span> <span class="ruby-identifier">contents</span>
+ 94:               <span class="ruby-keyword kw">end</span>
+ 95:             <span class="ruby-keyword kw">end</span>
+ 96:           <span class="ruby-keyword kw">rescue</span>
+ 97:             <span class="ruby-identifier">old_gf</span> = <span class="ruby-identifier">gem_file</span>
+ 98:             <span class="ruby-identifier">gem_file</span> = <span class="ruby-identifier">gem_file</span>.<span class="ruby-identifier">downcase</span>
+ 99:             <span class="ruby-keyword kw">retry</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">old_gf</span> <span class="ruby-operator">!=</span> <span class="ruby-identifier">gem_file</span>
+100:             <span class="ruby-identifier">alert_error</span> <span class="ruby-identifier">$!</span>
+101:           <span class="ruby-keyword kw">end</span>
+102:         <span class="ruby-keyword kw">end</span>
+103: 
+104:         <span class="ruby-identifier">progress</span>.<span class="ruby-identifier">updated</span> <span class="ruby-identifier">gem_file</span>
+105:       <span class="ruby-keyword kw">end</span>
+106: 
+107:       <span class="ruby-identifier">progress</span>.<span class="ruby-identifier">done</span>
+108:     <span class="ruby-keyword kw">end</span>
+109:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

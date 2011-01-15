@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Test::Unit::Util::BacktraceFilter</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Module</span> 
+            Test::Unit::Util::BacktraceFilter 
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../../../files/lib/test/unit/util/backtracefilter_rb.html">lib/test/unit/util/backtracefilter.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>F</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005532">filter_backtrace</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">TESTUNIT_FILE_SEPARATORS</td>
+            <td>=</td>
+            <td class="attr-value">%r{[\\/:]}</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">TESTUNIT_PREFIX</td>
+            <td>=</td>
+            <td class="attr-value">__FILE__.split(TESTUNIT_FILE_SEPARATORS)[0..-3]</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">TESTUNIT_RB_FILE</td>
+            <td>=</td>
+            <td class="attr-value">/\.rb\Z/</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+
+    
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005532">
+                    
+                    <a name="M005532"></a><b>filter_backtrace</b>(backtrace, prefix=nil)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005532_source')" id="l_M005532_source">show</a>
+                        
+                    </p>
+                    <div id="M005532_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/test/unit/util/backtracefilter.rb, line 9</span>
+ 9:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">filter_backtrace</span>(<span class="ruby-identifier">backtrace</span>, <span class="ruby-identifier">prefix</span>=<span class="ruby-keyword kw">nil</span>)
+10:           <span class="ruby-keyword kw">return</span> [<span class="ruby-value str">&quot;No backtrace&quot;</span>] <span class="ruby-keyword kw">unless</span>(<span class="ruby-identifier">backtrace</span>)
+11:           <span class="ruby-identifier">split_p</span> = <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">prefix</span>)
+12:             <span class="ruby-identifier">prefix</span>.<span class="ruby-identifier">split</span>(<span class="ruby-constant">TESTUNIT_FILE_SEPARATORS</span>)
+13:           <span class="ruby-keyword kw">else</span>
+14:             <span class="ruby-constant">TESTUNIT_PREFIX</span>
+15:           <span class="ruby-keyword kw">end</span>
+16:           <span class="ruby-identifier">match</span> = <span class="ruby-identifier">proc</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">e</span><span class="ruby-operator">|</span>
+17:             <span class="ruby-identifier">split_e</span> = <span class="ruby-identifier">e</span>.<span class="ruby-identifier">split</span>(<span class="ruby-constant">TESTUNIT_FILE_SEPARATORS</span>)[<span class="ruby-value">0</span>, <span class="ruby-identifier">split_p</span>.<span class="ruby-identifier">size</span>]
+18:             <span class="ruby-keyword kw">next</span> <span class="ruby-keyword kw">false</span> <span class="ruby-keyword kw">unless</span>(<span class="ruby-identifier">split_e</span>[<span class="ruby-value">0</span><span class="ruby-operator">..</span><span class="ruby-value">-2</span>] <span class="ruby-operator">==</span> <span class="ruby-identifier">split_p</span>[<span class="ruby-value">0</span><span class="ruby-operator">..</span><span class="ruby-value">-2</span>])
+19:             <span class="ruby-identifier">split_e</span>[<span class="ruby-value">-1</span>].<span class="ruby-identifier">sub</span>(<span class="ruby-constant">TESTUNIT_RB_FILE</span>, <span class="ruby-value str">''</span>) <span class="ruby-operator">==</span> <span class="ruby-identifier">split_p</span>[<span class="ruby-value">-1</span>]
+20:           <span class="ruby-keyword kw">end</span>
+21:           <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">backtrace</span> <span class="ruby-keyword kw">unless</span>(<span class="ruby-identifier">backtrace</span>.<span class="ruby-identifier">detect</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">match</span>))
+22:           <span class="ruby-identifier">found_prefix</span> = <span class="ruby-keyword kw">false</span>
+23:           <span class="ruby-identifier">new_backtrace</span> = <span class="ruby-identifier">backtrace</span>.<span class="ruby-identifier">reverse</span>.<span class="ruby-identifier">reject</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">e</span><span class="ruby-operator">|</span>
+24:             <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">match</span>[<span class="ruby-identifier">e</span>])
+25:               <span class="ruby-identifier">found_prefix</span> = <span class="ruby-keyword kw">true</span>
+26:               <span class="ruby-keyword kw">true</span>
+27:             <span class="ruby-keyword kw">elsif</span>(<span class="ruby-identifier">found_prefix</span>)
+28:               <span class="ruby-keyword kw">false</span>
+29:             <span class="ruby-keyword kw">else</span>
+30:               <span class="ruby-keyword kw">true</span>
+31:             <span class="ruby-keyword kw">end</span>
+32:           <span class="ruby-keyword kw">end</span>.<span class="ruby-identifier">reverse</span>
+33:           <span class="ruby-identifier">new_backtrace</span> = (<span class="ruby-identifier">new_backtrace</span>.<span class="ruby-identifier">empty?</span> <span class="ruby-value">? </span><span class="ruby-identifier">backtrace</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">new_backtrace</span>)
+34:           <span class="ruby-identifier">new_backtrace</span> = <span class="ruby-identifier">new_backtrace</span>.<span class="ruby-identifier">reject</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">match</span>)
+35:           <span class="ruby-identifier">new_backtrace</span>.<span class="ruby-identifier">empty?</span> <span class="ruby-value">? </span><span class="ruby-identifier">backtrace</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">new_backtrace</span>
+36:         <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

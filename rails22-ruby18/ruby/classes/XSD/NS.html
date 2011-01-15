@@ -1,0 +1,509 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>XSD::NS</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            XSD::NS 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../files/lib/xsd/ns_rb.html">lib/xsd/ns.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>A</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003144">assign</a>,</li>
+                
+                <li><a href="#M003145">assigned?</a>,</li>
+                
+                <li><a href="#M003146">assigned_tag?</a>,</li>
+                
+                <li><a href="#M003153">assigner=</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003147">clone_ns</a>,</li>
+                
+                <li><a href="#M003149">compare</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003152">each_ns</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003148">name</a>,</li>
+                
+                <li><a href="#M003143">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>P</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003150">parse</a>,</li>
+                
+                <li><a href="#M003151">parse_local</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Classes and Modules</div>
+    <ul>
+        
+        <li><span class="type">CLASS</span> <a href="NS/Assigner.html">XSD::NS::Assigner</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="NS/FormatError.html">XSD::NS::FormatError</a></li>
+        
+    </ul>
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">ParseRegexp</td>
+            <td>=</td>
+            <td class="attr-value">Regexp.new('^([^:]+)(?::(.+))?$')</td>
+        </tr>
+        
+        <tr valign='top'>
+            <td>&nbsp;</td>
+            <td colspan="2" class="attr-desc"><p>
+$1 and $2 are necessary.
+</p>
+</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+    <div class="sectiontitle">Attributes</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>default_namespace</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+    </table>
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M003143">
+                    
+                    <a name="M003143"></a><b>new</b>(tag2ns = {})
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003143_source')" id="l_M003143_source">show</a>
+                        
+                    </p>
+                    <div id="M003143_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/xsd/ns.rb, line 33</span>
+33:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">tag2ns</span> = {})
+34:     <span class="ruby-ivar">@tag2ns</span> = <span class="ruby-identifier">tag2ns</span>
+35:     <span class="ruby-ivar">@assigner</span> = <span class="ruby-keyword kw">nil</span>
+36:     <span class="ruby-ivar">@ns2tag</span> = {}
+37:     <span class="ruby-ivar">@tag2ns</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">tag</span>, <span class="ruby-identifier">ns</span><span class="ruby-operator">|</span>
+38:       <span class="ruby-ivar">@ns2tag</span>[<span class="ruby-identifier">ns</span>] = <span class="ruby-identifier">tag</span>
+39:     <span class="ruby-keyword kw">end</span>
+40:     <span class="ruby-ivar">@default_namespace</span> = <span class="ruby-keyword kw">nil</span>
+41:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M003144">
+                    
+                    <a name="M003144"></a><b>assign</b>(ns, tag = nil)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003144_source')" id="l_M003144_source">show</a>
+                        
+                    </p>
+                    <div id="M003144_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/xsd/ns.rb, line 43</span>
+43:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">assign</span>(<span class="ruby-identifier">ns</span>, <span class="ruby-identifier">tag</span> = <span class="ruby-keyword kw">nil</span>)
+44:     <span class="ruby-keyword kw">if</span> (<span class="ruby-identifier">tag</span> <span class="ruby-operator">==</span> <span class="ruby-value str">''</span>)
+45:       <span class="ruby-ivar">@default_namespace</span> = <span class="ruby-identifier">ns</span>
+46:       <span class="ruby-identifier">tag</span>
+47:     <span class="ruby-keyword kw">else</span>
+48:       <span class="ruby-ivar">@assigner</span> <span class="ruby-operator">||=</span> <span class="ruby-constant">Assigner</span>.<span class="ruby-identifier">new</span>
+49:       <span class="ruby-identifier">tag</span> <span class="ruby-operator">||=</span> <span class="ruby-ivar">@assigner</span>.<span class="ruby-identifier">assign</span>(<span class="ruby-identifier">ns</span>)
+50:       <span class="ruby-ivar">@ns2tag</span>[<span class="ruby-identifier">ns</span>] = <span class="ruby-identifier">tag</span>
+51:       <span class="ruby-ivar">@tag2ns</span>[<span class="ruby-identifier">tag</span>] = <span class="ruby-identifier">ns</span>
+52:       <span class="ruby-identifier">tag</span>
+53:     <span class="ruby-keyword kw">end</span>
+54:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003145">
+                    
+                    <a name="M003145"></a><b>assigned?</b>(ns)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003145_source')" id="l_M003145_source">show</a>
+                        
+                    </p>
+                    <div id="M003145_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/xsd/ns.rb, line 56</span>
+56:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">assigned?</span>(<span class="ruby-identifier">ns</span>)
+57:     <span class="ruby-ivar">@default_namespace</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">ns</span> <span class="ruby-keyword kw">or</span> <span class="ruby-ivar">@ns2tag</span>.<span class="ruby-identifier">key?</span>(<span class="ruby-identifier">ns</span>)
+58:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003146">
+                    
+                    <a name="M003146"></a><b>assigned_tag?</b>(tag)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003146_source')" id="l_M003146_source">show</a>
+                        
+                    </p>
+                    <div id="M003146_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/xsd/ns.rb, line 60</span>
+60:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">assigned_tag?</span>(<span class="ruby-identifier">tag</span>)
+61:     <span class="ruby-ivar">@tag2ns</span>.<span class="ruby-identifier">key?</span>(<span class="ruby-identifier">tag</span>)
+62:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003147">
+                    
+                    <a name="M003147"></a><b>clone_ns</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003147_source')" id="l_M003147_source">show</a>
+                        
+                    </p>
+                    <div id="M003147_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/xsd/ns.rb, line 64</span>
+64:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">clone_ns</span>
+65:     <span class="ruby-identifier">cloned</span> = <span class="ruby-constant">NS</span>.<span class="ruby-identifier">new</span>(<span class="ruby-ivar">@tag2ns</span>.<span class="ruby-identifier">dup</span>)
+66:     <span class="ruby-identifier">cloned</span>.<span class="ruby-identifier">assigner</span> = <span class="ruby-ivar">@assigner</span>
+67:     <span class="ruby-identifier">cloned</span>.<span class="ruby-identifier">assign</span>(<span class="ruby-ivar">@default_namespace</span>, <span class="ruby-value str">''</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@default_namespace</span>
+68:     <span class="ruby-identifier">cloned</span>
+69:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003149">
+                    
+                    <a name="M003149"></a><b>compare</b>(ns, name, rhs)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003149_source')" id="l_M003149_source">show</a>
+                        
+                    </p>
+                    <div id="M003149_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/xsd/ns.rb, line 81</span>
+81:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">compare</span>(<span class="ruby-identifier">ns</span>, <span class="ruby-identifier">name</span>, <span class="ruby-identifier">rhs</span>)
+82:     <span class="ruby-keyword kw">if</span> (<span class="ruby-identifier">ns</span> <span class="ruby-operator">==</span> <span class="ruby-ivar">@default_namespace</span>)
+83:       <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">true</span> <span class="ruby-keyword kw">if</span> (<span class="ruby-identifier">name</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">rhs</span>)
+84:     <span class="ruby-keyword kw">end</span>
+85:     <span class="ruby-ivar">@tag2ns</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">assigned_tag</span>, <span class="ruby-identifier">assigned_ns</span><span class="ruby-operator">|</span>
+86:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">assigned_ns</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">ns</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-node">&quot;#{assigned_tag}:#{name}&quot;</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">rhs</span>
+87:         <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">true</span>
+88:       <span class="ruby-keyword kw">end</span>
+89:     <span class="ruby-keyword kw">end</span>
+90:     <span class="ruby-keyword kw">false</span>
+91:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003152">
+                    
+                    <a name="M003152"></a><b>each_ns</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003152_source')" id="l_M003152_source">show</a>
+                        
+                    </p>
+                    <div id="M003152_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/xsd/ns.rb, line 126</span>
+126:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">each_ns</span>
+127:     <span class="ruby-ivar">@ns2tag</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">ns</span>, <span class="ruby-identifier">tag</span><span class="ruby-operator">|</span>
+128:       <span class="ruby-keyword kw">yield</span>(<span class="ruby-identifier">ns</span>, <span class="ruby-identifier">tag</span>)
+129:     <span class="ruby-keyword kw">end</span>
+130:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003148">
+                    
+                    <a name="M003148"></a><b>name</b>(name)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003148_source')" id="l_M003148_source">show</a>
+                        
+                    </p>
+                    <div id="M003148_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/xsd/ns.rb, line 71</span>
+71:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">name</span>(<span class="ruby-identifier">name</span>)
+72:     <span class="ruby-keyword kw">if</span> (<span class="ruby-identifier">name</span>.<span class="ruby-identifier">namespace</span> <span class="ruby-operator">==</span> <span class="ruby-ivar">@default_namespace</span>)
+73:       <span class="ruby-identifier">name</span>.<span class="ruby-identifier">name</span>
+74:     <span class="ruby-keyword kw">elsif</span> <span class="ruby-ivar">@ns2tag</span>.<span class="ruby-identifier">key?</span>(<span class="ruby-identifier">name</span>.<span class="ruby-identifier">namespace</span>)
+75:       <span class="ruby-node">&quot;#{@ns2tag[name.namespace]}:#{name.name}&quot;</span>
+76:     <span class="ruby-keyword kw">else</span>
+77:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">FormatError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-node">&quot;namespace: #{name.namespace} not defined yet&quot;</span>)
+78:     <span class="ruby-keyword kw">end</span>
+79:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003150">
+                    
+                    <a name="M003150"></a><b>parse</b>(str, local = false)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003150_source')" id="l_M003150_source">show</a>
+                        
+                    </p>
+                    <div id="M003150_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/xsd/ns.rb, line 96</span>
+ 96:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">parse</span>(<span class="ruby-identifier">str</span>, <span class="ruby-identifier">local</span> = <span class="ruby-keyword kw">false</span>)
+ 97:     <span class="ruby-keyword kw">if</span> <span class="ruby-constant">ParseRegexp</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">str</span>
+ 98:       <span class="ruby-keyword kw">if</span> (<span class="ruby-identifier">name</span> = <span class="ruby-identifier">$2</span>) <span class="ruby-keyword kw">and</span> (<span class="ruby-identifier">ns</span> = <span class="ruby-ivar">@tag2ns</span>[<span class="ruby-identifier">$1</span>])
+ 99:         <span class="ruby-keyword kw">return</span> <span class="ruby-constant">XSD</span><span class="ruby-operator">::</span><span class="ruby-constant">QName</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">ns</span>, <span class="ruby-identifier">name</span>)
+100:       <span class="ruby-keyword kw">end</span>
+101:     <span class="ruby-keyword kw">end</span>
+102:     <span class="ruby-constant">XSD</span><span class="ruby-operator">::</span><span class="ruby-constant">QName</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">local</span> <span class="ruby-value">? </span><span class="ruby-keyword kw">nil</span> <span class="ruby-operator">:</span> <span class="ruby-ivar">@default_namespace</span>, <span class="ruby-identifier">str</span>)
+103:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003151">
+                    
+                    <a name="M003151"></a><b>parse_local</b>(elem)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+For local attribute key parsing
+</p>
+<pre>
+  &lt;foo xmlns=&quot;urn:a&quot; xmlns:n1=&quot;urn:a&quot; bar=&quot;1&quot; n1:baz=&quot;2&quot; /&gt;
+    =&gt;
+  {}bar, {urn:a}baz
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003151_source')" id="l_M003151_source">show</a>
+                        
+                    </p>
+                    <div id="M003151_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/xsd/ns.rb, line 109</span>
+109:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">parse_local</span>(<span class="ruby-identifier">elem</span>)
+110:     <span class="ruby-constant">ParseRegexp</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">elem</span>
+111:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">$2</span>
+112:       <span class="ruby-identifier">ns</span> = <span class="ruby-ivar">@tag2ns</span>[<span class="ruby-identifier">$1</span>]
+113:       <span class="ruby-identifier">name</span> = <span class="ruby-identifier">$2</span>
+114:       <span class="ruby-keyword kw">if</span> <span class="ruby-operator">!</span><span class="ruby-identifier">ns</span>
+115:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">FormatError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-node">&quot;unknown namespace qualifier: #{$1}&quot;</span>)
+116:       <span class="ruby-keyword kw">end</span>
+117:     <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">$1</span>
+118:       <span class="ruby-identifier">ns</span> = <span class="ruby-keyword kw">nil</span>
+119:       <span class="ruby-identifier">name</span> = <span class="ruby-identifier">$1</span>
+120:     <span class="ruby-keyword kw">else</span>
+121:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">FormatError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-node">&quot;illegal element format: #{elem}&quot;</span>)
+122:     <span class="ruby-keyword kw">end</span>
+123:     <span class="ruby-constant">XSD</span><span class="ruby-operator">::</span><span class="ruby-constant">QName</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">ns</span>, <span class="ruby-identifier">name</span>)
+124:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Protected methods</div>
+            
+            <div class="method">
+                <div class="title" id="M003153">
+                    
+                    <a name="M003153"></a><b>assigner=</b>(assigner)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003153_source')" id="l_M003153_source">show</a>
+                        
+                    </p>
+                    <div id="M003153_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/xsd/ns.rb, line 134</span>
+134:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">assigner=</span>(<span class="ruby-identifier">assigner</span>)
+135:     <span class="ruby-ivar">@assigner</span> = <span class="ruby-identifier">assigner</span>
+136:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

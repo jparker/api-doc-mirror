@@ -1,0 +1,143 @@
+  <div id="fileHeader">
+    <h1>http_authentication.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionpack/lib/action_controller/http_authentication.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:04 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>module ActionController
+  module HttpAuthentication
+    # Makes it dead easy to do HTTP Basic authentication.
+    # 
+    # Simple Basic example:
+    # 
+    #   class PostsController &lt; ApplicationController
+    #     USER_NAME, PASSWORD = &quot;dhh&quot;, &quot;secret&quot;
+    #   
+    #     before_filter :authenticate, :except =&gt; [ :index ]
+    #   
+    #     def index
+    #       render :text =&gt; &quot;Everyone can see me!&quot;
+    #     end
+    #   
+    #     def edit
+    #       render :text =&gt; &quot;I'm only accessible if you know the password&quot;
+    #     end
+    #   
+    #     private
+    #       def authenticate
+    #         authenticate_or_request_with_http_basic do |user_name, password| 
+    #           user_name == USER_NAME &amp;&amp; password == PASSWORD
+    #         end
+    #       end
+    #   end
+    # 
+    # 
+    # Here is a more advanced Basic example where only Atom feeds and the XML API is protected by HTTP authentication, 
+    # the regular HTML interface is protected by a session approach:
+    # 
+    #   class ApplicationController &lt; ActionController::Base
+    #     before_filter :set_account, :authenticate
+    #   
+    #     protected
+    #       def set_account
+    #         @account = Account.find_by_url_name(request.subdomains.first)
+    #       end
+    #   
+    #       def authenticate
+    #         case request.format
+    #         when Mime::XML, Mime::ATOM
+    #           if user = authenticate_with_http_basic { |u, p| @account.users.authenticate(u, p) }
+    #             @current_user = user
+    #           else
+    #             request_http_basic_authentication
+    #           end
+    #         else
+    #           if session_authenticated?
+    #             @current_user = @account.users.find(session[:authenticated][:user_id])
+    #           else
+    #             redirect_to(login_url) and return false
+    #           end
+    #         end
+    #       end
+    #   end
+    # 
+    # 
+    # In your integration tests, you can do something like this:
+    # 
+    #   def test_access_granted_from_xml
+    #     get(
+    #       &quot;/notes/1.xml&quot;, nil, 
+    #       :authorization =&gt; ActionController::HttpAuthentication::Basic.encode_credentials(users(:dhh).name, users(:dhh).password)
+    #     )
+    # 
+    #     assert_equal 200, status
+    #   end
+    #  
+    #  
+    # On shared hosts, Apache sometimes doesn't pass authentication headers to
+    # FCGI instances. If your environment matches this description and you cannot
+    # authenticate, try this rule in your Apache setup:
+    # 
+    #   RewriteRule ^(.*)$ dispatch.fcgi [E=X-HTTP_AUTHORIZATION:%{HTTP:Authorization},QSA,L]
+    module Basic
+      extend self
+
+      module ControllerMethods
+        def authenticate_or_request_with_http_basic(realm = &quot;Application&quot;, &amp;login_procedure)
+          authenticate_with_http_basic(&amp;login_procedure) || request_http_basic_authentication(realm)
+        end
+
+        def authenticate_with_http_basic(&amp;login_procedure)
+          HttpAuthentication::Basic.authenticate(self, &amp;login_procedure)
+        end
+
+        def request_http_basic_authentication(realm = &quot;Application&quot;)
+          HttpAuthentication::Basic.authentication_request(self, realm)
+        end
+      end
+
+      def authenticate(controller, &amp;login_procedure)
+        unless authorization(controller.request).blank?
+          login_procedure.call(*user_name_and_password(controller.request))
+        end
+      end
+
+      def user_name_and_password(request)
+        decode_credentials(request).split(/:/, 2)
+      end
+  
+      def authorization(request)
+        request.env['HTTP_AUTHORIZATION']   ||
+        request.env['X-HTTP_AUTHORIZATION'] ||
+        request.env['X_HTTP_AUTHORIZATION'] ||
+        request.env['REDIRECT_X_HTTP_AUTHORIZATION']
+      end
+    
+      def decode_credentials(request)
+        ActiveSupport::Base64.decode64(authorization(request).split.last || '')
+      end
+
+      def encode_credentials(user_name, password)
+        &quot;Basic #{ActiveSupport::Base64.encode64(&quot;#{user_name}:#{password}&quot;)}&quot;
+      end
+
+      def authentication_request(controller, realm)
+        controller.headers[&quot;WWW-Authenticate&quot;] = %(Basic realm=&quot;#{realm.gsub(/&quot;/, &quot;&quot;)}&quot;)
+        controller.send! :render, :text =&gt; &quot;HTTP Basic: Access denied.\n&quot;, :status =&gt; :unauthorized
+      end
+    end
+  end
+end
+</pre>
+    </div>

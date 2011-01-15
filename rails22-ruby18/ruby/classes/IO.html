@@ -1,0 +1,5153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>IO</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            IO 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/io_c.html">io.c</a></li>
+            
+            <li><a href="../files/file_c.html">file.c</a></li>
+            
+            <li><a href="../files/lib/readbytes_rb.html">lib/readbytes.rb</a></li>
+            
+            <li><a href="../files/lib/scanf_rb.html">lib/scanf.rb</a></li>
+            
+            <li><a href="../files/ext/io/wait/wait_c.html">ext/io/wait/wait.c</a></li>
+            
+            <li><a href="../files/ext/dl/dl_c.html">ext/dl/dl.c</a></li>
+            
+            <li><a href="../files/ext/io/wait/lib/nonblock_rb.html">ext/io/wait/lib/nonblock.rb</a></li>
+            
+            <li><a href="../files/ext/pty/lib/expect_rb.html">ext/pty/lib/expect.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+<a href="Class.html">Class</a> <tt>IO</tt> is the basis for all input and
+output in Ruby. An I/O stream may be <em>duplexed</em> (that is,
+bidirectional), and so may use more than one native operating system
+stream.
+</p>
+<p>
+Many of the examples in this section use class <tt>File</tt>, the only
+standard subclass of <tt>IO</tt>. The two classes are closely associated.
+</p>
+<p>
+As used in this section, <em>portname</em> may take any of the following
+forms.
+</p>
+<ul>
+<li>A plain string represents a filename suitable for the underlying operating
+system.
+
+</li>
+<li>A string starting with ``<tt>|</tt>&#8217;&#8217; indicates a subprocess.
+The remainder of the string following the ``<tt>|</tt>&#8217;&#8217; is
+invoked as a process with appropriate input/output channels connected to
+it.
+
+</li>
+<li>A string equal to ``<tt>|-</tt>&#8217;&#8217; will create another Ruby
+instance as a subprocess.
+
+</li>
+</ul>
+<p>
+Ruby will convert pathnames between different operating system conventions
+if possible. For instance, on a Windows system the filename
+``<tt>/gumby/ruby/test.rb</tt>&#8217;&#8217; will be opened as
+``<tt>gumbyrubytest.rb</tt>&#8217;&#8217;. When specifying a Windows-style
+filename in a Ruby string, remember to escape the backslashes:
+</p>
+<pre>
+   &quot;c:\\gumby\\ruby\\test.rb&quot;
+</pre>
+<p>
+Our examples here will use the Unix-style forward slashes;
+<tt>File::SEPARATOR</tt> can be used to get the platform-specific separator
+character.
+</p>
+<p>
+I/O ports may be opened in any one of several different modes, which are
+shown in this section as <em>mode</em>. The mode may either be a <a
+href="Fixnum.html">Fixnum</a> or a <a href="String.html">String</a>. If
+numeric, it should be one of the operating system specific constants
+(O_RDONLY, O_WRONLY, O_RDWR, O_APPEND and so on). See man open(2) for more
+information.
+</p>
+<p>
+If the mode is given as a <a href="String.html">String</a>, it must be one
+of the values listed in the following table.
+</p>
+<pre>
+  Mode |  Meaning
+  -----+--------------------------------------------------------
+  &quot;r&quot;  |  Read-only, starts at beginning of file  (default mode).
+  -----+--------------------------------------------------------
+  &quot;r+&quot; |  Read-write, starts at beginning of file.
+  -----+--------------------------------------------------------
+  &quot;w&quot;  |  Write-only, truncates existing file
+       |  to zero length or creates a new file for writing.
+  -----+--------------------------------------------------------
+  &quot;w+&quot; |  Read-write, truncates existing file to zero length
+       |  or creates a new file for reading and writing.
+  -----+--------------------------------------------------------
+  &quot;a&quot;  |  Write-only, starts at end of file if file exists,
+       |  otherwise creates a new file for writing.
+  -----+--------------------------------------------------------
+  &quot;a+&quot; |  Read-write, starts at end of file if file exists,
+       |  otherwise creates a new file for reading and
+       |  writing.
+  -----+--------------------------------------------------------
+   &quot;b&quot; |  (DOS/Windows only) Binary file mode (may appear with
+       |  any of the key letters listed above).
+</pre>
+<p>
+The global constant ARGF (also accessible as $<) provides an IO-like stream
+which allows access to all files mentioned on the command line (or STDIN if
+no files are mentioned). ARGF provides the methods <tt>path</tt> and
+<tt>filename</tt> to access the name of the file currently being read.
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>#</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000557"><<</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>B</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000572">binmode</a>,</li>
+                
+                <li><a href="#M006146">block_scanf</a>,</li>
+                
+                <li><a href="#M000531">bytes</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000532">chars</a>,</li>
+                
+                <li><a href="#M000566">close</a>,</li>
+                
+                <li><a href="#M000568">close_read</a>,</li>
+                
+                <li><a href="#M000569">close_write</a>,</li>
+                
+                <li><a href="#M000567">closed?</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000526">each</a>,</li>
+                
+                <li><a href="#M000528">each_byte</a>,</li>
+                
+                <li><a href="#M000529">each_char</a>,</li>
+                
+                <li><a href="#M000527">each_line</a>,</li>
+                
+                <li><a href="#M000564">eof</a>,</li>
+                
+                <li><a href="#M000565">eof?</a>,</li>
+                
+                <li><a href="#M007745">expect</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>F</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000575">fcntl</a>,</li>
+                
+                <li><a href="#M000537">fileno</a>,</li>
+                
+                <li><a href="#M000558">flush</a>,</li>
+                
+                <li><a href="#M000512">for_fd</a>,</li>
+                
+                <li><a href="#M000514">foreach</a>,</li>
+                
+                <li><a href="#M000539">fsync</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>G</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000553">getbyte</a>,</li>
+                
+                <li><a href="#M000552">getc</a>,</li>
+                
+                <li><a href="#M000550">gets</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>I</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000577">inspect</a>,</li>
+                
+                <li><a href="#M000574">ioctl</a>,</li>
+                
+                <li><a href="#M000570">isatty</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>L</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000542">lineno</a>,</li>
+                
+                <li><a href="#M000543">lineno=</a>,</li>
+                
+                <li><a href="#M000530">lines</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000509">new</a>,</li>
+                
+                <li><a href="#M000519">new</a>,</li>
+                
+                <li><a href="#M007659">nonblock</a>,</li>
+                
+                <li><a href="#M007658">nonblock=</a>,</li>
+                
+                <li><a href="#M007657">nonblock?</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>O</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000510">open</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>P</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000576">pid</a>,</li>
+                
+                <li><a href="#M000518">pipe</a>,</li>
+                
+                <li><a href="#M000513">popen</a>,</li>
+                
+                <li><a href="#M000562">pos</a>,</li>
+                
+                <li><a href="#M000563">pos=</a>,</li>
+                
+                <li><a href="#M000522">print</a>,</li>
+                
+                <li><a href="#M000525">printf</a>,</li>
+                
+                <li><a href="#M000523">putc</a>,</li>
+                
+                <li><a href="#M000524">puts</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>R</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000548">read</a>,</li>
+                
+                <li><a href="#M000516">read</a>,</li>
+                
+                <li><a href="#M000545">read_nonblock</a>,</li>
+                
+                <li><a href="#M000555">readbyte</a>,</li>
+                
+                <li><a href="#M002542">readbytes</a>,</li>
+                
+                <li><a href="#M000554">readchar</a>,</li>
+                
+                <li><a href="#M000551">readline</a>,</li>
+                
+                <li><a href="#M000515">readlines</a>,</li>
+                
+                <li><a href="#M000544">readlines</a>,</li>
+                
+                <li><a href="#M000547">readpartial</a>,</li>
+                
+                <li><a href="#M007131">ready?</a>,</li>
+                
+                <li><a href="#M000521">reopen</a>,</li>
+                
+                <li><a href="#M000561">rewind</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006144">scanf</a>,</li>
+                
+                <li><a href="#M000560">seek</a>,</li>
+                
+                <li><a href="#M000517">select</a>,</li>
+                
+                <li><a href="#M006145">soak_up_spaces</a>,</li>
+                
+                <li><a href="#M000752">stat</a>,</li>
+                
+                <li><a href="#M000540">sync</a>,</li>
+                
+                <li><a href="#M000541">sync=</a>,</li>
+                
+                <li><a href="#M000511">sysopen</a>,</li>
+                
+                <li><a href="#M000536">sysread</a>,</li>
+                
+                <li><a href="#M000573">sysseek</a>,</li>
+                
+                <li><a href="#M000533">syswrite</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>T</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000559">tell</a>,</li>
+                
+                <li><a href="#M000592">to_i</a>,</li>
+                
+                <li><a href="#M000538">to_io</a>,</li>
+                
+                <li><a href="#M000571">tty?</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>U</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000556">ungetc</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>W</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007132">wait</a>,</li>
+                
+                <li><a href="#M000549">write</a>,</li>
+                
+                <li><a href="#M000546">write_nonblock</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+    <div class="sectiontitle">Included Modules</div>
+    <ul>
+        
+        <li>
+            
+            <a href="Marshal.html">Marshal</a>
+            
+            START:includes
+        </li>
+        
+        <li>
+            
+            <a href="Marshal.html">Marshal</a>
+            
+            START:includes
+        </li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">SEEK_SET</td>
+            <td>=</td>
+            <td class="attr-value">INT2FIX(SEEK_SET)</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">SEEK_CUR</td>
+            <td>=</td>
+            <td class="attr-value">INT2FIX(SEEK_CUR)</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">SEEK_END</td>
+            <td>=</td>
+            <td class="attr-value">INT2FIX(SEEK_END)</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M000512">
+                    
+                    <a name="M000512"></a><b>IO.for_fd(fd, mode)    => io
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Synonym for <tt>IO::new</tt>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000512_source')" id="l_M000512_source">show</a>
+                        
+                    </p>
+                    <div id="M000512_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_s_for_fd(argc, argv, klass)
+    int argc;
+    VALUE *argv;
+    VALUE klass;
+{
+    VALUE io = rb_obj_alloc(klass);
+    rb_io_initialize(argc, argv, io);
+    return io;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000514">
+                    
+                    <a name="M000514"></a><b>IO.foreach(name, sep_string=$/) {|line| block }   => nil
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Executes the block for every line in the named I/O port, where lines are
+separated by <em>sep_string</em>.
+</p>
+<pre>
+   IO.foreach(&quot;testfile&quot;) {|x| print &quot;GOT &quot;, x }
+</pre>
+<p>
+<em>produces:</em>
+</p>
+<pre>
+   GOT This is line one
+   GOT This is line two
+   GOT This is line three
+   GOT And so on...
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000514_source')" id="l_M000514_source">show</a>
+                        
+                    </p>
+                    <div id="M000514_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_s_foreach(argc, argv, self)
+    int argc;
+    VALUE *argv;
+    VALUE self;
+{
+    VALUE fname;
+    struct foreach_arg arg;
+
+    rb_scan_args(argc, argv, &quot;11&quot;, &amp;fname, &amp;arg.sep);
+    RETURN_ENUMERATOR(self, argc, argv);
+    SafeStringValue(fname);
+
+    if (argc == 1) {
+        arg.sep = rb_default_rs;
+    }
+    else if (!NIL_P(arg.sep)) {
+        StringValue(arg.sep);
+    }
+    arg.io = rb_io_open(StringValueCStr(fname), &quot;r&quot;);
+    if (NIL_P(arg.io)) return Qnil;
+
+    return rb_ensure(io_s_foreach, (VALUE)&amp;arg, rb_io_close, arg.io);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000509">
+                    
+                    <a name="M000509"></a><b>IO.new(fd, mode_string)   => io
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns a new <tt>IO</tt> object (a stream) for the given integer file
+descriptor and mode string. See also <tt><a
+href="IO.html#M000537">IO#fileno</a></tt> and <tt>IO::<a
+href="IO.html#M000512">for_fd</a></tt>.
+</p>
+<pre>
+   a = IO.new(2,&quot;w&quot;)      # '2' is standard error
+   $stderr.puts &quot;Hello&quot;
+   a.puts &quot;World&quot;
+</pre>
+<p>
+<em>produces:</em>
+</p>
+<pre>
+   Hello
+   World
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000509_source')" id="l_M000509_source">show</a>
+                        
+                    </p>
+                    <div id="M000509_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_s_new(argc, argv, klass)
+    int argc;
+    VALUE *argv;
+    VALUE klass;
+{
+    if (rb_block_given_p()) {
+        const char *cname = rb_class2name(klass);
+
+        rb_warn(&quot;%s::new() does not take block; use %s::open() instead&quot;,
+                cname, cname);
+    }
+    return rb_class_new_instance(argc, argv, klass);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000519">
+                    
+                    <a name="M000519"></a><b>IO.new(fd, mode)   => io
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns a new <tt>IO</tt> object (a stream) for the given integer file
+descriptor and mode string. See also <tt><a
+href="IO.html#M000537">IO#fileno</a></tt> and <tt>IO::<a
+href="IO.html#M000512">for_fd</a></tt>.
+</p>
+<pre>
+   a = IO.new(2,&quot;w&quot;)      # '2' is standard error
+   $stderr.puts &quot;Hello&quot;
+   a.puts &quot;World&quot;
+</pre>
+<p>
+<em>produces:</em>
+</p>
+<pre>
+   Hello
+   World
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000519_source')" id="l_M000519_source">show</a>
+                        
+                    </p>
+                    <div id="M000519_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_initialize(argc, argv, io)
+    int argc;
+    VALUE *argv;
+    VALUE io;
+{
+    VALUE fnum, mode;
+    rb_io_t *fp;
+    int fd, flags;
+
+    rb_secure(4);
+    rb_scan_args(argc, argv, &quot;11&quot;, &amp;fnum, &amp;mode);
+    fd = NUM2INT(fnum);
+    if (argc == 2) {
+        if (FIXNUM_P(mode)) {
+            flags = FIX2LONG(mode);
+        }
+        else {
+            SafeStringValue(mode);
+            flags = rb_io_mode_modenum(StringValueCStr(mode));
+        }
+    }
+    else {
+#if defined(HAVE_FCNTL) &amp;&amp; defined(F_GETFL)
+        flags = fcntl(fd, F_GETFL);
+        if (flags == -1) rb_sys_fail(0);
+#else
+        flags = O_RDONLY;
+#endif
+    }
+    MakeOpenFile(io, fp);
+    fp-&gt;mode = rb_io_modenum_flags(flags);
+    fp-&gt;f = rb_fdopen(fd, rb_io_modenum_mode(flags));
+
+    return io;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000510">
+                    
+                    <a name="M000510"></a><b>IO.open(fd, mode_string="r" )               => io
+IO.open(fd, mode_string="r" ) {|io| block } => obj
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+With no associated block, <tt>open</tt> is a synonym for <tt>IO::new</tt>.
+If the optional code block is given, it will be passed <em>io</em> as an
+argument, and the <a href="IO.html">IO</a> object will automatically be
+closed when the block terminates. In this instance, <tt>IO::open</tt>
+returns the value of the block.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000510_source')" id="l_M000510_source">show</a>
+                        
+                    </p>
+                    <div id="M000510_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_s_open(argc, argv, klass)
+    int argc;
+    VALUE *argv;
+    VALUE klass;
+{
+    VALUE io = rb_class_new_instance(argc, argv, klass);
+
+    if (rb_block_given_p()) {
+        return rb_ensure(rb_yield, io, io_close, io);
+    }
+
+    return io;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000518">
+                    
+                    <a name="M000518"></a><b>IO.pipe &rarr; array
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Creates a pair of pipe endpoints (connected to each other) and returns them
+as a two-element array of <tt>IO</tt> objects: <tt>[</tt>
+<em>read_file</em>, <em>write_file</em> <tt>]</tt>. Not available on all
+platforms.
+</p>
+<p>
+In the example below, the two processes close the ends of the pipe that
+they are not using. This is not just a cosmetic nicety. The read end of a
+pipe will not generate an end of file condition if there are any writers
+with the pipe still open. In the case of the parent process, the
+<tt>rd.read</tt> will never return if it does not first issue a
+<tt>wr.close</tt>.
+</p>
+<pre>
+   rd, wr = IO.pipe
+
+   if fork
+     wr.close
+     puts &quot;Parent got: &lt;#{rd.read}&gt;&quot;
+     rd.close
+     Process.wait
+   else
+     rd.close
+     puts &quot;Sending message to parent&quot;
+     wr.write &quot;Hi Dad&quot;
+     wr.close
+   end
+</pre>
+<p>
+<em>produces:</em>
+</p>
+<pre>
+   Sending message to parent
+   Parent got: &lt;Hi Dad&gt;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000518_source')" id="l_M000518_source">show</a>
+                        
+                    </p>
+                    <div id="M000518_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_s_pipe(klass)
+    VALUE klass;
+{
+#ifndef __human68k__
+    int pipes[2], state;
+    VALUE r, w, args[3];
+
+#ifdef _WIN32
+    if (_pipe(pipes, 1024, O_BINARY) == -1)
+#else
+    if (pipe(pipes) == -1)
+#endif
+        rb_sys_fail(0);
+
+    args[0] = klass;
+    args[1] = INT2NUM(pipes[0]);
+    args[2] = INT2FIX(O_RDONLY);
+    r = rb_protect(io_new_instance, (VALUE)args, &amp;state);
+    if (state) {
+        close(pipes[0]);
+        close(pipes[1]);
+        rb_jump_tag(state);
+    }
+    args[1] = INT2NUM(pipes[1]);
+    args[2] = INT2FIX(O_WRONLY);
+    w = rb_protect(io_new_instance, (VALUE)args, &amp;state);
+    if (state) {
+        close(pipes[1]);
+        if (!NIL_P(r)) rb_io_close(r);
+        rb_jump_tag(state);
+    }
+    rb_io_synchronized(RFILE(w)-&gt;fptr);
+
+    return rb_assoc_new(r, w);
+#else
+    rb_notimplement();
+    return Qnil;                /* not reached */
+#endif
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000513">
+                    
+                    <a name="M000513"></a><b>IO.popen(cmd_string, mode="r" )               => io
+IO.popen(cmd_string, mode="r" ) {|io| block } => obj
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Runs the specified command string as a subprocess; the subprocess&#8217;s
+standard input and output will be connected to the returned <tt>IO</tt>
+object. If <em>cmd_string</em> starts with a ``<tt>-</tt>&#8217;&#8217;,
+then a new instance of Ruby is started as the subprocess. The default mode
+for the new file object is ``r&#8217;&#8217;, but <em>mode</em> may be set
+to any of the modes listed in the description for class <a
+href="IO.html">IO</a>.
+</p>
+<p>
+If a block is given, Ruby will run the command as a child connected to Ruby
+with a pipe. Ruby&#8217;s end of the pipe will be passed as a parameter to
+the block. At the end of block, Ruby close the pipe and sets <tt>$?</tt>.
+In this case <tt>IO::popen</tt> returns the value of the block.
+</p>
+<p>
+If a block is given with a <em>cmd_string</em> of
+``<tt>-</tt>&#8217;&#8217;, the block will be run in two separate
+processes: once in the parent, and once in a child. The parent process will
+be passed the pipe object as a parameter to the block, the child version of
+the block will be passed <tt>nil</tt>, and the child&#8217;s standard in
+and standard out will be connected to the parent through the pipe. Not
+available on all platforms.
+</p>
+<pre>
+   f = IO.popen(&quot;uname&quot;)
+   p f.readlines
+   puts &quot;Parent is #{Process.pid}&quot;
+   IO.popen (&quot;date&quot;) { |f| puts f.gets }
+   IO.popen(&quot;-&quot;) {|f| $stderr.puts &quot;#{Process.pid} is here, f is #{f}&quot;}
+   p $?
+</pre>
+<p>
+<em>produces:</em>
+</p>
+<pre>
+   [&quot;Linux\n&quot;]
+   Parent is 26166
+   Wed Apr  9 08:53:52 CDT 2003
+   26169 is here, f is
+   26166 is here, f is #&lt;IO:0x401b3d44&gt;
+   #&lt;Process::Status: pid=26166,exited(0)&gt;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000513_source')" id="l_M000513_source">show</a>
+                        
+                    </p>
+                    <div id="M000513_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_s_popen(argc, argv, klass)
+    int argc;
+    VALUE *argv;
+    VALUE klass;
+{
+    const char *mode;
+    VALUE pname, pmode, port;
+
+    if (rb_scan_args(argc, argv, &quot;11&quot;, &amp;pname, &amp;pmode) == 1) {
+        mode = &quot;r&quot;;
+    }
+    else if (FIXNUM_P(pmode)) {
+        mode = rb_io_modenum_mode(FIX2INT(pmode));
+    }
+    else {
+        mode = rb_io_flags_mode(rb_io_mode_flags(StringValueCStr(pmode)));
+    }
+    SafeStringValue(pname);
+    port = pipe_open(pname, 0, mode);
+    if (NIL_P(port)) {
+        /* child */
+        if (rb_block_given_p()) {
+            rb_yield(Qnil);
+            fflush(stdout);
+            fflush(stderr);
+            _exit(0);
+        }
+        return Qnil;
+    }
+    RBASIC(port)-&gt;klass = klass;
+    if (rb_block_given_p()) {
+        return rb_ensure(rb_yield, port, io_close, port);
+    }
+    return port;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000516">
+                    
+                    <a name="M000516"></a><b>IO.read(name, [length [, offset]] )   => string
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Opens the file, optionally seeks to the given offset, then returns
+<em>length</em> bytes (defaulting to the rest of the file). <tt>read</tt>
+ensures the file is closed before returning.
+</p>
+<pre>
+   IO.read(&quot;testfile&quot;)           #=&gt; &quot;This is line one\nThis is line two\nThis is line three\nAnd so on...\n&quot;
+   IO.read(&quot;testfile&quot;, 20)       #=&gt; &quot;This is line one\nThi&quot;
+   IO.read(&quot;testfile&quot;, 20, 10)   #=&gt; &quot;ne one\nThis is line &quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000516_source')" id="l_M000516_source">show</a>
+                        
+                    </p>
+                    <div id="M000516_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_s_read(argc, argv, io)
+    int argc;
+    VALUE *argv;
+    VALUE io;
+{
+    VALUE fname, offset;
+    struct foreach_arg arg;
+
+    rb_scan_args(argc, argv, &quot;12&quot;, &amp;fname, &amp;arg.sep, &amp;offset);
+    SafeStringValue(fname);
+
+    arg.argc = argc ? 1 : 0;
+    arg.io = rb_io_open(StringValueCStr(fname), &quot;r&quot;);
+    if (NIL_P(arg.io)) return Qnil;
+    if (!NIL_P(offset)) {
+        rb_io_seek(arg.io, offset, SEEK_SET);
+    }
+    return rb_ensure(io_s_read, (VALUE)&amp;arg, rb_io_close, arg.io);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000515">
+                    
+                    <a name="M000515"></a><b>IO.readlines(name, sep_string=$/)   => array
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Reads the entire file specified by <em>name</em> as individual lines, and
+returns those lines in an array. Lines are separated by
+<em>sep_string</em>.
+</p>
+<pre>
+   a = IO.readlines(&quot;testfile&quot;)
+   a[0]   #=&gt; &quot;This is line one\n&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000515_source')" id="l_M000515_source">show</a>
+                        
+                    </p>
+                    <div id="M000515_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_s_readlines(argc, argv, io)
+    int argc;
+    VALUE *argv;
+    VALUE io;
+{
+    VALUE fname;
+    struct foreach_arg arg;
+
+    rb_scan_args(argc, argv, &quot;11&quot;, &amp;fname, &amp;arg.sep);
+    SafeStringValue(fname);
+
+    arg.argc = argc - 1;
+    arg.io = rb_io_open(StringValueCStr(fname), &quot;r&quot;);
+    if (NIL_P(arg.io)) return Qnil;
+    return rb_ensure(io_s_readlines, (VALUE)&amp;arg, rb_io_close, arg.io);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000517">
+                    
+                    <a name="M000517"></a><b>IO.select(read_array 
+[, write_array 
+[, error_array 
+[, timeout]]] ) =>  array  or  nil
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+See <tt><a href="Kernel.html#M000588">Kernel#select</a></tt>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000517_source')" id="l_M000517_source">show</a>
+                        
+                    </p>
+                    <div id="M000517_source" class="dyn-source">
+                        <pre>static VALUE
+rb_f_select(argc, argv, obj)
+    int argc;
+    VALUE *argv;
+    VALUE obj;
+{
+    VALUE read, write, except, timeout, res, list;
+    fd_set rset, wset, eset, pset;
+    fd_set *rp, *wp, *ep;
+    struct timeval *tp, timerec;
+    rb_io_t *fptr;
+    long i;
+    int max = 0, n;
+    int interrupt_flag = 0;
+    int pending = 0;
+
+    rb_scan_args(argc, argv, &quot;13&quot;, &amp;read, &amp;write, &amp;except, &amp;timeout);
+    if (NIL_P(timeout)) {
+        tp = 0;
+    }
+    else {
+        timerec = rb_time_interval(timeout);
+        tp = &amp;timerec;
+    }
+
+    FD_ZERO(&amp;pset);
+    if (!NIL_P(read)) {
+        Check_Type(read, T_ARRAY);
+        rp = &amp;rset;
+        FD_ZERO(rp);
+        for (i=0; i&lt;RARRAY(read)-&gt;len; i++) {
+            GetOpenFile(rb_io_get_io(RARRAY(read)-&gt;ptr[i]), fptr);
+            FD_SET(fileno(fptr-&gt;f), rp);
+            if (READ_DATA_PENDING(fptr-&gt;f)) { /* check for buffered data */
+                pending++;
+                FD_SET(fileno(fptr-&gt;f), &amp;pset);
+            }
+            if (max &lt; fileno(fptr-&gt;f)) max = fileno(fptr-&gt;f);
+        }
+        if (pending) {         /* no blocking if there's buffered data */
+            timerec.tv_sec = timerec.tv_usec = 0;
+            tp = &amp;timerec;
+        }
+    }
+    else
+        rp = 0;
+
+    if (!NIL_P(write)) {
+        Check_Type(write, T_ARRAY);
+        wp = &amp;wset;
+        FD_ZERO(wp);
+        for (i=0; i&lt;RARRAY(write)-&gt;len; i++) {
+            GetOpenFile(rb_io_get_io(RARRAY(write)-&gt;ptr[i]), fptr);
+            FD_SET(fileno(fptr-&gt;f), wp);
+            if (max &lt; fileno(fptr-&gt;f)) max = fileno(fptr-&gt;f);
+            if (fptr-&gt;f2) {
+                FD_SET(fileno(fptr-&gt;f2), wp);
+                if (max &lt; fileno(fptr-&gt;f2)) max = fileno(fptr-&gt;f2);
+            }
+        }
+    }
+    else
+        wp = 0;
+
+    if (!NIL_P(except)) {
+        Check_Type(except, T_ARRAY);
+        ep = &amp;eset;
+        FD_ZERO(ep);
+        for (i=0; i&lt;RARRAY(except)-&gt;len; i++) {
+            GetOpenFile(rb_io_get_io(RARRAY(except)-&gt;ptr[i]), fptr);
+            FD_SET(fileno(fptr-&gt;f), ep);
+            if (max &lt; fileno(fptr-&gt;f)) max = fileno(fptr-&gt;f);
+            if (fptr-&gt;f2) {
+                FD_SET(fileno(fptr-&gt;f2), ep);
+                if (max &lt; fileno(fptr-&gt;f2)) max = fileno(fptr-&gt;f2);
+            }
+        }
+    }
+    else {
+        ep = 0;
+    }
+
+    max++;
+
+    n = rb_thread_select(max, rp, wp, ep, tp);
+    if (n &lt; 0) {
+        rb_sys_fail(0);
+    }
+    if (!pending &amp;&amp; n == 0) return Qnil; /* returns nil on timeout */
+
+    res = rb_ary_new2(3);
+    rb_ary_push(res, rp?rb_ary_new():rb_ary_new2(0));
+    rb_ary_push(res, wp?rb_ary_new():rb_ary_new2(0));
+    rb_ary_push(res, ep?rb_ary_new():rb_ary_new2(0));
+
+    if (interrupt_flag == 0) {
+        if (rp) {
+            list = RARRAY(res)-&gt;ptr[0];
+            for (i=0; i&lt; RARRAY(read)-&gt;len; i++) {
+                GetOpenFile(rb_io_get_io(RARRAY(read)-&gt;ptr[i]), fptr);
+                if (FD_ISSET(fileno(fptr-&gt;f), rp)
+                    || FD_ISSET(fileno(fptr-&gt;f), &amp;pset)) {
+                    rb_ary_push(list, rb_ary_entry(read, i));
+                }
+            }
+        }
+
+        if (wp) {
+            list = RARRAY(res)-&gt;ptr[1];
+            for (i=0; i&lt; RARRAY(write)-&gt;len; i++) {
+                GetOpenFile(rb_io_get_io(RARRAY(write)-&gt;ptr[i]), fptr);
+                if (FD_ISSET(fileno(fptr-&gt;f), wp)) {
+                    rb_ary_push(list, rb_ary_entry(write, i));
+                }
+                else if (fptr-&gt;f2 &amp;&amp; FD_ISSET(fileno(fptr-&gt;f2), wp)) {
+                    rb_ary_push(list, rb_ary_entry(write, i));
+                }
+            }
+        }
+
+        if (ep) {
+            list = RARRAY(res)-&gt;ptr[2];
+            for (i=0; i&lt; RARRAY(except)-&gt;len; i++) {
+                GetOpenFile(rb_io_get_io(RARRAY(except)-&gt;ptr[i]), fptr);
+                if (FD_ISSET(fileno(fptr-&gt;f), ep)) {
+                    rb_ary_push(list, rb_ary_entry(except, i));
+                }
+                else if (fptr-&gt;f2 &amp;&amp; FD_ISSET(fileno(fptr-&gt;f2), ep)) {
+                    rb_ary_push(list, rb_ary_entry(except, i));
+                }
+            }
+        }
+    }
+
+    return res;                 /* returns an empty array on interrupt */
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000511">
+                    
+                    <a name="M000511"></a><b>IO.sysopen(path, [mode, [perm]])  => fixnum
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Opens the given path, returning the underlying file descriptor as a
+<tt>Fixnum</tt>.
+</p>
+<pre>
+   IO.sysopen(&quot;testfile&quot;)   #=&gt; 3
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000511_source')" id="l_M000511_source">show</a>
+                        
+                    </p>
+                    <div id="M000511_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_s_sysopen(argc, argv)
+    int argc;
+    VALUE *argv;
+{
+    VALUE fname, vmode, perm;
+    int flags, fd;
+    unsigned int fmode;
+    char *path;
+
+    rb_scan_args(argc, argv, &quot;12&quot;, &amp;fname, &amp;vmode, &amp;perm);
+    SafeStringValue(fname);
+
+    if (NIL_P(vmode)) flags = O_RDONLY;
+    else if (FIXNUM_P(vmode)) flags = FIX2INT(vmode);
+    else {
+        SafeStringValue(vmode);
+        flags = rb_io_mode_modenum(RSTRING(vmode)-&gt;ptr);
+    }
+    if (NIL_P(perm)) fmode = 0666;
+    else             fmode = NUM2UINT(perm);
+
+    path = ALLOCA_N(char, strlen(RSTRING(fname)-&gt;ptr)+1);
+    strcpy(path, RSTRING(fname)-&gt;ptr);
+    fd = rb_sysopen(path, flags, fmode);
+    return INT2NUM(fd);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M000557">
+                    
+                    <a name="M000557"></a><b>ios << obj     => ios
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+<a href="String.html">String</a> Output&#8212;Writes <em>obj</em> to
+<em>ios</em>. <em>obj</em> will be converted to a string using
+<tt>to_s</tt>.
+</p>
+<pre>
+   $stdout &lt;&lt; &quot;Hello &quot; &lt;&lt; &quot;world!\n&quot;
+</pre>
+<p>
+<em>produces:</em>
+</p>
+<pre>
+   Hello world!
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000557_source')" id="l_M000557_source">show</a>
+                        
+                    </p>
+                    <div id="M000557_source" class="dyn-source">
+                        <pre>VALUE
+rb_io_addstr(io, str)
+    VALUE io, str;
+{
+    rb_io_write(io, str);
+    return io;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000572">
+                    
+                    <a name="M000572"></a><b>ios.binmode    => ios
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Puts <em>ios</em> into binary mode. This is useful only in MS-DOS/Windows
+environments. Once a stream is in binary mode, it cannot be reset to
+nonbinary mode.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000572_source')" id="l_M000572_source">show</a>
+                        
+                    </p>
+                    <div id="M000572_source" class="dyn-source">
+                        <pre>VALUE
+rb_io_binmode(io)
+    VALUE io;
+{
+#if defined(_WIN32) || defined(DJGPP) || defined(__CYGWIN__) || defined(__human68k__) || defined(__EMX__)
+    rb_io_t *fptr;
+
+    GetOpenFile(io, fptr);
+#ifdef __human68k__
+    if (fptr-&gt;f)
+        fmode(fptr-&gt;f, _IOBIN);
+    if (fptr-&gt;f2)
+        fmode(fptr-&gt;f2, _IOBIN);
+#else
+    if (fptr-&gt;f &amp;&amp; setmode(fileno(fptr-&gt;f), O_BINARY) == -1)
+        rb_sys_fail(fptr-&gt;path);
+    if (fptr-&gt;f2 &amp;&amp; setmode(fileno(fptr-&gt;f2), O_BINARY) == -1)
+        rb_sys_fail(fptr-&gt;path);
+#endif
+
+    fptr-&gt;mode |= FMODE_BINMODE;
+#endif
+    return io;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000531">
+                    
+                    <a name="M000531"></a><b>ios.bytes   => anEnumerator
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns an enumerator that gives each byte (0..255) in <em>ios</em>. The
+stream must be opened for reading or an <tt>IOError</tt> will be raised.
+</p>
+<pre>
+   f = File.new(&quot;testfile&quot;)
+   f.bytes.to_a  #=&gt; [104, 101, 108, 108, 111]
+   f.rewind
+   f.bytes.sort  #=&gt; [101, 104, 108, 108, 111]
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000531_source')" id="l_M000531_source">show</a>
+                        
+                    </p>
+                    <div id="M000531_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_bytes(io)
+    VALUE io;
+{
+    return rb_enumeratorize(io, ID2SYM(rb_intern(&quot;each_byte&quot;)), 0, 0);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000532">
+                    
+                    <a name="M000532"></a><b>ios.each_char {|c| block }  => ios
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Calls the given block once for each character in <em>ios</em>, passing the
+character as an argument. The stream must be opened for reading or an
+<tt>IOError</tt> will be raised. Multibyte characters are dealt with
+according to $KCODE.
+</p>
+<pre>
+   f = File.new(&quot;testfile&quot;)
+   f.each_char {|c| print c, ' ' }   #=&gt; #&lt;File:testfile&gt;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000532_source')" id="l_M000532_source">show</a>
+                        
+                    </p>
+                    <div id="M000532_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_each_char(io)
+    VALUE io;
+{
+    VALUE ch;
+
+    RETURN_ENUMERATOR(io, 0, 0);
+
+    while (!NIL_P(ch = rb_io_getc(io))) {
+        unsigned char c;
+        int n;
+        VALUE str;
+
+        c= FIX2INT(ch);
+        n = mbclen(c);
+        str = rb_tainted_str_new((const char *)&amp;c, 1);
+
+        while (--n &gt; 0) {
+            if (NIL_P(ch = rb_io_getc(io))) {
+                rb_yield(str);
+                return io;
+            }
+            c = FIX2INT(ch);
+            rb_str_cat(str, (const char *)&amp;c, 1);
+        }
+        rb_yield(str);
+    }
+    return io;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000566">
+                    
+                    <a name="M000566"></a><b>ios.close   => nil
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Closes <em>ios</em> and flushes any pending writes to the operating system.
+The stream is unavailable for any further data operations; an
+<tt>IOError</tt> is raised if such an attempt is made. I/O streams are
+automatically closed when they are claimed by the garbage collector.
+</p>
+<p>
+If <em>ios</em> is opened by <tt><a
+href="IO.html#M000513">IO.popen</a></tt>, <tt>close</tt> sets <tt>$?</tt>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000566_source')" id="l_M000566_source">show</a>
+                        
+                    </p>
+                    <div id="M000566_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_close_m(io)
+    VALUE io;
+{
+    if (rb_safe_level() &gt;= 4 &amp;&amp; !OBJ_TAINTED(io)) {
+        rb_raise(rb_eSecurityError, &quot;Insecure: can't close&quot;);
+    }
+    rb_io_check_closed(RFILE(io)-&gt;fptr);
+    rb_io_close(io);
+    return Qnil;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000568">
+                    
+                    <a name="M000568"></a><b>ios.close_read    => nil
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Closes the read end of a duplex I/O stream (i.e., one that contains both a
+read and a write stream, such as a pipe). Will raise an <tt>IOError</tt> if
+the stream is not duplexed.
+</p>
+<pre>
+   f = IO.popen(&quot;/bin/sh&quot;,&quot;r+&quot;)
+   f.close_read
+   f.readlines
+</pre>
+<p>
+<em>produces:</em>
+</p>
+<pre>
+   prog.rb:3:in `readlines': not opened for reading (IOError)
+    from prog.rb:3
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000568_source')" id="l_M000568_source">show</a>
+                        
+                    </p>
+                    <div id="M000568_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_close_read(io)
+    VALUE io;
+{
+    rb_io_t *fptr;
+    int n;
+
+    if (rb_safe_level() &gt;= 4 &amp;&amp; !OBJ_TAINTED(io)) {
+        rb_raise(rb_eSecurityError, &quot;Insecure: can't close&quot;);
+    }
+    GetOpenFile(io, fptr);
+    if (fptr-&gt;f2 == 0 &amp;&amp; (fptr-&gt;mode &amp; FMODE_WRITABLE)) {
+        rb_raise(rb_eIOError, &quot;closing non-duplex IO for reading&quot;);
+    }
+    if (fptr-&gt;f2 == 0) {
+        return rb_io_close(io);
+    }
+    n = fclose(fptr-&gt;f);
+    fptr-&gt;mode &amp;= ~FMODE_READABLE;
+    fptr-&gt;f = fptr-&gt;f2;
+    fptr-&gt;f2 = 0;
+    if (n != 0) rb_sys_fail(fptr-&gt;path);
+
+    return Qnil;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000569">
+                    
+                    <a name="M000569"></a><b>ios.close_write   => nil
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Closes the write end of a duplex I/O stream (i.e., one that contains both a
+read and a write stream, such as a pipe). Will raise an <tt>IOError</tt> if
+the stream is not duplexed.
+</p>
+<pre>
+   f = IO.popen(&quot;/bin/sh&quot;,&quot;r+&quot;)
+   f.close_write
+   f.print &quot;nowhere&quot;
+</pre>
+<p>
+<em>produces:</em>
+</p>
+<pre>
+   prog.rb:3:in `write': not opened for writing (IOError)
+    from prog.rb:3:in `print'
+    from prog.rb:3
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000569_source')" id="l_M000569_source">show</a>
+                        
+                    </p>
+                    <div id="M000569_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_close_write(io)
+    VALUE io;
+{
+    rb_io_t *fptr;
+    int n;
+
+    if (rb_safe_level() &gt;= 4 &amp;&amp; !OBJ_TAINTED(io)) {
+        rb_raise(rb_eSecurityError, &quot;Insecure: can't close&quot;);
+    }
+    GetOpenFile(io, fptr);
+    if (fptr-&gt;f2 == 0 &amp;&amp; (fptr-&gt;mode &amp; FMODE_READABLE)) {
+        rb_raise(rb_eIOError, &quot;closing non-duplex IO for writing&quot;);
+    }
+    if (fptr-&gt;f2 == 0) {
+        return rb_io_close(io);
+    }
+    n = fclose(fptr-&gt;f2);
+    fptr-&gt;f2 = 0;
+    fptr-&gt;mode &amp;= ~FMODE_WRITABLE;
+    if (n != 0) rb_sys_fail(fptr-&gt;path);
+
+    return Qnil;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000567">
+                    
+                    <a name="M000567"></a><b>ios.closed?    => true or false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns <tt>true</tt> if <em>ios</em> is completely closed (for duplex
+streams, both reader and writer), <tt>false</tt> otherwise.
+</p>
+<pre>
+   f = File.new(&quot;testfile&quot;)
+   f.close         #=&gt; nil
+   f.closed?       #=&gt; true
+   f = IO.popen(&quot;/bin/sh&quot;,&quot;r+&quot;)
+   f.close_write   #=&gt; nil
+   f.closed?       #=&gt; false
+   f.close_read    #=&gt; nil
+   f.closed?       #=&gt; true
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000567_source')" id="l_M000567_source">show</a>
+                        
+                    </p>
+                    <div id="M000567_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_closed(io)
+    VALUE io;
+{
+    rb_io_t *fptr;
+
+    fptr = RFILE(io)-&gt;fptr;
+    rb_io_check_initialized(fptr);
+    return (fptr-&gt;f || fptr-&gt;f2)?Qfalse:Qtrue;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000526">
+                    
+                    <a name="M000526"></a><b>ios.each(sep_string=$/)      {|line| block }  => ios
+ios.each_line(sep_string=$/) {|line| block }  => ios
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Executes the block for every line in <em>ios</em>, where lines are
+separated by <em>sep_string</em>. <em>ios</em> must be opened for reading
+or an <tt>IOError</tt> will be raised.
+</p>
+<pre>
+   f = File.new(&quot;testfile&quot;)
+   f.each {|line| puts &quot;#{f.lineno}: #{line}&quot; }
+</pre>
+<p>
+<em>produces:</em>
+</p>
+<pre>
+   1: This is line one
+   2: This is line two
+   3: This is line three
+   4: And so on...
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000526_source')" id="l_M000526_source">show</a>
+                        
+                    </p>
+                    <div id="M000526_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_each_line(argc, argv, io)
+    int argc;
+    VALUE *argv;
+    VALUE io;
+{
+    VALUE str;
+    VALUE rs;
+
+    RETURN_ENUMERATOR(io, argc, argv);
+    if (argc == 0) {
+        rs = rb_rs;
+    }
+    else {
+        rb_scan_args(argc, argv, &quot;1&quot;, &amp;rs);
+        if (!NIL_P(rs)) StringValue(rs);
+    }
+    while (!NIL_P(str = rb_io_getline(rs, io))) {
+        rb_yield(str);
+    }
+    return io;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000528">
+                    
+                    <a name="M000528"></a><b>ios.each_byte {|byte| block }  => ios
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Calls the given block once for each byte (0..255) in <em>ios</em>, passing
+the byte as an argument. The stream must be opened for reading or an
+<tt>IOError</tt> will be raised.
+</p>
+<pre>
+   f = File.new(&quot;testfile&quot;)
+   checksum = 0
+   f.each_byte {|x| checksum ^= x }   #=&gt; #&lt;File:testfile&gt;
+   checksum                           #=&gt; 12
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000528_source')" id="l_M000528_source">show</a>
+                        
+                    </p>
+                    <div id="M000528_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_each_byte(io)
+    VALUE io;
+{
+    rb_io_t *fptr;
+    FILE *f;
+    int c;
+
+    RETURN_ENUMERATOR(io, 0, 0);
+    GetOpenFile(io, fptr);
+
+    for (;;) {
+        rb_io_check_readable(fptr);
+        f = fptr-&gt;f;
+        READ_CHECK(f);
+        clearerr(f);
+        TRAP_BEG;
+        c = getc(f);
+        TRAP_END;
+        if (c == EOF) {
+            if (ferror(f)) {
+                clearerr(f);
+                if (!rb_io_wait_readable(fileno(f)))
+                    rb_sys_fail(fptr-&gt;path);
+                continue;
+            }
+            break;
+        }
+        rb_yield(INT2FIX(c &amp; 0xff));
+    }
+    if (ferror(f)) rb_sys_fail(fptr-&gt;path);
+    return io;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000529">
+                    
+                    <a name="M000529"></a><b>ios.each_char {|c| block }  => ios
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Calls the given block once for each character in <em>ios</em>, passing the
+character as an argument. The stream must be opened for reading or an
+<tt>IOError</tt> will be raised. Multibyte characters are dealt with
+according to $KCODE.
+</p>
+<pre>
+   f = File.new(&quot;testfile&quot;)
+   f.each_char {|c| print c, ' ' }   #=&gt; #&lt;File:testfile&gt;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000529_source')" id="l_M000529_source">show</a>
+                        
+                    </p>
+                    <div id="M000529_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_each_char(io)
+    VALUE io;
+{
+    VALUE ch;
+
+    RETURN_ENUMERATOR(io, 0, 0);
+
+    while (!NIL_P(ch = rb_io_getc(io))) {
+        unsigned char c;
+        int n;
+        VALUE str;
+
+        c= FIX2INT(ch);
+        n = mbclen(c);
+        str = rb_tainted_str_new((const char *)&amp;c, 1);
+
+        while (--n &gt; 0) {
+            if (NIL_P(ch = rb_io_getc(io))) {
+                rb_yield(str);
+                return io;
+            }
+            c = FIX2INT(ch);
+            rb_str_cat(str, (const char *)&amp;c, 1);
+        }
+        rb_yield(str);
+    }
+    return io;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000527">
+                    
+                    <a name="M000527"></a><b>ios.each(sep_string=$/)      {|line| block }  => ios
+ios.each_line(sep_string=$/) {|line| block }  => ios
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Executes the block for every line in <em>ios</em>, where lines are
+separated by <em>sep_string</em>. <em>ios</em> must be opened for reading
+or an <tt>IOError</tt> will be raised.
+</p>
+<pre>
+   f = File.new(&quot;testfile&quot;)
+   f.each {|line| puts &quot;#{f.lineno}: #{line}&quot; }
+</pre>
+<p>
+<em>produces:</em>
+</p>
+<pre>
+   1: This is line one
+   2: This is line two
+   3: This is line three
+   4: And so on...
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000527_source')" id="l_M000527_source">show</a>
+                        
+                    </p>
+                    <div id="M000527_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_each_line(argc, argv, io)
+    int argc;
+    VALUE *argv;
+    VALUE io;
+{
+    VALUE str;
+    VALUE rs;
+
+    RETURN_ENUMERATOR(io, argc, argv);
+    if (argc == 0) {
+        rs = rb_rs;
+    }
+    else {
+        rb_scan_args(argc, argv, &quot;1&quot;, &amp;rs);
+        if (!NIL_P(rs)) StringValue(rs);
+    }
+    while (!NIL_P(str = rb_io_getline(rs, io))) {
+        rb_yield(str);
+    }
+    return io;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000564">
+                    
+                    <a name="M000564"></a><b>ios.eof     => true or false
+ios.eof?    => true or false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns true if <em>ios</em> is at end of file that means there are no more
+data to read. The stream must be opened for reading or an <tt>IOError</tt>
+will be raised.
+</p>
+<pre>
+   f = File.new(&quot;testfile&quot;)
+   dummy = f.readlines
+   f.eof   #=&gt; true
+</pre>
+<p>
+If <em>ios</em> is a stream such as pipe or socket, <tt><a
+href="IO.html#M000565">IO#eof?</a></tt> blocks until the other end sends
+some data or closes it.
+</p>
+<pre>
+   r, w = IO.pipe
+   Thread.new { sleep 1; w.close }
+   r.eof?  #=&gt; true after 1 second blocking
+
+   r, w = IO.pipe
+   Thread.new { sleep 1; w.puts &quot;a&quot; }
+   r.eof?  #=&gt; false after 1 second blocking
+
+   r, w = IO.pipe
+   r.eof?  # blocks forever
+</pre>
+<p>
+Note that <tt><a href="IO.html#M000565">IO#eof?</a></tt> reads data to a
+input buffer. So <tt><a href="IO.html#M000536">IO#sysread</a></tt>
+doesn&#8217;t work with <tt><a href="IO.html#M000565">IO#eof?</a></tt>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000564_source')" id="l_M000564_source">show</a>
+                        
+                    </p>
+                    <div id="M000564_source" class="dyn-source">
+                        <pre>VALUE
+rb_io_eof(io)
+    VALUE io;
+{
+    rb_io_t *fptr;
+    int ch;
+
+    GetOpenFile(io, fptr);
+    rb_io_check_readable(fptr);
+
+    if (feof(fptr-&gt;f)) return Qtrue;
+    if (READ_DATA_PENDING(fptr-&gt;f)) return Qfalse;
+    READ_CHECK(fptr-&gt;f);
+    clearerr(fptr-&gt;f);
+    TRAP_BEG;
+    ch = getc(fptr-&gt;f);
+    TRAP_END;
+
+    if (ch != EOF) {
+        ungetc(ch, fptr-&gt;f);
+        return Qfalse;
+    }
+    rb_io_check_closed(fptr);
+    clearerr(fptr-&gt;f);
+    return Qtrue;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000565">
+                    
+                    <a name="M000565"></a><b>ios.eof     => true or false
+ios.eof?    => true or false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns true if <em>ios</em> is at end of file that means there are no more
+data to read. The stream must be opened for reading or an <tt>IOError</tt>
+will be raised.
+</p>
+<pre>
+   f = File.new(&quot;testfile&quot;)
+   dummy = f.readlines
+   f.eof   #=&gt; true
+</pre>
+<p>
+If <em>ios</em> is a stream such as pipe or socket, <tt><a
+href="IO.html#M000565">IO#eof?</a></tt> blocks until the other end sends
+some data or closes it.
+</p>
+<pre>
+   r, w = IO.pipe
+   Thread.new { sleep 1; w.close }
+   r.eof?  #=&gt; true after 1 second blocking
+
+   r, w = IO.pipe
+   Thread.new { sleep 1; w.puts &quot;a&quot; }
+   r.eof?  #=&gt; false after 1 second blocking
+
+   r, w = IO.pipe
+   r.eof?  # blocks forever
+</pre>
+<p>
+Note that <tt><a href="IO.html#M000565">IO#eof?</a></tt> reads data to a
+input buffer. So <tt><a href="IO.html#M000536">IO#sysread</a></tt>
+doesn&#8217;t work with <tt><a href="IO.html#M000565">IO#eof?</a></tt>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000565_source')" id="l_M000565_source">show</a>
+                        
+                    </p>
+                    <div id="M000565_source" class="dyn-source">
+                        <pre>VALUE
+rb_io_eof(io)
+    VALUE io;
+{
+    rb_io_t *fptr;
+    int ch;
+
+    GetOpenFile(io, fptr);
+    rb_io_check_readable(fptr);
+
+    if (feof(fptr-&gt;f)) return Qtrue;
+    if (READ_DATA_PENDING(fptr-&gt;f)) return Qfalse;
+    READ_CHECK(fptr-&gt;f);
+    clearerr(fptr-&gt;f);
+    TRAP_BEG;
+    ch = getc(fptr-&gt;f);
+    TRAP_END;
+
+    if (ch != EOF) {
+        ungetc(ch, fptr-&gt;f);
+        return Qfalse;
+    }
+    rb_io_check_closed(fptr);
+    clearerr(fptr-&gt;f);
+    return Qtrue;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007745">
+                    
+                    <a name="M007745"></a><b>expect</b>(pat,timeout=9999999)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007745_source')" id="l_M007745_source">show</a>
+                        
+                    </p>
+                    <div id="M007745_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File ext/pty/lib/expect.rb, line 4</span>
+ 4:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">expect</span>(<span class="ruby-identifier">pat</span>,<span class="ruby-identifier">timeout</span>=<span class="ruby-value">9999999</span>)
+ 5:     <span class="ruby-identifier">buf</span> = <span class="ruby-value str">''</span>
+ 6:     <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">pat</span>
+ 7:     <span class="ruby-keyword kw">when</span> <span class="ruby-constant">String</span>
+ 8:       <span class="ruby-identifier">e_pat</span> = <span class="ruby-constant">Regexp</span>.<span class="ruby-identifier">new</span>(<span class="ruby-constant">Regexp</span>.<span class="ruby-identifier">quote</span>(<span class="ruby-identifier">pat</span>))
+ 9:     <span class="ruby-keyword kw">when</span> <span class="ruby-constant">Regexp</span>
+10:       <span class="ruby-identifier">e_pat</span> = <span class="ruby-identifier">pat</span>
+11:     <span class="ruby-keyword kw">end</span>
+12:     <span class="ruby-keyword kw">while</span> <span class="ruby-keyword kw">true</span>
+13:       <span class="ruby-keyword kw">if</span> <span class="ruby-operator">!</span><span class="ruby-constant">IO</span>.<span class="ruby-identifier">select</span>([<span class="ruby-keyword kw">self</span>],<span class="ruby-keyword kw">nil</span>,<span class="ruby-keyword kw">nil</span>,<span class="ruby-identifier">timeout</span>) <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">eof?</span> <span class="ruby-keyword kw">then</span>
+14:         <span class="ruby-identifier">result</span> = <span class="ruby-keyword kw">nil</span>
+15:         <span class="ruby-keyword kw">break</span>
+16:       <span class="ruby-keyword kw">end</span>
+17:       <span class="ruby-identifier">c</span> = <span class="ruby-identifier">getc</span>.<span class="ruby-identifier">chr</span>
+18:       <span class="ruby-identifier">buf</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">c</span>
+19:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">$expect_verbose</span>
+20:         <span class="ruby-constant">STDOUT</span>.<span class="ruby-identifier">print</span> <span class="ruby-identifier">c</span>
+21:         <span class="ruby-constant">STDOUT</span>.<span class="ruby-identifier">flush</span>
+22:       <span class="ruby-keyword kw">end</span>
+23:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">mat</span>=<span class="ruby-identifier">e_pat</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">buf</span>) <span class="ruby-keyword kw">then</span>
+24:         <span class="ruby-identifier">result</span> = [<span class="ruby-identifier">buf</span>,<span class="ruby-operator">*</span><span class="ruby-identifier">mat</span>.<span class="ruby-identifier">to_a</span>[<span class="ruby-value">1</span><span class="ruby-operator">..</span><span class="ruby-value">-1</span>]]
+25:         <span class="ruby-keyword kw">break</span>
+26:       <span class="ruby-keyword kw">end</span>
+27:     <span class="ruby-keyword kw">end</span>
+28:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">block_given?</span> <span class="ruby-keyword kw">then</span>
+29:       <span class="ruby-keyword kw">yield</span> <span class="ruby-identifier">result</span>
+30:     <span class="ruby-keyword kw">else</span>
+31:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">result</span>
+32:     <span class="ruby-keyword kw">end</span>
+33:     <span class="ruby-keyword kw">nil</span>
+34:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000575">
+                    
+                    <a name="M000575"></a><b>ios.fcntl(integer_cmd, arg)    => integer
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Provides a mechanism for issuing low-level commands to control or query
+file-oriented I/O streams. Arguments and results are platform dependent. If
+<em>arg</em> is a number, its value is passed directly. If it is a string,
+it is interpreted as a binary sequence of bytes (<tt><a
+href="Array.html#M000534">Array#pack</a></tt> might be a useful way to
+build this string). On Unix platforms, see <tt>fcntl(2)</tt> for details.
+Not implemented on all platforms.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000575_source')" id="l_M000575_source">show</a>
+                        
+                    </p>
+                    <div id="M000575_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_fcntl(argc, argv, io)
+    int argc;
+    VALUE *argv;
+    VALUE io;
+{
+#ifdef HAVE_FCNTL
+    VALUE req, arg;
+
+    rb_scan_args(argc, argv, &quot;11&quot;, &amp;req, &amp;arg);
+    return rb_io_ctl(io, req, arg, 0);
+#else
+    rb_notimplement();
+    return Qnil;                /* not reached */
+#endif
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000537">
+                    
+                    <a name="M000537"></a><b>ios.fileno    => fixnum
+ios.to_i      => fixnum
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns an integer representing the numeric file descriptor for
+<em>ios</em>.
+</p>
+<pre>
+   $stdin.fileno    #=&gt; 0
+   $stdout.fileno   #=&gt; 1
+</pre>
+
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="IO.html#M000592">to_i</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000537_source')" id="l_M000537_source">show</a>
+                        
+                    </p>
+                    <div id="M000537_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_fileno(io)
+    VALUE io;
+{
+    rb_io_t *fptr;
+    int fd;
+
+    GetOpenFile(io, fptr);
+    fd = fileno(fptr-&gt;f);
+    return INT2FIX(fd);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000558">
+                    
+                    <a name="M000558"></a><b>ios.flush    => ios
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Flushes any buffered data within <em>ios</em> to the underlying operating
+system (note that this is Ruby internal buffering only; the OS may buffer
+the data as well).
+</p>
+<pre>
+   $stdout.print &quot;no newline&quot;
+   $stdout.flush
+</pre>
+<p>
+<em>produces:</em>
+</p>
+<pre>
+   no newline
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000558_source')" id="l_M000558_source">show</a>
+                        
+                    </p>
+                    <div id="M000558_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_flush(io)
+    VALUE io;
+{
+    rb_io_t *fptr;
+    FILE *f;
+
+    GetOpenFile(io, fptr);
+    rb_io_check_writable(fptr);
+    f = GetWriteFile(fptr);
+
+    io_fflush(f, fptr);
+
+    return io;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000539">
+                    
+                    <a name="M000539"></a><b>ios.fsync   => 0 or nil
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Immediately writes all buffered data in <em>ios</em> to disk. Returns
+<tt>nil</tt> if the underlying operating system does not support
+<em>fsync(2)</em>. Note that <tt>fsync</tt> differs from using <tt><a
+href="IO.html#M000541">IO#sync=</a></tt>. The latter ensures that data is
+flushed from Ruby&#8217;s buffers, but doesn&#8217;t not guarantee that the
+underlying operating system actually writes it to disk.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000539_source')" id="l_M000539_source">show</a>
+                        
+                    </p>
+                    <div id="M000539_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_fsync(io)
+    VALUE io;
+{
+#ifdef HAVE_FSYNC
+    rb_io_t *fptr;
+    FILE *f;
+
+    GetOpenFile(io, fptr);
+    f = GetWriteFile(fptr);
+
+    io_fflush(f, fptr);
+    if (fsync(fileno(f)) &lt; 0)
+        rb_sys_fail(fptr-&gt;path);
+    return INT2FIX(0);
+#else
+    rb_notimplement();
+    return Qnil;                /* not reached */
+#endif
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000553">
+                    
+                    <a name="M000553"></a><b>ios.getc   => fixnum or nil
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Gets the next 8-bit byte (0..255) from <em>ios</em>. Returns <tt>nil</tt>
+if called at end of file.
+</p>
+<pre>
+   f = File.new(&quot;testfile&quot;)
+   f.getc   #=&gt; 84
+   f.getc   #=&gt; 104
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000553_source')" id="l_M000553_source">show</a>
+                        
+                    </p>
+                    <div id="M000553_source" class="dyn-source">
+                        <pre>VALUE
+rb_io_getc(io)
+    VALUE io;
+{
+    rb_io_t *fptr;
+    FILE *f;
+    int c;
+
+    GetOpenFile(io, fptr);
+    rb_io_check_readable(fptr);
+    f = fptr-&gt;f;
+
+  retry:
+    READ_CHECK(f);
+    clearerr(f);
+    TRAP_BEG;
+    c = getc(f);
+    TRAP_END;
+
+    if (c == EOF) {
+        if (ferror(f)) {
+            clearerr(f);
+            if (!rb_io_wait_readable(fileno(f)))
+                rb_sys_fail(fptr-&gt;path);
+            goto retry;
+        }
+        return Qnil;
+    }
+    return INT2FIX(c &amp; 0xff);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000552">
+                    
+                    <a name="M000552"></a><b>ios.getc   => fixnum or nil
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Gets the next 8-bit byte (0..255) from <em>ios</em>. Returns <tt>nil</tt>
+if called at end of file.
+</p>
+<pre>
+   f = File.new(&quot;testfile&quot;)
+   f.getc   #=&gt; 84
+   f.getc   #=&gt; 104
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000552_source')" id="l_M000552_source">show</a>
+                        
+                    </p>
+                    <div id="M000552_source" class="dyn-source">
+                        <pre>VALUE
+rb_io_getc(io)
+    VALUE io;
+{
+    rb_io_t *fptr;
+    FILE *f;
+    int c;
+
+    GetOpenFile(io, fptr);
+    rb_io_check_readable(fptr);
+    f = fptr-&gt;f;
+
+  retry:
+    READ_CHECK(f);
+    clearerr(f);
+    TRAP_BEG;
+    c = getc(f);
+    TRAP_END;
+
+    if (c == EOF) {
+        if (ferror(f)) {
+            clearerr(f);
+            if (!rb_io_wait_readable(fileno(f)))
+                rb_sys_fail(fptr-&gt;path);
+            goto retry;
+        }
+        return Qnil;
+    }
+    return INT2FIX(c &amp; 0xff);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000550">
+                    
+                    <a name="M000550"></a><b>ios.gets(sep_string=$/)   => string or nil
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Reads the next ``line&#8217;&#8217; from the I/O stream; lines are
+separated by <em>sep_string</em>. A separator of <tt>nil</tt> reads the
+entire contents, and a zero-length separator reads the input a paragraph at
+a time (two successive newlines in the input separate paragraphs). The
+stream must be opened for reading or an <tt>IOError</tt> will be raised.
+The line read in will be returned and also assigned to <tt>$_</tt>. Returns
+<tt>nil</tt> if called at end of file.
+</p>
+<pre>
+   File.new(&quot;testfile&quot;).gets   #=&gt; &quot;This is line one\n&quot;
+   $_                          #=&gt; &quot;This is line one\n&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000550_source')" id="l_M000550_source">show</a>
+                        
+                    </p>
+                    <div id="M000550_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_gets_m(argc, argv, io)
+    int argc;
+    VALUE *argv;
+    VALUE io;
+{
+    VALUE rs, str;
+
+    if (argc == 0) {
+        rs = rb_rs;
+    }
+    else {
+        rb_scan_args(argc, argv, &quot;1&quot;, &amp;rs);
+        if (!NIL_P(rs)) StringValue(rs);
+    }
+    str = rb_io_getline(rs, io);
+    rb_lastline_set(str);
+
+    return str;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000577">
+                    
+                    <a name="M000577"></a><b>ios.inspect   => string
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Return a string describing this <a href="IO.html">IO</a> object.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000577_source')" id="l_M000577_source">show</a>
+                        
+                    </p>
+                    <div id="M000577_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_inspect(obj)
+    VALUE obj;
+{
+    rb_io_t *fptr;
+    char *buf;
+    const char *cname, *st = &quot;&quot;;
+    long len;
+
+    fptr = RFILE(rb_io_taint_check(obj))-&gt;fptr;
+    if (!fptr || !fptr-&gt;path) return rb_any_to_s(obj);
+    cname = rb_obj_classname(obj);
+    len = strlen(cname) + strlen(fptr-&gt;path) + 5;
+    if (!(fptr-&gt;f || fptr-&gt;f2)) {
+        st = &quot; (closed)&quot;;
+        len += 9;
+    }
+    buf = ALLOCA_N(char, len);
+    snprintf(buf, len, &quot;#&lt;%s:%s%s&gt;&quot;, cname, fptr-&gt;path, st);
+    return rb_str_new2(buf);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000574">
+                    
+                    <a name="M000574"></a><b>ios.ioctl(integer_cmd, arg)    => integer
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Provides a mechanism for issuing low-level commands to control or query I/O
+devices. Arguments and results are platform dependent. If <em>arg</em> is a
+number, its value is passed directly. If it is a string, it is interpreted
+as a binary sequence of bytes. On Unix platforms, see <tt>ioctl(2)</tt> for
+details. Not implemented on all platforms.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000574_source')" id="l_M000574_source">show</a>
+                        
+                    </p>
+                    <div id="M000574_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_ioctl(argc, argv, io)
+    int argc;
+    VALUE *argv;
+    VALUE io;
+{
+    VALUE req, arg;
+
+    rb_scan_args(argc, argv, &quot;11&quot;, &amp;req, &amp;arg);
+    return rb_io_ctl(io, req, arg, 1);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000570">
+                    
+                    <a name="M000570"></a><b>ios.isatty   => true or false
+ios.tty?     => true or false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns <tt>true</tt> if <em>ios</em> is associated with a terminal device
+(tty), <tt>false</tt> otherwise.
+</p>
+<pre>
+   File.new(&quot;testfile&quot;).isatty   #=&gt; false
+   File.new(&quot;/dev/tty&quot;).isatty   #=&gt; true
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000570_source')" id="l_M000570_source">show</a>
+                        
+                    </p>
+                    <div id="M000570_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_isatty(io)
+    VALUE io;
+{
+    rb_io_t *fptr;
+
+    GetOpenFile(io, fptr);
+    if (isatty(fileno(fptr-&gt;f)) == 0)
+        return Qfalse;
+    return Qtrue;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000542">
+                    
+                    <a name="M000542"></a><b>ios.lineno    => integer
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the current line number in <em>ios</em>. The stream must be opened
+for reading. <tt>lineno</tt> counts the number of times <tt>gets</tt> is
+called, rather than the number of newlines encountered. The two values will
+differ if <tt>gets</tt> is called with a separator other than newline. See
+also the <tt>$.</tt> variable.
+</p>
+<pre>
+   f = File.new(&quot;testfile&quot;)
+   f.lineno   #=&gt; 0
+   f.gets     #=&gt; &quot;This is line one\n&quot;
+   f.lineno   #=&gt; 1
+   f.gets     #=&gt; &quot;This is line two\n&quot;
+   f.lineno   #=&gt; 2
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000542_source')" id="l_M000542_source">show</a>
+                        
+                    </p>
+                    <div id="M000542_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_lineno(io)
+    VALUE io;
+{
+    rb_io_t *fptr;
+
+    GetOpenFile(io, fptr);
+    rb_io_check_readable(fptr);
+    return INT2NUM(fptr-&gt;lineno);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000543">
+                    
+                    <a name="M000543"></a><b>ios.lineno = integer    => integer
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Manually sets the current line number to the given value. <tt>$.</tt> is
+updated only on the next read.
+</p>
+<pre>
+   f = File.new(&quot;testfile&quot;)
+   f.gets                     #=&gt; &quot;This is line one\n&quot;
+   $.                         #=&gt; 1
+   f.lineno = 1000
+   f.lineno                   #=&gt; 1000
+   $. # lineno of last read   #=&gt; 1
+   f.gets                     #=&gt; &quot;This is line two\n&quot;
+   $. # lineno of last read   #=&gt; 1001
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000543_source')" id="l_M000543_source">show</a>
+                        
+                    </p>
+                    <div id="M000543_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_set_lineno(io, lineno)
+    VALUE io, lineno;
+{
+    rb_io_t *fptr;
+
+    GetOpenFile(io, fptr);
+    rb_io_check_readable(fptr);
+    fptr-&gt;lineno = NUM2INT(lineno);
+    return lineno;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000530">
+                    
+                    <a name="M000530"></a><b>ios.lines(sep=$/)     => anEnumerator
+ios.lines(limit)      => anEnumerator
+ios.lines(sep, limit) => anEnumerator
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns an enumerator that gives each line in <em>ios</em>. The stream must
+be opened for reading or an <tt>IOError</tt> will be raised.
+</p>
+<pre>
+   f = File.new(&quot;testfile&quot;)
+   f.lines.to_a  #=&gt; [&quot;foo\n&quot;, &quot;bar\n&quot;]
+   f.rewind
+   f.lines.sort  #=&gt; [&quot;bar\n&quot;, &quot;foo\n&quot;]
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000530_source')" id="l_M000530_source">show</a>
+                        
+                    </p>
+                    <div id="M000530_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_lines(argc, argv, io)
+    int argc;
+    VALUE *argv;
+    VALUE io;
+{
+    return rb_enumeratorize(io, ID2SYM(rb_intern(&quot;each_line&quot;)), argc, argv);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007659">
+                    
+                    <a name="M007659"></a><b>nonblock</b>(nb = true)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007659_source')" id="l_M007659_source">show</a>
+                        
+                    </p>
+                    <div id="M007659_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File ext/io/wait/lib/nonblock.rb, line 17</span>
+17:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">nonblock</span>(<span class="ruby-identifier">nb</span> = <span class="ruby-keyword kw">true</span>)
+18:     <span class="ruby-identifier">nb</span>, <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">nonblock</span> = <span class="ruby-identifier">nonblock?</span>, <span class="ruby-identifier">nb</span>
+19:     <span class="ruby-keyword kw">yield</span>
+20:   <span class="ruby-keyword kw">ensure</span>
+21:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">nonblock</span> = <span class="ruby-identifier">nb</span>
+22:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007658">
+                    
+                    <a name="M007658"></a><b>nonblock=</b>(nb)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007658_source')" id="l_M007658_source">show</a>
+                        
+                    </p>
+                    <div id="M007658_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File ext/io/wait/lib/nonblock.rb, line 7</span>
+ 7:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">nonblock=</span>(<span class="ruby-identifier">nb</span>)
+ 8:     <span class="ruby-identifier">f</span> = <span class="ruby-identifier">fcntl</span>(<span class="ruby-constant">Fcntl</span><span class="ruby-operator">::</span><span class="ruby-constant">F_GETFL</span>)
+ 9:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">nb</span>
+10:       <span class="ruby-identifier">f</span> <span class="ruby-operator">|=</span> <span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-constant">NONBLOCK</span>
+11:     <span class="ruby-keyword kw">else</span>
+12:       <span class="ruby-identifier">f</span> <span class="ruby-operator">&amp;=</span> <span class="ruby-operator">~</span><span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-constant">NONBLOCK</span>
+13:     <span class="ruby-keyword kw">end</span>
+14:     <span class="ruby-identifier">fcntl</span>(<span class="ruby-constant">Fcntl</span><span class="ruby-operator">::</span><span class="ruby-constant">F_SETFL</span>, <span class="ruby-identifier">f</span>)
+15:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007657">
+                    
+                    <a name="M007657"></a><b>nonblock?</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007657_source')" id="l_M007657_source">show</a>
+                        
+                    </p>
+                    <div id="M007657_source" class="dyn-source">
+                        <pre>   <span class="ruby-comment cmt"># File ext/io/wait/lib/nonblock.rb, line 3</span>
+3:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">nonblock?</span>
+4:     (<span class="ruby-identifier">fcntl</span>(<span class="ruby-constant">Fcntl</span><span class="ruby-operator">::</span><span class="ruby-constant">F_GETFL</span>) <span class="ruby-operator">&amp;</span> <span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-constant">NONBLOCK</span>) <span class="ruby-operator">!=</span> <span class="ruby-value">0</span>
+5:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000576">
+                    
+                    <a name="M000576"></a><b>ios.pid    => fixnum
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the process ID of a child process associated with <em>ios</em>.
+This will be set by <tt>IO::popen</tt>.
+</p>
+<pre>
+   pipe = IO.popen(&quot;-&quot;)
+   if pipe
+     $stderr.puts &quot;In parent, child pid is #{pipe.pid}&quot;
+   else
+     $stderr.puts &quot;In child, pid is #{$$}&quot;
+   end
+</pre>
+<p>
+<em>produces:</em>
+</p>
+<pre>
+   In child, pid is 26209
+   In parent, child pid is 26209
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000576_source')" id="l_M000576_source">show</a>
+                        
+                    </p>
+                    <div id="M000576_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_pid(io)
+    VALUE io;
+{
+    rb_io_t *fptr;
+
+    GetOpenFile(io, fptr);
+    if (!fptr-&gt;pid)
+        return Qnil;
+    return INT2FIX(fptr-&gt;pid);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000562">
+                    
+                    <a name="M000562"></a><b>ios.pos     => integer
+ios.tell    => integer
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the current offset (in bytes) of <em>ios</em>.
+</p>
+<pre>
+   f = File.new(&quot;testfile&quot;)
+   f.pos    #=&gt; 0
+   f.gets   #=&gt; &quot;This is line one\n&quot;
+   f.pos    #=&gt; 17
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000562_source')" id="l_M000562_source">show</a>
+                        
+                    </p>
+                    <div id="M000562_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_tell(io)
+     VALUE io;
+{
+    rb_io_t *fptr;
+    off_t pos;
+
+    GetOpenFile(io, fptr);
+    pos = io_tell(fptr);
+    if (pos &lt; 0 &amp;&amp; errno) rb_sys_fail(fptr-&gt;path);
+    return OFFT2NUM(pos);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000563">
+                    
+                    <a name="M000563"></a><b>ios.pos = integer    => integer
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Seeks to the given position (in bytes) in <em>ios</em>.
+</p>
+<pre>
+   f = File.new(&quot;testfile&quot;)
+   f.pos = 17
+   f.gets   #=&gt; &quot;This is line two\n&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000563_source')" id="l_M000563_source">show</a>
+                        
+                    </p>
+                    <div id="M000563_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_set_pos(io, offset)
+     VALUE io, offset;
+{
+    rb_io_t *fptr;
+    off_t pos;
+
+    pos = NUM2OFFT(offset);
+    GetOpenFile(io, fptr);
+    pos = io_seek(fptr, pos, SEEK_SET);
+    if (pos != 0) rb_sys_fail(fptr-&gt;path);
+    clearerr(fptr-&gt;f);
+
+    return OFFT2NUM(pos);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000522">
+                    
+                    <a name="M000522"></a><b>ios.print()             => nil
+ios.print(obj, ...)     => nil
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Writes the given object(s) to <em>ios</em>. The stream must be opened for
+writing. If the output record separator (<tt>$\</tt>) is not <tt>nil</tt>,
+it will be appended to the output. If no arguments are given, prints
+<tt>$_</tt>. Objects that aren&#8217;t strings will be converted by calling
+their <tt>to_s</tt> method. With no argument, prints the contents of the
+variable <tt>$_</tt>. Returns <tt>nil</tt>.
+</p>
+<pre>
+   $stdout.print(&quot;This is &quot;, 100, &quot; percent.\n&quot;)
+</pre>
+<p>
+<em>produces:</em>
+</p>
+<pre>
+   This is 100 percent.
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000522_source')" id="l_M000522_source">show</a>
+                        
+                    </p>
+                    <div id="M000522_source" class="dyn-source">
+                        <pre>VALUE
+rb_io_print(argc, argv, out)
+    int argc;
+    VALUE *argv;
+    VALUE out;
+{
+    int i;
+    VALUE line;
+
+    /* if no argument given, print `$_' */
+    if (argc == 0) {
+        argc = 1;
+        line = rb_lastline_get();
+        argv = &amp;line;
+    }
+    for (i=0; i&lt;argc; i++) {
+        if (!NIL_P(rb_output_fs) &amp;&amp; i&gt;0) {
+            rb_io_write(out, rb_output_fs);
+        }
+        switch (TYPE(argv[i])) {
+          case T_NIL:
+            rb_io_write(out, rb_str_new2(&quot;nil&quot;));
+            break;
+          default:
+            rb_io_write(out, argv[i]);
+            break;
+        }
+    }
+    if (!NIL_P(rb_output_rs)) {
+        rb_io_write(out, rb_output_rs);
+    }
+
+    return Qnil;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000525">
+                    
+                    <a name="M000525"></a><b>ios.printf(format_string [, obj, ...] )   => nil
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Formats and writes to <em>ios</em>, converting parameters under control of
+the format string. See <tt><a
+href="Kernel.html#M001016">Kernel#sprintf</a></tt> for details.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000525_source')" id="l_M000525_source">show</a>
+                        
+                    </p>
+                    <div id="M000525_source" class="dyn-source">
+                        <pre>VALUE
+rb_io_printf(argc, argv, out)
+    int argc;
+    VALUE argv[];
+    VALUE out;
+{
+    rb_io_write(out, rb_f_sprintf(argc, argv));
+    return Qnil;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000523">
+                    
+                    <a name="M000523"></a><b>ios.putc(obj)    => obj
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+If <em>obj</em> is <tt>Numeric</tt>, write the character whose code is
+<em>obj</em>, otherwise write the first character of the string
+representation of <em>obj</em> to <em>ios</em>.
+</p>
+<pre>
+   $stdout.putc &quot;A&quot;
+   $stdout.putc 65
+</pre>
+<p>
+<em>produces:</em>
+</p>
+<pre>
+   AA
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000523_source')" id="l_M000523_source">show</a>
+                        
+                    </p>
+                    <div id="M000523_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_putc(io, ch)
+    VALUE io, ch;
+{
+    char c = NUM2CHR(ch);
+
+    rb_io_write(io, rb_str_new(&amp;c, 1));
+    return ch;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000524">
+                    
+                    <a name="M000524"></a><b>ios.puts(obj, ...)    => nil
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Writes the given objects to <em>ios</em> as with <tt><a
+href="IO.html#M000522">IO#print</a></tt>. Writes a record separator
+(typically a newline) after any that do not already end with a newline
+sequence. If called with an array argument, writes each element on a new
+line. If called without arguments, outputs a single record separator.
+</p>
+<pre>
+   $stdout.puts(&quot;this&quot;, &quot;is&quot;, &quot;a&quot;, &quot;test&quot;)
+</pre>
+<p>
+<em>produces:</em>
+</p>
+<pre>
+   this
+   is
+   a
+   test
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000524_source')" id="l_M000524_source">show</a>
+                        
+                    </p>
+                    <div id="M000524_source" class="dyn-source">
+                        <pre>VALUE
+rb_io_puts(argc, argv, out)
+    int argc;
+    VALUE *argv;
+    VALUE out;
+{
+    int i;
+    VALUE line;
+
+    /* if no argument given, print newline. */
+    if (argc == 0) {
+        rb_io_write(out, rb_default_rs);
+        return Qnil;
+    }
+    for (i=0; i&lt;argc; i++) {
+        if (NIL_P(argv[i])) {
+            line = rb_str_new2(&quot;nil&quot;);
+        }
+        else {
+            line = rb_check_array_type(argv[i]);
+            if (!NIL_P(line)) {
+                rb_protect_inspect(io_puts_ary, line, out);
+                continue;
+            }
+            line = rb_obj_as_string(argv[i]);
+        }
+        rb_io_write(out, line);
+        if (RSTRING(line)-&gt;len == 0 ||
+            RSTRING(line)-&gt;ptr[RSTRING(line)-&gt;len-1] != '\n') {
+            rb_io_write(out, rb_default_rs);
+        }
+    }
+
+    return Qnil;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000548">
+                    
+                    <a name="M000548"></a><b>ios.read([length [, buffer]])    => string, buffer, or nil
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Reads at most <em>length</em> bytes from the I/O stream, or to the end of
+file if <em>length</em> is omitted or is <tt>nil</tt>. <em>length</em> must
+be a non-negative integer or nil. If the optional <em>buffer</em> argument
+is present, it must reference a <a href="String.html">String</a>, which
+will receive the data.
+</p>
+<p>
+At end of file, it returns <tt>nil</tt> or <tt>&quot;&quot;</tt> depend on
+<em>length</em>. <tt><em>ios</em>.read()</tt> and
+<tt><em>ios</em>.read(nil)</tt> returns <tt>&quot;&quot;</tt>.
+<tt><em>ios</em>.read(<em>positive-integer</em>)</tt> returns nil.
+</p>
+<pre>
+   f = File.new(&quot;testfile&quot;)
+   f.read(16)   #=&gt; &quot;This is line one&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000548_source')" id="l_M000548_source">show</a>
+                        
+                    </p>
+                    <div id="M000548_source" class="dyn-source">
+                        <pre>static VALUE
+io_read(argc, argv, io)
+    int argc;
+    VALUE *argv;
+    VALUE io;
+{
+    rb_io_t *fptr;
+    long n, len;
+    VALUE length, str;
+
+    rb_scan_args(argc, argv, &quot;02&quot;, &amp;length, &amp;str);
+
+    if (NIL_P(length)) {
+        if (!NIL_P(str)) StringValue(str);
+        GetOpenFile(io, fptr);
+        rb_io_check_readable(fptr);    
+        return read_all(fptr, remain_size(fptr), str);
+    }
+    len = NUM2LONG(length);
+    if (len &lt; 0) {
+        rb_raise(rb_eArgError, &quot;negative length %ld given&quot;, len);
+    }
+
+    if (NIL_P(str)) {
+        str = rb_tainted_str_new(0, len);
+    }
+    else {
+        StringValue(str);
+        rb_str_modify(str);
+        rb_str_resize(str,len);
+    }
+
+    GetOpenFile(io, fptr);
+    rb_io_check_readable(fptr);
+    if (feof(fptr-&gt;f)) return Qnil;
+    if (len == 0) return str;
+
+    rb_str_locktmp(str);
+    READ_CHECK(fptr-&gt;f);
+    if (RSTRING(str)-&gt;len != len) {
+        rb_raise(rb_eRuntimeError, &quot;buffer string modified&quot;);
+    }
+    n = io_fread(RSTRING(str)-&gt;ptr, len, fptr);
+    rb_str_unlocktmp(str);
+    if (n == 0) {
+        if (!fptr-&gt;f) return Qnil;
+        if (feof(fptr-&gt;f)) {
+            rb_str_resize(str, 0);
+            return Qnil;
+        }
+        if (len &gt; 0) rb_sys_fail(fptr-&gt;path);
+    }
+    rb_str_resize(str, n);
+    RSTRING(str)-&gt;len = n;
+    RSTRING(str)-&gt;ptr[n] = '\0';
+    OBJ_TAINT(str);
+
+    return str;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000545">
+                    
+                    <a name="M000545"></a><b>ios.read_nonblock(maxlen)              => string
+ios.read_nonblock(maxlen, outbuf)      => outbuf
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Reads at most <em>maxlen</em> bytes from <em>ios</em> using read(2) system
+call after O_NONBLOCK is set for the underlying file descriptor.
+</p>
+<p>
+If the optional <em>outbuf</em> argument is present, it must reference a <a
+href="String.html">String</a>, which will receive the data.
+</p>
+<p>
+<a href="IO.html#M000545">read_nonblock</a> just calls read(2). It causes
+all errors read(2) causes: EAGAIN, EINTR, etc. The caller should care such
+errors.
+</p>
+<p>
+<a href="IO.html#M000545">read_nonblock</a> causes <a
+href="EOFError.html">EOFError</a> on EOF.
+</p>
+<p>
+If the read buffer is not empty, <a
+href="IO.html#M000545">read_nonblock</a> reads from the buffer like
+readpartial. In this case, read(2) is not called.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000545_source')" id="l_M000545_source">show</a>
+                        
+                    </p>
+                    <div id="M000545_source" class="dyn-source">
+                        <pre>static VALUE
+io_read_nonblock(int argc, VALUE *argv, VALUE io)
+{
+    VALUE ret;
+
+    ret = io_getpartial(argc, argv, io, 1);
+    if (NIL_P(ret))
+        rb_eof_error();
+    else
+        return ret;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000555">
+                    
+                    <a name="M000555"></a><b>ios.readchar   => fixnum
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Reads a character as with <tt><a href="IO.html#M000552">IO#getc</a></tt>,
+but raises an <tt>EOFError</tt> on end of file.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000555_source')" id="l_M000555_source">show</a>
+                        
+                    </p>
+                    <div id="M000555_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_readchar(io)
+    VALUE io;
+{
+    VALUE c = rb_io_getc(io);
+
+    if (NIL_P(c)) {
+        rb_eof_error();
+    }
+    return c;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002542">
+                    
+                    <a name="M002542"></a><b>readbytes</b>(n)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Reads exactly <tt>n</tt> bytes.
+</p>
+<p>
+If the data read is nil an <a href="EOFError.html">EOFError</a> is raised.
+</p>
+<p>
+If the data read is too short a <a
+href="TruncatedDataError.html">TruncatedDataError</a> is raised and the
+read data is obtainable via its data method.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002542_source')" id="l_M002542_source">show</a>
+                        
+                    </p>
+                    <div id="M002542_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/readbytes.rb, line 20</span>
+20:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">readbytes</span>(<span class="ruby-identifier">n</span>)
+21:     <span class="ruby-identifier">str</span> = <span class="ruby-identifier">read</span>(<span class="ruby-identifier">n</span>)
+22:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">str</span> <span class="ruby-operator">==</span> <span class="ruby-keyword kw">nil</span>
+23:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">EOFError</span>, <span class="ruby-value str">&quot;End of file reached&quot;</span>
+24:     <span class="ruby-keyword kw">end</span>
+25:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">str</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">&lt;</span> <span class="ruby-identifier">n</span>
+26:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">TruncatedDataError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value str">&quot;data truncated&quot;</span>, <span class="ruby-identifier">str</span>) 
+27:     <span class="ruby-keyword kw">end</span>
+28:     <span class="ruby-identifier">str</span>
+29:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000554">
+                    
+                    <a name="M000554"></a><b>ios.readchar   => fixnum
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Reads a character as with <tt><a href="IO.html#M000552">IO#getc</a></tt>,
+but raises an <tt>EOFError</tt> on end of file.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000554_source')" id="l_M000554_source">show</a>
+                        
+                    </p>
+                    <div id="M000554_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_readchar(io)
+    VALUE io;
+{
+    VALUE c = rb_io_getc(io);
+
+    if (NIL_P(c)) {
+        rb_eof_error();
+    }
+    return c;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000551">
+                    
+                    <a name="M000551"></a><b>ios.readline(sep_string=$/)   => string
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Reads a line as with <tt><a href="IO.html#M000550">IO#gets</a></tt>, but
+raises an <tt>EOFError</tt> on end of file.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000551_source')" id="l_M000551_source">show</a>
+                        
+                    </p>
+                    <div id="M000551_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_readline(argc, argv, io)
+    int argc;
+    VALUE *argv;
+    VALUE io;
+{
+    VALUE line = rb_io_gets_m(argc, argv, io);
+
+    if (NIL_P(line)) {
+        rb_eof_error();
+    }
+    return line;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000544">
+                    
+                    <a name="M000544"></a><b>ios.readlines(sep_string=$/)  =>   array
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Reads all of the lines in <em>ios</em>, and returns them in
+<em>anArray</em>. Lines are separated by the optional <em>sep_string</em>.
+If <em>sep_string</em> is <tt>nil</tt>, the rest of the stream is returned
+as a single record. The stream must be opened for reading or an
+<tt>IOError</tt> will be raised.
+</p>
+<pre>
+   f = File.new(&quot;testfile&quot;)
+   f.readlines[0]   #=&gt; &quot;This is line one\n&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000544_source')" id="l_M000544_source">show</a>
+                        
+                    </p>
+                    <div id="M000544_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_readlines(argc, argv, io)
+    int argc;
+    VALUE *argv;
+    VALUE io;
+{
+    VALUE line, ary;
+    VALUE rs;
+
+    if (argc == 0) {
+        rs = rb_rs;
+    }
+    else {
+        rb_scan_args(argc, argv, &quot;1&quot;, &amp;rs);
+        if (!NIL_P(rs)) StringValue(rs);
+    }
+    ary = rb_ary_new();
+    while (!NIL_P(line = rb_io_getline(rs, io))) {
+        rb_ary_push(ary, line);
+    }
+    return ary;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000547">
+                    
+                    <a name="M000547"></a><b>ios.readpartial(maxlen)              => string
+ios.readpartial(maxlen, outbuf)      => outbuf
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Reads at most <em>maxlen</em> bytes from the I/O stream. It blocks only if
+<em>ios</em> has no data immediately available. It doesn&#8217;t block if
+some data available. If the optional <em>outbuf</em> argument is present,
+it must reference a <a href="String.html">String</a>, which will receive
+the data. It raises <tt>EOFError</tt> on end of file.
+</p>
+<p>
+readpartial is designed for streams such as pipe, socket, tty, etc. It
+blocks only when no data immediately available. This means that it blocks
+only when following all conditions hold.
+</p>
+<ul>
+<li>the buffer in the <a href="IO.html">IO</a> object is empty.
+
+</li>
+<li>the content of the stream is empty.
+
+</li>
+<li>the stream is not reached to EOF.
+
+</li>
+</ul>
+<p>
+When readpartial blocks, it waits data or EOF on the stream. If some data
+is reached, readpartial returns with the data. If EOF is reached,
+readpartial raises <a href="EOFError.html">EOFError</a>.
+</p>
+<p>
+When readpartial doesn&#8217;t blocks, it returns or raises immediately. If
+the buffer is not empty, it returns the data in the buffer. Otherwise if
+the stream has some content, it returns the data in the stream. Otherwise
+if the stream is reached to EOF, it raises <a
+href="EOFError.html">EOFError</a>.
+</p>
+<pre>
+   r, w = IO.pipe           #               buffer          pipe content
+   w &lt;&lt; &quot;abc&quot;               #               &quot;&quot;              &quot;abc&quot;.
+   r.readpartial(4096)      #=&gt; &quot;abc&quot;       &quot;&quot;              &quot;&quot;
+   r.readpartial(4096)      # blocks because buffer and pipe is empty.
+
+   r, w = IO.pipe           #               buffer          pipe content
+   w &lt;&lt; &quot;abc&quot;               #               &quot;&quot;              &quot;abc&quot;
+   w.close                  #               &quot;&quot;              &quot;abc&quot; EOF
+   r.readpartial(4096)      #=&gt; &quot;abc&quot;       &quot;&quot;              EOF
+   r.readpartial(4096)      # raises EOFError
+
+   r, w = IO.pipe           #               buffer          pipe content
+   w &lt;&lt; &quot;abc\ndef\n&quot;        #               &quot;&quot;              &quot;abc\ndef\n&quot;
+   r.gets                   #=&gt; &quot;abc\n&quot;     &quot;def\n&quot;         &quot;&quot;
+   w &lt;&lt; &quot;ghi\n&quot;             #               &quot;def\n&quot;         &quot;ghi\n&quot;
+   r.readpartial(4096)      #=&gt; &quot;def\n&quot;     &quot;&quot;              &quot;ghi\n&quot;
+   r.readpartial(4096)      #=&gt; &quot;ghi\n&quot;     &quot;&quot;              &quot;&quot;
+</pre>
+<p>
+Note that readpartial behaves similar to sysread. The differences are:
+</p>
+<ul>
+<li>If the buffer is not empty, read from the buffer instead of &#8220;sysread
+for buffered <a href="IO.html">IO</a> (<a
+href="IOError.html">IOError</a>)&#8221;.
+
+</li>
+<li>It doesn&#8217;t cause Errno::EAGAIN and Errno::EINTR. When readpartial
+meets EAGAIN and EINTR by read system call, readpartial retry the system
+call.
+
+</li>
+</ul>
+<p>
+The later means that readpartial is nonblocking-flag insensitive. It blocks
+on the situation <a href="IO.html#M000536">IO#sysread</a> causes
+Errno::EAGAIN as if the fd is blocking mode.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000547_source')" id="l_M000547_source">show</a>
+                        
+                    </p>
+                    <div id="M000547_source" class="dyn-source">
+                        <pre>static VALUE
+io_readpartial(int argc, VALUE *argv, VALUE io)
+{
+    VALUE ret;
+
+    ret = io_getpartial(argc, argv, io, 0);
+    if (NIL_P(ret))
+        rb_eof_error();
+    else
+        return ret;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007131">
+                    
+                    <a name="M007131"></a><b>ready?</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <h1>begin</h1>
+<p>
+&#8212; <a href="IO.html#M007131">IO#ready?</a>
+</p>
+<pre>
+    returns non-nil if input available without blocking, or nil.
+</pre>
+<h1>end</h1>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007131_source')" id="l_M007131_source">show</a>
+                        
+                    </p>
+                    <div id="M007131_source" class="dyn-source">
+                        <pre>static VALUE
+io_ready_p(io)
+    VALUE io;
+{
+    rb_io_t *fptr;
+    FILE *fp;
+    ioctl_arg n;
+
+    GetOpenFile(io, fptr);
+    rb_io_check_readable(fptr);
+    if (!FIONREAD_POSSIBLE_P(fileno(fptr-&gt;f))) return Qfalse;
+    fp = fptr-&gt;f;
+    if (feof(fp)) return Qfalse;
+    if (rb_read_pending(fp)) return Qtrue;
+    if (ioctl(fileno(fp), FIONREAD, &amp;n)) rb_sys_fail(0);
+    if (n &gt; 0) return ioctl_arg2num(n);
+    return Qnil;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000521">
+                    
+                    <a name="M000521"></a><b>ios.reopen(other_IO)         => ios 
+ios.reopen(path, mode_str)   => ios
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Reassociates <em>ios</em> with the I/O stream given in <em>other_IO</em> or
+to a new stream opened on <em>path</em>. This may dynamically change the
+actual class of this stream.
+</p>
+<pre>
+   f1 = File.new(&quot;testfile&quot;)
+   f2 = File.new(&quot;testfile&quot;)
+   f2.readlines[0]   #=&gt; &quot;This is line one\n&quot;
+   f2.reopen(f1)     #=&gt; #&lt;File:testfile&gt;
+   f2.readlines[0]   #=&gt; &quot;This is line one\n&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000521_source')" id="l_M000521_source">show</a>
+                        
+                    </p>
+                    <div id="M000521_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_reopen(argc, argv, file)
+    int argc;
+    VALUE *argv;
+    VALUE file;
+{
+    VALUE fname, nmode;
+    const char *mode;
+    rb_io_t *fptr;
+
+    rb_secure(4);
+    if (rb_scan_args(argc, argv, &quot;11&quot;, &amp;fname, &amp;nmode) == 1) {
+        VALUE tmp = rb_io_check_io(fname);
+        if (!NIL_P(tmp)) {
+            return io_reopen(file, tmp);
+        }
+    }
+
+    SafeStringValue(fname);
+    rb_io_taint_check(file);
+    fptr = RFILE(file)-&gt;fptr;
+    if (!fptr) {
+        fptr = RFILE(file)-&gt;fptr = ALLOC(rb_io_t);
+        MEMZERO(fptr, rb_io_t, 1);
+    }
+
+    if (!NIL_P(nmode)) {
+        fptr-&gt;mode = rb_io_mode_flags(StringValueCStr(nmode));
+    }
+
+    if (fptr-&gt;path) {
+        free(fptr-&gt;path);
+        fptr-&gt;path = 0;
+    }
+
+    fptr-&gt;path = strdup(StringValueCStr(fname));
+    mode = rb_io_flags_mode(fptr-&gt;mode);
+    if (!fptr-&gt;f) {
+        fptr-&gt;f = rb_fopen(fptr-&gt;path, mode);
+        if (fptr-&gt;f2) {
+            fclose(fptr-&gt;f2);
+            fptr-&gt;f2 = 0;
+        }
+        return file;
+    }
+
+    if (freopen(fptr-&gt;path, mode, fptr-&gt;f) == 0) {
+        rb_sys_fail(fptr-&gt;path);
+    }
+#ifdef USE_SETVBUF
+    if (setvbuf(fptr-&gt;f, NULL, _IOFBF, 0) != 0)
+        rb_warn(&quot;setvbuf() can't be honoured for %s&quot;, fptr-&gt;path);
+#endif
+
+    if (fptr-&gt;f2) {
+        if (freopen(fptr-&gt;path, &quot;w&quot;, fptr-&gt;f2) == 0) {
+            rb_sys_fail(fptr-&gt;path);
+        }
+    }
+
+    return file;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000561">
+                    
+                    <a name="M000561"></a><b>ios.rewind    => 0
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Positions <em>ios</em> to the beginning of input, resetting <tt>lineno</tt>
+to zero.
+</p>
+<pre>
+   f = File.new(&quot;testfile&quot;)
+   f.readline   #=&gt; &quot;This is line one\n&quot;
+   f.rewind     #=&gt; 0
+   f.lineno     #=&gt; 0
+   f.readline   #=&gt; &quot;This is line one\n&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000561_source')" id="l_M000561_source">show</a>
+                        
+                    </p>
+                    <div id="M000561_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_rewind(io)
+    VALUE io;
+{
+    rb_io_t *fptr;
+
+    GetOpenFile(io, fptr);
+    if (io_seek(fptr, 0L, 0) != 0) rb_sys_fail(fptr-&gt;path);
+    clearerr(fptr-&gt;f);
+    if (io == current_file) {
+        gets_lineno -= fptr-&gt;lineno;
+    }
+    fptr-&gt;lineno = 0;
+
+    return INT2FIX(0);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006144">
+                    
+                    <a name="M006144"></a><b>scanf</b>(str,&amp;b)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+The trick here is doing a match where you grab one <b>line</b> of input at
+a time. The linebreak may or may not occur at the boundary where the string
+matches a format specifier. And if it does, some rule about whitespace may
+or may not be in effect...
+</p>
+<p>
+That&#8217;s why this is much more elaborate than the string version.
+</p>
+<p>
+For each line: Match succeeds (non-emptily) and the last attempted
+spec/string sub-match succeeded:
+</p>
+<pre>
+  could the last spec keep matching?
+    yes: save interim results and continue (next line)
+</pre>
+<p>
+The last attempted spec/string did not match:
+</p>
+<p>
+are we on the next-to-last spec in the string?
+</p>
+<pre>
+  yes:
+    is fmt_string.string_left all spaces?
+      yes: does current spec care about input space?
+        yes: fatal failure
+        no: save interim results and continue
+  no: continue  [this state could be analyzed further]
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006144_source')" id="l_M006144_source">show</a>
+                        
+                    </p>
+                    <div id="M006144_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/scanf.rb, line 590</span>
+590:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">scanf</span>(<span class="ruby-identifier">str</span>,<span class="ruby-operator">&amp;</span><span class="ruby-identifier">b</span>)
+591:     <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">block_scanf</span>(<span class="ruby-identifier">str</span>,<span class="ruby-operator">&amp;</span><span class="ruby-identifier">b</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">b</span>
+592:     <span class="ruby-keyword kw">return</span> [] <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">str</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>
+593: 
+594:     <span class="ruby-identifier">start_position</span> = <span class="ruby-identifier">pos</span> <span class="ruby-keyword kw">rescue</span> <span class="ruby-value">0</span>
+595:     <span class="ruby-identifier">matched_so_far</span> = <span class="ruby-value">0</span>
+596:     <span class="ruby-identifier">source_buffer</span> = <span class="ruby-value str">&quot;&quot;</span>
+597:     <span class="ruby-identifier">result_buffer</span> = []
+598:     <span class="ruby-identifier">final_result</span> = []
+599: 
+600:     <span class="ruby-identifier">fstr</span> = <span class="ruby-constant">Scanf</span><span class="ruby-operator">::</span><span class="ruby-constant">FormatString</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">str</span>)
+601: 
+602:     <span class="ruby-identifier">loop</span> <span class="ruby-keyword kw">do</span>
+603:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">eof</span> <span class="ruby-operator">||</span> (<span class="ruby-identifier">tty?</span> <span class="ruby-operator">&amp;&amp;</span><span class="ruby-operator">!</span> <span class="ruby-identifier">fstr</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">source_buffer</span>))
+604:         <span class="ruby-identifier">final_result</span>.<span class="ruby-identifier">concat</span>(<span class="ruby-identifier">result_buffer</span>)
+605:         <span class="ruby-keyword kw">break</span>
+606:       <span class="ruby-keyword kw">end</span>
+607: 
+608:       <span class="ruby-identifier">source_buffer</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">gets</span>
+609: 
+610:       <span class="ruby-identifier">current_match</span> = <span class="ruby-identifier">fstr</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">source_buffer</span>)
+611: 
+612:       <span class="ruby-identifier">spec</span> = <span class="ruby-identifier">fstr</span>.<span class="ruby-identifier">last_spec_tried</span>
+613: 
+614:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">spec</span>.<span class="ruby-identifier">matched</span>
+615:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">spec</span>.<span class="ruby-identifier">mid_match?</span>
+616:           <span class="ruby-identifier">result_buffer</span>.<span class="ruby-identifier">replace</span>(<span class="ruby-identifier">current_match</span>)
+617:           <span class="ruby-keyword kw">next</span>
+618:         <span class="ruby-keyword kw">end</span>
+619: 
+620:       <span class="ruby-keyword kw">elsif</span> (<span class="ruby-identifier">fstr</span>.<span class="ruby-identifier">matched_count</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">fstr</span>.<span class="ruby-identifier">spec_count</span> <span class="ruby-operator">-</span> <span class="ruby-value">1</span>)
+621:         <span class="ruby-keyword kw">if</span> <span class="ruby-regexp re">/\A\s*\z/</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">fstr</span>.<span class="ruby-identifier">string_left</span>)
+622:           <span class="ruby-keyword kw">break</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">spec</span>.<span class="ruby-identifier">count_space?</span>
+623:           <span class="ruby-identifier">result_buffer</span>.<span class="ruby-identifier">replace</span>(<span class="ruby-identifier">current_match</span>)
+624:           <span class="ruby-keyword kw">next</span>
+625:         <span class="ruby-keyword kw">end</span>
+626:       <span class="ruby-keyword kw">end</span>
+627: 
+628:       <span class="ruby-identifier">final_result</span>.<span class="ruby-identifier">concat</span>(<span class="ruby-identifier">current_match</span>)
+629: 
+630:       <span class="ruby-identifier">matched_so_far</span> <span class="ruby-operator">+=</span> <span class="ruby-identifier">source_buffer</span>.<span class="ruby-identifier">size</span>
+631:       <span class="ruby-identifier">source_buffer</span>.<span class="ruby-identifier">replace</span>(<span class="ruby-identifier">fstr</span>.<span class="ruby-identifier">string_left</span>)
+632:       <span class="ruby-identifier">matched_so_far</span> <span class="ruby-operator">-=</span> <span class="ruby-identifier">source_buffer</span>.<span class="ruby-identifier">size</span>
+633:       <span class="ruby-keyword kw">break</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">fstr</span>.<span class="ruby-identifier">last_spec</span>
+634:       <span class="ruby-identifier">fstr</span>.<span class="ruby-identifier">prune</span>
+635:     <span class="ruby-keyword kw">end</span>
+636:     <span class="ruby-identifier">seek</span>(<span class="ruby-identifier">start_position</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">matched_so_far</span>, <span class="ruby-constant">IO</span><span class="ruby-operator">::</span><span class="ruby-constant">SEEK_SET</span>) <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Errno</span><span class="ruby-operator">::</span><span class="ruby-constant">ESPIPE</span>
+637:     <span class="ruby-identifier">soak_up_spaces</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">fstr</span>.<span class="ruby-identifier">last_spec</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">fstr</span>.<span class="ruby-identifier">space</span>
+638: 
+639:     <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">final_result</span>
+640:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000560">
+                    
+                    <a name="M000560"></a><b>ios.seek(amount, whence=SEEK_SET) &rarr; 0
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Seeks to a given offset <em>anInteger</em> in the stream according to the
+value of <em>whence</em>:
+</p>
+<pre>
+  IO::SEEK_CUR  | Seeks to _amount_ plus current position
+  --------------+----------------------------------------------------
+  IO::SEEK_END  | Seeks to _amount_ plus end of stream (you probably
+                | want a negative value for _amount_)
+  --------------+----------------------------------------------------
+  IO::SEEK_SET  | Seeks to the absolute location given by _amount_
+</pre>
+<p>
+Example:
+</p>
+<pre>
+   f = File.new(&quot;testfile&quot;)
+   f.seek(-13, IO::SEEK_END)   #=&gt; 0
+   f.readline                  #=&gt; &quot;And so on...\n&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000560_source')" id="l_M000560_source">show</a>
+                        
+                    </p>
+                    <div id="M000560_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_seek_m(argc, argv, io)
+    int argc;
+    VALUE *argv;
+    VALUE io;
+{
+    VALUE offset, ptrname;
+    int whence = SEEK_SET;
+
+    if (rb_scan_args(argc, argv, &quot;11&quot;, &amp;offset, &amp;ptrname) == 2) {
+        whence = NUM2INT(ptrname);
+    }
+
+    return rb_io_seek(io, offset, whence);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000752">
+                    
+                    <a name="M000752"></a><b>ios.stat    => stat
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns status information for <em>ios</em> as an object of type
+<tt>File::Stat</tt>.
+</p>
+<pre>
+   f = File.new(&quot;testfile&quot;)
+   s = f.stat
+   &quot;%o&quot; % s.mode   #=&gt; &quot;100644&quot;
+   s.blksize       #=&gt; 4096
+   s.atime         #=&gt; Wed Apr 09 08:53:54 CDT 2003
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000752_source')" id="l_M000752_source">show</a>
+                        
+                    </p>
+                    <div id="M000752_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_stat(obj)
+    VALUE obj;
+{
+    rb_io_t *fptr;
+    struct stat st;
+
+    GetOpenFile(obj, fptr);
+    if (fstat(fileno(fptr-&gt;f), &amp;st) == -1) {
+        rb_sys_fail(fptr-&gt;path);
+    }
+    return stat_new(&amp;st);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000540">
+                    
+                    <a name="M000540"></a><b>ios.sync    => true or false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the current ``sync mode&#8217;&#8217; of <em>ios</em>. When sync
+mode is true, all output is immediately flushed to the underlying operating
+system and is not buffered by Ruby internally. See also <tt><a
+href="IO.html#M000539">IO#fsync</a></tt>.
+</p>
+<pre>
+   f = File.new(&quot;testfile&quot;)
+   f.sync   #=&gt; false
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000540_source')" id="l_M000540_source">show</a>
+                        
+                    </p>
+                    <div id="M000540_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_sync(io)
+    VALUE io;
+{
+    rb_io_t *fptr;
+
+    GetOpenFile(io, fptr);
+    return (fptr-&gt;mode &amp; FMODE_SYNC) ? Qtrue : Qfalse;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000541">
+                    
+                    <a name="M000541"></a><b>ios.sync = boolean   => boolean
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Sets the ``sync mode&#8217;&#8217; to <tt>true</tt> or <tt>false</tt>. When
+sync mode is true, all output is immediately flushed to the underlying
+operating system and is not buffered internally. Returns the new state. See
+also <tt><a href="IO.html#M000539">IO#fsync</a></tt>.
+</p>
+<pre>
+   f = File.new(&quot;testfile&quot;)
+   f.sync = true
+</pre>
+<p>
+<em>(produces no output)</em>
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000541_source')" id="l_M000541_source">show</a>
+                        
+                    </p>
+                    <div id="M000541_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_set_sync(io, mode)
+    VALUE io, mode;
+{
+    rb_io_t *fptr;
+
+    GetOpenFile(io, fptr);
+    if (RTEST(mode)) {
+        fptr-&gt;mode |= FMODE_SYNC;
+    }
+    else {
+        fptr-&gt;mode &amp;= ~FMODE_SYNC;
+    }
+    return mode;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000536">
+                    
+                    <a name="M000536"></a><b>ios.sysread(integer )    => string
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Reads <em>integer</em> bytes from <em>ios</em> using a low-level read and
+returns them as a string. Do not mix with other methods that read from
+<em>ios</em> or you may get unpredictable results. Raises
+<tt>SystemCallError</tt> on error and <tt>EOFError</tt> at end of file.
+</p>
+<pre>
+   f = File.new(&quot;testfile&quot;)
+   f.sysread(16)   #=&gt; &quot;This is line one&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000536_source')" id="l_M000536_source">show</a>
+                        
+                    </p>
+                    <div id="M000536_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_sysread(argc, argv, io)
+    int argc;
+    VALUE *argv;
+    VALUE io;
+{
+    VALUE len, str;
+    rb_io_t *fptr;
+    long n, ilen;
+
+    rb_scan_args(argc, argv, &quot;11&quot;, &amp;len, &amp;str);
+    ilen = NUM2LONG(len);
+
+    if (NIL_P(str)) {
+        str = rb_str_new(0, ilen);
+    }
+    else {
+        StringValue(str);
+        rb_str_modify(str);
+        rb_str_resize(str, ilen);
+    }
+    if (ilen == 0) return str;
+
+    GetOpenFile(io, fptr);
+    rb_io_check_readable(fptr);
+
+    if (READ_DATA_BUFFERED(fptr-&gt;f)) {
+        rb_raise(rb_eIOError, &quot;sysread for buffered IO&quot;);
+    }
+    rb_str_locktmp(str);
+
+    n = fileno(fptr-&gt;f);
+    rb_thread_wait_fd(fileno(fptr-&gt;f));
+    rb_io_check_closed(fptr);
+    if (RSTRING(str)-&gt;len != ilen) {
+        rb_raise(rb_eRuntimeError, &quot;buffer string modified&quot;);
+    }
+    TRAP_BEG;
+    n = read(fileno(fptr-&gt;f), RSTRING(str)-&gt;ptr, ilen);
+    TRAP_END;
+
+    rb_str_unlocktmp(str);
+    if (n == -1) {
+        rb_sys_fail(fptr-&gt;path);
+    }
+    rb_str_resize(str, n);
+    if (n == 0 &amp;&amp; ilen &gt; 0) {
+        rb_eof_error();
+    }
+    RSTRING(str)-&gt;len = n;
+    RSTRING(str)-&gt;ptr[n] = '\0';
+    OBJ_TAINT(str);
+
+    return str;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000573">
+                    
+                    <a name="M000573"></a><b>ios.sysseek(offset, whence=SEEK_SET)   => integer
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Seeks to a given <em>offset</em> in the stream according to the value of
+<em>whence</em> (see <tt><a href="IO.html#M000560">IO#seek</a></tt> for
+values of <em>whence</em>). Returns the new offset into the file.
+</p>
+<pre>
+   f = File.new(&quot;testfile&quot;)
+   f.sysseek(-13, IO::SEEK_END)   #=&gt; 53
+   f.sysread(10)                  #=&gt; &quot;And so on.&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000573_source')" id="l_M000573_source">show</a>
+                        
+                    </p>
+                    <div id="M000573_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_sysseek(argc, argv, io)
+    int argc;
+    VALUE *argv;
+    VALUE io;
+{
+    VALUE offset, ptrname;
+    int whence = SEEK_SET;
+    rb_io_t *fptr;
+    off_t pos;
+
+    if (rb_scan_args(argc, argv, &quot;11&quot;, &amp;offset, &amp;ptrname) == 2) {
+        whence = NUM2INT(ptrname);
+    }
+    pos = NUM2OFFT(offset);
+    GetOpenFile(io, fptr);
+    if ((fptr-&gt;mode &amp; FMODE_READABLE) &amp;&amp; READ_DATA_BUFFERED(fptr-&gt;f)) {
+        rb_raise(rb_eIOError, &quot;sysseek for buffered IO&quot;);
+    }
+    if ((fptr-&gt;mode &amp; FMODE_WRITABLE) &amp;&amp; (fptr-&gt;mode &amp; FMODE_WBUF)) {
+        rb_warn(&quot;sysseek for buffered IO&quot;);
+    }
+    pos = lseek(fileno(fptr-&gt;f), pos, whence);
+    if (pos == -1) rb_sys_fail(fptr-&gt;path);
+    clearerr(fptr-&gt;f);
+
+    return OFFT2NUM(pos);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000533">
+                    
+                    <a name="M000533"></a><b>ios.syswrite(string)   => integer
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Writes the given string to <em>ios</em> using a low-level write. Returns
+the number of bytes written. Do not mix with other methods that write to
+<em>ios</em> or you may get unpredictable results. Raises
+<tt>SystemCallError</tt> on error.
+</p>
+<pre>
+   f = File.new(&quot;out&quot;, &quot;w&quot;)
+   f.syswrite(&quot;ABCDEF&quot;)   #=&gt; 6
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000533_source')" id="l_M000533_source">show</a>
+                        
+                    </p>
+                    <div id="M000533_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_syswrite(io, str)
+    VALUE io, str;
+{
+    rb_io_t *fptr;
+    FILE *f;
+    long n;
+
+    rb_secure(4);
+    if (TYPE(str) != T_STRING)
+        str = rb_obj_as_string(str);
+
+    GetOpenFile(io, fptr);
+    rb_io_check_writable(fptr);
+    f = GetWriteFile(fptr);
+
+    if (fptr-&gt;mode &amp; FMODE_WBUF) {
+        rb_warn(&quot;syswrite for buffered IO&quot;);
+    }
+    if (!rb_thread_fd_writable(fileno(f))) {
+        rb_io_check_closed(fptr);
+    }
+    TRAP_BEG;
+    n = write(fileno(f), RSTRING(str)-&gt;ptr, RSTRING(str)-&gt;len);
+    TRAP_END;
+
+    if (n == -1) rb_sys_fail(fptr-&gt;path);
+
+    return LONG2FIX(n);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000559">
+                    
+                    <a name="M000559"></a><b>ios.pos     => integer
+ios.tell    => integer
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the current offset (in bytes) of <em>ios</em>.
+</p>
+<pre>
+   f = File.new(&quot;testfile&quot;)
+   f.pos    #=&gt; 0
+   f.gets   #=&gt; &quot;This is line one\n&quot;
+   f.pos    #=&gt; 17
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000559_source')" id="l_M000559_source">show</a>
+                        
+                    </p>
+                    <div id="M000559_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_tell(io)
+     VALUE io;
+{
+    rb_io_t *fptr;
+    off_t pos;
+
+    GetOpenFile(io, fptr);
+    pos = io_tell(fptr);
+    if (pos &lt; 0 &amp;&amp; errno) rb_sys_fail(fptr-&gt;path);
+    return OFFT2NUM(pos);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000592">
+                    
+                    <a name="M000592"></a><b>to_i</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a href="IO.html#M000537">fileno</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000538">
+                    
+                    <a name="M000538"></a><b>ios.to_io &rarr; ios
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns <em>ios</em>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000538_source')" id="l_M000538_source">show</a>
+                        
+                    </p>
+                    <div id="M000538_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_to_io(io)
+    VALUE io;
+{
+    return io;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000571">
+                    
+                    <a name="M000571"></a><b>ios.isatty   => true or false
+ios.tty?     => true or false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns <tt>true</tt> if <em>ios</em> is associated with a terminal device
+(tty), <tt>false</tt> otherwise.
+</p>
+<pre>
+   File.new(&quot;testfile&quot;).isatty   #=&gt; false
+   File.new(&quot;/dev/tty&quot;).isatty   #=&gt; true
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000571_source')" id="l_M000571_source">show</a>
+                        
+                    </p>
+                    <div id="M000571_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_isatty(io)
+    VALUE io;
+{
+    rb_io_t *fptr;
+
+    GetOpenFile(io, fptr);
+    if (isatty(fileno(fptr-&gt;f)) == 0)
+        return Qfalse;
+    return Qtrue;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000556">
+                    
+                    <a name="M000556"></a><b>ios.ungetc(integer)   => nil
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Pushes back one character (passed as a parameter) onto <em>ios</em>, such
+that a subsequent buffered read will return it. Only one character may be
+pushed back before a subsequent read operation (that is, you will be able
+to read only the last of several characters that have been pushed back).
+Has no effect with unbuffered reads (such as <tt><a
+href="IO.html#M000536">IO#sysread</a></tt>).
+</p>
+<pre>
+   f = File.new(&quot;testfile&quot;)   #=&gt; #&lt;File:testfile&gt;
+   c = f.getc                 #=&gt; 84
+   f.ungetc(c)                #=&gt; nil
+   f.getc                     #=&gt; 84
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000556_source')" id="l_M000556_source">show</a>
+                        
+                    </p>
+                    <div id="M000556_source" class="dyn-source">
+                        <pre>VALUE
+rb_io_ungetc(io, c)
+    VALUE io, c;
+{
+    rb_io_t *fptr;
+    int cc = NUM2INT(c);
+
+    GetOpenFile(io, fptr);
+    if (!(fptr-&gt;mode &amp; FMODE_RBUF))
+        rb_raise(rb_eIOError, &quot;unread stream&quot;);
+    rb_io_check_readable(fptr);
+
+    if (ungetc(cc, fptr-&gt;f) == EOF &amp;&amp; cc != EOF) {
+        rb_raise(rb_eIOError, &quot;ungetc failed&quot;);
+    }
+    return Qnil;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007132">
+                    
+                    <a name="M007132"></a><b>wait</b>(...)
+                    
+                </div>
+                
+                <div class="description">
+                  <h1>begin</h1>
+<p>
+&#8212; <a href="IO.html#M007132">IO#wait</a>([timeout])
+</p>
+<pre>
+    waits until input available or timed out and returns self, or nil
+    when EOF reached.
+</pre>
+<h1>end</h1>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007132_source')" id="l_M007132_source">show</a>
+                        
+                    </p>
+                    <div id="M007132_source" class="dyn-source">
+                        <pre>static VALUE
+io_wait(argc, argv, io)
+    int argc;
+    VALUE *argv;
+    VALUE io;
+{
+    rb_io_t *fptr;
+    fd_set rd;
+    FILE *fp;
+    int fd;
+    ioctl_arg n;
+    VALUE timeout;
+    struct timeval *tp, timerec;
+
+    GetOpenFile(io, fptr);
+    rb_io_check_readable(fptr);
+    rb_scan_args(argc, argv, &quot;01&quot;, &amp;timeout);
+    if (NIL_P(timeout)) {
+        tp = 0;
+    }
+    else {
+        timerec = rb_time_interval(timeout);
+        tp = &amp;timerec;
+    }
+
+    fp = fptr-&gt;f;
+    if (feof(fp)) return Qfalse;
+    if (rb_read_pending(fp)) return Qtrue;
+    fd = fileno(fp);
+    FD_ZERO(&amp;rd);
+    FD_SET(fd, &amp;rd);
+    if (rb_thread_select(fd + 1, &amp;rd, NULL, NULL, tp) &lt; 0)
+        rb_sys_fail(0);
+    rb_io_check_closed(fptr);
+    if (!FIONREAD_POSSIBLE_P(fileno(fptr-&gt;f))) return Qfalse;
+    if (ioctl(fileno(fp), FIONREAD, &amp;n)) rb_sys_fail(0);
+    if (n &gt; 0) return io;
+    return Qnil;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000549">
+                    
+                    <a name="M000549"></a><b>ios.write(string)    => integer
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Writes the given string to <em>ios</em>. The stream must be opened for
+writing. If the argument is not a string, it will be converted to a string
+using <tt>to_s</tt>. Returns the number of bytes written.
+</p>
+<pre>
+   count = $stdout.write( &quot;This is a test\n&quot; )
+   puts &quot;That was #{count} bytes of data&quot;
+</pre>
+<p>
+<em>produces:</em>
+</p>
+<pre>
+   This is a test
+   That was 15 bytes of data
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000549_source')" id="l_M000549_source">show</a>
+                        
+                    </p>
+                    <div id="M000549_source" class="dyn-source">
+                        <pre>static VALUE
+io_write(io, str)
+    VALUE io, str;
+{
+    rb_io_t *fptr;
+    long n;
+
+    rb_secure(4);
+    if (TYPE(str) != T_STRING)
+        str = rb_obj_as_string(str);
+
+    if (TYPE(io) != T_FILE) {
+        /* port is not IO, call write method for it. */
+        return rb_funcall(io, id_write, 1, str);
+    }
+    if (RSTRING(str)-&gt;len == 0) return INT2FIX(0);
+
+    GetOpenFile(io, fptr);
+    rb_io_check_writable(fptr);
+
+    n = io_fwrite(str, fptr);
+    if (n == -1L) rb_sys_fail(fptr-&gt;path);
+    if (!(fptr-&gt;mode &amp; FMODE_SYNC)) {
+        fptr-&gt;mode |= FMODE_WBUF;
+    }
+
+    return LONG2FIX(n);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000546">
+                    
+                    <a name="M000546"></a><b>ios.write_nonblock(string)   => integer
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Writes the given string to <em>ios</em> using write(2) system call after
+O_NONBLOCK is set for the underlying file descriptor.
+</p>
+<p>
+<a href="IO.html#M000546">write_nonblock</a> just calls write(2). It causes
+all errors write(2) causes: EAGAIN, EINTR, etc. The result may also be
+smaller than string.length (partial write). The caller should care such
+errors and partial write.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000546_source')" id="l_M000546_source">show</a>
+                        
+                    </p>
+                    <div id="M000546_source" class="dyn-source">
+                        <pre>static VALUE
+rb_io_write_nonblock(VALUE io, VALUE str)
+{
+    rb_io_t *fptr;
+    FILE *f;
+    long n;
+
+    rb_secure(4);
+    if (TYPE(str) != T_STRING)
+        str = rb_obj_as_string(str);
+
+    GetOpenFile(io, fptr);
+    rb_io_check_writable(fptr);
+
+    f = GetWriteFile(fptr);
+
+    rb_io_set_nonblock(fptr);
+    n = write(fileno(f), RSTRING(str)-&gt;ptr, RSTRING(str)-&gt;len);
+
+    if (n == -1) rb_sys_fail(fptr-&gt;path);
+
+    return LONG2FIX(n);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Private methods</div>
+            
+            <div class="method">
+                <div class="title" id="M006146">
+                    
+                    <a name="M006146"></a><b>block_scanf</b>(str)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006146_source')" id="l_M006146_source">show</a>
+                        
+                    </p>
+                    <div id="M006146_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/scanf.rb, line 653</span>
+653:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">block_scanf</span>(<span class="ruby-identifier">str</span>)
+654:     <span class="ruby-identifier">final</span> = []
+655: <span class="ruby-comment cmt"># Sub-ideal, since another FS gets created in scanf.</span>
+656: <span class="ruby-comment cmt"># But used here to determine the number of specifiers.</span>
+657:     <span class="ruby-identifier">fstr</span> = <span class="ruby-constant">Scanf</span><span class="ruby-operator">::</span><span class="ruby-constant">FormatString</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">str</span>)
+658:     <span class="ruby-identifier">last_spec</span> = <span class="ruby-identifier">fstr</span>.<span class="ruby-identifier">last_spec</span>
+659:     <span class="ruby-keyword kw">begin</span>
+660:       <span class="ruby-identifier">current</span> = <span class="ruby-identifier">scanf</span>(<span class="ruby-identifier">str</span>)
+661:       <span class="ruby-keyword kw">break</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">current</span>.<span class="ruby-identifier">empty?</span>
+662:       <span class="ruby-identifier">final</span>.<span class="ruby-identifier">push</span>(<span class="ruby-keyword kw">yield</span>(<span class="ruby-identifier">current</span>))
+663:     <span class="ruby-keyword kw">end</span> <span class="ruby-keyword kw">until</span> <span class="ruby-identifier">eof</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">fstr</span>.<span class="ruby-identifier">last_spec_tried</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">last_spec</span>
+664:     <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">final</span>
+665:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006145">
+                    
+                    <a name="M006145"></a><b>soak_up_spaces</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006145_source')" id="l_M006145_source">show</a>
+                        
+                    </p>
+                    <div id="M006145_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/scanf.rb, line 644</span>
+644:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">soak_up_spaces</span>
+645:     <span class="ruby-identifier">c</span> = <span class="ruby-identifier">getc</span>
+646:     <span class="ruby-identifier">ungetc</span>(<span class="ruby-identifier">c</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">c</span>
+647:     <span class="ruby-keyword kw">until</span> <span class="ruby-identifier">eof</span> <span class="ruby-operator">||</span><span class="ruby-operator">!</span> <span class="ruby-identifier">c</span> <span class="ruby-operator">||</span> <span class="ruby-regexp re">/\S/</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">c</span>.<span class="ruby-identifier">chr</span>)
+648:       <span class="ruby-identifier">c</span> = <span class="ruby-identifier">getc</span>
+649:     <span class="ruby-keyword kw">end</span>
+650:     <span class="ruby-identifier">ungetc</span>(<span class="ruby-identifier">c</span>) <span class="ruby-keyword kw">if</span> (<span class="ruby-identifier">c</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-regexp re">/\S/</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">c</span>.<span class="ruby-identifier">chr</span>))
+651:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

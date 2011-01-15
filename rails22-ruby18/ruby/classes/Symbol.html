@@ -1,0 +1,636 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Symbol</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            Symbol 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/object_c.html">object.c</a></li>
+            
+            <li><a href="../files/lib/rexml/xpath_parser_rb.html">lib/rexml/xpath_parser.rb</a></li>
+            
+            <li><a href="../files/lib/yaml/rubytypes_rb.html">lib/yaml/rubytypes.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+<tt>Symbol</tt> objects represent names and some strings inside the Ruby
+interpreter. They are generated using the <tt>:name</tt> and
+<tt>:&quot;string&quot;</tt> literals syntax, and by the various <tt><a
+href="Symbol.html#M000966">to_sym</a></tt> methods. The same
+<tt>Symbol</tt> object will be created for a given name or string for the
+duration of a program&#8217;s execution, regardless of the context or
+meaning of that name. Thus if <tt>Fred</tt> is a constant in one context, a
+method in another, and a class in a third, the <tt>Symbol</tt>
+<tt>:Fred</tt> will be the same object in all three contexts.
+</p>
+<pre>
+   module One
+     class Fred
+     end
+     $f1 = :Fred
+   end
+   module Two
+     Fred = 1
+     $f2 = :Fred
+   end
+   def Fred()
+   end
+   $f3 = :Fred
+   $f1.id   #=&gt; 2514190
+   $f2.id   #=&gt; 2514190
+   $f3.id   #=&gt; 2514190
+</pre>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>#</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000968">===</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>A</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000960">all_symbols</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>D</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002147">dclone</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>I</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000965">id2name</a>,</li>
+                
+                <li><a href="#M000963">inspect</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>T</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000961">to_i</a>,</li>
+                
+                <li><a href="#M000962">to_int</a>,</li>
+                
+                <li><a href="#M000967">to_proc</a>,</li>
+                
+                <li><a href="#M000964">to_s</a>,</li>
+                
+                <li><a href="#M000966">to_sym</a>,</li>
+                
+                <li><a href="#M006076">to_yaml</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>Y</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006075">yaml_new</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M000960">
+                    
+                    <a name="M000960"></a><b>Symbol.all_symbols    => array
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns an array of all the symbols currently in Ruby&#8217;s symbol table.
+</p>
+<pre>
+   Symbol.all_symbols.size    #=&gt; 903
+   Symbol.all_symbols[1,20]   #=&gt; [:floor, :ARGV, :Binding, :symlink,
+                                   :chown, :EOFError, :$;, :String,
+                                   :LOCK_SH, :&quot;setuid?&quot;, :$&lt;,
+                                   :default_proc, :compact, :extend,
+                                   :Tms, :getwd, :$=, :ThreadGroup,
+                                   :wait2, :$&gt;]
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000960_source')" id="l_M000960_source">show</a>
+                        
+                    </p>
+                    <div id="M000960_source" class="dyn-source">
+                        <pre>VALUE
+rb_sym_all_symbols()
+{
+    VALUE ary = rb_ary_new2(sym_tbl-&gt;num_entries);
+
+    st_foreach(sym_tbl, symbols_i, ary);
+    return ary;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006075">
+                    
+                    <a name="M006075"></a><b>yaml_new</b>( klass, tag, val )
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006075_source')" id="l_M006075_source">show</a>
+                        
+                    </p>
+                    <div id="M006075_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/yaml/rubytypes.rb, line 184</span>
+184:     <span class="ruby-keyword kw">def</span> <span class="ruby-constant">Symbol</span>.<span class="ruby-identifier">yaml_new</span>( <span class="ruby-identifier">klass</span>, <span class="ruby-identifier">tag</span>, <span class="ruby-identifier">val</span> )
+185:         <span class="ruby-keyword kw">if</span> <span class="ruby-constant">String</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">val</span>
+186:             <span class="ruby-identifier">val</span> = <span class="ruby-constant">YAML</span><span class="ruby-operator">::</span><span class="ruby-identifier">load</span>( <span class="ruby-identifier">val</span> ) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">val</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/\A([&quot;']).*\1\z/</span>
+187:             <span class="ruby-identifier">val</span>.<span class="ruby-identifier">intern</span>
+188:         <span class="ruby-keyword kw">else</span>
+189:             <span class="ruby-identifier">raise</span> <span class="ruby-constant">YAML</span><span class="ruby-operator">::</span><span class="ruby-constant">TypeError</span>, <span class="ruby-value str">&quot;Invalid Symbol: &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">val</span>.<span class="ruby-identifier">inspect</span>
+190:         <span class="ruby-keyword kw">end</span>
+191:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M000968">
+                    
+                    <a name="M000968"></a><b>obj == other        => true or false
+obj.equal?(other)   => true or false
+obj.eql?(other)     => true or false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Equality&#8212;At the <tt>Object</tt> level, <tt>==</tt> returns
+<tt>true</tt> only if <em>obj</em> and <em>other</em> are the same object.
+Typically, this method is overridden in descendent classes to provide
+class-specific meaning.
+</p>
+<p>
+Unlike <tt>==</tt>, the <tt>equal?</tt> method should never be overridden
+by subclasses: it is used to determine object identity (that is,
+<tt>a.equal?(b)</tt> iff <tt>a</tt> is the same object as <tt>b</tt>).
+</p>
+<p>
+The <tt>eql?</tt> method returns <tt>true</tt> if <em>obj</em> and
+<em>anObject</em> have the same value. Used by <tt>Hash</tt> to test
+members for equality. For objects of class <tt>Object</tt>, <tt>eql?</tt>
+is synonymous with <tt>==</tt>. Subclasses normally continue this
+tradition, but there are exceptions. <tt>Numeric</tt> types, for example,
+perform type conversion across <tt>==</tt>, but not across <tt>eql?</tt>,
+so:
+</p>
+<pre>
+   1 == 1.0     #=&gt; true
+   1.eql? 1.0   #=&gt; false
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000968_source')" id="l_M000968_source">show</a>
+                        
+                    </p>
+                    <div id="M000968_source" class="dyn-source">
+                        <pre>static VALUE
+rb_obj_equal(obj1, obj2)
+    VALUE obj1, obj2;
+{
+    if (obj1 == obj2) return Qtrue;
+    return Qfalse;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002147">
+                    
+                    <a name="M002147"></a><b>dclone</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002147_source')" id="l_M002147_source">show</a>
+                        
+                    </p>
+                    <div id="M002147_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/rexml/xpath_parser.rb, line 13</span>
+13:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">dclone</span> ; <span class="ruby-keyword kw">self</span> ; <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000965">
+                    
+                    <a name="M000965"></a><b>sym.id2name   => string
+sym.to_s      => string
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the name or string corresponding to <em>sym</em>.
+</p>
+<pre>
+   :fred.id2name   #=&gt; &quot;fred&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000965_source')" id="l_M000965_source">show</a>
+                        
+                    </p>
+                    <div id="M000965_source" class="dyn-source">
+                        <pre>static VALUE
+sym_to_s(sym)
+    VALUE sym;
+{
+    return rb_str_new2(rb_id2name(SYM2ID(sym)));
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000963">
+                    
+                    <a name="M000963"></a><b>sym.inspect    => string
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the representation of <em>sym</em> as a symbol literal.
+</p>
+<pre>
+   :fred.inspect   #=&gt; &quot;:fred&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000963_source')" id="l_M000963_source">show</a>
+                        
+                    </p>
+                    <div id="M000963_source" class="dyn-source">
+                        <pre>static VALUE
+sym_inspect(sym)
+    VALUE sym;
+{
+    VALUE str;
+    const char *name;
+    ID id = SYM2ID(sym);
+
+    name = rb_id2name(id);
+    str = rb_str_new(0, strlen(name)+1);
+    RSTRING(str)-&gt;ptr[0] = ':';
+    strcpy(RSTRING(str)-&gt;ptr+1, name);
+    if (!rb_symname_p(name)) {
+        str = rb_str_dump(str);
+        strncpy(RSTRING(str)-&gt;ptr, &quot;:\&quot;&quot;, 2);
+    }
+    return str;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000961">
+                    
+                    <a name="M000961"></a><b>sym.to_i      => fixnum
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns an integer that is unique for each symbol within a particular
+execution of a program.
+</p>
+<pre>
+   :fred.to_i           #=&gt; 9809
+   &quot;fred&quot;.to_sym.to_i   #=&gt; 9809
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000961_source')" id="l_M000961_source">show</a>
+                        
+                    </p>
+                    <div id="M000961_source" class="dyn-source">
+                        <pre>static VALUE
+sym_to_i(sym)
+    VALUE sym;
+{
+    ID id = SYM2ID(sym);
+
+    return LONG2FIX(id);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000962">
+                    
+                    <a name="M000962"></a><b>to_int</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+:nodoc:
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000962_source')" id="l_M000962_source">show</a>
+                        
+                    </p>
+                    <div id="M000962_source" class="dyn-source">
+                        <pre>static VALUE
+sym_to_int(sym)
+    VALUE sym;
+{
+    rb_warning(&quot;treating Symbol as an integer&quot;);
+    return sym_to_i(sym);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000967">
+                    
+                    <a name="M000967"></a><b>sym.to_proc
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns a <em>Proc</em> object which respond to the given method by
+<em>sym</em>.
+</p>
+<pre>
+  (1..3).collect(&amp;:to_s)  #=&gt; [&quot;1&quot;, &quot;2&quot;, &quot;3&quot;]
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000967_source')" id="l_M000967_source">show</a>
+                        
+                    </p>
+                    <div id="M000967_source" class="dyn-source">
+                        <pre>static VALUE
+sym_to_proc(VALUE sym)
+{
+    return rb_proc_new(sym_call, (VALUE)SYM2ID(sym));
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000964">
+                    
+                    <a name="M000964"></a><b>sym.id2name   => string
+sym.to_s      => string
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the name or string corresponding to <em>sym</em>.
+</p>
+<pre>
+   :fred.id2name   #=&gt; &quot;fred&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000964_source')" id="l_M000964_source">show</a>
+                        
+                    </p>
+                    <div id="M000964_source" class="dyn-source">
+                        <pre>static VALUE
+sym_to_s(sym)
+    VALUE sym;
+{
+    return rb_str_new2(rb_id2name(SYM2ID(sym)));
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000966">
+                    
+                    <a name="M000966"></a><b>sym.to_sym   => sym
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+In general, <tt><a href="Symbol.html#M000966">to_sym</a></tt> returns the
+<tt>Symbol</tt> corresponding to an object. As <em>sym</em> is already a
+symbol, <tt>self</tt> is returned in this case.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000966_source')" id="l_M000966_source">show</a>
+                        
+                    </p>
+                    <div id="M000966_source" class="dyn-source">
+                        <pre>static VALUE
+sym_to_sym(sym)
+    VALUE sym;
+{
+    return sym;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006076">
+                    
+                    <a name="M006076"></a><b>to_yaml</b>( opts = {} )
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006076_source')" id="l_M006076_source">show</a>
+                        
+                    </p>
+                    <div id="M006076_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/yaml/rubytypes.rb, line 192</span>
+192:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">to_yaml</span>( <span class="ruby-identifier">opts</span> = {} )
+193:                 <span class="ruby-constant">YAML</span><span class="ruby-operator">::</span><span class="ruby-identifier">quick_emit</span>( <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">opts</span> ) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">out</span><span class="ruby-operator">|</span>
+194:             <span class="ruby-identifier">out</span>.<span class="ruby-identifier">scalar</span>( <span class="ruby-value str">&quot;tag:yaml.org,2002:str&quot;</span>, <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">inspect</span>, <span class="ruby-identifier">:plain</span> )
+195:         <span class="ruby-keyword kw">end</span>
+196:         <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

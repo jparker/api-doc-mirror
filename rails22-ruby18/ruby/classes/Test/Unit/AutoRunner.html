@@ -1,0 +1,541 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Test::Unit::AutoRunner</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            Test::Unit::AutoRunner 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../../Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../../files/lib/test/unit/autorunner_rb.html">lib/test/unit/autorunner.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>K</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005581">keyword_display</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005578">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>O</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005580">options</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>P</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005579">process_args</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>R</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005562">run</a>,</li>
+                
+                <li><a href="#M005582">run</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005563">standalone?</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">RUNNERS</td>
+            <td>=</td>
+            <td class="attr-value">{         :console =&gt; proc do |r|           require 'test/unit/ui/console/testrunner'           Test::Unit::UI::Console::TestRunner         end,         :gtk =&gt; proc do |r|           require 'test/unit/ui/gtk/testrunner'           Test::Unit::UI::GTK::TestRunner         end,         :gtk2 =&gt; proc do |r|           require 'test/unit/ui/gtk2/testrunner'           Test::Unit::UI::GTK2::TestRunner         end,         :fox =&gt; proc do |r|           require 'test/unit/ui/fox/testrunner'           Test::Unit::UI::Fox::TestRunner         end,         :tk =&gt; proc do |r|           require 'test/unit/ui/tk/testrunner'           Test::Unit::UI::Tk::TestRunner         end,       }</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">OUTPUT_LEVELS</td>
+            <td>=</td>
+            <td class="attr-value">[         [:silent, UI::SILENT],         [:progress, UI::PROGRESS_ONLY],         [:normal, UI::NORMAL],         [:verbose, UI::VERBOSE],       ]</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">COLLECTORS</td>
+            <td>=</td>
+            <td class="attr-value">{         :objectspace =&gt; proc do |r|           require 'test/unit/collector/objectspace'           c = Collector::ObjectSpace.new           c.filter = r.filters           c.collect($0.sub(/\.rb\Z/, ''))         end,         :dir =&gt; proc do |r|           require 'test/unit/collector/dir'           c = Collector::Dir.new           c.filter = r.filters           c.pattern.concat(r.pattern) if(r.pattern)           c.exclude.concat(r.exclude) if(r.exclude)           c.base = r.base           $:.push(r.base) if r.base           c.collect(*(r.to_run.empty? ? ['.'] : r.to_run))         end,       }</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+    <div class="sectiontitle">Attributes</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>suite</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [RW]
+            </td>
+            <td class='attr-name'>output_level</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [RW]
+            </td>
+            <td class='attr-name'>filters</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [RW]
+            </td>
+            <td class='attr-name'>to_run</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [RW]
+            </td>
+            <td class='attr-name'>pattern</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [RW]
+            </td>
+            <td class='attr-name'>exclude</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [RW]
+            </td>
+            <td class='attr-name'>base</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [RW]
+            </td>
+            <td class='attr-name'>workdir</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [W]
+            </td>
+            <td class='attr-name'>runner</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [W]
+            </td>
+            <td class='attr-name'>collector</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+    </table>
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005578">
+                    
+                    <a name="M005578"></a><b>new</b>(standalone)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005578_source')" id="l_M005578_source">show</a>
+                        
+                    </p>
+                    <div id="M005578_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/test/unit/autorunner.rb, line 76</span>
+76:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">standalone</span>)
+77:         <span class="ruby-constant">Unit</span>.<span class="ruby-identifier">run</span> = <span class="ruby-keyword kw">true</span>
+78:         <span class="ruby-ivar">@standalone</span> = <span class="ruby-identifier">standalone</span>
+79:         <span class="ruby-ivar">@runner</span> = <span class="ruby-constant">RUNNERS</span>[<span class="ruby-identifier">:console</span>]
+80:         <span class="ruby-ivar">@collector</span> = <span class="ruby-constant">COLLECTORS</span>[(<span class="ruby-identifier">standalone</span> <span class="ruby-value">? </span><span class="ruby-operator">:</span><span class="ruby-identifier">dir</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">:objectspace</span>)]
+81:         <span class="ruby-ivar">@filters</span> = []
+82:         <span class="ruby-ivar">@to_run</span> = []
+83:         <span class="ruby-ivar">@output_level</span> = <span class="ruby-constant">UI</span><span class="ruby-operator">::</span><span class="ruby-constant">NORMAL</span>
+84:         <span class="ruby-ivar">@workdir</span> = <span class="ruby-keyword kw">nil</span>
+85:         <span class="ruby-keyword kw">yield</span>(<span class="ruby-keyword kw">self</span>) <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">block_given?</span>)
+86:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005562">
+                    
+                    <a name="M005562"></a><b>run</b>(force_standalone=false, default_dir=nil, argv=ARGV, &amp;block)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005562_source')" id="l_M005562_source">show</a>
+                        
+                    </p>
+                    <div id="M005562_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/test/unit/autorunner.rb, line 8</span>
+ 8:       <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">run</span>(<span class="ruby-identifier">force_standalone</span>=<span class="ruby-keyword kw">false</span>, <span class="ruby-identifier">default_dir</span>=<span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">argv</span>=<span class="ruby-constant">ARGV</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+ 9:         <span class="ruby-identifier">r</span> = <span class="ruby-identifier">new</span>(<span class="ruby-identifier">force_standalone</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">standalone?</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+10:         <span class="ruby-identifier">r</span>.<span class="ruby-identifier">base</span> = <span class="ruby-identifier">default_dir</span>
+11:         <span class="ruby-identifier">r</span>.<span class="ruby-identifier">process_args</span>(<span class="ruby-identifier">argv</span>)
+12:         <span class="ruby-identifier">r</span>.<span class="ruby-identifier">run</span>
+13:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005563">
+                    
+                    <a name="M005563"></a><b>standalone?</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005563_source')" id="l_M005563_source">show</a>
+                        
+                    </p>
+                    <div id="M005563_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/test/unit/autorunner.rb, line 15</span>
+15:       <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">standalone?</span>
+16:         <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">false</span> <span class="ruby-keyword kw">unless</span>(<span class="ruby-value str">&quot;-e&quot;</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">$0</span>)
+17:         <span class="ruby-constant">ObjectSpace</span>.<span class="ruby-identifier">each_object</span>(<span class="ruby-constant">Class</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">klass</span><span class="ruby-operator">|</span>
+18:           <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">false</span> <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">klass</span> <span class="ruby-operator">&lt;</span> <span class="ruby-constant">TestCase</span>)
+19:         <span class="ruby-keyword kw">end</span>
+20:         <span class="ruby-keyword kw">true</span>
+21:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005581">
+                    
+                    <a name="M005581"></a><b>keyword_display</b>(array)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005581_source')" id="l_M005581_source">show</a>
+                        
+                    </p>
+                    <div id="M005581_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/test/unit/autorunner.rb, line 206</span>
+206:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">keyword_display</span>(<span class="ruby-identifier">array</span>)
+207:         <span class="ruby-identifier">list</span> = <span class="ruby-identifier">array</span>.<span class="ruby-identifier">collect</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">e</span>, <span class="ruby-operator">*</span><span class="ruby-operator">|</span> <span class="ruby-identifier">e</span>.<span class="ruby-identifier">to_s</span>}
+208:         <span class="ruby-constant">Array</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">array</span> <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">list</span>.<span class="ruby-identifier">sort!</span>
+209:         <span class="ruby-identifier">list</span>.<span class="ruby-identifier">collect</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">e</span><span class="ruby-operator">|</span> <span class="ruby-identifier">e</span>.<span class="ruby-identifier">sub</span>(<span class="ruby-regexp re">/^(.)([A-Za-z]+)(?=\w*$)/</span>, <span class="ruby-value str">'\\1[\\2]'</span>)}.<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;, &quot;</span>)
+210:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005580">
+                    
+                    <a name="M005580"></a><b>options</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005580_source')" id="l_M005580_source">show</a>
+                        
+                    </p>
+                    <div id="M005580_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/test/unit/autorunner.rb, line 102</span>
+102:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">options</span>
+103:         <span class="ruby-ivar">@options</span> <span class="ruby-operator">||=</span> <span class="ruby-constant">OptionParser</span>.<span class="ruby-identifier">new</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">o</span><span class="ruby-operator">|</span>
+104:           <span class="ruby-identifier">o</span>.<span class="ruby-identifier">banner</span> = <span class="ruby-value str">&quot;Test::Unit automatic runner.&quot;</span>
+105:           <span class="ruby-identifier">o</span>.<span class="ruby-identifier">banner</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot;\nUsage: #{$0} [options] [-- untouched arguments]&quot;</span>
+106: 
+107:           <span class="ruby-identifier">o</span>.<span class="ruby-identifier">on</span>
+108:           <span class="ruby-identifier">o</span>.<span class="ruby-identifier">on</span>(<span class="ruby-value str">'-r'</span>, <span class="ruby-value str">'--runner=RUNNER'</span>, <span class="ruby-constant">RUNNERS</span>,
+109:                <span class="ruby-value str">&quot;Use the given RUNNER.&quot;</span>,
+110:                <span class="ruby-value str">&quot;(&quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">keyword_display</span>(<span class="ruby-constant">RUNNERS</span>) <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;)&quot;</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">r</span><span class="ruby-operator">|</span>
+111:             <span class="ruby-ivar">@runner</span> = <span class="ruby-identifier">r</span>
+112:           <span class="ruby-keyword kw">end</span>
+113: 
+114:           <span class="ruby-keyword kw">if</span>(<span class="ruby-ivar">@standalone</span>)
+115:             <span class="ruby-identifier">o</span>.<span class="ruby-identifier">on</span>(<span class="ruby-value str">'-b'</span>, <span class="ruby-value str">'--basedir=DIR'</span>, <span class="ruby-value str">&quot;Base directory of test suites.&quot;</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">b</span><span class="ruby-operator">|</span>
+116:               <span class="ruby-ivar">@base</span> = <span class="ruby-identifier">b</span>
+117:             <span class="ruby-keyword kw">end</span>
+118: 
+119:             <span class="ruby-identifier">o</span>.<span class="ruby-identifier">on</span>(<span class="ruby-value str">'-w'</span>, <span class="ruby-value str">'--workdir=DIR'</span>, <span class="ruby-value str">&quot;Working directory to run tests.&quot;</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">w</span><span class="ruby-operator">|</span>
+120:               <span class="ruby-ivar">@workdir</span> = <span class="ruby-identifier">w</span>
+121:             <span class="ruby-keyword kw">end</span>
+122: 
+123:             <span class="ruby-identifier">o</span>.<span class="ruby-identifier">on</span>(<span class="ruby-value str">'-a'</span>, <span class="ruby-value str">'--add=TORUN'</span>, <span class="ruby-constant">Array</span>,
+124:                  <span class="ruby-value str">&quot;Add TORUN to the list of things to run;&quot;</span>,
+125:                  <span class="ruby-value str">&quot;can be a file or a directory.&quot;</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">a</span><span class="ruby-operator">|</span>
+126:               <span class="ruby-ivar">@to_run</span>.<span class="ruby-identifier">concat</span>(<span class="ruby-identifier">a</span>)
+127:             <span class="ruby-keyword kw">end</span>
+128: 
+129:             <span class="ruby-ivar">@pattern</span> = []
+130:             <span class="ruby-identifier">o</span>.<span class="ruby-identifier">on</span>(<span class="ruby-value str">'-p'</span>, <span class="ruby-value str">'--pattern=PATTERN'</span>, <span class="ruby-constant">Regexp</span>,
+131:                  <span class="ruby-value str">&quot;Match files to collect against PATTERN.&quot;</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">e</span><span class="ruby-operator">|</span>
+132:               <span class="ruby-ivar">@pattern</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">e</span>
+133:             <span class="ruby-keyword kw">end</span>
+134: 
+135:             <span class="ruby-ivar">@exclude</span> = []
+136:             <span class="ruby-identifier">o</span>.<span class="ruby-identifier">on</span>(<span class="ruby-value str">'-x'</span>, <span class="ruby-value str">'--exclude=PATTERN'</span>, <span class="ruby-constant">Regexp</span>,
+137:                  <span class="ruby-value str">&quot;Ignore files to collect against PATTERN.&quot;</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">e</span><span class="ruby-operator">|</span>
+138:               <span class="ruby-ivar">@exclude</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">e</span>
+139:             <span class="ruby-keyword kw">end</span>
+140:           <span class="ruby-keyword kw">end</span>
+141: 
+142:           <span class="ruby-identifier">o</span>.<span class="ruby-identifier">on</span>(<span class="ruby-value str">'-n'</span>, <span class="ruby-value str">'--name=NAME'</span>, <span class="ruby-constant">String</span>,
+143:                <span class="ruby-value str">&quot;Runs tests matching NAME.&quot;</span>,
+144:                <span class="ruby-value str">&quot;(patterns may be used).&quot;</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">n</span><span class="ruby-operator">|</span>
+145:             <span class="ruby-identifier">n</span> = (<span class="ruby-regexp re">%r{\A/(.*)/\Z}</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">n</span> <span class="ruby-value">? </span><span class="ruby-constant">Regexp</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">$1</span>) <span class="ruby-operator">:</span> <span class="ruby-identifier">n</span>)
+146:             <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">n</span>
+147:             <span class="ruby-keyword kw">when</span> <span class="ruby-constant">Regexp</span>
+148:               <span class="ruby-ivar">@filters</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">proc</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">t</span><span class="ruby-operator">|</span> <span class="ruby-identifier">n</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">t</span>.<span class="ruby-identifier">method_name</span> <span class="ruby-value">? </span><span class="ruby-keyword kw">true</span> <span class="ruby-operator">:</span> <span class="ruby-keyword kw">nil</span>}
+149:             <span class="ruby-keyword kw">else</span>
+150:               <span class="ruby-ivar">@filters</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">proc</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">t</span><span class="ruby-operator">|</span> <span class="ruby-identifier">n</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">t</span>.<span class="ruby-identifier">method_name</span> <span class="ruby-value">? </span><span class="ruby-keyword kw">true</span> <span class="ruby-operator">:</span> <span class="ruby-keyword kw">nil</span>}
+151:             <span class="ruby-keyword kw">end</span>
+152:           <span class="ruby-keyword kw">end</span>
+153: 
+154:           <span class="ruby-identifier">o</span>.<span class="ruby-identifier">on</span>(<span class="ruby-value str">'-t'</span>, <span class="ruby-value str">'--testcase=TESTCASE'</span>, <span class="ruby-constant">String</span>,
+155:                <span class="ruby-value str">&quot;Runs tests in TestCases matching TESTCASE.&quot;</span>,
+156:                <span class="ruby-value str">&quot;(patterns may be used).&quot;</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">n</span><span class="ruby-operator">|</span>
+157:             <span class="ruby-identifier">n</span> = (<span class="ruby-regexp re">%r{\A/(.*)/\Z}</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">n</span> <span class="ruby-value">? </span><span class="ruby-constant">Regexp</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">$1</span>) <span class="ruby-operator">:</span> <span class="ruby-identifier">n</span>)
+158:             <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">n</span>
+159:             <span class="ruby-keyword kw">when</span> <span class="ruby-constant">Regexp</span>
+160:               <span class="ruby-ivar">@filters</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">proc</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">t</span><span class="ruby-operator">|</span> <span class="ruby-identifier">n</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">t</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">name</span> <span class="ruby-value">? </span><span class="ruby-keyword kw">true</span> <span class="ruby-operator">:</span> <span class="ruby-keyword kw">nil</span>}
+161:             <span class="ruby-keyword kw">else</span>
+162:               <span class="ruby-ivar">@filters</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">proc</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">t</span><span class="ruby-operator">|</span> <span class="ruby-identifier">n</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">t</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">name</span> <span class="ruby-value">? </span><span class="ruby-keyword kw">true</span> <span class="ruby-operator">:</span> <span class="ruby-keyword kw">nil</span>}
+163:             <span class="ruby-keyword kw">end</span>
+164:           <span class="ruby-keyword kw">end</span>
+165: 
+166:           <span class="ruby-identifier">o</span>.<span class="ruby-identifier">on</span>(<span class="ruby-value str">'-I'</span>, <span class="ruby-node">&quot;--load-path=DIR[#{File::PATH_SEPARATOR}DIR...]&quot;</span>,
+167:                <span class="ruby-value str">&quot;Appends directory list to $LOAD_PATH.&quot;</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">dirs</span><span class="ruby-operator">|</span>
+168:             <span class="ruby-identifier">$LOAD_PATH</span>.<span class="ruby-identifier">concat</span>(<span class="ruby-identifier">dirs</span>.<span class="ruby-identifier">split</span>(<span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-constant">PATH_SEPARATOR</span>))
+169:           <span class="ruby-keyword kw">end</span>
+170: 
+171:           <span class="ruby-identifier">o</span>.<span class="ruby-identifier">on</span>(<span class="ruby-value str">'-v'</span>, <span class="ruby-value str">'--verbose=[LEVEL]'</span>, <span class="ruby-constant">OUTPUT_LEVELS</span>,
+172:                <span class="ruby-value str">&quot;Set the output level (default is verbose).&quot;</span>,
+173:                <span class="ruby-value str">&quot;(&quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">keyword_display</span>(<span class="ruby-constant">OUTPUT_LEVELS</span>) <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;)&quot;</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">l</span><span class="ruby-operator">|</span>
+174:             <span class="ruby-ivar">@output_level</span> = <span class="ruby-identifier">l</span> <span class="ruby-operator">||</span> <span class="ruby-constant">UI</span><span class="ruby-operator">::</span><span class="ruby-constant">VERBOSE</span>
+175:           <span class="ruby-keyword kw">end</span>
+176: 
+177:           <span class="ruby-identifier">o</span>.<span class="ruby-identifier">on</span>(<span class="ruby-value str">'--'</span>,
+178:                <span class="ruby-value str">&quot;Stop processing options so that the&quot;</span>,
+179:                <span class="ruby-value str">&quot;remaining options will be passed to the&quot;</span>,
+180:                <span class="ruby-value str">&quot;test.&quot;</span>){<span class="ruby-identifier">o</span>.<span class="ruby-identifier">terminate</span>}
+181: 
+182:           <span class="ruby-identifier">o</span>.<span class="ruby-identifier">on</span>(<span class="ruby-value str">'-h'</span>, <span class="ruby-value str">'--help'</span>, <span class="ruby-value str">'Display this help.'</span>){<span class="ruby-identifier">puts</span> <span class="ruby-identifier">o</span>; <span class="ruby-identifier">exit</span>}
+183: 
+184:           <span class="ruby-identifier">o</span>.<span class="ruby-identifier">on_tail</span>
+185:           <span class="ruby-identifier">o</span>.<span class="ruby-identifier">on_tail</span>(<span class="ruby-value str">'Deprecated options:'</span>)
+186: 
+187:           <span class="ruby-identifier">o</span>.<span class="ruby-identifier">on_tail</span>(<span class="ruby-value str">'--console'</span>, <span class="ruby-value str">'Console runner (use --runner).'</span>) <span class="ruby-keyword kw">do</span>
+188:             <span class="ruby-identifier">warn</span>(<span class="ruby-value str">&quot;Deprecated option (--console).&quot;</span>)
+189:             <span class="ruby-ivar">@runner</span> = <span class="ruby-constant">RUNNERS</span>[<span class="ruby-identifier">:console</span>]
+190:           <span class="ruby-keyword kw">end</span>
+191: 
+192:           <span class="ruby-identifier">o</span>.<span class="ruby-identifier">on_tail</span>(<span class="ruby-value str">'--gtk'</span>, <span class="ruby-value str">'GTK runner (use --runner).'</span>) <span class="ruby-keyword kw">do</span>
+193:             <span class="ruby-identifier">warn</span>(<span class="ruby-value str">&quot;Deprecated option (--gtk).&quot;</span>)
+194:             <span class="ruby-ivar">@runner</span> = <span class="ruby-constant">RUNNERS</span>[<span class="ruby-identifier">:gtk</span>]
+195:           <span class="ruby-keyword kw">end</span>
+196: 
+197:           <span class="ruby-identifier">o</span>.<span class="ruby-identifier">on_tail</span>(<span class="ruby-value str">'--fox'</span>, <span class="ruby-value str">'Fox runner (use --runner).'</span>) <span class="ruby-keyword kw">do</span>
+198:             <span class="ruby-identifier">warn</span>(<span class="ruby-value str">&quot;Deprecated option (--fox).&quot;</span>)
+199:             <span class="ruby-ivar">@runner</span> = <span class="ruby-constant">RUNNERS</span>[<span class="ruby-identifier">:fox</span>]
+200:           <span class="ruby-keyword kw">end</span>
+201: 
+202:           <span class="ruby-identifier">o</span>.<span class="ruby-identifier">on_tail</span>
+203:         <span class="ruby-keyword kw">end</span>
+204:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005579">
+                    
+                    <a name="M005579"></a><b>process_args</b>(args = ARGV)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005579_source')" id="l_M005579_source">show</a>
+                        
+                    </p>
+                    <div id="M005579_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/test/unit/autorunner.rb, line 88</span>
+ 88:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">process_args</span>(<span class="ruby-identifier">args</span> = <span class="ruby-constant">ARGV</span>)
+ 89:         <span class="ruby-keyword kw">begin</span>
+ 90:           <span class="ruby-identifier">options</span>.<span class="ruby-identifier">order!</span>(<span class="ruby-identifier">args</span>) {<span class="ruby-operator">|</span><span class="ruby-identifier">arg</span><span class="ruby-operator">|</span> <span class="ruby-ivar">@to_run</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">arg</span>}
+ 91:         <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">OptionParser</span><span class="ruby-operator">::</span><span class="ruby-constant">ParseError</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+ 92:           <span class="ruby-identifier">puts</span> <span class="ruby-identifier">e</span>
+ 93:           <span class="ruby-identifier">puts</span> <span class="ruby-identifier">options</span>
+ 94:           <span class="ruby-identifier">$!</span> = <span class="ruby-keyword kw">nil</span>
+ 95:           <span class="ruby-identifier">abort</span>
+ 96:         <span class="ruby-keyword kw">else</span>
+ 97:           <span class="ruby-ivar">@filters</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">proc</span>{<span class="ruby-keyword kw">false</span>} <span class="ruby-keyword kw">unless</span>(<span class="ruby-ivar">@filters</span>.<span class="ruby-identifier">empty?</span>)
+ 98:         <span class="ruby-keyword kw">end</span>
+ 99:         <span class="ruby-keyword kw">not</span> <span class="ruby-ivar">@to_run</span>.<span class="ruby-identifier">empty?</span>
+100:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005582">
+                    
+                    <a name="M005582"></a><b>run</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005582_source')" id="l_M005582_source">show</a>
+                        
+                    </p>
+                    <div id="M005582_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/test/unit/autorunner.rb, line 212</span>
+212:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">run</span>
+213:         <span class="ruby-ivar">@suite</span> = <span class="ruby-ivar">@collector</span>[<span class="ruby-keyword kw">self</span>]
+214:         <span class="ruby-identifier">result</span> = <span class="ruby-ivar">@runner</span>[<span class="ruby-keyword kw">self</span>] <span class="ruby-keyword kw">or</span> <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">false</span>
+215:         <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">chdir</span>(<span class="ruby-ivar">@workdir</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@workdir</span>
+216:         <span class="ruby-identifier">result</span>.<span class="ruby-identifier">run</span>(<span class="ruby-ivar">@suite</span>, <span class="ruby-ivar">@output_level</span>).<span class="ruby-identifier">passed?</span>
+217:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

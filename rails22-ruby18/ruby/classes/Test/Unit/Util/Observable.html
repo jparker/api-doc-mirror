@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Test::Unit::Util::Observable</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Module</span> 
+            Test::Unit::Util::Observable 
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../../../files/lib/test/unit/util/observable_rb.html">lib/test/unit/util/observable.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+This is a utility class that allows anything mixing it in to notify a set
+of listeners about interesting events.
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>A</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005533">add_listener</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005536">channels</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005535">notify_listeners</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>R</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005534">remove_listener</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">NOTHING</td>
+            <td>=</td>
+            <td class="attr-value">&quot;NOTHING/#{__id__}&quot;</td>
+        </tr>
+        
+        <tr valign='top'>
+            <td>&nbsp;</td>
+            <td colspan="2" class="attr-desc"><p>
+We use this for defaults since nil might mean something
+</p>
+</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+
+    
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005533">
+                    
+                    <a name="M005533"></a><b>add_listener</b>(channel_name, listener_key=NOTHING)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Adds the passed proc as a listener on the channel indicated by
+channel_name. listener_key is used to remove the listener later; if none is
+specified, the proc itself is used.
+</p>
+<p>
+Whatever is used as the listener_key is returned, making it very easy to
+use the proc itself as the listener_key:
+</p>
+<pre>
+ listener = add_listener(&quot;Channel&quot;) { ... }
+ remove_listener(&quot;Channel&quot;, listener)
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005533_source')" id="l_M005533_source">show</a>
+                        
+                    </p>
+                    <div id="M005533_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/test/unit/util/observable.rb, line 31</span>
+31:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">add_listener</span>(<span class="ruby-identifier">channel_name</span>, <span class="ruby-identifier">listener_key</span>=<span class="ruby-constant">NOTHING</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">listener</span>) <span class="ruby-comment cmt"># :yields: value</span>
+32:           <span class="ruby-keyword kw">unless</span>(<span class="ruby-identifier">block_given?</span>)
+33:             <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value str">&quot;No callback was passed as a listener&quot;</span>)
+34:           <span class="ruby-keyword kw">end</span>
+35:       
+36:           <span class="ruby-identifier">key</span> = <span class="ruby-identifier">listener_key</span>
+37:           <span class="ruby-keyword kw">if</span> (<span class="ruby-identifier">listener_key</span> <span class="ruby-operator">==</span> <span class="ruby-constant">NOTHING</span>)
+38:             <span class="ruby-identifier">listener_key</span> = <span class="ruby-identifier">listener</span>
+39:             <span class="ruby-identifier">key</span> = <span class="ruby-constant">ProcWrapper</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">listener</span>)
+40:           <span class="ruby-keyword kw">end</span>
+41:       
+42:           <span class="ruby-identifier">channels</span>[<span class="ruby-identifier">channel_name</span>] <span class="ruby-operator">||=</span> {}
+43:           <span class="ruby-identifier">channels</span>[<span class="ruby-identifier">channel_name</span>][<span class="ruby-identifier">key</span>] = <span class="ruby-identifier">listener</span>
+44:           <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">listener_key</span>
+45:         <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005535">
+                    
+                    <a name="M005535"></a><b>notify_listeners</b>(channel_name, *arguments)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Calls all the procs registered on the channel indicated by channel_name. If
+value is specified, it is passed in to the procs, otherwise they are called
+with no arguments.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005535_source')" id="l_M005535_source">show</a>
+                        
+                    </p>
+                    <div id="M005535_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/test/unit/util/observable.rb, line 74</span>
+74:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">notify_listeners</span>(<span class="ruby-identifier">channel_name</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">arguments</span>)
+75:           <span class="ruby-identifier">channel</span> = <span class="ruby-identifier">channels</span>[<span class="ruby-identifier">channel_name</span>]
+76:           <span class="ruby-keyword kw">return</span> <span class="ruby-value">0</span> <span class="ruby-keyword kw">unless</span> (<span class="ruby-identifier">channel</span>)
+77:           <span class="ruby-identifier">listeners</span> = <span class="ruby-identifier">channel</span>.<span class="ruby-identifier">values</span>
+78:           <span class="ruby-identifier">listeners</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">listener</span><span class="ruby-operator">|</span> <span class="ruby-identifier">listener</span>.<span class="ruby-identifier">call</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">arguments</span>) }
+79:           <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">listeners</span>.<span class="ruby-identifier">size</span>
+80:         <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005534">
+                    
+                    <a name="M005534"></a><b>remove_listener</b>(channel_name, listener_key)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Removes the listener indicated by listener_key from the channel indicated
+by channel_name. Returns the registered proc, or nil if none was found.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005534_source')" id="l_M005534_source">show</a>
+                        
+                    </p>
+                    <div id="M005534_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/test/unit/util/observable.rb, line 51</span>
+51:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">remove_listener</span>(<span class="ruby-identifier">channel_name</span>, <span class="ruby-identifier">listener_key</span>)
+52:           <span class="ruby-identifier">channel</span> = <span class="ruby-identifier">channels</span>[<span class="ruby-identifier">channel_name</span>]
+53:           <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">nil</span> <span class="ruby-keyword kw">unless</span> (<span class="ruby-identifier">channel</span>)
+54:           <span class="ruby-identifier">key</span> = <span class="ruby-identifier">listener_key</span>
+55:           <span class="ruby-keyword kw">if</span> (<span class="ruby-identifier">listener_key</span>.<span class="ruby-identifier">instance_of?</span>(<span class="ruby-constant">Proc</span>))
+56:             <span class="ruby-identifier">key</span> = <span class="ruby-constant">ProcWrapper</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">listener_key</span>)
+57:           <span class="ruby-keyword kw">end</span>
+58:           <span class="ruby-keyword kw">if</span> (<span class="ruby-identifier">channel</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-identifier">key</span>))
+59:             <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">channel</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">key</span>)
+60:           <span class="ruby-keyword kw">end</span>
+61:           <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">nil</span>
+62:         <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Private methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005536">
+                    
+                    <a name="M005536"></a><b>channels</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005536_source')" id="l_M005536_source">show</a>
+                        
+                    </p>
+                    <div id="M005536_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/test/unit/util/observable.rb, line 83</span>
+83:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">channels</span>
+84:           <span class="ruby-ivar">@channels</span> <span class="ruby-operator">||=</span> {}
+85:           <span class="ruby-keyword kw">return</span> <span class="ruby-ivar">@channels</span>
+86:         <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>YAML::Syck::Out</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            YAML::Syck::Out 
+            
+                <span class="parent">&lt; 
+                    
+                    rb_cObject 
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../../files/ext/syck/rubyext_c.html">ext/syck/rubyext.c</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+Define <a href="Out.html">YAML::Syck::Out</a> classes
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>M</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007404">map</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007403">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M007406">scalar</a>,</li>
+                
+                <li><a href="#M007405">seq</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Attributes</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [RW]
+            </td>
+            <td class='attr-name'>emitter</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+    </table>
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M007403">
+                    
+                    <a name="M007403"></a><b>new</b>(p1)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+YAML::Syck::Out::initialize
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007403_source')" id="l_M007403_source">show</a>
+                        
+                    </p>
+                    <div id="M007403_source" class="dyn-source">
+                        <pre>VALUE
+syck_out_initialize( self, emitter )
+    VALUE self, emitter;
+{
+    rb_ivar_set( self, s_emitter, emitter );
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M007404">
+                    
+                    <a name="M007404"></a><b>map</b>(...)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+YAML::Syck::Out::map
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007404_source')" id="l_M007404_source">show</a>
+                        
+                    </p>
+                    <div id="M007404_source" class="dyn-source">
+                        <pre>VALUE
+syck_out_map( argc, argv, self )
+    int argc;
+    VALUE *argv;
+    VALUE self;
+{
+    VALUE type_id, style, map;
+    if (rb_scan_args(argc, argv, &quot;11&quot;, &amp;type_id, &amp;style) == 1) {
+        style = Qnil;
+    }
+    map = rb_funcall( cMap, s_new, 3, type_id, rb_hash_new(), style );
+    syck_out_mark( rb_ivar_get( self, s_emitter ), map );
+    rb_yield( map );
+    return map;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007406">
+                    
+                    <a name="M007406"></a><b>scalar</b>(...)
+                    
+                </div>
+                
+                <div class="description">
+                  <pre>
+   YAML::Syck::Out::scalar
+</pre>
+<p>
+syck_out_scalar( self, type_id, str, style )
+</p>
+<pre>
+    VALUE self, type_id, str, style;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007406_source')" id="l_M007406_source">show</a>
+                        
+                    </p>
+                    <div id="M007406_source" class="dyn-source">
+                        <pre>VALUE
+syck_out_scalar( argc, argv, self )
+    int argc;
+    VALUE *argv;
+    VALUE self;
+{
+    VALUE type_id, str, style, scalar;
+    if (rb_scan_args(argc, argv, &quot;21&quot;, &amp;type_id, &amp;str, &amp;style) == 2) {
+        style = Qnil;
+    }
+    scalar = rb_funcall( cScalar, s_new, 3, type_id, str, style );
+    syck_out_mark( rb_ivar_get( self, s_emitter ), scalar );
+    return scalar;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M007405">
+                    
+                    <a name="M007405"></a><b>seq</b>(...)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+YAML::Syck::Out::seq
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M007405_source')" id="l_M007405_source">show</a>
+                        
+                    </p>
+                    <div id="M007405_source" class="dyn-source">
+                        <pre>VALUE
+syck_out_seq( argc, argv, self )
+    int argc;
+    VALUE *argv;
+    VALUE self;
+{
+    VALUE type_id, style, seq;
+    if (rb_scan_args(argc, argv, &quot;11&quot;, &amp;type_id, &amp;style) == 1) {
+        style = Qnil;
+    }
+    seq = rb_funcall( cSeq, s_new, 3, type_id, rb_ary_new(), style );
+    syck_out_mark( rb_ivar_get( self, s_emitter ), seq );
+    rb_yield( seq );
+    return seq;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

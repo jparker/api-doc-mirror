@@ -1,0 +1,591 @@
+  <div id="fileHeader">
+    <h1>resources.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionpack/lib/action_controller/resources.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:04 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>module ActionController
+  # == Overview
+  #
+  # ActionController::Resources are a way of defining RESTful resources.  A RESTful resource, in basic terms,
+  # is something that can be pointed at and it will respond with a representation of the data requested.
+  # In real terms this could mean a user with a browser requests an HTML page, or that a desktop application
+  # requests XML data.
+  #
+  # RESTful design is based on the assumption that there are four generic verbs that a user of an
+  # application can request from a resource (the noun).
+  #
+  # Resources can be requested using four basic HTTP verbs (GET, POST, PUT, DELETE), the method used
+  # denotes the type of action that should take place.
+  #
+  # === The Different Methods and their Usage
+  #
+  # +GET+     Requests for a resource, no saving or editing of a resource should occur in a GET request
+  # +POST+    Creation of resources
+  # +PUT+     Editing of attributes on a resource
+  # +DELETE+  Deletion of a resource
+  #
+  # === Examples
+  #
+  #   # A GET request on the Posts resource is asking for all Posts
+  #   GET /posts
+  #
+  #   # A GET request on a single Post resource is asking for that particular Post
+  #   GET /posts/1
+  #
+  #   # A POST request on the Posts resource is asking for a Post to be created with the supplied details
+  #   POST /posts # with =&gt; { :post =&gt; { :title =&gt; &quot;My Whizzy New Post&quot;, :body =&gt; &quot;I've got a brand new combine harvester&quot; } }
+  #
+  #   # A PUT request on a single Post resource is asking for a Post to be updated
+  #   PUT /posts # with =&gt; { :id =&gt; 1, :post =&gt; { :title =&gt; &quot;Changed Whizzy Title&quot; } }
+  #
+  #   # A DELETE request on a single Post resource is asking for it to be deleted
+  #   DELETE /posts # with =&gt; { :id =&gt; 1 }
+  #
+  # By using the REST convention, users of our application can assume certain things about how the data
+  # is requested and how it is returned.  Rails simplifies the routing part of RESTful design by
+  # supplying you with methods to create them in your routes.rb file.
+  #
+  # Read more about REST at http://en.wikipedia.org/wiki/Representational_State_Transfer
+  module Resources
+    class Resource #:nodoc:
+      attr_reader :collection_methods, :member_methods, :new_methods
+      attr_reader :path_prefix, :name_prefix, :path_segment
+      attr_reader :plural, :singular
+      attr_reader :options
+
+      def initialize(entities, options)
+        @plural   ||= entities
+        @singular ||= options[:singular] || plural.to_s.singularize
+        @path_segment = options.delete(:as) || @plural
+
+        @options = options
+
+        arrange_actions
+        add_default_actions
+        set_prefixes
+      end
+
+      def controller
+        @controller ||= &quot;#{options[:namespace]}#{(options[:controller] || plural).to_s}&quot;
+      end
+
+      def requirements(with_id = false)
+        @requirements   ||= @options[:requirements] || {}
+        @id_requirement ||= { :id =&gt; @requirements.delete(:id) || /[^#{Routing::SEPARATORS.join}]+/ }
+
+        with_id ? @requirements.merge(@id_requirement) : @requirements
+      end
+
+      def conditions
+        @conditions = @options[:conditions] || {}
+      end
+
+      def path
+        @path ||= &quot;#{path_prefix}/#{path_segment}&quot;
+      end
+
+      def new_path
+        new_action = self.options[:path_names][:new] if self.options[:path_names]
+        new_action ||= Base.resources_path_names[:new]
+        @new_path ||= &quot;#{path}/#{new_action}&quot;
+      end
+
+      def member_path
+        @member_path ||= &quot;#{path}/:id&quot;
+      end
+
+      def nesting_path_prefix
+        @nesting_path_prefix ||= &quot;#{path}/:#{singular}_id&quot;
+      end
+
+      def nesting_name_prefix
+        &quot;#{name_prefix}#{singular}_&quot;
+      end
+
+      def action_separator
+        @action_separator ||= Base.resource_action_separator
+      end
+
+      def uncountable?
+        @singular.to_s == @plural.to_s
+      end
+
+      protected
+        def arrange_actions
+          @collection_methods = arrange_actions_by_methods(options.delete(:collection))
+          @member_methods     = arrange_actions_by_methods(options.delete(:member))
+          @new_methods        = arrange_actions_by_methods(options.delete(:new))
+        end
+
+        def add_default_actions
+          add_default_action(member_methods, :get, :edit)
+          add_default_action(new_methods, :get, :new)
+        end
+
+        def set_prefixes
+          @path_prefix = options.delete(:path_prefix)
+          @name_prefix = options.delete(:name_prefix)
+        end
+
+        def arrange_actions_by_methods(actions)
+          (actions || {}).inject({}) do |flipped_hash, (key, value)|
+            (flipped_hash[value] ||= []) &lt;&lt; key
+            flipped_hash
+          end
+        end
+
+        def add_default_action(collection, method, action)
+          (collection[method] ||= []).unshift(action)
+        end
+    end
+
+    class SingletonResource &lt; Resource #:nodoc:
+      def initialize(entity, options)
+        @singular = @plural = entity
+        options[:controller] ||= @singular.to_s.pluralize
+        super
+      end
+
+      alias_method :member_path,         :path
+      alias_method :nesting_path_prefix, :path
+    end
+
+    # Creates named routes for implementing verb-oriented controllers
+    # for a collection resource.
+    #
+    # For example:
+    #
+    #   map.resources :messages
+    #
+    # will map the following actions in the corresponding controller:
+    #
+    #   class MessagesController &lt; ActionController::Base
+    #     # GET messages_url
+    #     def index
+    #       # return all messages
+    #     end
+    #
+    #     # GET new_message_url
+    #     def new
+    #       # return an HTML form for describing a new message
+    #     end
+    #
+    #     # POST messages_url
+    #     def create
+    #       # create a new message
+    #     end
+    #
+    #     # GET message_url(:id =&gt; 1)
+    #     def show
+    #       # find and return a specific message
+    #     end
+    #
+    #     # GET edit_message_url(:id =&gt; 1)
+    #     def edit
+    #       # return an HTML form for editing a specific message
+    #     end
+    #
+    #     # PUT message_url(:id =&gt; 1)
+    #     def update
+    #       # find and update a specific message
+    #     end
+    #
+    #     # DELETE message_url(:id =&gt; 1)
+    #     def destroy
+    #       # delete a specific message
+    #     end
+    #   end
+    #
+    # Along with the routes themselves, +resources+ generates named routes for use in
+    # controllers and views. &lt;tt&gt;map.resources :messages&lt;/tt&gt; produces the following named routes and helpers:
+    #
+    #   Named Route   Helpers
+    #   ============  =====================================================
+    #   messages      messages_url, hash_for_messages_url,
+    #                 messages_path, hash_for_messages_path
+    #
+    #   message       message_url(id), hash_for_message_url(id),
+    #                 message_path(id), hash_for_message_path(id)
+    #
+    #   new_message   new_message_url, hash_for_new_message_url,
+    #                 new_message_path, hash_for_new_message_path
+    #
+    #   edit_message  edit_message_url(id), hash_for_edit_message_url(id),
+    #                 edit_message_path(id), hash_for_edit_message_path(id)
+    #
+    # You can use these helpers instead of +url_for+ or methods that take +url_for+ parameters. For example:
+    #
+    #   redirect_to :controller =&gt; 'messages', :action =&gt; 'index'
+    #   # and
+    #   &lt;%= link_to &quot;edit this message&quot;, :controller =&gt; 'messages', :action =&gt; 'edit', :id =&gt; @message.id %&gt;
+    #
+    # now become:
+    #
+    #   redirect_to messages_url
+    #   # and
+    #   &lt;%= link_to &quot;edit this message&quot;, edit_message_url(@message) # calls @message.id automatically
+    #
+    # Since web browsers don't support the PUT and DELETE verbs, you will need to add a parameter '_method' to your
+    # form tags. The form helpers make this a little easier. For an update form with a &lt;tt&gt;@message&lt;/tt&gt; object:
+    #
+    #   &lt;%= form_tag message_path(@message), :method =&gt; :put %&gt;
+    #
+    # or
+    #
+    #   &lt;% form_for :message, @message, :url =&gt; message_path(@message), :html =&gt; {:method =&gt; :put} do |f| %&gt;
+    #
+    # or
+    #
+    #   &lt;% form_for @message do |f| %&gt;
+    #
+    # which takes into account whether &lt;tt&gt;@message&lt;/tt&gt; is a new record or not and generates the
+    # path and method accordingly.
+    #
+    # The +resources+ method accepts the following options to customize the resulting routes:
+    # * &lt;tt&gt;:collection&lt;/tt&gt; - Add named routes for other actions that operate on the collection.
+    #   Takes a hash of &lt;tt&gt;#{action} =&gt; #{method}&lt;/tt&gt;, where method is &lt;tt&gt;:get&lt;/tt&gt;/&lt;tt&gt;:post&lt;/tt&gt;/&lt;tt&gt;:put&lt;/tt&gt;/&lt;tt&gt;:delete&lt;/tt&gt;
+    #   or &lt;tt&gt;:any&lt;/tt&gt; if the method does not matter.  These routes map to a URL like /messages/rss, with a route of +rss_messages_url+.
+    # * &lt;tt&gt;:member&lt;/tt&gt; - Same as &lt;tt&gt;:collection&lt;/tt&gt;, but for actions that operate on a specific member.
+    # * &lt;tt&gt;:new&lt;/tt&gt; - Same as &lt;tt&gt;:collection&lt;/tt&gt;, but for actions that operate on the new resource action.
+    # * &lt;tt&gt;:controller&lt;/tt&gt; - Specify the controller name for the routes.
+    # * &lt;tt&gt;:singular&lt;/tt&gt; - Specify the singular name used in the member routes.
+    # * &lt;tt&gt;:requirements&lt;/tt&gt; - Set custom routing parameter requirements.
+    # * &lt;tt&gt;:conditions&lt;/tt&gt; - Specify custom routing recognition conditions.  Resources sets the &lt;tt&gt;:method&lt;/tt&gt; value for the method-specific routes.
+    # * &lt;tt&gt;:as&lt;/tt&gt; - Specify a different resource name to use in the URL path. For example:
+    #     # products_path == '/productos'
+    #     map.resources :products, :as =&gt; 'productos' do |product|
+    #       # product_reviews_path(product) == '/productos/1234/comentarios'
+    #       product.resources :product_reviews, :as =&gt; 'comentarios'
+    #     end
+    #
+    # * &lt;tt&gt;:has_one&lt;/tt&gt; - Specify nested resources, this is a shorthand for mapping singleton resources beneath the current.
+    # * &lt;tt&gt;:has_many&lt;/tt&gt; - Same has &lt;tt&gt;:has_one&lt;/tt&gt;, but for plural resources.
+    #
+    #   You may directly specify the routing association with +has_one+ and +has_many+ like:
+    #
+    #     map.resources :notes, :has_one =&gt; :author, :has_many =&gt; [:comments, :attachments]
+    #
+    #   This is the same as:
+    #
+    #     map.resources :notes do |notes|
+    #       notes.resource  :author
+    #       notes.resources :comments
+    #       notes.resources :attachments
+    #     end
+    #
+    # * &lt;tt&gt;:path_names&lt;/tt&gt; - Specify different names for the 'new' and 'edit' actions. For example:
+    #     # new_products_path == '/productos/nuevo'
+    #     map.resources :products, :as =&gt; 'productos', :path_names =&gt; { :new =&gt; 'nuevo', :edit =&gt; 'editar' }
+    #
+    #   You can also set default action names from an environment, like this:
+    #     config.action_controller.resources_path_names = { :new =&gt; 'nuevo', :edit =&gt; 'editar' }
+    #
+    # * &lt;tt&gt;:path_prefix&lt;/tt&gt; - Set a prefix to the routes with required route variables.
+    #
+    #   Weblog comments usually belong to a post, so you might use resources like:
+    #
+    #     map.resources :articles
+    #     map.resources :comments, :path_prefix =&gt; '/articles/:article_id'
+    #
+    #   You can nest resources calls to set this automatically:
+    #
+    #     map.resources :articles do |article|
+    #       article.resources :comments
+    #     end
+    #
+    #   The comment resources work the same, but must now include a value for &lt;tt&gt;:article_id&lt;/tt&gt;.
+    #
+    #     article_comments_url(@article)
+    #     article_comment_url(@article, @comment)
+    #
+    #     article_comments_url(:article_id =&gt; @article)
+    #     article_comment_url(:article_id =&gt; @article, :id =&gt; @comment)
+    #
+    # * &lt;tt&gt;:name_prefix&lt;/tt&gt; - Define a prefix for all generated routes, usually ending in an underscore.
+    #   Use this if you have named routes that may clash.
+    #
+    #     map.resources :tags, :path_prefix =&gt; '/books/:book_id', :name_prefix =&gt; 'book_'
+    #     map.resources :tags, :path_prefix =&gt; '/toys/:toy_id',   :name_prefix =&gt; 'toy_'
+    #
+    # You may also use &lt;tt&gt;:name_prefix&lt;/tt&gt; to override the generic named routes in a nested resource:
+    # 
+    #   map.resources :articles do |article|
+    #     article.resources :comments, :name_prefix =&gt; nil
+    #   end 
+    # 
+    # This will yield named resources like so:
+    # 
+    #   comments_url(@article)
+    #   comment_url(@article, @comment)
+    #
+    # If &lt;tt&gt;map.resources&lt;/tt&gt; is called with multiple resources, they all get the same options applied.
+    #
+    # Examples:
+    #
+    #   map.resources :messages, :path_prefix =&gt; &quot;/thread/:thread_id&quot;
+    #   # --&gt; GET /thread/7/messages/1
+    #
+    #   map.resources :messages, :collection =&gt; { :rss =&gt; :get }
+    #   # --&gt; GET /messages/rss (maps to the #rss action)
+    #   #     also adds a named route called &quot;rss_messages&quot;
+    #
+    #   map.resources :messages, :member =&gt; { :mark =&gt; :post }
+    #   # --&gt; POST /messages/1/mark (maps to the #mark action)
+    #   #     also adds a named route called &quot;mark_message&quot;
+    #
+    #   map.resources :messages, :new =&gt; { :preview =&gt; :post }
+    #   # --&gt; POST /messages/new/preview (maps to the #preview action)
+    #   #     also adds a named route called &quot;preview_new_message&quot;
+    #
+    #   map.resources :messages, :new =&gt; { :new =&gt; :any, :preview =&gt; :post }
+    #   # --&gt; POST /messages/new/preview (maps to the #preview action)
+    #   #     also adds a named route called &quot;preview_new_message&quot;
+    #   # --&gt; /messages/new can be invoked via any request method
+    #
+    #   map.resources :messages, :controller =&gt; &quot;categories&quot;,
+    #         :path_prefix =&gt; &quot;/category/:category_id&quot;,
+    #         :name_prefix =&gt; &quot;category_&quot;
+    #   # --&gt; GET /categories/7/messages/1
+    #   #     has named route &quot;category_message&quot;
+    #
+    # The +resources+ method sets HTTP method restrictions on the routes it generates. For example, making an
+    # HTTP POST on &lt;tt&gt;new_message_url&lt;/tt&gt; will raise a RoutingError exception. The default route in
+    # &lt;tt&gt;config/routes.rb&lt;/tt&gt; overrides this and allows invalid HTTP methods for resource routes.
+    def resources(*entities, &amp;block)
+      options = entities.extract_options!
+      entities.each { |entity| map_resource(entity, options.dup, &amp;block) }
+    end
+
+    # Creates named routes for implementing verb-oriented controllers for a singleton resource.
+    # A singleton resource is global to its current context.  For unnested singleton resources,
+    # the resource is global to the current user visiting the application, such as a user's
+    # /account profile.  For nested singleton resources, the resource is global to its parent
+    # resource, such as a &lt;tt&gt;projects&lt;/tt&gt; resource that &lt;tt&gt;has_one :project_manager&lt;/tt&gt;.
+    # The &lt;tt&gt;project_manager&lt;/tt&gt; should be mapped as a singleton resource under &lt;tt&gt;projects&lt;/tt&gt;:
+    #
+    #   map.resources :projects do |project|
+    #     project.resource :project_manager
+    #   end
+    #
+    # See map.resources for general conventions.  These are the main differences:
+    # * A singular name is given to map.resource.  The default controller name is still taken from the plural name.
+    # * To specify a custom plural name, use the &lt;tt&gt;:plural&lt;/tt&gt; option.  There is no &lt;tt&gt;:singular&lt;/tt&gt; option.
+    # * No default index route is created for the singleton resource controller.
+    # * When nesting singleton resources, only the singular name is used as the path prefix (example: 'account/messages/1')
+    #
+    # For example:
+    #
+    #   map.resource :account
+    #
+    # maps these actions in the Accounts controller:
+    #
+    #   class AccountsController &lt; ActionController::Base
+    #     # GET new_account_url
+    #     def new
+    #       # return an HTML form for describing the new account
+    #     end
+    #
+    #     # POST account_url
+    #     def create
+    #       # create an account
+    #     end
+    #
+    #     # GET account_url
+    #     def show
+    #       # find and return the account
+    #     end
+    #
+    #     # GET edit_account_url
+    #     def edit
+    #       # return an HTML form for editing the account
+    #     end
+    #
+    #     # PUT account_url
+    #     def update
+    #       # find and update the account
+    #     end
+    #
+    #     # DELETE account_url
+    #     def destroy
+    #       # delete the account
+    #     end
+    #   end
+    #
+    # Along with the routes themselves, +resource+ generates named routes for
+    # use in controllers and views. &lt;tt&gt;map.resource :account&lt;/tt&gt; produces
+    # these named routes and helpers:
+    #
+    #   Named Route   Helpers
+    #   ============  =============================================
+    #   account       account_url, hash_for_account_url,
+    #                 account_path, hash_for_account_path
+    #
+    #   new_account   new_account_url, hash_for_new_account_url,
+    #                 new_account_path, hash_for_new_account_path
+    #
+    #   edit_account  edit_account_url, hash_for_edit_account_url,
+    #                 edit_account_path, hash_for_edit_account_path
+    def resource(*entities, &amp;block)
+      options = entities.extract_options!
+      entities.each { |entity| map_singleton_resource(entity, options.dup, &amp;block) }
+    end
+
+    private
+      def map_resource(entities, options = {}, &amp;block)
+        resource = Resource.new(entities, options)
+
+        with_options :controller =&gt; resource.controller do |map|
+          map_collection_actions(map, resource)
+          map_default_collection_actions(map, resource)
+          map_new_actions(map, resource)
+          map_member_actions(map, resource)
+
+          map_associations(resource, options)
+
+          if block_given?
+            with_options(:path_prefix =&gt; resource.nesting_path_prefix, :name_prefix =&gt; resource.nesting_name_prefix, :namespace =&gt; options[:namespace], &amp;block)
+          end
+        end
+      end
+
+      def map_singleton_resource(entities, options = {}, &amp;block)
+        resource = SingletonResource.new(entities, options)
+
+        with_options :controller =&gt; resource.controller do |map|
+          map_collection_actions(map, resource)
+          map_default_singleton_actions(map, resource)
+          map_new_actions(map, resource)
+          map_member_actions(map, resource)
+
+          map_associations(resource, options)
+
+          if block_given?
+            with_options(:path_prefix =&gt; resource.nesting_path_prefix, :name_prefix =&gt; resource.nesting_name_prefix, :namespace =&gt; options[:namespace], &amp;block)
+          end
+        end
+      end
+
+      def map_associations(resource, options)
+        path_prefix = &quot;#{options.delete(:path_prefix)}#{resource.nesting_path_prefix}&quot;
+        name_prefix = &quot;#{options.delete(:name_prefix)}#{resource.nesting_name_prefix}&quot;
+
+        Array(options[:has_many]).each do |association|
+          resources(association, :path_prefix =&gt; path_prefix, :name_prefix =&gt; name_prefix, :namespace =&gt; options[:namespace])
+        end
+
+        Array(options[:has_one]).each do |association|
+          resource(association, :path_prefix =&gt; path_prefix, :name_prefix =&gt; name_prefix, :namespace =&gt; options[:namespace])
+        end
+      end
+
+      def map_collection_actions(map, resource)
+        resource.collection_methods.each do |method, actions|
+          actions.each do |action|
+            action_options = action_options_for(action, resource, method)
+            map.named_route(&quot;#{action}_#{resource.name_prefix}#{resource.plural}&quot;, &quot;#{resource.path}#{resource.action_separator}#{action}&quot;, action_options)
+            map.named_route(&quot;formatted_#{action}_#{resource.name_prefix}#{resource.plural}&quot;, &quot;#{resource.path}#{resource.action_separator}#{action}.:format&quot;, action_options)
+          end
+        end
+      end
+
+      def map_default_collection_actions(map, resource)
+        index_action_options = action_options_for(&quot;index&quot;, resource)
+        index_route_name = &quot;#{resource.name_prefix}#{resource.plural}&quot;
+
+        if resource.uncountable?
+          index_route_name &lt;&lt; &quot;_index&quot;
+        end
+
+        map.named_route(index_route_name, resource.path, index_action_options)
+        map.named_route(&quot;formatted_#{index_route_name}&quot;, &quot;#{resource.path}.:format&quot;, index_action_options)
+
+        create_action_options = action_options_for(&quot;create&quot;, resource)
+        map.connect(resource.path, create_action_options)
+        map.connect(&quot;#{resource.path}.:format&quot;, create_action_options)
+      end
+
+      def map_default_singleton_actions(map, resource)
+        create_action_options = action_options_for(&quot;create&quot;, resource)
+        map.connect(resource.path, create_action_options)
+        map.connect(&quot;#{resource.path}.:format&quot;, create_action_options)
+      end
+
+      def map_new_actions(map, resource)
+        resource.new_methods.each do |method, actions|
+          actions.each do |action|
+            action_options = action_options_for(action, resource, method)
+            if action == :new
+              map.named_route(&quot;new_#{resource.name_prefix}#{resource.singular}&quot;, resource.new_path, action_options)
+              map.named_route(&quot;formatted_new_#{resource.name_prefix}#{resource.singular}&quot;, &quot;#{resource.new_path}.:format&quot;, action_options)
+            else
+              map.named_route(&quot;#{action}_new_#{resource.name_prefix}#{resource.singular}&quot;, &quot;#{resource.new_path}#{resource.action_separator}#{action}&quot;, action_options)
+              map.named_route(&quot;formatted_#{action}_new_#{resource.name_prefix}#{resource.singular}&quot;, &quot;#{resource.new_path}#{resource.action_separator}#{action}.:format&quot;, action_options)
+            end
+          end
+        end
+      end
+
+      def map_member_actions(map, resource)
+        resource.member_methods.each do |method, actions|
+          actions.each do |action|
+            action_options = action_options_for(action, resource, method)
+
+            action_path = resource.options[:path_names][action] if resource.options[:path_names].is_a?(Hash)
+            action_path ||= Base.resources_path_names[action] || action
+
+            map.named_route(&quot;#{action}_#{resource.name_prefix}#{resource.singular}&quot;, &quot;#{resource.member_path}#{resource.action_separator}#{action_path}&quot;, action_options)
+            map.named_route(&quot;formatted_#{action}_#{resource.name_prefix}#{resource.singular}&quot;, &quot;#{resource.member_path}#{resource.action_separator}#{action_path}.:format&quot;,action_options)
+          end
+        end
+
+        show_action_options = action_options_for(&quot;show&quot;, resource)
+        map.named_route(&quot;#{resource.name_prefix}#{resource.singular}&quot;, resource.member_path, show_action_options)
+        map.named_route(&quot;formatted_#{resource.name_prefix}#{resource.singular}&quot;, &quot;#{resource.member_path}.:format&quot;, show_action_options)
+
+        update_action_options = action_options_for(&quot;update&quot;, resource)
+        map.connect(resource.member_path, update_action_options)
+        map.connect(&quot;#{resource.member_path}.:format&quot;, update_action_options)
+
+        destroy_action_options = action_options_for(&quot;destroy&quot;, resource)
+        map.connect(resource.member_path, destroy_action_options)
+        map.connect(&quot;#{resource.member_path}.:format&quot;, destroy_action_options)
+      end
+
+      def add_conditions_for(conditions, method)
+        returning({:conditions =&gt; conditions.dup}) do |options|
+          options[:conditions][:method] = method unless method == :any
+        end
+      end
+
+      def action_options_for(action, resource, method = nil)
+        default_options = { :action =&gt; action.to_s }
+        require_id = !resource.kind_of?(SingletonResource)
+        case default_options[:action]
+          when &quot;index&quot;, &quot;new&quot;; default_options.merge(add_conditions_for(resource.conditions, method || :get)).merge(resource.requirements)
+          when &quot;create&quot;;       default_options.merge(add_conditions_for(resource.conditions, method || :post)).merge(resource.requirements)
+          when &quot;show&quot;, &quot;edit&quot;; default_options.merge(add_conditions_for(resource.conditions, method || :get)).merge(resource.requirements(require_id))
+          when &quot;update&quot;;       default_options.merge(add_conditions_for(resource.conditions, method || :put)).merge(resource.requirements(require_id))
+          when &quot;destroy&quot;;      default_options.merge(add_conditions_for(resource.conditions, method || :delete)).merge(resource.requirements(require_id))
+          else                  default_options.merge(add_conditions_for(resource.conditions, method)).merge(resource.requirements)
+        end
+      end
+  end
+end
+
+class ActionController::Routing::RouteSet::Mapper
+  include ActionController::Resources
+end
+</pre>
+    </div>

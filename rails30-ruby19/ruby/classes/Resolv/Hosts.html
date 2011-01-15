@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Resolv::Hosts</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            Resolv::Hosts 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../files/lib/resolv_rb.html">lib/resolv.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+<a href="Hosts.html">Resolv::Hosts</a> is a hostname resolver that uses the
+system hosts file.
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002851">each_address</a>,</li>
+                
+                <li><a href="#M002854">each_name</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>G</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002849">getaddress</a>,</li>
+                
+                <li><a href="#M002850">getaddresses</a>,</li>
+                
+                <li><a href="#M002852">getname</a>,</li>
+                
+                <li><a href="#M002853">getnames</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M002843">new</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">DefaultFileName</td>
+            <td>=</td>
+            <td class="attr-value">Win32::Resolv.get_hosts_path</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">DefaultFileName</td>
+            <td>=</td>
+            <td class="attr-value">'/etc/hosts'</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M002843">
+                    
+                    <a name="M002843"></a><b>new</b>(filename = DefaultFileName)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Creates a new <a href="Hosts.html">Resolv::Hosts</a>, using
+<tt>filename</tt> for its data source.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002843_source')" id="l_M002843_source">show</a>
+                        
+                    </p>
+                    <div id="M002843_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/resolv.rb, line 178</span>
+178:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">filename</span> = <span class="ruby-constant">DefaultFileName</span>)
+179:       <span class="ruby-ivar">@filename</span> = <span class="ruby-identifier">filename</span>
+180:       <span class="ruby-ivar">@mutex</span> = <span class="ruby-constant">Mutex</span>.<span class="ruby-identifier">new</span>
+181:       <span class="ruby-ivar">@initialized</span> = <span class="ruby-keyword kw">nil</span>
+182:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M002851">
+                    
+                    <a name="M002851"></a><b>each_address</b>(name, &amp;proc)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Iterates over all IP addresses for <tt>name</tt> retrieved from the hosts
+file.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002851_source')" id="l_M002851_source">show</a>
+                        
+                    </p>
+                    <div id="M002851_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/resolv.rb, line 235</span>
+235:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">each_address</span>(<span class="ruby-identifier">name</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">proc</span>)
+236:       <span class="ruby-identifier">lazy_initialize</span>
+237:       <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@name2addr</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">name</span>)
+238:         <span class="ruby-ivar">@name2addr</span>[<span class="ruby-identifier">name</span>].<span class="ruby-identifier">each</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">proc</span>)
+239:       <span class="ruby-keyword kw">end</span>
+240:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002854">
+                    
+                    <a name="M002854"></a><b>each_name</b>(address, &amp;proc)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Iterates over all hostnames for <tt>address</tt> retrieved from the hosts
+file.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002854_source')" id="l_M002854_source">show</a>
+                        
+                    </p>
+                    <div id="M002854_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/resolv.rb, line 262</span>
+262:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">each_name</span>(<span class="ruby-identifier">address</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">proc</span>)
+263:       <span class="ruby-identifier">lazy_initialize</span>
+264:       <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@addr2name</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">address</span>)
+265:         <span class="ruby-ivar">@addr2name</span>[<span class="ruby-identifier">address</span>].<span class="ruby-identifier">each</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">proc</span>)
+266:       <span class="ruby-keyword kw">end</span>
+267:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002849">
+                    
+                    <a name="M002849"></a><b>getaddress</b>(name)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Gets the IP address of <tt>name</tt> from the hosts file.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002849_source')" id="l_M002849_source">show</a>
+                        
+                    </p>
+                    <div id="M002849_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/resolv.rb, line 218</span>
+218:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">getaddress</span>(<span class="ruby-identifier">name</span>)
+219:       <span class="ruby-identifier">each_address</span>(<span class="ruby-identifier">name</span>) {<span class="ruby-operator">|</span><span class="ruby-identifier">address</span><span class="ruby-operator">|</span> <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">address</span>}
+220:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">ResolvError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-node">&quot;#{@filename} has no name: #{name}&quot;</span>)
+221:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002850">
+                    
+                    <a name="M002850"></a><b>getaddresses</b>(name)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Gets all IP addresses for <tt>name</tt> from the hosts file.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002850_source')" id="l_M002850_source">show</a>
+                        
+                    </p>
+                    <div id="M002850_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/resolv.rb, line 226</span>
+226:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">getaddresses</span>(<span class="ruby-identifier">name</span>)
+227:       <span class="ruby-identifier">ret</span> = []
+228:       <span class="ruby-identifier">each_address</span>(<span class="ruby-identifier">name</span>) {<span class="ruby-operator">|</span><span class="ruby-identifier">address</span><span class="ruby-operator">|</span> <span class="ruby-identifier">ret</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">address</span>}
+229:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">ret</span>
+230:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002852">
+                    
+                    <a name="M002852"></a><b>getname</b>(address)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Gets the hostname of <tt>address</tt> from the hosts file.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002852_source')" id="l_M002852_source">show</a>
+                        
+                    </p>
+                    <div id="M002852_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/resolv.rb, line 245</span>
+245:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">getname</span>(<span class="ruby-identifier">address</span>)
+246:       <span class="ruby-identifier">each_name</span>(<span class="ruby-identifier">address</span>) {<span class="ruby-operator">|</span><span class="ruby-identifier">name</span><span class="ruby-operator">|</span> <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">name</span>}
+247:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">ResolvError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-node">&quot;#{@filename} has no address: #{address}&quot;</span>)
+248:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M002853">
+                    
+                    <a name="M002853"></a><b>getnames</b>(address)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Gets all hostnames for <tt>address</tt> from the hosts file.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M002853_source')" id="l_M002853_source">show</a>
+                        
+                    </p>
+                    <div id="M002853_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/resolv.rb, line 253</span>
+253:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">getnames</span>(<span class="ruby-identifier">address</span>)
+254:       <span class="ruby-identifier">ret</span> = []
+255:       <span class="ruby-identifier">each_name</span>(<span class="ruby-identifier">address</span>) {<span class="ruby-operator">|</span><span class="ruby-identifier">name</span><span class="ruby-operator">|</span> <span class="ruby-identifier">ret</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">name</span>}
+256:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">ret</span>
+257:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

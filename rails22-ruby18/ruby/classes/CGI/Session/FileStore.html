@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>CGI::Session::FileStore</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            CGI::Session::FileStore 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../../Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../../files/lib/cgi/session_rb.html">lib/cgi/session.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+File-based session storage class.
+</p>
+<p>
+Implements session storage as a flat file of &#8216;key=value&#8217;
+values. This storage type only works directly with <a
+href="../../String.html">String</a> values; the user is responsible for
+converting other types to Strings when storing and from Strings when
+retrieving.
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003453">close</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>D</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003454">delete</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003450">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>R</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003451">restore</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>U</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003452">update</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M003450">
+                    
+                    <a name="M003450"></a><b>new</b>(session, option={})
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Create a new <a href="FileStore.html">FileStore</a> instance.
+</p>
+<p>
+This constructor is used internally by <a
+href="../Session.html">CGI::Session</a>. The user does not generally need
+to call it directly.
+</p>
+<p>
+<tt>session</tt> is the session for which this instance is being created.
+The session id must only contain alphanumeric characters; automatically
+generated session ids observe this requirement.
+</p>
+<p>
+<tt>option</tt> is a hash of options for the initializer. The following
+options are recognised:
+</p>
+<table>
+<tr><td valign="top">tmpdir:</td><td>the directory to use for storing the <a href="FileStore.html">FileStore</a>
+file. Defaults to Dir::tmpdir (generally &#8220;/tmp&#8221; on Unix
+systems).
+
+</td></tr>
+<tr><td valign="top">prefix:</td><td>the prefix to add to the session id when generating the filename for this
+session&#8217;s <a href="FileStore.html">FileStore</a> file. Defaults to
+the empty string.
+
+</td></tr>
+<tr><td valign="top">suffix:</td><td>the prefix to add to the session id when generating the filename for this
+session&#8217;s <a href="FileStore.html">FileStore</a> file. Defaults to
+the empty string.
+
+</td></tr>
+</table>
+<p>
+This session&#8217;s <a href="FileStore.html">FileStore</a> file will be
+created if it does not exist, or opened if it does.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003450_source')" id="l_M003450_source">show</a>
+                        
+                    </p>
+                    <div id="M003450_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi/session.rb, line 377</span>
+377:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">session</span>, <span class="ruby-identifier">option</span>={})
+378:         <span class="ruby-identifier">dir</span> = <span class="ruby-identifier">option</span>[<span class="ruby-value str">'tmpdir'</span>] <span class="ruby-operator">||</span> <span class="ruby-constant">Dir</span><span class="ruby-operator">::</span><span class="ruby-identifier">tmpdir</span>
+379:         <span class="ruby-identifier">prefix</span> = <span class="ruby-identifier">option</span>[<span class="ruby-value str">'prefix'</span>] <span class="ruby-operator">||</span> <span class="ruby-value str">''</span>
+380:         <span class="ruby-identifier">suffix</span> = <span class="ruby-identifier">option</span>[<span class="ruby-value str">'suffix'</span>] <span class="ruby-operator">||</span> <span class="ruby-value str">''</span>
+381:         <span class="ruby-identifier">id</span> = <span class="ruby-identifier">session</span>.<span class="ruby-identifier">session_id</span>
+382:         <span class="ruby-identifier">require</span> <span class="ruby-value str">'digest/md5'</span>
+383:         <span class="ruby-identifier">md5</span> = <span class="ruby-constant">Digest</span><span class="ruby-operator">::</span><span class="ruby-constant">MD5</span>.<span class="ruby-identifier">hexdigest</span>(<span class="ruby-identifier">id</span>)[<span class="ruby-value">0</span>,<span class="ruby-value">16</span>]
+384:         <span class="ruby-ivar">@path</span> = <span class="ruby-identifier">dir</span><span class="ruby-operator">+</span><span class="ruby-value str">&quot;/&quot;</span><span class="ruby-operator">+</span><span class="ruby-identifier">prefix</span><span class="ruby-operator">+</span><span class="ruby-identifier">md5</span><span class="ruby-operator">+</span><span class="ruby-identifier">suffix</span>
+385:         <span class="ruby-keyword kw">if</span> <span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-identifier">exist?</span> <span class="ruby-ivar">@path</span>
+386:           <span class="ruby-ivar">@hash</span> = <span class="ruby-keyword kw">nil</span>
+387:         <span class="ruby-keyword kw">else</span>
+388:           <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">session</span>.<span class="ruby-identifier">new_session</span>
+389:             <span class="ruby-identifier">raise</span> <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-constant">Session</span><span class="ruby-operator">::</span><span class="ruby-constant">NoSession</span>, <span class="ruby-value str">&quot;uninitialized session&quot;</span>
+390:           <span class="ruby-keyword kw">end</span>
+391:           <span class="ruby-ivar">@hash</span> = {}
+392:         <span class="ruby-keyword kw">end</span>
+393:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M003453">
+                    
+                    <a name="M003453"></a><b>close</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Update and close the session&#8217;s <a href="FileStore.html">FileStore</a>
+file.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003453_source')" id="l_M003453_source">show</a>
+                        
+                    </p>
+                    <div id="M003453_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi/session.rb, line 437</span>
+437:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">close</span>
+438:         <span class="ruby-identifier">update</span>
+439:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003454">
+                    
+                    <a name="M003454"></a><b>delete</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Close and delete the session&#8217;s <a href="FileStore.html">FileStore</a>
+file.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003454_source')" id="l_M003454_source">show</a>
+                        
+                    </p>
+                    <div id="M003454_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi/session.rb, line 442</span>
+442:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">delete</span>
+443:         <span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-identifier">unlink</span> <span class="ruby-ivar">@path</span><span class="ruby-operator">+</span><span class="ruby-value str">&quot;.lock&quot;</span> <span class="ruby-keyword kw">rescue</span> <span class="ruby-keyword kw">nil</span>
+444:         <span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-identifier">unlink</span> <span class="ruby-ivar">@path</span><span class="ruby-operator">+</span><span class="ruby-value str">&quot;.new&quot;</span> <span class="ruby-keyword kw">rescue</span> <span class="ruby-keyword kw">nil</span>
+445:         <span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-identifier">unlink</span> <span class="ruby-ivar">@path</span>
+446:       <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Errno</span><span class="ruby-operator">::</span><span class="ruby-constant">ENOENT</span>
+447:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003451">
+                    
+                    <a name="M003451"></a><b>restore</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Restore session state from the session&#8217;s <a
+href="FileStore.html">FileStore</a> file.
+</p>
+<p>
+Returns the session state as a hash.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003451_source')" id="l_M003451_source">show</a>
+                        
+                    </p>
+                    <div id="M003451_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi/session.rb, line 398</span>
+398:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">restore</span>
+399:         <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@hash</span>
+400:           <span class="ruby-ivar">@hash</span> = {}
+401:           <span class="ruby-keyword kw">begin</span>
+402:             <span class="ruby-identifier">lockf</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-ivar">@path</span><span class="ruby-operator">+</span><span class="ruby-value str">&quot;.lock&quot;</span>, <span class="ruby-value str">&quot;r&quot;</span>)
+403:             <span class="ruby-identifier">lockf</span>.<span class="ruby-identifier">flock</span> <span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-constant">LOCK_SH</span>
+404:             <span class="ruby-identifier">f</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-ivar">@path</span>, <span class="ruby-value str">'r'</span>)
+405:             <span class="ruby-keyword kw">for</span> <span class="ruby-identifier">line</span> <span class="ruby-keyword kw">in</span> <span class="ruby-identifier">f</span>
+406:               <span class="ruby-identifier">line</span>.<span class="ruby-identifier">chomp!</span>
+407:               <span class="ruby-identifier">k</span>, <span class="ruby-identifier">v</span> = <span class="ruby-identifier">line</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">'='</span>,<span class="ruby-value">2</span>)
+408:               <span class="ruby-ivar">@hash</span>[<span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">unescape</span>(<span class="ruby-identifier">k</span>)] = <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">unescape</span>(<span class="ruby-identifier">v</span>)
+409:             <span class="ruby-keyword kw">end</span>
+410:           <span class="ruby-keyword kw">ensure</span>
+411:             <span class="ruby-identifier">f</span>.<span class="ruby-identifier">close</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">f</span>.<span class="ruby-identifier">nil?</span>
+412:             <span class="ruby-identifier">lockf</span>.<span class="ruby-identifier">close</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">lockf</span>
+413:           <span class="ruby-keyword kw">end</span>
+414:         <span class="ruby-keyword kw">end</span>
+415:         <span class="ruby-ivar">@hash</span>
+416:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003452">
+                    
+                    <a name="M003452"></a><b>update</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Save session state to the session&#8217;s <a
+href="FileStore.html">FileStore</a> file.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003452_source')" id="l_M003452_source">show</a>
+                        
+                    </p>
+                    <div id="M003452_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi/session.rb, line 419</span>
+419:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">update</span>
+420:         <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@hash</span>
+421:         <span class="ruby-keyword kw">begin</span>
+422:           <span class="ruby-identifier">lockf</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-ivar">@path</span><span class="ruby-operator">+</span><span class="ruby-value str">&quot;.lock&quot;</span>, <span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-constant">CREAT</span><span class="ruby-operator">|</span><span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-constant">RDWR</span>, <span class="ruby-value">0600</span>)
+423:           <span class="ruby-identifier">lockf</span>.<span class="ruby-identifier">flock</span> <span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-constant">LOCK_EX</span>
+424:           <span class="ruby-identifier">f</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-ivar">@path</span><span class="ruby-operator">+</span><span class="ruby-value str">&quot;.new&quot;</span>, <span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-constant">CREAT</span><span class="ruby-operator">|</span><span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-constant">TRUNC</span><span class="ruby-operator">|</span><span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-constant">WRONLY</span>, <span class="ruby-value">0600</span>)
+425:           <span class="ruby-keyword kw">for</span> <span class="ruby-identifier">k</span>,<span class="ruby-identifier">v</span> <span class="ruby-keyword kw">in</span> <span class="ruby-ivar">@hash</span>
+426:             <span class="ruby-identifier">f</span>.<span class="ruby-identifier">printf</span> <span class="ruby-value str">&quot;%s=%s\n&quot;</span>, <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">escape</span>(<span class="ruby-identifier">k</span>), <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">escape</span>(<span class="ruby-constant">String</span>(<span class="ruby-identifier">v</span>))
+427:           <span class="ruby-keyword kw">end</span>
+428:           <span class="ruby-identifier">f</span>.<span class="ruby-identifier">close</span>
+429:           <span class="ruby-constant">File</span>.<span class="ruby-identifier">rename</span> <span class="ruby-ivar">@path</span><span class="ruby-operator">+</span><span class="ruby-value str">&quot;.new&quot;</span>, <span class="ruby-ivar">@path</span>
+430:         <span class="ruby-keyword kw">ensure</span>
+431:           <span class="ruby-identifier">f</span>.<span class="ruby-identifier">close</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">f</span> <span class="ruby-keyword kw">and</span> <span class="ruby-operator">!</span><span class="ruby-identifier">f</span>.<span class="ruby-identifier">closed?</span>
+432:           <span class="ruby-identifier">lockf</span>.<span class="ruby-identifier">close</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">lockf</span>
+433:         <span class="ruby-keyword kw">end</span>
+434:       <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

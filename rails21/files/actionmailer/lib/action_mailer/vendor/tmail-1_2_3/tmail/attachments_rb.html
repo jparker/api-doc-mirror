@@ -1,0 +1,65 @@
+  <div id="fileHeader">
+    <h1>attachments.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionmailer/lib/action_mailer/vendor/tmail-1.2.3/tmail/attachments.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>=begin rdoc
+
+= Attachment handling file
+
+=end
+
+require 'stringio'
+
+module TMail
+  class Attachment &lt; StringIO
+    attr_accessor :original_filename, :content_type
+  end
+
+  class Mail
+    def has_attachments?
+      multipart? &amp;&amp; parts.any? { |part| attachment?(part) }
+    end
+
+    def attachment?(part)
+      part.disposition_is_attachment? || part.content_type_is_text?
+    end
+
+    def attachments
+      if multipart?
+        parts.collect { |part| 
+          if part.multipart?
+            part.attachments
+          elsif attachment?(part)
+            content   = part.body # unquoted automatically by TMail#body
+            file_name = (part['content-location'] &amp;&amp;
+                          part['content-location'].body) ||
+                        part.sub_header(&quot;content-type&quot;, &quot;name&quot;) ||
+                        part.sub_header(&quot;content-disposition&quot;, &quot;filename&quot;)
+            
+            next if file_name.blank? || content.blank?
+            
+            attachment = Attachment.new(content)
+            attachment.original_filename = file_name.strip
+            attachment.content_type = part.content_type
+            attachment
+          end
+        }.flatten.compact
+      end      
+    end
+  end
+end
+</pre>
+    </div>

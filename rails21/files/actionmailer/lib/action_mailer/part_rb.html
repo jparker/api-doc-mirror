@@ -1,0 +1,129 @@
+  <div id="fileHeader">
+    <h1>part.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionmailer/lib/action_mailer/part.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>require 'action_mailer/adv_attr_accessor'
+require 'action_mailer/part_container'
+require 'action_mailer/utils'
+
+module ActionMailer
+  # Represents a subpart of an email message. It shares many similar
+  # attributes of ActionMailer::Base.  Although you can create parts manually
+  # and add them to the +parts+ list of the mailer, it is easier
+  # to use the helper methods in ActionMailer::PartContainer.
+  class Part
+    include ActionMailer::AdvAttrAccessor
+    include ActionMailer::PartContainer
+
+    # Represents the body of the part, as a string. This should not be a
+    # Hash (like ActionMailer::Base), but if you want a template to be rendered
+    # into the body of a subpart you can do it with the mailer's +render+ method
+    # and assign the result here.
+    adv_attr_accessor :body
+    
+    # Specify the charset for this subpart. By default, it will be the charset
+    # of the containing part or mailer.
+    adv_attr_accessor :charset
+    
+    # The content disposition of this part, typically either &quot;inline&quot; or
+    # &quot;attachment&quot;.
+    adv_attr_accessor :content_disposition
+    
+    # The content type of the part.
+    adv_attr_accessor :content_type
+    
+    # The filename to use for this subpart (usually for attachments).
+    adv_attr_accessor :filename
+    
+    # Accessor for specifying additional headers to include with this part.
+    adv_attr_accessor :headers
+    
+    # The transfer encoding to use for this subpart, like &quot;base64&quot; or
+    # &quot;quoted-printable&quot;.
+    adv_attr_accessor :transfer_encoding
+
+    # Create a new part from the given +params+ hash. The valid params keys
+    # correspond to the accessors.
+    def initialize(params)
+      @content_type = params[:content_type]
+      @content_disposition = params[:disposition] || &quot;inline&quot;
+      @charset = params[:charset]
+      @body = params[:body]
+      @filename = params[:filename]
+      @transfer_encoding = params[:transfer_encoding] || &quot;quoted-printable&quot;
+      @headers = params[:headers] || {}
+      @parts = []
+    end
+
+    # Convert the part to a mail object which can be included in the parts
+    # list of another mail object.
+    def to_mail(defaults)
+      part = TMail::Mail.new
+
+      real_content_type, ctype_attrs = parse_content_type(defaults)
+
+      if @parts.empty?
+        part.content_transfer_encoding = transfer_encoding || &quot;quoted-printable&quot;
+        case (transfer_encoding || &quot;&quot;).downcase
+          when &quot;base64&quot; then
+            part.body = TMail::Base64.folding_encode(body)
+          when &quot;quoted-printable&quot;
+            part.body = [Utils.normalize_new_lines(body)].pack(&quot;M*&quot;)
+          else
+            part.body = body
+        end
+
+        # Always set the content_type after setting the body and or parts!
+        # Also don't set filename and name when there is none (like in
+        # non-attachment parts)
+        if content_disposition == &quot;attachment&quot;
+          ctype_attrs.delete &quot;charset&quot;
+          part.set_content_type(real_content_type, nil,
+            squish(&quot;name&quot; =&gt; filename).merge(ctype_attrs))
+          part.set_content_disposition(content_disposition,
+            squish(&quot;filename&quot; =&gt; filename).merge(ctype_attrs))
+        else
+          part.set_content_type(real_content_type, nil, ctype_attrs)
+          part.set_content_disposition(content_disposition) 
+        end        
+      else
+        if String === body
+          @parts.unshift Part.new(:charset =&gt; charset, :body =&gt; @body, :content_type =&gt; 'text/plain')
+          @body = nil
+        end
+          
+        @parts.each do |p|
+          prt = (TMail::Mail === p ? p : p.to_mail(defaults))
+          part.parts &lt;&lt; prt
+        end
+        
+        part.set_content_type(real_content_type, nil, ctype_attrs) if real_content_type =~ /multipart/
+      end
+
+      headers.each { |k,v| part[k] = v }
+
+      part
+    end
+
+    private
+
+      def squish(values={})
+        values.delete_if { |k,v| v.nil? }
+      end
+  end
+end
+</pre>
+    </div>

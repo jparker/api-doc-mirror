@@ -1,0 +1,1378 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>OpenSSL::X509::Certificate</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            OpenSSL::X509::Certificate 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../../Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../../files/ext/openssl/ossl_hmac_c.html">ext/openssl/ossl_hmac.c</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+INIT
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>A</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006602">add_extension</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006599">check_private_key</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006600">extensions</a>,</li>
+                
+                <li><a href="#M006601">extensions=</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>I</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006589">issuer</a>,</li>
+                
+                <li><a href="#M006590">issuer=</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006578">new</a>,</li>
+                
+                <li><a href="#M006593">not_after</a>,</li>
+                
+                <li><a href="#M006594">not_after=</a>,</li>
+                
+                <li><a href="#M006591">not_before</a>,</li>
+                
+                <li><a href="#M006592">not_before=</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>P</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006595">public_key</a>,</li>
+                
+                <li><a href="#M006596">public_key=</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006585">serial</a>,</li>
+                
+                <li><a href="#M006586">serial=</a>,</li>
+                
+                <li><a href="#M006597">sign</a>,</li>
+                
+                <li><a href="#M006584">signature_algorithm</a>,</li>
+                
+                <li><a href="#M006587">subject</a>,</li>
+                
+                <li><a href="#M006588">subject=</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>T</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006579">to_der</a>,</li>
+                
+                <li><a href="#M006580">to_pem</a>,</li>
+                
+                <li><a href="#M006611">to_s</a>,</li>
+                
+                <li><a href="#M006581">to_text</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>V</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006598">verify</a>,</li>
+                
+                <li><a href="#M006582">version</a>,</li>
+                
+                <li><a href="#M006583">version=</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M006578">
+                    
+                    <a name="M006578"></a><b>new</b>(...)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call-seq:
+</p>
+<pre>
+   Certificate.new =&gt; cert
+   Certificate.new(string) =&gt; cert
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006578_source')" id="l_M006578_source">show</a>
+                        
+                    </p>
+                    <div id="M006578_source" class="dyn-source">
+                        <pre>static VALUE 
+ossl_x509_initialize(int argc, VALUE *argv, VALUE self)
+{
+    BIO *in;
+    X509 *x509;
+    VALUE arg;
+
+    if (rb_scan_args(argc, argv, &quot;01&quot;, &amp;arg) == 0) {
+        /* create just empty X509Cert */
+        return self;
+    }
+    arg = ossl_to_der_if_possible(arg);
+    in = ossl_obj2bio(arg);
+    x509 = PEM_read_bio_X509(in, (X509 **)&amp;DATA_PTR(self), NULL, NULL);
+    if (!x509) {
+        BIO_reset(in);
+        x509 = d2i_X509_bio(in, (X509 **)&amp;DATA_PTR(self));
+    }
+    BIO_free(in);
+    if (!x509) ossl_raise(eX509CertError, NULL);
+    
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M006602">
+                    
+                    <a name="M006602"></a><b>add_extension</b>(p1)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call-seq:
+</p>
+<pre>
+   cert.add_extension(extension) =&gt; extension
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006602_source')" id="l_M006602_source">show</a>
+                        
+                    </p>
+                    <div id="M006602_source" class="dyn-source">
+                        <pre>static VALUE 
+ossl_x509_add_extension(VALUE self, VALUE extension)
+{
+    X509 *x509;
+    X509_EXTENSION *ext;
+        
+    GetX509(self, x509);
+    ext = DupX509ExtPtr(extension);
+    if (!X509_add_ext(x509, ext, -1)) { /* DUPs ext - FREE it */
+        X509_EXTENSION_free(ext);
+        ossl_raise(eX509CertError, NULL);
+    }
+    X509_EXTENSION_free(ext);
+
+    return extension;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006599">
+                    
+                    <a name="M006599"></a><b>cert.check_private_key(key)
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Checks if &#8216;key&#8217; is PRIV key for this cert
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006599_source')" id="l_M006599_source">show</a>
+                        
+                    </p>
+                    <div id="M006599_source" class="dyn-source">
+                        <pre>static VALUE 
+ossl_x509_check_private_key(VALUE self, VALUE key)
+{
+    X509 *x509;
+    EVP_PKEY *pkey;
+        
+    /* not needed private key, but should be */
+    pkey = GetPrivPKeyPtr(key); /* NO NEED TO DUP */
+    GetX509(self, x509);
+    if (!X509_check_private_key(x509, pkey)) {
+        OSSL_Warning(&quot;Check private key:%s&quot;, OSSL_ErrMsg());
+        return Qfalse;
+    }
+
+    return Qtrue;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006600">
+                    
+                    <a name="M006600"></a><b>extensions</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call-seq:
+</p>
+<pre>
+   cert.extensions =&gt; [extension...]
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006600_source')" id="l_M006600_source">show</a>
+                        
+                    </p>
+                    <div id="M006600_source" class="dyn-source">
+                        <pre>static VALUE 
+ossl_x509_get_extensions(VALUE self)
+{
+    X509 *x509;
+    int count, i;
+    X509_EXTENSION *ext;
+    VALUE ary;
+
+    GetX509(self, x509);
+    count = X509_get_ext_count(x509);
+    if (count &lt; 0) {
+        return rb_ary_new();
+    }
+    ary = rb_ary_new2(count);
+    for (i=0; i&lt;count; i++) {
+        ext = X509_get_ext(x509, i); /* NO DUP - don't free! */
+        rb_ary_push(ary, ossl_x509ext_new(ext));
+    }
+
+    return ary;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006601">
+                    
+                    <a name="M006601"></a><b>extensions=</b>(p1)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call-seq:
+</p>
+<pre>
+   cert.extensions = [ext...] =&gt; [ext...]
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006601_source')" id="l_M006601_source">show</a>
+                        
+                    </p>
+                    <div id="M006601_source" class="dyn-source">
+                        <pre>static VALUE 
+ossl_x509_set_extensions(VALUE self, VALUE ary)
+{
+    X509 *x509;
+    X509_EXTENSION *ext;
+    int i;
+        
+    Check_Type(ary, T_ARRAY);
+    /* All ary's members should be X509Extension */
+    for (i=0; i&lt;RARRAY_LEN(ary); i++) {
+        OSSL_Check_Kind(RARRAY_PTR(ary)[i], cX509Ext);
+    }
+    GetX509(self, x509);
+    sk_X509_EXTENSION_pop_free(x509-&gt;cert_info-&gt;extensions, X509_EXTENSION_free);
+    x509-&gt;cert_info-&gt;extensions = NULL;
+    for (i=0; i&lt;RARRAY_LEN(ary); i++) {
+        ext = DupX509ExtPtr(RARRAY_PTR(ary)[i]);
+        
+        if (!X509_add_ext(x509, ext, -1)) { /* DUPs ext - FREE it */
+            X509_EXTENSION_free(ext);
+            ossl_raise(eX509CertError, NULL);
+        }
+        X509_EXTENSION_free(ext);
+    }
+
+    return ary;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006589">
+                    
+                    <a name="M006589"></a><b>issuer</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call-seq:
+</p>
+<pre>
+   cert.issuer =&gt; name
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006589_source')" id="l_M006589_source">show</a>
+                        
+                    </p>
+                    <div id="M006589_source" class="dyn-source">
+                        <pre>static VALUE 
+ossl_x509_get_issuer(VALUE self)
+{
+    X509 *x509;
+    X509_NAME *name;
+
+    GetX509(self, x509);
+    if(!(name = X509_get_issuer_name(x509))) { /* NO DUP - don't free! */
+        ossl_raise(eX509CertError, NULL);
+    }
+
+    return ossl_x509name_new(name);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006590">
+                    
+                    <a name="M006590"></a><b>issuer=</b>(p1)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call-seq:
+</p>
+<pre>
+   cert.issuer = name =&gt; name
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006590_source')" id="l_M006590_source">show</a>
+                        
+                    </p>
+                    <div id="M006590_source" class="dyn-source">
+                        <pre>static VALUE 
+ossl_x509_set_issuer(VALUE self, VALUE issuer)
+{
+    X509 *x509;
+
+    GetX509(self, x509);
+    if (!X509_set_issuer_name(x509, GetX509NamePtr(issuer))) { /* DUPs name */
+        ossl_raise(eX509CertError, NULL);
+    }
+
+    return issuer;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006593">
+                    
+                    <a name="M006593"></a><b>not_after</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call-seq:
+</p>
+<pre>
+   cert.not_after =&gt; time
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006593_source')" id="l_M006593_source">show</a>
+                        
+                    </p>
+                    <div id="M006593_source" class="dyn-source">
+                        <pre>static VALUE 
+ossl_x509_get_not_after(VALUE self)
+{
+    X509 *x509;
+    ASN1_TIME *asn1time;
+
+    GetX509(self, x509);
+    if (!(asn1time = X509_get_notAfter(x509))) { /* NO DUP - don't free! */
+        ossl_raise(eX509CertError, NULL);
+    }
+
+    return asn1time_to_time(asn1time);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006594">
+                    
+                    <a name="M006594"></a><b>not_after=</b>(p1)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call-seq:
+</p>
+<pre>
+   cert.not_before = time =&gt; time
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006594_source')" id="l_M006594_source">show</a>
+                        
+                    </p>
+                    <div id="M006594_source" class="dyn-source">
+                        <pre>static VALUE 
+ossl_x509_set_not_after(VALUE self, VALUE time)
+{
+    X509 *x509;
+    time_t sec;
+        
+    sec = time_to_time_t(time);
+    GetX509(self, x509);
+    if (!X509_time_adj(X509_get_notAfter(x509), 0, &amp;sec)) {
+        ossl_raise(eX509CertError, NULL);
+    }
+
+    return time;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006591">
+                    
+                    <a name="M006591"></a><b>not_before</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call-seq:
+</p>
+<pre>
+   cert.not_before =&gt; time
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006591_source')" id="l_M006591_source">show</a>
+                        
+                    </p>
+                    <div id="M006591_source" class="dyn-source">
+                        <pre>static VALUE 
+ossl_x509_get_not_before(VALUE self)
+{
+    X509 *x509;
+    ASN1_UTCTIME *asn1time;
+
+    GetX509(self, x509);
+    if (!(asn1time = X509_get_notBefore(x509))) { /* NO DUP - don't free! */
+        ossl_raise(eX509CertError, NULL);
+    }
+
+    return asn1time_to_time(asn1time);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006592">
+                    
+                    <a name="M006592"></a><b>not_before=</b>(p1)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call-seq:
+</p>
+<pre>
+   cert.not_before = time =&gt; time
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006592_source')" id="l_M006592_source">show</a>
+                        
+                    </p>
+                    <div id="M006592_source" class="dyn-source">
+                        <pre>static VALUE 
+ossl_x509_set_not_before(VALUE self, VALUE time)
+{
+    X509 *x509;
+    time_t sec;
+        
+    sec = time_to_time_t(time);
+    GetX509(self, x509);
+    if (!X509_time_adj(X509_get_notBefore(x509), 0, &amp;sec)) {
+        ossl_raise(eX509CertError, NULL);
+    }
+
+    return time;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006595">
+                    
+                    <a name="M006595"></a><b>public_key</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call-seq:
+</p>
+<pre>
+   cert.public_key =&gt; key
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006595_source')" id="l_M006595_source">show</a>
+                        
+                    </p>
+                    <div id="M006595_source" class="dyn-source">
+                        <pre>static VALUE 
+ossl_x509_get_public_key(VALUE self)
+{
+    X509 *x509;
+    EVP_PKEY *pkey;
+
+    GetX509(self, x509);
+    if (!(pkey = X509_get_pubkey(x509))) { /* adds an reference */
+        ossl_raise(eX509CertError, NULL);
+    }
+
+    return ossl_pkey_new(pkey); /* NO DUP - OK */
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006596">
+                    
+                    <a name="M006596"></a><b>public_key=</b>(p1)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call-seq:
+</p>
+<pre>
+   cert.public_key = key =&gt; key
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006596_source')" id="l_M006596_source">show</a>
+                        
+                    </p>
+                    <div id="M006596_source" class="dyn-source">
+                        <pre>static VALUE 
+ossl_x509_set_public_key(VALUE self, VALUE key)
+{
+    X509 *x509;
+
+    GetX509(self, x509);
+    if (!X509_set_pubkey(x509, GetPKeyPtr(key))) { /* DUPs pkey */
+        ossl_raise(eX509CertError, NULL);
+    }
+
+    return key;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006585">
+                    
+                    <a name="M006585"></a><b>serial</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call-seq:
+</p>
+<pre>
+   cert.serial =&gt; integer
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006585_source')" id="l_M006585_source">show</a>
+                        
+                    </p>
+                    <div id="M006585_source" class="dyn-source">
+                        <pre>static VALUE 
+ossl_x509_get_serial(VALUE self)
+{
+    X509 *x509;
+
+    GetX509(self, x509);
+        
+    return asn1integer_to_num(X509_get_serialNumber(x509));
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006586">
+                    
+                    <a name="M006586"></a><b>serial=</b>(p1)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call-seq:
+</p>
+<pre>
+   cert.serial = integer =&gt; integer
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006586_source')" id="l_M006586_source">show</a>
+                        
+                    </p>
+                    <div id="M006586_source" class="dyn-source">
+                        <pre>static VALUE 
+ossl_x509_set_serial(VALUE self, VALUE num)
+{
+    X509 *x509;
+
+    GetX509(self, x509);
+
+    x509-&gt;cert_info-&gt;serialNumber =
+        num_to_asn1integer(num, X509_get_serialNumber(x509));
+        
+    return num;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006597">
+                    
+                    <a name="M006597"></a><b>sign</b>(p1, p2)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call-seq:
+</p>
+<pre>
+   cert.sign(key, digest) =&gt; self
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006597_source')" id="l_M006597_source">show</a>
+                        
+                    </p>
+                    <div id="M006597_source" class="dyn-source">
+                        <pre>static VALUE 
+ossl_x509_sign(VALUE self, VALUE key, VALUE digest)
+{
+    X509 *x509;
+    EVP_PKEY *pkey;
+    const EVP_MD *md;
+
+    pkey = GetPrivPKeyPtr(key); /* NO NEED TO DUP */
+    md = GetDigestPtr(digest);
+    GetX509(self, x509);
+    if (!X509_sign(x509, pkey, md)) {
+        ossl_raise(eX509CertError, NULL);
+    }
+
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006584">
+                    
+                    <a name="M006584"></a><b>signature_algorithm</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call-seq:
+</p>
+<pre>
+   cert.signature_algorithm =&gt; string
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006584_source')" id="l_M006584_source">show</a>
+                        
+                    </p>
+                    <div id="M006584_source" class="dyn-source">
+                        <pre>static VALUE 
+ossl_x509_get_signature_algorithm(VALUE self)
+{
+    X509 *x509;
+    BIO *out;
+    VALUE str;
+
+    GetX509(self, x509);
+    out = BIO_new(BIO_s_mem());
+    if (!out) ossl_raise(eX509CertError, NULL);
+
+    if (!i2a_ASN1_OBJECT(out, x509-&gt;cert_info-&gt;signature-&gt;algorithm)) {
+        BIO_free(out);
+        ossl_raise(eX509CertError, NULL);
+    }
+    str = ossl_membio2str(out);
+
+    return str;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006587">
+                    
+                    <a name="M006587"></a><b>subject</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call-seq:
+</p>
+<pre>
+   cert.subject =&gt; name
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006587_source')" id="l_M006587_source">show</a>
+                        
+                    </p>
+                    <div id="M006587_source" class="dyn-source">
+                        <pre>static VALUE 
+ossl_x509_get_subject(VALUE self)
+{
+    X509 *x509;
+    X509_NAME *name;
+        
+    GetX509(self, x509);
+    if (!(name = X509_get_subject_name(x509))) { /* NO DUP - don't free! */
+        ossl_raise(eX509CertError, NULL);
+    }
+
+    return ossl_x509name_new(name);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006588">
+                    
+                    <a name="M006588"></a><b>subject=</b>(p1)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call-seq:
+</p>
+<pre>
+   cert.subject = name =&gt; name
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006588_source')" id="l_M006588_source">show</a>
+                        
+                    </p>
+                    <div id="M006588_source" class="dyn-source">
+                        <pre>static VALUE 
+ossl_x509_set_subject(VALUE self, VALUE subject)
+{
+    X509 *x509;
+        
+    GetX509(self, x509);
+    if (!X509_set_subject_name(x509, GetX509NamePtr(subject))) { /* DUPs name */
+        ossl_raise(eX509CertError, NULL);
+    }
+
+    return subject;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006579">
+                    
+                    <a name="M006579"></a><b>to_der</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call-seq:
+</p>
+<pre>
+   cert.to_der =&gt; string
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006579_source')" id="l_M006579_source">show</a>
+                        
+                    </p>
+                    <div id="M006579_source" class="dyn-source">
+                        <pre>static VALUE 
+ossl_x509_to_der(VALUE self)
+{
+    X509 *x509;
+    VALUE str;
+    long len;
+    unsigned char *p;
+
+    GetX509(self, x509);
+    if ((len = i2d_X509(x509, NULL)) &lt;= 0)
+        ossl_raise(eX509CertError, NULL);
+    str = rb_str_new(0, len);
+    p = RSTRING_PTR(str);
+    if (i2d_X509(x509, &amp;p) &lt;= 0)
+        ossl_raise(eX509CertError, NULL);
+    ossl_str_adjust(str, p);
+    
+    return str;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006580">
+                    
+                    <a name="M006580"></a><b>to_pem</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call-seq:
+</p>
+<pre>
+   cert.to_pem =&gt; string
+</pre>
+
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="Certificate.html#M006611">to_s</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006580_source')" id="l_M006580_source">show</a>
+                        
+                    </p>
+                    <div id="M006580_source" class="dyn-source">
+                        <pre>static VALUE 
+ossl_x509_to_pem(VALUE self)
+{
+    X509 *x509;
+    BIO *out;
+    VALUE str;
+        
+    GetX509(self, x509);
+    out = BIO_new(BIO_s_mem());
+    if (!out) ossl_raise(eX509CertError, NULL);
+
+    if (!PEM_write_bio_X509(out, x509)) {
+        BIO_free(out);
+        ossl_raise(eX509CertError, NULL);
+    }
+    str = ossl_membio2str(out);
+
+    return str;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006611">
+                    
+                    <a name="M006611"></a><b>to_s</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a href="Certificate.html#M006580">to_pem</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006581">
+                    
+                    <a name="M006581"></a><b>to_text</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call-seq:
+</p>
+<pre>
+   cert.to_text =&gt; string
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006581_source')" id="l_M006581_source">show</a>
+                        
+                    </p>
+                    <div id="M006581_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_x509_to_text(VALUE self)
+{
+    X509 *x509;
+    BIO *out;
+    VALUE str;
+        
+    GetX509(self, x509);
+
+    out = BIO_new(BIO_s_mem());
+    if (!out) ossl_raise(eX509CertError, NULL);
+
+    if (!X509_print(out, x509)) {
+        BIO_free(out);
+        ossl_raise(eX509CertError, NULL);
+    }
+    str = ossl_membio2str(out);
+
+    return str;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006598">
+                    
+                    <a name="M006598"></a><b>cert.verify(key) => true | false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Checks that cert signature is made with PRIVversion of this PUBLIC
+&#8216;key&#8217;
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006598_source')" id="l_M006598_source">show</a>
+                        
+                    </p>
+                    <div id="M006598_source" class="dyn-source">
+                        <pre>static VALUE 
+ossl_x509_verify(VALUE self, VALUE key)
+{
+    X509 *x509;
+    EVP_PKEY *pkey;
+    int i;
+
+    pkey = GetPKeyPtr(key); /* NO NEED TO DUP */
+    GetX509(self, x509);
+    if ((i = X509_verify(x509, pkey)) &lt; 0) {
+        ossl_raise(eX509CertError, NULL);
+    } 
+    if (i &gt; 0) {
+        return Qtrue;
+    }
+
+    return Qfalse;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006582">
+                    
+                    <a name="M006582"></a><b>version</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call-seq:
+</p>
+<pre>
+   cert.version =&gt; integer
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006582_source')" id="l_M006582_source">show</a>
+                        
+                    </p>
+                    <div id="M006582_source" class="dyn-source">
+                        <pre>static VALUE 
+ossl_x509_get_version(VALUE self)
+{
+    X509 *x509;
+
+    GetX509(self, x509);
+        
+    return LONG2NUM(X509_get_version(x509));
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006583">
+                    
+                    <a name="M006583"></a><b>version=</b>(p1)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+call-seq:
+</p>
+<pre>
+   cert.version = integer =&gt; integer
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006583_source')" id="l_M006583_source">show</a>
+                        
+                    </p>
+                    <div id="M006583_source" class="dyn-source">
+                        <pre>static VALUE 
+ossl_x509_set_version(VALUE self, VALUE version)
+{
+    X509 *x509;
+    long ver;
+
+    if ((ver = NUM2LONG(version)) &lt; 0) {
+        ossl_raise(eX509CertError, &quot;version must be &gt;= 0!&quot;);
+    }
+    GetX509(self, x509);
+    if (!X509_set_version(x509, ver)) {
+        ossl_raise(eX509CertError, NULL);
+    }
+
+    return version;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

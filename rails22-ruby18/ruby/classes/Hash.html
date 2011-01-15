@@ -1,0 +1,2950 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Hash</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            Hash 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/hash_c.html">hash.c</a></li>
+            
+            <li><a href="../files/lib/pp_rb.html">lib/pp.rb</a></li>
+            
+            <li><a href="../files/lib/yaml/rubytypes_rb.html">lib/yaml/rubytypes.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+A <tt>Hash</tt> is a collection of key-value pairs. It is similar to an
+<tt>Array</tt>, except that indexing is done via arbitrary keys of any
+object type, not an integer index. The order in which you traverse a hash
+by either key or value may seem arbitrary, and will generally not be in the
+insertion order.
+</p>
+<p>
+Hashes have a <em>default value</em> that is returned when accessing keys
+that do not exist in the hash. By default, that value is <tt>nil</tt>.
+</p>
+<p>
+<tt>Hash</tt> uses <tt>key.eql?</tt> to test keys for equality. If you need
+to use instances of your own classes as keys in a <tt>Hash</tt>, it is
+recommended that you define both the <tt>eql?</tt> and <tt>hash</tt>
+methods. The <tt>hash</tt> method must have the property that
+<tt>a.eql?(b)</tt> implies <tt>a.hash == b.hash</tt>.
+</p>
+<pre>
+  class MyClass
+    attr_reader :str
+    def initialize(str)
+      @str = str
+    end
+    def eql?(o)
+      o.is_a?(MyClass) &amp;&amp; str == o.str
+    end
+    def hash
+      @str.hash
+    end
+  end
+
+  a = MyClass.new(&quot;some string&quot;)
+  b = MyClass.new(&quot;some string&quot;)
+  a.eql? b  #=&gt; true
+
+  h = {}
+
+  h[a] = 1
+  h[a]      #=&gt; 1
+  h[b]      #=&gt; 1
+
+  h[b] = 2
+  h[a]      #=&gt; 2
+  h[b]      #=&gt; 2
+</pre>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>#</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000685">==</a>,</li>
+                
+                <li><a href="#M000677">[]</a>,</li>
+                
+                <li><a href="#M000686">[]</a>,</li>
+                
+                <li><a href="#M000690">[]=</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000715">clear</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>D</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000692">default</a>,</li>
+                
+                <li><a href="#M000693">default=</a>,</li>
+                
+                <li><a href="#M000694">default_proc</a>,</li>
+                
+                <li><a href="#M000710">delete</a>,</li>
+                
+                <li><a href="#M000711">delete_if</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000701">each</a>,</li>
+                
+                <li><a href="#M000703">each_key</a>,</li>
+                
+                <li><a href="#M000704">each_pair</a>,</li>
+                
+                <li><a href="#M000702">each_value</a>,</li>
+                
+                <li><a href="#M000700">empty?</a>,</li>
+                
+                <li><a href="#M000688">eql?</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>F</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000689">fetch</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>H</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000723">has_key?</a>,</li>
+                
+                <li><a href="#M000724">has_value?</a>,</li>
+                
+                <li><a href="#M000687">hash</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>I</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000721">include?</a>,</li>
+                
+                <li><a href="#M000695">index</a>,</li>
+                
+                <li><a href="#M000696">indexes</a>,</li>
+                
+                <li><a href="#M000697">indices</a>,</li>
+                
+                <li><a href="#M000679">initialize_copy</a>,</li>
+                
+                <li><a href="#M000684">inspect</a>,</li>
+                
+                <li><a href="#M000716">invert</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>K</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000725">key?</a>,</li>
+                
+                <li><a href="#M000706">keys</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>L</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000699">length</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>M</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000722">member?</a>,</li>
+                
+                <li><a href="#M000720">merge</a>,</li>
+                
+                <li><a href="#M000719">merge!</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000678">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>P</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M001759">pretty_print</a>,</li>
+                
+                <li><a href="#M001760">pretty_print_cycle</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>R</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000680">rehash</a>,</li>
+                
+                <li><a href="#M000713">reject</a>,</li>
+                
+                <li><a href="#M000714">reject!</a>,</li>
+                
+                <li><a href="#M000718">replace</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000712">select</a>,</li>
+                
+                <li><a href="#M000709">shift</a>,</li>
+                
+                <li><a href="#M000698">size</a>,</li>
+                
+                <li><a href="#M000705">sort</a>,</li>
+                
+                <li><a href="#M000691">store</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>T</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000682">to_a</a>,</li>
+                
+                <li><a href="#M000681">to_hash</a>,</li>
+                
+                <li><a href="#M000683">to_s</a>,</li>
+                
+                <li><a href="#M006062">to_yaml</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>U</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000717">update</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>V</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M000726">value?</a>,</li>
+                
+                <li><a href="#M000707">values</a>,</li>
+                
+                <li><a href="#M000708">values_at</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>Y</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006061">yaml_initialize</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+    <div class="sectiontitle">Included Modules</div>
+    <ul>
+        
+        <li>
+            
+            <a href="Marshal.html">Marshal</a>
+            
+            START:includes
+        </li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M000677">
+                    
+                    <a name="M000677"></a><b>Hash[ [key =>|, value]* ]   => hash
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Creates a new hash populated with the given objects. Equivalent to the
+literal <tt>{ <em>key</em>, <em>value</em>, ... }</tt>. Keys and values
+occur in pairs, so there must be an even number of arguments.
+</p>
+<pre>
+   Hash[&quot;a&quot;, 100, &quot;b&quot;, 200]       #=&gt; {&quot;a&quot;=&gt;100, &quot;b&quot;=&gt;200}
+   Hash[&quot;a&quot; =&gt; 100, &quot;b&quot; =&gt; 200]   #=&gt; {&quot;a&quot;=&gt;100, &quot;b&quot;=&gt;200}
+   { &quot;a&quot; =&gt; 100, &quot;b&quot; =&gt; 200 }     #=&gt; {&quot;a&quot;=&gt;100, &quot;b&quot;=&gt;200}
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000677_source')" id="l_M000677_source">show</a>
+                        
+                    </p>
+                    <div id="M000677_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_s_create(argc, argv, klass)
+    int argc;
+    VALUE *argv;
+    VALUE klass;
+{
+    VALUE hash, tmp;
+    int i;
+
+    if (argc == 1) {
+        tmp = rb_check_convert_type(argv[0], T_HASH, &quot;Hash&quot;, &quot;to_hash&quot;);
+        if (!NIL_P(tmp)) {
+            hash = hash_alloc0(klass);
+            RHASH(hash)-&gt;tbl = st_copy(RHASH(tmp)-&gt;tbl);
+            return hash;
+        }
+
+        tmp = rb_check_array_type(argv[0]);
+        if (!NIL_P(tmp)) {
+            long i;
+
+            hash = hash_alloc(klass);
+            for (i = 0; i &lt; RARRAY_LEN(tmp); ++i) {
+                VALUE v = rb_check_array_type(RARRAY_PTR(tmp)[i]);
+                VALUE key, val = Qnil;
+
+                if (NIL_P(v)) continue;
+                switch (RARRAY_LEN(v)) {
+                  case 2:
+                    val = RARRAY_PTR(v)[1];
+                  case 1:
+                    key = RARRAY_PTR(v)[0];
+                    rb_hash_aset(hash, key, val);
+                }
+            }
+            return hash;
+        }
+    }
+    if (argc % 2 != 0) {
+        rb_raise(rb_eArgError, &quot;odd number of arguments for Hash&quot;);
+    }
+
+    hash = hash_alloc(klass);
+    for (i=0; i&lt;argc; i+=2) {
+        rb_hash_aset(hash, argv[i], argv[i + 1]);
+    }
+
+    return hash;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000678">
+                    
+                    <a name="M000678"></a><b>Hash.new                          => hash
+Hash.new(obj)                     => aHash
+Hash.new {|hash, key| block }     => aHash
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns a new, empty hash. If this hash is subsequently accessed by a key
+that doesn&#8217;t correspond to a hash entry, the value returned depends
+on the style of <tt>new</tt> used to create the hash. In the first form,
+the access returns <tt>nil</tt>. If <em>obj</em> is specified, this single
+object will be used for all <em>default values</em>. If a block is
+specified, it will be called with the hash object and the key, and should
+return the default value. It is the block&#8217;s responsibility to store
+the value in the hash if required.
+</p>
+<pre>
+   h = Hash.new(&quot;Go Fish&quot;)
+   h[&quot;a&quot;] = 100
+   h[&quot;b&quot;] = 200
+   h[&quot;a&quot;]           #=&gt; 100
+   h[&quot;c&quot;]           #=&gt; &quot;Go Fish&quot;
+   # The following alters the single default object
+   h[&quot;c&quot;].upcase!   #=&gt; &quot;GO FISH&quot;
+   h[&quot;d&quot;]           #=&gt; &quot;GO FISH&quot;
+   h.keys           #=&gt; [&quot;a&quot;, &quot;b&quot;]
+
+   # While this creates a new default object each time
+   h = Hash.new { |hash, key| hash[key] = &quot;Go Fish: #{key}&quot; }
+   h[&quot;c&quot;]           #=&gt; &quot;Go Fish: c&quot;
+   h[&quot;c&quot;].upcase!   #=&gt; &quot;GO FISH: C&quot;
+   h[&quot;d&quot;]           #=&gt; &quot;Go Fish: d&quot;
+   h.keys           #=&gt; [&quot;c&quot;, &quot;d&quot;]
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000678_source')" id="l_M000678_source">show</a>
+                        
+                    </p>
+                    <div id="M000678_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_initialize(argc, argv, hash)
+    int argc;
+    VALUE *argv;
+    VALUE hash;
+{
+    VALUE ifnone;
+
+    rb_hash_modify(hash);
+    if (rb_block_given_p()) {
+        if (argc &gt; 0) {
+            rb_raise(rb_eArgError, &quot;wrong number of arguments&quot;);
+        }
+        RHASH(hash)-&gt;ifnone = rb_block_proc();
+        FL_SET(hash, HASH_PROC_DEFAULT);
+    }
+    else {
+        rb_scan_args(argc, argv, &quot;01&quot;, &amp;ifnone);
+        RHASH(hash)-&gt;ifnone = ifnone;
+    }
+
+    return hash;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M000685">
+                    
+                    <a name="M000685"></a><b>hsh == other_hash    => true or false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Equality&#8212;Two hashes are equal if they each contain the same number of
+keys and if each key-value pair is equal to (according to
+<tt>Object#==</tt>) the corresponding elements in the other hash.
+</p>
+<pre>
+   h1 = { &quot;a&quot; =&gt; 1, &quot;c&quot; =&gt; 2 }
+   h2 = { 7 =&gt; 35, &quot;c&quot; =&gt; 2, &quot;a&quot; =&gt; 1 }
+   h3 = { &quot;a&quot; =&gt; 1, &quot;c&quot; =&gt; 2, 7 =&gt; 35 }
+   h4 = { &quot;a&quot; =&gt; 1, &quot;d&quot; =&gt; 2, &quot;f&quot; =&gt; 35 }
+   h1 == h2   #=&gt; false
+   h2 == h3   #=&gt; true
+   h3 == h4   #=&gt; false
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000685_source')" id="l_M000685_source">show</a>
+                        
+                    </p>
+                    <div id="M000685_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_equal(hash1, hash2)
+    VALUE hash1, hash2;
+{
+    return hash_equal(hash1, hash2, Qfalse);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000686">
+                    
+                    <a name="M000686"></a><b>hsh[key]    =>  value
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Element Reference&#8212;Retrieves the <em>value</em> object corresponding
+to the <em>key</em> object. If not found, returns the a default value (see
+<tt>Hash::new</tt> for details).
+</p>
+<pre>
+   h = { &quot;a&quot; =&gt; 100, &quot;b&quot; =&gt; 200 }
+   h[&quot;a&quot;]   #=&gt; 100
+   h[&quot;c&quot;]   #=&gt; nil
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000686_source')" id="l_M000686_source">show</a>
+                        
+                    </p>
+                    <div id="M000686_source" class="dyn-source">
+                        <pre>VALUE
+rb_hash_aref(hash, key)
+    VALUE hash, key;
+{
+    VALUE val;
+
+    if (!st_lookup(RHASH(hash)-&gt;tbl, key, &amp;val)) {
+        return rb_funcall(hash, id_default, 1, key);
+    }
+    return val;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000690">
+                    
+                    <a name="M000690"></a><b>hsh[key] = value        => value
+hsh.store(key, value)   => value
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Element Assignment&#8212;Associates the value given by <em>value</em> with
+the key given by <em>key</em>. <em>key</em> should not have its value
+changed while it is in use as a key (a <tt>String</tt> passed as a key will
+be duplicated and frozen).
+</p>
+<pre>
+   h = { &quot;a&quot; =&gt; 100, &quot;b&quot; =&gt; 200 }
+   h[&quot;a&quot;] = 9
+   h[&quot;c&quot;] = 4
+   h   #=&gt; {&quot;a&quot;=&gt;9, &quot;b&quot;=&gt;200, &quot;c&quot;=&gt;4}
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000690_source')" id="l_M000690_source">show</a>
+                        
+                    </p>
+                    <div id="M000690_source" class="dyn-source">
+                        <pre>VALUE
+rb_hash_aset(hash, key, val)
+    VALUE hash, key, val;
+{
+    rb_hash_modify(hash);
+    if (TYPE(key) != T_STRING || st_lookup(RHASH(hash)-&gt;tbl, key, 0)) {
+        st_insert(RHASH(hash)-&gt;tbl, key, val);
+    }
+    else {
+        st_add_direct(RHASH(hash)-&gt;tbl, rb_str_new4(key), val);
+    }
+    return val;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000715">
+                    
+                    <a name="M000715"></a><b>hsh.clear &rarr; hsh
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Removes all key-value pairs from <em>hsh</em>.
+</p>
+<pre>
+   h = { &quot;a&quot; =&gt; 100, &quot;b&quot; =&gt; 200 }   #=&gt; {&quot;a&quot;=&gt;100, &quot;b&quot;=&gt;200}
+   h.clear                          #=&gt; {}
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000715_source')" id="l_M000715_source">show</a>
+                        
+                    </p>
+                    <div id="M000715_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_clear(hash)
+    VALUE hash;
+{
+    rb_hash_modify(hash);
+    if (RHASH(hash)-&gt;tbl-&gt;num_entries &gt; 0) {
+        rb_hash_foreach(hash, clear_i, 0);
+    }
+
+    return hash;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000692">
+                    
+                    <a name="M000692"></a><b>hsh.default(key=nil)   => obj
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the default value, the value that would be returned by
+<em>hsh</em>[<em>key</em>] if <em>key</em> did not exist in <em>hsh</em>.
+See also <tt>Hash::new</tt> and <tt><a
+href="Hash.html#M000693">Hash#default=</a></tt>.
+</p>
+<pre>
+   h = Hash.new                            #=&gt; {}
+   h.default                               #=&gt; nil
+   h.default(2)                            #=&gt; nil
+
+   h = Hash.new(&quot;cat&quot;)                     #=&gt; {}
+   h.default                               #=&gt; &quot;cat&quot;
+   h.default(2)                            #=&gt; &quot;cat&quot;
+
+   h = Hash.new {|h,k| h[k] = k.to_i*10}   #=&gt; {}
+   h.default                               #=&gt; nil
+   h.default(2)                            #=&gt; 20
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000692_source')" id="l_M000692_source">show</a>
+                        
+                    </p>
+                    <div id="M000692_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_default(argc, argv, hash)
+    int argc;
+    VALUE *argv;
+    VALUE hash;
+{
+    VALUE key;
+
+    rb_scan_args(argc, argv, &quot;01&quot;, &amp;key);
+    if (FL_TEST(hash, HASH_PROC_DEFAULT)) {
+        if (argc == 0) return Qnil;
+        return rb_funcall(RHASH(hash)-&gt;ifnone, id_call, 2, hash, key);
+    }
+    return RHASH(hash)-&gt;ifnone;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000693">
+                    
+                    <a name="M000693"></a><b>hsh.default = obj     => hsh
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Sets the default value, the value returned for a key that does not exist in
+the hash. It is not possible to set the a default to a <tt>Proc</tt> that
+will be executed on each key lookup.
+</p>
+<pre>
+   h = { &quot;a&quot; =&gt; 100, &quot;b&quot; =&gt; 200 }
+   h.default = &quot;Go fish&quot;
+   h[&quot;a&quot;]     #=&gt; 100
+   h[&quot;z&quot;]     #=&gt; &quot;Go fish&quot;
+   # This doesn't do what you might hope...
+   h.default = proc do |hash, key|
+     hash[key] = key + key
+   end
+   h[2]       #=&gt; #&lt;Proc:0x401b3948@-:6&gt;
+   h[&quot;cat&quot;]   #=&gt; #&lt;Proc:0x401b3948@-:6&gt;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000693_source')" id="l_M000693_source">show</a>
+                        
+                    </p>
+                    <div id="M000693_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_set_default(hash, ifnone)
+    VALUE hash, ifnone;
+{
+    rb_hash_modify(hash);
+    RHASH(hash)-&gt;ifnone = ifnone;
+    FL_UNSET(hash, HASH_PROC_DEFAULT);
+    return ifnone;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000694">
+                    
+                    <a name="M000694"></a><b>hsh.default_proc &rarr; anObject
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+If <tt>Hash::new</tt> was invoked with a block, return that block,
+otherwise return <tt>nil</tt>.
+</p>
+<pre>
+   h = Hash.new {|h,k| h[k] = k*k }   #=&gt; {}
+   p = h.default_proc                 #=&gt; #&lt;Proc:0x401b3d08@-:1&gt;
+   a = []                             #=&gt; []
+   p.call(a, 2)
+   a                                  #=&gt; [nil, nil, 4]
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000694_source')" id="l_M000694_source">show</a>
+                        
+                    </p>
+                    <div id="M000694_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_default_proc(hash)
+    VALUE hash;
+{
+    if (FL_TEST(hash, HASH_PROC_DEFAULT)) {
+        return RHASH(hash)-&gt;ifnone;
+    }
+    return Qnil;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000710">
+                    
+                    <a name="M000710"></a><b>hsh.delete(key)                   => value
+hsh.delete(key) {| key | block }  => value
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Deletes and returns a key-value pair from <em>hsh</em> whose key is equal
+to <em>key</em>. If the key is not found, returns <tt>nil</tt>. If the
+optional code block is given and the key is not found, pass in the key and
+return the result of <em>block</em>.
+</p>
+<pre>
+   h = { &quot;a&quot; =&gt; 100, &quot;b&quot; =&gt; 200 }
+   h.delete(&quot;a&quot;)                              #=&gt; 100
+   h.delete(&quot;z&quot;)                              #=&gt; nil
+   h.delete(&quot;z&quot;) { |el| &quot;#{el} not found&quot; }   #=&gt; &quot;z not found&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000710_source')" id="l_M000710_source">show</a>
+                        
+                    </p>
+                    <div id="M000710_source" class="dyn-source">
+                        <pre>VALUE
+rb_hash_delete(hash, key)
+    VALUE hash, key;
+{
+    VALUE val;
+
+    rb_hash_modify(hash);
+    val = rb_hash_delete_key(hash, key);
+    if (val != Qundef) return val;
+    if (rb_block_given_p()) {
+        return rb_yield(key);
+    }
+    return Qnil;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000711">
+                    
+                    <a name="M000711"></a><b>hsh.delete_if {| key, value | block }  &rarr; hsh
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Deletes every key-value pair from <em>hsh</em> for which <em>block</em>
+evaluates to <tt>true</tt>.
+</p>
+<pre>
+   h = { &quot;a&quot; =&gt; 100, &quot;b&quot; =&gt; 200, &quot;c&quot; =&gt; 300 }
+   h.delete_if {|key, value| key &gt;= &quot;b&quot; }   #=&gt; {&quot;a&quot;=&gt;100}
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000711_source')" id="l_M000711_source">show</a>
+                        
+                    </p>
+                    <div id="M000711_source" class="dyn-source">
+                        <pre>VALUE
+rb_hash_delete_if(hash)
+    VALUE hash;
+{
+    RETURN_ENUMERATOR(hash, 0, 0);
+    rb_hash_modify(hash);
+    rb_hash_foreach(hash, delete_if_i, hash);
+    return hash;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000701">
+                    
+                    <a name="M000701"></a><b>hsh.each {| key, value | block } &rarr; hsh
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Calls <em>block</em> once for each key in <em>hsh</em>, passing the key and
+value to the block as a two-element array. Because of the assignment
+semantics of block parameters, these elements will be split out if the
+block has two formal parameters. Also see <tt><a
+href="Hash.html#M000704">Hash.each_pair</a></tt>, which will be marginally
+more efficient for blocks with two parameters.
+</p>
+<pre>
+   h = { &quot;a&quot; =&gt; 100, &quot;b&quot; =&gt; 200 }
+   h.each {|key, value| puts &quot;#{key} is #{value}&quot; }
+</pre>
+<p>
+<em>produces:</em>
+</p>
+<pre>
+   a is 100
+   b is 200
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000701_source')" id="l_M000701_source">show</a>
+                        
+                    </p>
+                    <div id="M000701_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_each(hash)
+    VALUE hash;
+{
+    RETURN_ENUMERATOR(hash, 0, 0);
+    rb_hash_foreach(hash, each_i, 0);
+    return hash;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000703">
+                    
+                    <a name="M000703"></a><b>hsh.each_key {| key | block } &rarr; hsh
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Calls <em>block</em> once for each key in <em>hsh</em>, passing the key as
+a parameter.
+</p>
+<pre>
+   h = { &quot;a&quot; =&gt; 100, &quot;b&quot; =&gt; 200 }
+   h.each_key {|key| puts key }
+</pre>
+<p>
+<em>produces:</em>
+</p>
+<pre>
+   a
+   b
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000703_source')" id="l_M000703_source">show</a>
+                        
+                    </p>
+                    <div id="M000703_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_each_key(hash)
+    VALUE hash;
+{
+    RETURN_ENUMERATOR(hash, 0, 0);
+    rb_hash_foreach(hash, each_key_i, 0);
+    return hash;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000704">
+                    
+                    <a name="M000704"></a><b>hsh.each_pair {| key_value_array | block } &rarr; hsh
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Calls <em>block</em> once for each key in <em>hsh</em>, passing the key and
+value as parameters.
+</p>
+<pre>
+   h = { &quot;a&quot; =&gt; 100, &quot;b&quot; =&gt; 200 }
+   h.each_pair {|key, value| puts &quot;#{key} is #{value}&quot; }
+</pre>
+<p>
+<em>produces:</em>
+</p>
+<pre>
+   a is 100
+   b is 200
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000704_source')" id="l_M000704_source">show</a>
+                        
+                    </p>
+                    <div id="M000704_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_each_pair(hash)
+    VALUE hash;
+{
+    RETURN_ENUMERATOR(hash, 0, 0);
+    rb_hash_foreach(hash, each_pair_i, 0);
+    return hash;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000702">
+                    
+                    <a name="M000702"></a><b>hsh.each_value {| value | block } &rarr; hsh
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Calls <em>block</em> once for each key in <em>hsh</em>, passing the value
+as a parameter.
+</p>
+<pre>
+   h = { &quot;a&quot; =&gt; 100, &quot;b&quot; =&gt; 200 }
+   h.each_value {|value| puts value }
+</pre>
+<p>
+<em>produces:</em>
+</p>
+<pre>
+   100
+   200
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000702_source')" id="l_M000702_source">show</a>
+                        
+                    </p>
+                    <div id="M000702_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_each_value(hash)
+    VALUE hash;
+{
+    RETURN_ENUMERATOR(hash, 0, 0);
+    rb_hash_foreach(hash, each_value_i, 0);
+    return hash;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000700">
+                    
+                    <a name="M000700"></a><b>hsh.empty?    => true or false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns <tt>true</tt> if <em>hsh</em> contains no key-value pairs.
+</p>
+<pre>
+   {}.empty?   #=&gt; true
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000700_source')" id="l_M000700_source">show</a>
+                        
+                    </p>
+                    <div id="M000700_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_empty_p(hash)
+    VALUE hash;
+{
+    if (RHASH(hash)-&gt;tbl-&gt;num_entries == 0)
+        return Qtrue;
+    return Qfalse;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000688">
+                    
+                    <a name="M000688"></a><b>hash.eql?(other)  &rarr; true or false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns <tt>true</tt> if <em>hash</em> and <em>other</em> are both hashes
+with the same content.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000688_source')" id="l_M000688_source">show</a>
+                        
+                    </p>
+                    <div id="M000688_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_eql(hash1, hash2)
+    VALUE hash1, hash2;
+{
+    return hash_equal(hash1, hash2, Qtrue);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000689">
+                    
+                    <a name="M000689"></a><b>hsh.fetch(key [, default] )       => obj
+hsh.fetch(key) {| key | block }   => obj
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns a value from the hash for the given key. If the key can&#8217;t be
+found, there are several options: With no other arguments, it will raise an
+<tt>IndexError</tt> exception; if <em>default</em> is given, then that will
+be returned; if the optional code block is specified, then that will be run
+and its result returned.
+</p>
+<pre>
+   h = { &quot;a&quot; =&gt; 100, &quot;b&quot; =&gt; 200 }
+   h.fetch(&quot;a&quot;)                            #=&gt; 100
+   h.fetch(&quot;z&quot;, &quot;go fish&quot;)                 #=&gt; &quot;go fish&quot;
+   h.fetch(&quot;z&quot;) { |el| &quot;go fish, #{el}&quot;}   #=&gt; &quot;go fish, z&quot;
+</pre>
+<p>
+The following example shows that an exception is raised if the key is not
+found and a default value is not supplied.
+</p>
+<pre>
+   h = { &quot;a&quot; =&gt; 100, &quot;b&quot; =&gt; 200 }
+   h.fetch(&quot;z&quot;)
+</pre>
+<p>
+<em>produces:</em>
+</p>
+<pre>
+   prog.rb:2:in `fetch': key not found (IndexError)
+    from prog.rb:2
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000689_source')" id="l_M000689_source">show</a>
+                        
+                    </p>
+                    <div id="M000689_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_fetch(argc, argv, hash)
+    int argc;
+    VALUE *argv;
+    VALUE hash;
+{
+    VALUE key, if_none;
+    VALUE val;
+    long block_given;
+
+    rb_scan_args(argc, argv, &quot;11&quot;, &amp;key, &amp;if_none);
+
+    block_given = rb_block_given_p();
+    if (block_given &amp;&amp; argc == 2) {
+        rb_warn(&quot;block supersedes default value argument&quot;);
+    }
+    if (!st_lookup(RHASH(hash)-&gt;tbl, key, &amp;val)) {
+        if (block_given) return rb_yield(key);
+        if (argc == 1) {
+            rb_raise(rb_eIndexError, &quot;key not found&quot;);
+        }
+        return if_none;
+    }
+    return val;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000723">
+                    
+                    <a name="M000723"></a><b>hsh.has_key?(key)    => true or false
+hsh.include?(key)    => true or false
+hsh.key?(key)        => true or false
+hsh.member?(key)     => true or false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns <tt>true</tt> if the given key is present in <em>hsh</em>.
+</p>
+<pre>
+   h = { &quot;a&quot; =&gt; 100, &quot;b&quot; =&gt; 200 }
+   h.has_key?(&quot;a&quot;)   #=&gt; true
+   h.has_key?(&quot;z&quot;)   #=&gt; false
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000723_source')" id="l_M000723_source">show</a>
+                        
+                    </p>
+                    <div id="M000723_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_has_key(hash, key)
+    VALUE hash;
+    VALUE key;
+{
+    if (st_lookup(RHASH(hash)-&gt;tbl, key, 0)) {
+        return Qtrue;
+    }
+    return Qfalse;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000724">
+                    
+                    <a name="M000724"></a><b>hsh.has_value?(value)    => true or false
+hsh.value?(value)        => true or false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns <tt>true</tt> if the given value is present for some key in
+<em>hsh</em>.
+</p>
+<pre>
+   h = { &quot;a&quot; =&gt; 100, &quot;b&quot; =&gt; 200 }
+   h.has_value?(100)   #=&gt; true
+   h.has_value?(999)   #=&gt; false
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000724_source')" id="l_M000724_source">show</a>
+                        
+                    </p>
+                    <div id="M000724_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_has_value(hash, val)
+    VALUE hash;
+    VALUE val;
+{
+    VALUE data[2];
+
+    data[0] = Qfalse;
+    data[1] = val;
+    rb_hash_foreach(hash, rb_hash_search_value, (st_data_t)data);
+    return data[0];
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000687">
+                    
+                    <a name="M000687"></a><b>array.hash   &rarr; fixnum
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Compute a hash-code for this array. Two arrays with the same content will
+have the same hash code (and will compare using <tt>eql?</tt>).
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000687_source')" id="l_M000687_source">show</a>
+                        
+                    </p>
+                    <div id="M000687_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_hash(hash)
+    VALUE hash;
+{
+    return rb_exec_recursive(recursive_hash, hash, 0);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000721">
+                    
+                    <a name="M000721"></a><b>hsh.has_key?(key)    => true or false
+hsh.include?(key)    => true or false
+hsh.key?(key)        => true or false
+hsh.member?(key)     => true or false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns <tt>true</tt> if the given key is present in <em>hsh</em>.
+</p>
+<pre>
+   h = { &quot;a&quot; =&gt; 100, &quot;b&quot; =&gt; 200 }
+   h.has_key?(&quot;a&quot;)   #=&gt; true
+   h.has_key?(&quot;z&quot;)   #=&gt; false
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000721_source')" id="l_M000721_source">show</a>
+                        
+                    </p>
+                    <div id="M000721_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_has_key(hash, key)
+    VALUE hash;
+    VALUE key;
+{
+    if (st_lookup(RHASH(hash)-&gt;tbl, key, 0)) {
+        return Qtrue;
+    }
+    return Qfalse;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000695">
+                    
+                    <a name="M000695"></a><b>hsh.index(value)    => key
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the key for a given value. If not found, returns <tt>nil</tt>.
+</p>
+<pre>
+   h = { &quot;a&quot; =&gt; 100, &quot;b&quot; =&gt; 200 }
+   h.index(200)   #=&gt; &quot;b&quot;
+   h.index(999)   #=&gt; nil
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000695_source')" id="l_M000695_source">show</a>
+                        
+                    </p>
+                    <div id="M000695_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_index(hash, value)
+    VALUE hash, value;
+{
+    VALUE args[2];
+
+    args[0] = value;
+    args[1] = Qnil;
+
+    rb_hash_foreach(hash, index_i, (st_data_t)args);
+
+    return args[1];
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000696">
+                    
+                    <a name="M000696"></a><b>hsh.indexes(key, ...)    => array
+hsh.indices(key, ...)    => array
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Deprecated in favor of <tt><a
+href="Hash.html#M000712">Hash#select</a></tt>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000696_source')" id="l_M000696_source">show</a>
+                        
+                    </p>
+                    <div id="M000696_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_indexes(argc, argv, hash)
+    int argc;
+    VALUE *argv;
+    VALUE hash;
+{
+    VALUE indexes;
+    int i;
+
+    rb_warn(&quot;Hash#%s is deprecated; use Hash#values_at&quot;,
+            rb_id2name(rb_frame_last_func()));
+    indexes = rb_ary_new2(argc);
+    for (i=0; i&lt;argc; i++) {
+        RARRAY(indexes)-&gt;ptr[i] = rb_hash_aref(hash, argv[i]);
+        RARRAY(indexes)-&gt;len++;
+    }
+    return indexes;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000697">
+                    
+                    <a name="M000697"></a><b>hsh.indexes(key, ...)    => array
+hsh.indices(key, ...)    => array
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Deprecated in favor of <tt><a
+href="Hash.html#M000712">Hash#select</a></tt>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000697_source')" id="l_M000697_source">show</a>
+                        
+                    </p>
+                    <div id="M000697_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_indexes(argc, argv, hash)
+    int argc;
+    VALUE *argv;
+    VALUE hash;
+{
+    VALUE indexes;
+    int i;
+
+    rb_warn(&quot;Hash#%s is deprecated; use Hash#values_at&quot;,
+            rb_id2name(rb_frame_last_func()));
+    indexes = rb_ary_new2(argc);
+    for (i=0; i&lt;argc; i++) {
+        RARRAY(indexes)-&gt;ptr[i] = rb_hash_aref(hash, argv[i]);
+        RARRAY(indexes)-&gt;len++;
+    }
+    return indexes;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000679">
+                    
+                    <a name="M000679"></a><b>hsh.replace(other_hash) &rarr; hsh
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Replaces the contents of <em>hsh</em> with the contents of
+<em>other_hash</em>.
+</p>
+<pre>
+   h = { &quot;a&quot; =&gt; 100, &quot;b&quot; =&gt; 200 }
+   h.replace({ &quot;c&quot; =&gt; 300, &quot;d&quot; =&gt; 400 })   #=&gt; {&quot;c&quot;=&gt;300, &quot;d&quot;=&gt;400}
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000679_source')" id="l_M000679_source">show</a>
+                        
+                    </p>
+                    <div id="M000679_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_replace(hash, hash2)
+    VALUE hash, hash2;
+{
+    hash2 = to_hash(hash2);
+    if (hash == hash2) return hash;
+    rb_hash_clear(hash);
+    rb_hash_foreach(hash2, replace_i, hash);
+    RHASH(hash)-&gt;ifnone = RHASH(hash2)-&gt;ifnone;
+    if (FL_TEST(hash2, HASH_PROC_DEFAULT)) {
+        FL_SET(hash, HASH_PROC_DEFAULT);
+    }
+    else {
+        FL_UNSET(hash, HASH_PROC_DEFAULT);
+    }
+
+    return hash;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000684">
+                    
+                    <a name="M000684"></a><b>hsh.inspect  => string
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Return the contents of this hash as a string.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000684_source')" id="l_M000684_source">show</a>
+                        
+                    </p>
+                    <div id="M000684_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_inspect(hash)
+    VALUE hash;
+{
+    if (RHASH(hash)-&gt;tbl == 0 || RHASH(hash)-&gt;tbl-&gt;num_entries == 0)
+        return rb_str_new2(&quot;{}&quot;);
+    if (rb_inspecting_p(hash)) return rb_str_new2(&quot;{...}&quot;);
+    return rb_protect_inspect(inspect_hash, hash, 0);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000716">
+                    
+                    <a name="M000716"></a><b>hsh.invert &rarr; aHash
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns a new hash created by using <em>hsh</em>&#8217;s values as keys,
+and the keys as values.
+</p>
+<pre>
+   h = { &quot;n&quot; =&gt; 100, &quot;m&quot; =&gt; 100, &quot;y&quot; =&gt; 300, &quot;d&quot; =&gt; 200, &quot;a&quot; =&gt; 0 }
+   h.invert   #=&gt; {0=&gt;&quot;a&quot;, 100=&gt;&quot;n&quot;, 200=&gt;&quot;d&quot;, 300=&gt;&quot;y&quot;}
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000716_source')" id="l_M000716_source">show</a>
+                        
+                    </p>
+                    <div id="M000716_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_invert(hash)
+    VALUE hash;
+{
+    VALUE h = rb_hash_new();
+
+    rb_hash_foreach(hash, rb_hash_invert_i, h);
+    return h;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000725">
+                    
+                    <a name="M000725"></a><b>hsh.has_key?(key)    => true or false
+hsh.include?(key)    => true or false
+hsh.key?(key)        => true or false
+hsh.member?(key)     => true or false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns <tt>true</tt> if the given key is present in <em>hsh</em>.
+</p>
+<pre>
+   h = { &quot;a&quot; =&gt; 100, &quot;b&quot; =&gt; 200 }
+   h.has_key?(&quot;a&quot;)   #=&gt; true
+   h.has_key?(&quot;z&quot;)   #=&gt; false
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000725_source')" id="l_M000725_source">show</a>
+                        
+                    </p>
+                    <div id="M000725_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_has_key(hash, key)
+    VALUE hash;
+    VALUE key;
+{
+    if (st_lookup(RHASH(hash)-&gt;tbl, key, 0)) {
+        return Qtrue;
+    }
+    return Qfalse;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000706">
+                    
+                    <a name="M000706"></a><b>hsh.keys    => array
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns a new array populated with the keys from this hash. See also <tt><a
+href="Hash.html#M000707">Hash#values</a></tt>.
+</p>
+<pre>
+   h = { &quot;a&quot; =&gt; 100, &quot;b&quot; =&gt; 200, &quot;c&quot; =&gt; 300, &quot;d&quot; =&gt; 400 }
+   h.keys   #=&gt; [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;]
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000706_source')" id="l_M000706_source">show</a>
+                        
+                    </p>
+                    <div id="M000706_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_keys(hash)
+    VALUE hash;
+{
+    VALUE ary;
+
+    ary = rb_ary_new();
+    rb_hash_foreach(hash, keys_i, ary);
+
+    return ary;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000699">
+                    
+                    <a name="M000699"></a><b>hsh.length    =>  fixnum
+hsh.size      =>  fixnum
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the number of key-value pairs in the hash.
+</p>
+<pre>
+   h = { &quot;d&quot; =&gt; 100, &quot;a&quot; =&gt; 200, &quot;v&quot; =&gt; 300, &quot;e&quot; =&gt; 400 }
+   h.length        #=&gt; 4
+   h.delete(&quot;a&quot;)   #=&gt; 200
+   h.length        #=&gt; 3
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000699_source')" id="l_M000699_source">show</a>
+                        
+                    </p>
+                    <div id="M000699_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_size(hash)
+    VALUE hash;
+{
+    return INT2FIX(RHASH(hash)-&gt;tbl-&gt;num_entries);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000722">
+                    
+                    <a name="M000722"></a><b>hsh.has_key?(key)    => true or false
+hsh.include?(key)    => true or false
+hsh.key?(key)        => true or false
+hsh.member?(key)     => true or false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns <tt>true</tt> if the given key is present in <em>hsh</em>.
+</p>
+<pre>
+   h = { &quot;a&quot; =&gt; 100, &quot;b&quot; =&gt; 200 }
+   h.has_key?(&quot;a&quot;)   #=&gt; true
+   h.has_key?(&quot;z&quot;)   #=&gt; false
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000722_source')" id="l_M000722_source">show</a>
+                        
+                    </p>
+                    <div id="M000722_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_has_key(hash, key)
+    VALUE hash;
+    VALUE key;
+{
+    if (st_lookup(RHASH(hash)-&gt;tbl, key, 0)) {
+        return Qtrue;
+    }
+    return Qfalse;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000720">
+                    
+                    <a name="M000720"></a><b>hsh.merge(other_hash)                              &rarr; a_hash
+hsh.merge(other_hash){|key, oldval, newval| block} &rarr; a_hash
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns a new hash containing the contents of <em>other_hash</em> and the
+contents of <em>hsh</em>, overwriting entries in <em>hsh</em> with
+duplicate keys with those from <em>other_hash</em>.
+</p>
+<pre>
+   h1 = { &quot;a&quot; =&gt; 100, &quot;b&quot; =&gt; 200 }
+   h2 = { &quot;b&quot; =&gt; 254, &quot;c&quot; =&gt; 300 }
+   h1.merge(h2)   #=&gt; {&quot;a&quot;=&gt;100, &quot;b&quot;=&gt;254, &quot;c&quot;=&gt;300}
+   h1             #=&gt; {&quot;a&quot;=&gt;100, &quot;b&quot;=&gt;200}
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000720_source')" id="l_M000720_source">show</a>
+                        
+                    </p>
+                    <div id="M000720_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_merge(hash1, hash2)
+    VALUE hash1, hash2;
+{
+    return rb_hash_update(rb_obj_dup(hash1), hash2);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000719">
+                    
+                    <a name="M000719"></a><b>hsh.merge!(other_hash)                                 => hsh
+hsh.update(other_hash)                                 => hsh
+hsh.merge!(other_hash){|key, oldval, newval| block}    => hsh
+hsh.update(other_hash){|key, oldval, newval| block}    => hsh
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Adds the contents of <em>other_hash</em> to <em>hsh</em>. If no block is
+specified entries with duplicate keys are overwritten with the values from
+<em>other_hash</em>, otherwise the value of each duplicate key is
+determined by calling the block with the key, its value in <em>hsh</em> and
+its value in <em>other_hash</em>.
+</p>
+<pre>
+   h1 = { &quot;a&quot; =&gt; 100, &quot;b&quot; =&gt; 200 }
+   h2 = { &quot;b&quot; =&gt; 254, &quot;c&quot; =&gt; 300 }
+   h1.merge!(h2)   #=&gt; {&quot;a&quot;=&gt;100, &quot;b&quot;=&gt;254, &quot;c&quot;=&gt;300}
+
+   h1 = { &quot;a&quot; =&gt; 100, &quot;b&quot; =&gt; 200 }
+   h2 = { &quot;b&quot; =&gt; 254, &quot;c&quot; =&gt; 300 }
+   h1.merge!(h2) { |key, v1, v2| v1 }
+                   #=&gt; {&quot;a&quot;=&gt;100, &quot;b&quot;=&gt;200, &quot;c&quot;=&gt;300}
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000719_source')" id="l_M000719_source">show</a>
+                        
+                    </p>
+                    <div id="M000719_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_update(hash1, hash2)
+    VALUE hash1, hash2;
+{
+    hash2 = to_hash(hash2);
+    if (rb_block_given_p()) {
+        rb_hash_foreach(hash2, rb_hash_update_block_i, hash1);
+    }
+    else {
+        rb_hash_foreach(hash2, rb_hash_update_i, hash1);
+    }
+    return hash1;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001759">
+                    
+                    <a name="M001759"></a><b>pretty_print</b>(q)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001759_source')" id="l_M001759_source">show</a>
+                        
+                    </p>
+                    <div id="M001759_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/pp.rb, line 315</span>
+315:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">pretty_print</span>(<span class="ruby-identifier">q</span>)
+316:     <span class="ruby-identifier">q</span>.<span class="ruby-identifier">pp_hash</span> <span class="ruby-keyword kw">self</span>
+317:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M001760">
+                    
+                    <a name="M001760"></a><b>pretty_print_cycle</b>(q)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M001760_source')" id="l_M001760_source">show</a>
+                        
+                    </p>
+                    <div id="M001760_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/pp.rb, line 319</span>
+319:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">pretty_print_cycle</span>(<span class="ruby-identifier">q</span>)
+320:     <span class="ruby-identifier">q</span>.<span class="ruby-identifier">text</span>(<span class="ruby-identifier">empty?</span> <span class="ruby-value">? </span><span class="ruby-value str">'{}'</span> <span class="ruby-operator">:</span> <span class="ruby-value str">'{...}'</span>)
+321:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000680">
+                    
+                    <a name="M000680"></a><b>hsh.rehash &rarr; hsh
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Rebuilds the hash based on the current hash values for each key. If values
+of key objects have changed since they were inserted, this method will
+reindex <em>hsh</em>. If <tt><a
+href="Hash.html#M000680">Hash#rehash</a></tt> is called while an iterator
+is traversing the hash, an <tt>IndexError</tt> will be raised in the
+iterator.
+</p>
+<pre>
+   a = [ &quot;a&quot;, &quot;b&quot; ]
+   c = [ &quot;c&quot;, &quot;d&quot; ]
+   h = { a =&gt; 100, c =&gt; 300 }
+   h[a]       #=&gt; 100
+   a[0] = &quot;z&quot;
+   h[a]       #=&gt; nil
+   h.rehash   #=&gt; {[&quot;z&quot;, &quot;b&quot;]=&gt;100, [&quot;c&quot;, &quot;d&quot;]=&gt;300}
+   h[a]       #=&gt; 100
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000680_source')" id="l_M000680_source">show</a>
+                        
+                    </p>
+                    <div id="M000680_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_rehash(hash)
+    VALUE hash;
+{
+    st_table *tbl;
+
+    rb_hash_modify(hash);
+    tbl = st_init_table_with_size(&amp;objhash, RHASH(hash)-&gt;tbl-&gt;num_entries);
+    rb_hash_foreach(hash, rb_hash_rehash_i, (st_data_t)tbl);
+    st_free_table(RHASH(hash)-&gt;tbl);
+    RHASH(hash)-&gt;tbl = tbl;
+
+    return hash;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000713">
+                    
+                    <a name="M000713"></a><b>hsh.reject {| key, value | block }  &rarr; a_hash
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Same as <tt><a href="Hash.html#M000711">Hash#delete_if</a></tt>, but works
+on (and returns) a copy of the <em>hsh</em>. Equivalent to
+<tt><em>hsh</em>.dup.delete_if</tt>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000713_source')" id="l_M000713_source">show</a>
+                        
+                    </p>
+                    <div id="M000713_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_reject(hash)
+    VALUE hash;
+{
+    return rb_hash_delete_if(rb_obj_dup(hash));
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000714">
+                    
+                    <a name="M000714"></a><b>hsh.reject! {| key, value | block }  &rarr; hsh or nil
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Equivalent to <tt><a href="Hash.html#M000711">Hash#delete_if</a></tt>, but
+returns <tt>nil</tt> if no changes were made.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000714_source')" id="l_M000714_source">show</a>
+                        
+                    </p>
+                    <div id="M000714_source" class="dyn-source">
+                        <pre>VALUE
+rb_hash_reject_bang(hash)
+    VALUE hash;
+{
+    int n;
+
+    RETURN_ENUMERATOR(hash, 0, 0);
+    n = RHASH(hash)-&gt;tbl-&gt;num_entries;
+    rb_hash_delete_if(hash);
+    if (n == RHASH(hash)-&gt;tbl-&gt;num_entries) return Qnil;
+    return hash;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000718">
+                    
+                    <a name="M000718"></a><b>hsh.replace(other_hash) &rarr; hsh
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Replaces the contents of <em>hsh</em> with the contents of
+<em>other_hash</em>.
+</p>
+<pre>
+   h = { &quot;a&quot; =&gt; 100, &quot;b&quot; =&gt; 200 }
+   h.replace({ &quot;c&quot; =&gt; 300, &quot;d&quot; =&gt; 400 })   #=&gt; {&quot;c&quot;=&gt;300, &quot;d&quot;=&gt;400}
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000718_source')" id="l_M000718_source">show</a>
+                        
+                    </p>
+                    <div id="M000718_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_replace(hash, hash2)
+    VALUE hash, hash2;
+{
+    hash2 = to_hash(hash2);
+    if (hash == hash2) return hash;
+    rb_hash_clear(hash);
+    rb_hash_foreach(hash2, replace_i, hash);
+    RHASH(hash)-&gt;ifnone = RHASH(hash2)-&gt;ifnone;
+    if (FL_TEST(hash2, HASH_PROC_DEFAULT)) {
+        FL_SET(hash, HASH_PROC_DEFAULT);
+    }
+    else {
+        FL_UNSET(hash, HASH_PROC_DEFAULT);
+    }
+
+    return hash;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000712">
+                    
+                    <a name="M000712"></a><b>hsh.select {|key, value| block}   => array
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns a new array consisting of <tt>[key,value]</tt> pairs for which the
+block returns true. Also see <tt><a
+href="Hash.html#M000708">Hash.values_at</a></tt>.
+</p>
+<pre>
+   h = { &quot;a&quot; =&gt; 100, &quot;b&quot; =&gt; 200, &quot;c&quot; =&gt; 300 }
+   h.select {|k,v| k &gt; &quot;a&quot;}  #=&gt; [[&quot;b&quot;, 200], [&quot;c&quot;, 300]]
+   h.select {|k,v| v &lt; 200}  #=&gt; [[&quot;a&quot;, 100]]
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000712_source')" id="l_M000712_source">show</a>
+                        
+                    </p>
+                    <div id="M000712_source" class="dyn-source">
+                        <pre>VALUE
+rb_hash_select(hash)
+    VALUE hash;
+{
+    VALUE result;
+
+    RETURN_ENUMERATOR(hash, 0, 0);
+    result = rb_ary_new();
+    rb_hash_foreach(hash, select_i, result);
+    return result;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000709">
+                    
+                    <a name="M000709"></a><b>hsh.shift &rarr; anArray or obj
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Removes a key-value pair from <em>hsh</em> and returns it as the two-item
+array <tt>[</tt> <em>key, value</em> <tt>]</tt>, or the hash&#8217;s
+default value if the hash is empty.
+</p>
+<pre>
+   h = { 1 =&gt; &quot;a&quot;, 2 =&gt; &quot;b&quot;, 3 =&gt; &quot;c&quot; }
+   h.shift   #=&gt; [1, &quot;a&quot;]
+   h         #=&gt; {2=&gt;&quot;b&quot;, 3=&gt;&quot;c&quot;}
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000709_source')" id="l_M000709_source">show</a>
+                        
+                    </p>
+                    <div id="M000709_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_shift(hash)
+    VALUE hash;
+{
+    struct shift_var var;
+
+    rb_hash_modify(hash);
+    var.key = Qundef;
+    if (RHASH(hash)-&gt;iter_lev &gt; 0) {
+        rb_hash_foreach(hash, shift_i_safe, (st_data_t)&amp;var);
+        if (var.key != Qundef) {
+            st_data_t key = var.key;
+            if (st_delete_safe(RHASH(hash)-&gt;tbl, &amp;key, 0, Qundef)) {
+                FL_SET(hash, HASH_DELETED);
+            }
+        }
+    }
+    else {
+        rb_hash_foreach(hash, shift_i, (st_data_t)&amp;var);
+    }
+
+    if (var.key != Qundef) {
+        return rb_assoc_new(var.key, var.val);
+    }
+    else if (FL_TEST(hash, HASH_PROC_DEFAULT)) {
+        return rb_funcall(RHASH(hash)-&gt;ifnone, id_call, 2, hash, Qnil);
+    }
+    else {
+        return RHASH(hash)-&gt;ifnone;
+    }
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000698">
+                    
+                    <a name="M000698"></a><b>hsh.length    =>  fixnum
+hsh.size      =>  fixnum
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the number of key-value pairs in the hash.
+</p>
+<pre>
+   h = { &quot;d&quot; =&gt; 100, &quot;a&quot; =&gt; 200, &quot;v&quot; =&gt; 300, &quot;e&quot; =&gt; 400 }
+   h.length        #=&gt; 4
+   h.delete(&quot;a&quot;)   #=&gt; 200
+   h.length        #=&gt; 3
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000698_source')" id="l_M000698_source">show</a>
+                        
+                    </p>
+                    <div id="M000698_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_size(hash)
+    VALUE hash;
+{
+    return INT2FIX(RHASH(hash)-&gt;tbl-&gt;num_entries);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000705">
+                    
+                    <a name="M000705"></a><b>hsh.sort                    => array
+hsh.sort {| a, b | block }  => array
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Converts <em>hsh</em> to a nested array of <tt>[</tt> <em>key, value</em>
+<tt>]</tt> arrays and sorts it, using <tt><a
+href="Array.html#M000047">Array#sort</a></tt>.
+</p>
+<pre>
+   h = { &quot;a&quot; =&gt; 20, &quot;b&quot; =&gt; 30, &quot;c&quot; =&gt; 10  }
+   h.sort                       #=&gt; [[&quot;a&quot;, 20], [&quot;b&quot;, 30], [&quot;c&quot;, 10]]
+   h.sort {|a,b| a[1]&lt;=&gt;b[1]}   #=&gt; [[&quot;c&quot;, 10], [&quot;a&quot;, 20], [&quot;b&quot;, 30]]
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000705_source')" id="l_M000705_source">show</a>
+                        
+                    </p>
+                    <div id="M000705_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_sort(hash)
+    VALUE hash;
+{
+    VALUE entries = rb_hash_to_a(hash);
+    rb_ary_sort_bang(entries);
+    return entries;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000691">
+                    
+                    <a name="M000691"></a><b>hsh[key] = value        => value
+hsh.store(key, value)   => value
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Element Assignment&#8212;Associates the value given by <em>value</em> with
+the key given by <em>key</em>. <em>key</em> should not have its value
+changed while it is in use as a key (a <tt>String</tt> passed as a key will
+be duplicated and frozen).
+</p>
+<pre>
+   h = { &quot;a&quot; =&gt; 100, &quot;b&quot; =&gt; 200 }
+   h[&quot;a&quot;] = 9
+   h[&quot;c&quot;] = 4
+   h   #=&gt; {&quot;a&quot;=&gt;9, &quot;b&quot;=&gt;200, &quot;c&quot;=&gt;4}
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000691_source')" id="l_M000691_source">show</a>
+                        
+                    </p>
+                    <div id="M000691_source" class="dyn-source">
+                        <pre>VALUE
+rb_hash_aset(hash, key, val)
+    VALUE hash, key, val;
+{
+    rb_hash_modify(hash);
+    if (TYPE(key) != T_STRING || st_lookup(RHASH(hash)-&gt;tbl, key, 0)) {
+        st_insert(RHASH(hash)-&gt;tbl, key, val);
+    }
+    else {
+        st_add_direct(RHASH(hash)-&gt;tbl, rb_str_new4(key), val);
+    }
+    return val;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000682">
+                    
+                    <a name="M000682"></a><b>hsh.to_a &rarr; array
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Converts <em>hsh</em> to a nested array of <tt>[</tt> <em>key, value</em>
+<tt>]</tt> arrays.
+</p>
+<pre>
+   h = { &quot;c&quot; =&gt; 300, &quot;a&quot; =&gt; 100, &quot;d&quot; =&gt; 400, &quot;c&quot; =&gt; 300  }
+   h.to_a   #=&gt; [[&quot;a&quot;, 100], [&quot;c&quot;, 300], [&quot;d&quot;, 400]]
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000682_source')" id="l_M000682_source">show</a>
+                        
+                    </p>
+                    <div id="M000682_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_to_a(hash)
+    VALUE hash;
+{
+    VALUE ary;
+
+    ary = rb_ary_new();
+    rb_hash_foreach(hash, to_a_i, ary);
+    if (OBJ_TAINTED(hash)) OBJ_TAINT(ary);
+
+    return ary;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000681">
+                    
+                    <a name="M000681"></a><b>hsh.to_hash   => hsh
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns <em>self</em>.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000681_source')" id="l_M000681_source">show</a>
+                        
+                    </p>
+                    <div id="M000681_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_to_hash(hash)
+    VALUE hash;
+{
+    return hash;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000683">
+                    
+                    <a name="M000683"></a><b>hsh.to_s   => string
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Converts <em>hsh</em> to a string by converting the hash to an array of
+<tt>[</tt> <em>key, value</em> <tt>]</tt> pairs and then converting that
+array to a string using <tt><a
+href="Array.html#M000044">Array#join</a></tt> with the default separator.
+</p>
+<pre>
+   h = { &quot;c&quot; =&gt; 300, &quot;a&quot; =&gt; 100, &quot;d&quot; =&gt; 400, &quot;c&quot; =&gt; 300  }
+   h.to_s   #=&gt; &quot;a100c300d400&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000683_source')" id="l_M000683_source">show</a>
+                        
+                    </p>
+                    <div id="M000683_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_to_s(hash)
+    VALUE hash;
+{
+    if (rb_inspecting_p(hash)) return rb_str_new2(&quot;{...}&quot;);
+    return rb_protect_inspect(to_s_hash, hash, 0);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006062">
+                    
+                    <a name="M006062"></a><b>to_yaml</b>( opts = {} )
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006062_source')" id="l_M006062_source">show</a>
+                        
+                    </p>
+                    <div id="M006062_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/yaml/rubytypes.rb, line 37</span>
+37:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">to_yaml</span>( <span class="ruby-identifier">opts</span> = {} )
+38:                 <span class="ruby-constant">YAML</span><span class="ruby-operator">::</span><span class="ruby-identifier">quick_emit</span>( <span class="ruby-keyword kw">self</span>, <span class="ruby-identifier">opts</span> ) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">out</span><span class="ruby-operator">|</span>
+39:             <span class="ruby-identifier">out</span>.<span class="ruby-identifier">map</span>( <span class="ruby-identifier">taguri</span>, <span class="ruby-identifier">to_yaml_style</span> ) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">map</span><span class="ruby-operator">|</span>
+40:                 <span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">k</span>, <span class="ruby-identifier">v</span><span class="ruby-operator">|</span>
+41:                     <span class="ruby-identifier">map</span>.<span class="ruby-identifier">add</span>( <span class="ruby-identifier">k</span>, <span class="ruby-identifier">v</span> )
+42:                 <span class="ruby-keyword kw">end</span>
+43:             <span class="ruby-keyword kw">end</span>
+44:         <span class="ruby-keyword kw">end</span>
+45:         <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000717">
+                    
+                    <a name="M000717"></a><b>hsh.merge!(other_hash)                                 => hsh
+hsh.update(other_hash)                                 => hsh
+hsh.merge!(other_hash){|key, oldval, newval| block}    => hsh
+hsh.update(other_hash){|key, oldval, newval| block}    => hsh
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Adds the contents of <em>other_hash</em> to <em>hsh</em>. If no block is
+specified entries with duplicate keys are overwritten with the values from
+<em>other_hash</em>, otherwise the value of each duplicate key is
+determined by calling the block with the key, its value in <em>hsh</em> and
+its value in <em>other_hash</em>.
+</p>
+<pre>
+   h1 = { &quot;a&quot; =&gt; 100, &quot;b&quot; =&gt; 200 }
+   h2 = { &quot;b&quot; =&gt; 254, &quot;c&quot; =&gt; 300 }
+   h1.merge!(h2)   #=&gt; {&quot;a&quot;=&gt;100, &quot;b&quot;=&gt;254, &quot;c&quot;=&gt;300}
+
+   h1 = { &quot;a&quot; =&gt; 100, &quot;b&quot; =&gt; 200 }
+   h2 = { &quot;b&quot; =&gt; 254, &quot;c&quot; =&gt; 300 }
+   h1.merge!(h2) { |key, v1, v2| v1 }
+                   #=&gt; {&quot;a&quot;=&gt;100, &quot;b&quot;=&gt;200, &quot;c&quot;=&gt;300}
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000717_source')" id="l_M000717_source">show</a>
+                        
+                    </p>
+                    <div id="M000717_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_update(hash1, hash2)
+    VALUE hash1, hash2;
+{
+    hash2 = to_hash(hash2);
+    if (rb_block_given_p()) {
+        rb_hash_foreach(hash2, rb_hash_update_block_i, hash1);
+    }
+    else {
+        rb_hash_foreach(hash2, rb_hash_update_i, hash1);
+    }
+    return hash1;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000726">
+                    
+                    <a name="M000726"></a><b>hsh.has_value?(value)    => true or false
+hsh.value?(value)        => true or false
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns <tt>true</tt> if the given value is present for some key in
+<em>hsh</em>.
+</p>
+<pre>
+   h = { &quot;a&quot; =&gt; 100, &quot;b&quot; =&gt; 200 }
+   h.has_value?(100)   #=&gt; true
+   h.has_value?(999)   #=&gt; false
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000726_source')" id="l_M000726_source">show</a>
+                        
+                    </p>
+                    <div id="M000726_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_has_value(hash, val)
+    VALUE hash;
+    VALUE val;
+{
+    VALUE data[2];
+
+    data[0] = Qfalse;
+    data[1] = val;
+    rb_hash_foreach(hash, rb_hash_search_value, (st_data_t)data);
+    return data[0];
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000707">
+                    
+                    <a name="M000707"></a><b>hsh.values    => array
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns a new array populated with the values from <em>hsh</em>. See also
+<tt><a href="Hash.html#M000706">Hash#keys</a></tt>.
+</p>
+<pre>
+   h = { &quot;a&quot; =&gt; 100, &quot;b&quot; =&gt; 200, &quot;c&quot; =&gt; 300 }
+   h.values   #=&gt; [100, 200, 300]
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000707_source')" id="l_M000707_source">show</a>
+                        
+                    </p>
+                    <div id="M000707_source" class="dyn-source">
+                        <pre>static VALUE
+rb_hash_values(hash)
+    VALUE hash;
+{
+    VALUE ary;
+
+    ary = rb_ary_new();
+    rb_hash_foreach(hash, values_i, ary);
+
+    return ary;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M000708">
+                    
+                    <a name="M000708"></a><b>hsh.values_at(key, ...)   => array
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Return an array containing the values associated with the given keys. Also
+see <tt><a href="Hash.html#M000712">Hash.select</a></tt>.
+</p>
+<pre>
+  h = { &quot;cat&quot; =&gt; &quot;feline&quot;, &quot;dog&quot; =&gt; &quot;canine&quot;, &quot;cow&quot; =&gt; &quot;bovine&quot; }
+  h.values_at(&quot;cow&quot;, &quot;cat&quot;)  #=&gt; [&quot;bovine&quot;, &quot;feline&quot;]
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M000708_source')" id="l_M000708_source">show</a>
+                        
+                    </p>
+                    <div id="M000708_source" class="dyn-source">
+                        <pre>VALUE
+rb_hash_values_at(argc, argv, hash)
+    int argc;
+    VALUE *argv;
+    VALUE hash;
+{
+    VALUE result = rb_ary_new();
+    long i;
+
+    for (i=0; i&lt;argc; i++) {
+        rb_ary_push(result, rb_hash_aref(hash, argv[i]));
+    }
+    return result;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006061">
+                    
+                    <a name="M006061"></a><b>yaml_initialize</b>( tag, val )
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006061_source')" id="l_M006061_source">show</a>
+                        
+                    </p>
+                    <div id="M006061_source" class="dyn-source">
+                        <pre>    <span class="ruby-comment cmt"># File lib/yaml/rubytypes.rb, line 28</span>
+28:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">yaml_initialize</span>( <span class="ruby-identifier">tag</span>, <span class="ruby-identifier">val</span> )
+29:         <span class="ruby-keyword kw">if</span> <span class="ruby-constant">Array</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">val</span>
+30:             <span class="ruby-identifier">update</span> <span class="ruby-constant">Hash</span>.[]( <span class="ruby-operator">*</span><span class="ruby-identifier">val</span> )              <span class="ruby-comment cmt"># Convert the map to a sequence</span>
+31:         <span class="ruby-keyword kw">elsif</span> <span class="ruby-constant">Hash</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">val</span>
+32:             <span class="ruby-identifier">update</span> <span class="ruby-identifier">val</span>
+33:         <span class="ruby-keyword kw">else</span>
+34:             <span class="ruby-identifier">raise</span> <span class="ruby-constant">YAML</span><span class="ruby-operator">::</span><span class="ruby-constant">TypeError</span>, <span class="ruby-node">&quot;Invalid map explicitly tagged #{ tag }: &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">val</span>.<span class="ruby-identifier">inspect</span>
+35:         <span class="ruby-keyword kw">end</span>
+36:     <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

@@ -1,0 +1,75 @@
+  <div id="fileHeader">
+    <h1>erb.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionpack/lib/action_view/template_handlers/erb.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:04 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>require 'erb'
+
+class ERB
+  module Util
+    HTML_ESCAPE = { '&amp;' =&gt; '&amp;amp;',  '&gt;' =&gt; '&amp;gt;',   '&lt;' =&gt; '&amp;lt;', '&quot;' =&gt; '&amp;quot;' }
+    JSON_ESCAPE = { '&amp;' =&gt; '\u0026', '&gt;' =&gt; '\u003E', '&lt;' =&gt; '\u003C' }
+
+    # A utility method for escaping HTML tag characters.
+    # This method is also aliased as &lt;tt&gt;h&lt;/tt&gt;.
+    #
+    # In your ERb templates, use this method to escape any unsafe content. For example:
+    #   &lt;%=h @person.name %&gt;
+    #
+    # ==== Example:
+    #   puts html_escape(&quot;is a &gt; 0 &amp; a &lt; 10?&quot;)
+    #   # =&gt; is a &amp;gt; 0 &amp;amp; a &amp;lt; 10?
+    def html_escape(s)
+      s.to_s.gsub(/[&amp;&quot;&gt;&lt;]/) { |special| HTML_ESCAPE[special] }
+    end
+
+    # A utility method for escaping HTML entities in JSON strings.
+    # This method is also aliased as &lt;tt&gt;j&lt;/tt&gt;.
+    #
+    # In your ERb templates, use this method to escape any HTML entities:
+    #   &lt;%=j @person.to_json %&gt;
+    #
+    # ==== Example:
+    #   puts json_escape(&quot;is a &gt; 0 &amp; a &lt; 10?&quot;)
+    #   # =&gt; is a \u003E 0 \u0026 a \u003C 10?
+    def json_escape(s)
+      s.to_s.gsub(/[&amp;&quot;&gt;&lt;]/) { |special| JSON_ESCAPE[special] }
+    end
+
+    alias j json_escape
+    module_function :j
+    module_function :json_escape
+  end
+end
+
+module ActionView
+  module TemplateHandlers
+    class ERB &lt; TemplateHandler
+      include Compilable
+
+      def compile(template)
+        ::ERB.new(template.source, nil, @view.erb_trim_mode).src
+      end
+
+      def cache_fragment(block, name = {}, options = nil) #:nodoc:
+        @view.fragment_for(block, name, options) do
+          eval(ActionView::Base.erb_variable, block.binding)
+        end
+      end
+    end
+  end
+end
+</pre>
+    </div>

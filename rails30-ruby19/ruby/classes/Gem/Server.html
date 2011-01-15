@@ -1,0 +1,1023 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Gem::Server</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            Gem::Server 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../files/lib/rubygems/server_rb.html">lib/rubygems/server.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+<a href="Server.html">Gem::Server</a> and allows users to serve gems for
+consumption by `gem &#8212;remote-install`.
+</p>
+<p>
+gem_server starts an HTTP server on the given port and serves the
+following:
+</p>
+<ul>
+<li>&#8220;/&#8221; - Browsing of gem spec files for installed gems
+
+</li>
+<li>&#8220;/specs.#{<a
+href="../Gem.html#M004610">Gem.marshal_version</a>}.gz&#8221; - specs
+name/version/platform index
+
+</li>
+<li>&#8220;/latest_specs.#{<a
+href="../Gem.html#M004610">Gem.marshal_version</a>}.gz&#8221; - latest
+specs name/version/platform index
+
+</li>
+<li>&#8220;/quick/&#8221; - Individual gemspecs
+
+</li>
+<li>&#8220;/gems&#8221; - Direct access to download the installable gems
+
+</li>
+<li>&#8220;/rdoc?q=&#8221; - Search for installed rdoc documentation
+
+</li>
+<li>legacy indexes:
+
+<ul>
+<li>&#8220;/<a href="Server.html#M005824">Marshal</a>.#{<a
+href="../Gem.html#M004610">Gem.marshal_version</a>}&#8221; - Full <a
+href="SourceIndex.html">SourceIndex</a> dump of metadata for installed gems
+
+</li>
+<li>&#8220;/yaml&#8221; - <a href="../YAML.html">YAML</a> dump of metadata for
+installed gems - deprecated
+
+</li>
+</ul>
+</li>
+</ul>
+<h2>Usage</h2>
+<pre>
+  gem_server = Gem::Server.new Gem.dir, 8089, false
+  gem_server.run
+</pre>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>M</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005824">Marshal</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>A</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005825">add_date</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>L</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005826">latest_specs</a>,</li>
+                
+                <li><a href="#M005827">listen</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005823">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>Q</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005828">quick</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>R</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005830">rdoc</a>,</li>
+                
+                <li><a href="#M005829">root</a>,</li>
+                
+                <li><a href="#M005822">run</a>,</li>
+                
+                <li><a href="#M005832">run</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005831">show_rdoc_for_pattern</a>,</li>
+                
+                <li><a href="#M005833">specs</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>Y</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M005834">yaml</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+    <div class="sectiontitle">Included Modules</div>
+    <ul>
+        
+        <li>
+            
+            <a href="../Kernel.html">Kernel</a>
+            
+            START:includes
+        </li>
+        
+        <li>
+            
+            <a href="../Kernel.html">Kernel</a>
+            
+            START:includes
+        </li>
+        
+    </ul>
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">SEARCH</td>
+            <td>=</td>
+            <td class="attr-value">&lt;&lt;-SEARCH       &lt;form class=&quot;headerSearch&quot; name=&quot;headerSearchForm&quot; method=&quot;get&quot; action=&quot;/rdoc&quot;&gt;         &lt;div id=&quot;search&quot; style=&quot;float:right&quot;&gt;           &lt;label for=&quot;q&quot;&gt;Filter/Search&lt;/label&gt;           &lt;input id=&quot;q&quot; type=&quot;text&quot; style=&quot;width:10em&quot; name=&quot;q&quot;&gt;           &lt;button type=&quot;submit&quot; style=&quot;display:none&quot;&gt;&lt;/button&gt;         &lt;/div&gt;       &lt;/form&gt;   SEARCH</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">DOC_TEMPLATE</td>
+            <td>=</td>
+            <td class="attr-value">&lt;&lt;-'DOC_TEMPLATE'   &lt;?xml version=&quot;1.0&quot; encoding=&quot;iso-8859-1&quot;?&gt;   &lt;!DOCTYPE html        PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot;        &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;&gt;    &lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; xml:lang=&quot;en&quot; lang=&quot;en&quot;&gt;   &lt;head&gt;     &lt;title&gt;RubyGems Documentation Index&lt;/title&gt;     &lt;link rel=&quot;stylesheet&quot; href=&quot;gem-server-rdoc-style.css&quot; type=&quot;text/css&quot; media=&quot;screen&quot; /&gt;   &lt;/head&gt;   &lt;body&gt;     &lt;div id=&quot;fileHeader&quot;&gt; &lt;%= SEARCH %&gt;       &lt;h1&gt;RubyGems Documentation Index&lt;/h1&gt;     &lt;/div&gt;     &lt;!-- banner header --&gt;    &lt;div id=&quot;bodyContent&quot;&gt;     &lt;div id=&quot;contextContent&quot;&gt;       &lt;div id=&quot;description&quot;&gt;         &lt;h1&gt;Summary&lt;/h1&gt;   &lt;p&gt;There are &lt;%=values[&quot;gem_count&quot;]%&gt; gems installed:&lt;/p&gt;   &lt;p&gt;   &lt;%= values[&quot;specs&quot;].map { |v| &quot;&lt;a href=\&quot;##{v[&quot;name&quot;]}\&quot;&gt;#{v[&quot;name&quot;]}&lt;/a&gt;&quot; }.join ', ' %&gt;.   &lt;h1&gt;Gems&lt;/h1&gt;    &lt;dl&gt;   &lt;% values[&quot;specs&quot;].each do |spec| %&gt;         &lt;dt&gt;         &lt;% if spec[&quot;first_name_entry&quot;] then %&gt;           &lt;a name=&quot;&lt;%=spec[&quot;name&quot;]%&gt;&quot;&gt;&lt;/a&gt;         &lt;% end %&gt;          &lt;b&gt;&lt;%=spec[&quot;name&quot;]%&gt; &lt;%=spec[&quot;version&quot;]%&gt;&lt;/b&gt;          &lt;% if spec[&quot;rdoc_installed&quot;] then %&gt;           &lt;a href=&quot;&lt;%=spec[&quot;doc_path&quot;]%&gt;&quot;&gt;[rdoc]&lt;/a&gt;         &lt;% else %&gt;           &lt;span title=&quot;rdoc not installed&quot;&gt;[rdoc]&lt;/span&gt;         &lt;% end %&gt;          &lt;% if spec[&quot;homepage&quot;] then %&gt;                 &lt;a href=&quot;&lt;%=spec[&quot;homepage&quot;]%&gt;&quot; title=&quot;&lt;%=spec[&quot;homepage&quot;]%&gt;&quot;&gt;[www]&lt;/a&gt;         &lt;% else %&gt;                 &lt;span title=&quot;no homepage available&quot;&gt;[www]&lt;/span&gt;         &lt;% end %&gt;          &lt;% if spec[&quot;has_deps&quot;] then %&gt;          - depends on                 &lt;%= spec[&quot;dependencies&quot;].map { |v| &quot;&lt;a href=\&quot;##{v[&quot;name&quot;]}\&quot;&gt;#{v[&quot;name&quot;]}&lt;/a&gt;&quot; }.join ', ' %&gt;.         &lt;% end %&gt;         &lt;/dt&gt;         &lt;dd&gt;         &lt;%=spec[&quot;summary&quot;]%&gt;         &lt;% if spec[&quot;executables&quot;] then %&gt;           &lt;br/&gt;                  &lt;% if spec[&quot;only_one_executable&quot;] then %&gt;                     Executable is                 &lt;% else %&gt;                     Executables are                 &lt;%end%&gt;                  &lt;%= spec[&quot;executables&quot;].map { |v| &quot;&lt;span class=\&quot;context-item-name\&quot;&gt;#{v[&quot;executable&quot;]}&lt;/span&gt;&quot;}.join ', ' %&gt;.          &lt;%end%&gt;         &lt;br/&gt;         &lt;br/&gt;         &lt;/dd&gt;   &lt;% end %&gt;   &lt;/dl&gt;        &lt;/div&gt;      &lt;/div&gt;     &lt;/div&gt;   &lt;div id=&quot;validator-badges&quot;&gt;     &lt;p&gt;&lt;small&gt;&lt;a href=&quot;http://validator.w3.org/check/referer&quot;&gt;[Validate]&lt;/a&gt;&lt;/small&gt;&lt;/p&gt;   &lt;/div&gt;   &lt;/body&gt;   &lt;/html&gt;   DOC_TEMPLATE</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">RDOC_CSS</td>
+            <td>=</td>
+            <td class="attr-value">&lt;&lt;-RDOC_CSS body {     font-family: Verdana,Arial,Helvetica,sans-serif;     font-size:   90%;     margin: 0;     margin-left: 40px;     padding: 0;     background: white; }  h1,h2,h3,h4 { margin: 0; color: #efefef; background: transparent; } h1 { font-size: 150%; } h2,h3,h4 { margin-top: 1em; }  a { background: #eef; color: #039; text-decoration: none; } a:hover { background: #039; color: #eef; }  /* Override the base stylesheets Anchor inside a table cell */ td &gt; a {   background: transparent;   color: #039;   text-decoration: none; }  /* and inside a section title */ .section-title &gt; a {   background: transparent;   color: #eee;   text-decoration: none; }  /* === Structural elements =================================== */  div#index {     margin: 0;     margin-left: -40px;     padding: 0;     font-size: 90%; }   div#index a {     margin-left: 0.7em; }  div#index .section-bar {    margin-left: 0px;    padding-left: 0.7em;    background: #ccc;    font-size: small; }   div#classHeader, div#fileHeader {     width: auto;     color: white;     padding: 0.5em 1.5em 0.5em 1.5em;     margin: 0;     margin-left: -40px;     border-bottom: 3px solid #006; }  div#classHeader a, div#fileHeader a {     background: inherit;     color: white; }  div#classHeader td, div#fileHeader td {     background: inherit;     color: white; }   div#fileHeader {     background: #057; }  div#classHeader {     background: #048; }   .class-name-in-header {   font-size:  180%;   font-weight: bold; }   div#bodyContent {     padding: 0 1.5em 0 1.5em; }  div#description {     padding: 0.5em 1.5em;     background: #efefef;     border: 1px dotted #999; }  div#description h1,h2,h3,h4,h5,h6 {     color: #125;;     background: transparent; }  div#validator-badges {     text-align: center; } div#validator-badges img { border: 0; }  div#copyright {     color: #333;     background: #efefef;     font: 0.75em sans-serif;     margin-top: 5em;     margin-bottom: 0;     padding: 0.5em 2em; }   /* === Classes =================================== */  table.header-table {     color: white;     font-size: small; }  .type-note {     font-size: small;     color: #DEDEDE; }  .xxsection-bar {     background: #eee;     color: #333;     padding: 3px; }  .section-bar {    color: #333;    border-bottom: 1px solid #999;     margin-left: -20px; }   .section-title {     background: #79a;     color: #eee;     padding: 3px;     margin-top: 2em;     margin-left: -30px;     border: 1px solid #999; }  .top-aligned-row {  vertical-align: top } .bottom-aligned-row { vertical-align: bottom }  /* --- Context section classes ----------------------- */  .context-row { } .context-item-name { font-family: monospace; font-weight: bold; color: black; } .context-item-value { font-size: small; color: #448; } .context-item-desc { color: #333; padding-left: 2em; }  /* --- Method classes -------------------------- */ .method-detail {     background: #efefef;     padding: 0;     margin-top: 0.5em;     margin-bottom: 1em;     border: 1px dotted #ccc; } .method-heading {   color: black;   background: #ccc;   border-bottom: 1px solid #666;   padding: 0.2em 0.5em 0 0.5em; } .method-signature { color: black; background: inherit; } .method-name { font-weight: bold; } .method-args { font-style: italic; } .method-description { padding: 0 0.5em 0 0.5em; }  /* --- Source code sections -------------------- */  a.source-toggle { font-size: 90%; } div.method-source-code {     background: #262626;     color: #ffdead;     margin: 1em;     padding: 0.5em;     border: 1px dashed #999;     overflow: hidden; }  div.method-source-code pre { color: #ffdead; overflow: hidden; }  /* --- Ruby keyword styles --------------------- */  .standalone-code { background: #221111; color: #ffdead; overflow: hidden; }  .ruby-constant  { color: #7fffd4; background: transparent; } .ruby-keyword { color: #00ffff; background: transparent; } .ruby-ivar    { color: #eedd82; background: transparent; } .ruby-operator  { color: #00ffee; background: transparent; } .ruby-identifier { color: #ffdead; background: transparent; } .ruby-node    { color: #ffa07a; background: transparent; } .ruby-comment { color: #b22222; font-weight: bold; background: transparent; } .ruby-regexp  { color: #ffa07a; background: transparent; } .ruby-value   { color: #7fffd4; background: transparent; }   RDOC_CSS</td>
+        </tr>
+        
+        <tr valign='top'>
+            <td>&nbsp;</td>
+            <td colspan="2" class="attr-desc"><p>
+CSS is copy &amp; paste from rdoc-style.css, RDoc V1.0.1 - 20041108
+</p>
+</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">RDOC_NO_DOCUMENTATION</td>
+            <td>=</td>
+            <td class="attr-value">&lt;&lt;-'NO_DOC' &lt;?xml version=&quot;1.0&quot; encoding=&quot;iso-8859-1&quot;?&gt; &lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot;           &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;&gt; &lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; xml:lang=&quot;en&quot; lang=&quot;en&quot;&gt;   &lt;head&gt;     &lt;title&gt;Found documentation&lt;/title&gt;     &lt;link rel=&quot;stylesheet&quot; href=&quot;gem-server-rdoc-style.css&quot; type=&quot;text/css&quot; media=&quot;screen&quot; /&gt;   &lt;/head&gt;   &lt;body&gt;     &lt;div id=&quot;fileHeader&quot;&gt; &lt;%= SEARCH %&gt;       &lt;h1&gt;No documentation found&lt;/h1&gt;     &lt;/div&gt;      &lt;div id=&quot;bodyContent&quot;&gt;       &lt;div id=&quot;contextContent&quot;&gt;         &lt;div id=&quot;description&quot;&gt;           &lt;p&gt;No gems matched &lt;%= h query.inspect %&gt;&lt;/p&gt;            &lt;p&gt;             Back to &lt;a href=&quot;/&quot;&gt;complete gem index&lt;/a&gt;           &lt;/p&gt;          &lt;/div&gt;       &lt;/div&gt;     &lt;/div&gt;     &lt;div id=&quot;validator-badges&quot;&gt;       &lt;p&gt;&lt;small&gt;&lt;a href=&quot;http://validator.w3.org/check/referer&quot;&gt;[Validate]&lt;/a&gt;&lt;/small&gt;&lt;/p&gt;     &lt;/div&gt;   &lt;/body&gt; &lt;/html&gt;   NO_DOC</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">RDOC_SEARCH_TEMPLATE</td>
+            <td>=</td>
+            <td class="attr-value">&lt;&lt;-'RDOC_SEARCH' &lt;?xml version=&quot;1.0&quot; encoding=&quot;iso-8859-1&quot;?&gt; &lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot;           &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;&gt; &lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; xml:lang=&quot;en&quot; lang=&quot;en&quot;&gt;   &lt;head&gt;     &lt;title&gt;Found documentation&lt;/title&gt;     &lt;link rel=&quot;stylesheet&quot; href=&quot;gem-server-rdoc-style.css&quot; type=&quot;text/css&quot; media=&quot;screen&quot; /&gt;   &lt;/head&gt;   &lt;body&gt;     &lt;div id=&quot;fileHeader&quot;&gt; &lt;%= SEARCH %&gt;       &lt;h1&gt;Found documentation&lt;/h1&gt;     &lt;/div&gt;     &lt;!-- banner header --&gt;      &lt;div id=&quot;bodyContent&quot;&gt;       &lt;div id=&quot;contextContent&quot;&gt;         &lt;div id=&quot;description&quot;&gt;           &lt;h1&gt;Summary&lt;/h1&gt;           &lt;p&gt;&lt;%=doc_items.length%&gt; documentation topics found.&lt;/p&gt;           &lt;h1&gt;Topics&lt;/h1&gt;            &lt;dl&gt;           &lt;% doc_items.each do |doc_item| %&gt;             &lt;dt&gt;               &lt;b&gt;&lt;%=doc_item[:name]%&gt;&lt;/b&gt;               &lt;a href=&quot;&lt;%=doc_item[:url]%&gt;&quot;&gt;[rdoc]&lt;/a&gt;             &lt;/dt&gt;             &lt;dd&gt;               &lt;%=doc_item[:summary]%&gt;               &lt;br/&gt;               &lt;br/&gt;             &lt;/dd&gt;           &lt;% end %&gt;           &lt;/dl&gt;            &lt;p&gt;             Back to &lt;a href=&quot;/&quot;&gt;complete gem index&lt;/a&gt;           &lt;/p&gt;          &lt;/div&gt;       &lt;/div&gt;     &lt;/div&gt;     &lt;div id=&quot;validator-badges&quot;&gt;       &lt;p&gt;&lt;small&gt;&lt;a href=&quot;http://validator.w3.org/check/referer&quot;&gt;[Validate]&lt;/a&gt;&lt;/small&gt;&lt;/p&gt;     &lt;/div&gt;   &lt;/body&gt; &lt;/html&gt;   RDOC_SEARCH</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+    <div class="sectiontitle">Attributes</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>spec_dirs</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+    </table>
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005823">
+                    
+                    <a name="M005823"></a><b>new</b>(gem_dirs, port, daemon, addresses = nil)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Only the first directory in gem_dirs is used for serving gems
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005823_source')" id="l_M005823_source">show</a>
+                        
+                    </p>
+                    <div id="M005823_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/server.rb, line 443</span>
+443:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">gem_dirs</span>, <span class="ruby-identifier">port</span>, <span class="ruby-identifier">daemon</span>, <span class="ruby-identifier">addresses</span> = <span class="ruby-keyword kw">nil</span>)
+444:     <span class="ruby-constant">Socket</span>.<span class="ruby-identifier">do_not_reverse_lookup</span> = <span class="ruby-keyword kw">true</span>
+445: 
+446:     <span class="ruby-ivar">@gem_dirs</span> = <span class="ruby-constant">Array</span> <span class="ruby-identifier">gem_dirs</span>
+447:     <span class="ruby-ivar">@port</span> = <span class="ruby-identifier">port</span>
+448:     <span class="ruby-ivar">@daemon</span> = <span class="ruby-identifier">daemon</span>
+449:     <span class="ruby-ivar">@addresses</span> = <span class="ruby-identifier">addresses</span>
+450:     <span class="ruby-identifier">logger</span> = <span class="ruby-constant">WEBrick</span><span class="ruby-operator">::</span><span class="ruby-constant">Log</span>.<span class="ruby-identifier">new</span> <span class="ruby-keyword kw">nil</span>, <span class="ruby-constant">WEBrick</span><span class="ruby-operator">::</span><span class="ruby-constant">BasicLog</span><span class="ruby-operator">::</span><span class="ruby-constant">FATAL</span>
+451:     <span class="ruby-ivar">@server</span> = <span class="ruby-constant">WEBrick</span><span class="ruby-operator">::</span><span class="ruby-constant">HTTPServer</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">:DoNotListen</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">true</span>, <span class="ruby-identifier">:Logger</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">logger</span>
+452: 
+453:     <span class="ruby-ivar">@spec_dirs</span> = <span class="ruby-ivar">@gem_dirs</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">gem_dir</span><span class="ruby-operator">|</span>
+454:       <span class="ruby-identifier">spec_dir</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span> <span class="ruby-identifier">gem_dir</span>, <span class="ruby-value str">'specifications'</span>
+455: 
+456:       <span class="ruby-keyword kw">unless</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">directory?</span> <span class="ruby-identifier">spec_dir</span> <span class="ruby-keyword kw">then</span>
+457:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;#{gem_dir} does not appear to be a gem repository&quot;</span>
+458:       <span class="ruby-keyword kw">end</span>
+459: 
+460:       <span class="ruby-identifier">spec_dir</span>
+461:     <span class="ruby-keyword kw">end</span>
+462: 
+463:     <span class="ruby-ivar">@source_index</span> = <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">SourceIndex</span>.<span class="ruby-identifier">from_gems_in</span>(<span class="ruby-operator">*</span><span class="ruby-ivar">@spec_dirs</span>)
+464:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005822">
+                    
+                    <a name="M005822"></a><b>run</b>(options)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005822_source')" id="l_M005822_source">show</a>
+                        
+                    </p>
+                    <div id="M005822_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/server.rb, line 435</span>
+435:   <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">run</span>(<span class="ruby-identifier">options</span>)
+436:     <span class="ruby-identifier">new</span>(<span class="ruby-identifier">options</span>[<span class="ruby-identifier">:gemdir</span>], <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:port</span>], <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:daemon</span>],
+437:         <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:addresses</span>]).<span class="ruby-identifier">run</span>
+438:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M005824">
+                    
+                    <a name="M005824"></a><b>Marshal</b>(req, res)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005824_source')" id="l_M005824_source">show</a>
+                        
+                    </p>
+                    <div id="M005824_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/server.rb, line 466</span>
+466:   <span class="ruby-keyword kw">def</span> <span class="ruby-constant">Marshal</span>(<span class="ruby-identifier">req</span>, <span class="ruby-identifier">res</span>)
+467:     <span class="ruby-ivar">@source_index</span>.<span class="ruby-identifier">refresh!</span>
+468: 
+469:     <span class="ruby-identifier">add_date</span> <span class="ruby-identifier">res</span>
+470: 
+471:     <span class="ruby-identifier">index</span> = <span class="ruby-constant">Marshal</span>.<span class="ruby-identifier">dump</span> <span class="ruby-ivar">@source_index</span>
+472: 
+473:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">req</span>.<span class="ruby-identifier">request_method</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'HEAD'</span> <span class="ruby-keyword kw">then</span>
+474:       <span class="ruby-identifier">res</span>[<span class="ruby-value str">'content-length'</span>] = <span class="ruby-identifier">index</span>.<span class="ruby-identifier">length</span>
+475:       <span class="ruby-keyword kw">return</span>
+476:     <span class="ruby-keyword kw">end</span>
+477: 
+478:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">req</span>.<span class="ruby-identifier">path</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/Z$/</span> <span class="ruby-keyword kw">then</span>
+479:       <span class="ruby-identifier">res</span>[<span class="ruby-value str">'content-type'</span>] = <span class="ruby-value str">'application/x-deflate'</span>
+480:       <span class="ruby-identifier">index</span> = <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">deflate</span> <span class="ruby-identifier">index</span>
+481:     <span class="ruby-keyword kw">else</span>
+482:       <span class="ruby-identifier">res</span>[<span class="ruby-value str">'content-type'</span>] = <span class="ruby-value str">'application/octet-stream'</span>
+483:     <span class="ruby-keyword kw">end</span>
+484: 
+485:     <span class="ruby-identifier">res</span>.<span class="ruby-identifier">body</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">index</span>
+486:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005825">
+                    
+                    <a name="M005825"></a><b>add_date</b>(res)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005825_source')" id="l_M005825_source">show</a>
+                        
+                    </p>
+                    <div id="M005825_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/server.rb, line 488</span>
+488:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">add_date</span> <span class="ruby-identifier">res</span>
+489:     <span class="ruby-identifier">res</span>[<span class="ruby-value str">'date'</span>] = <span class="ruby-ivar">@spec_dirs</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">spec_dir</span><span class="ruby-operator">|</span>
+490:       <span class="ruby-constant">File</span>.<span class="ruby-identifier">stat</span>(<span class="ruby-identifier">spec_dir</span>).<span class="ruby-identifier">mtime</span>
+491:     <span class="ruby-keyword kw">end</span>.<span class="ruby-identifier">max</span>
+492:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005826">
+                    
+                    <a name="M005826"></a><b>latest_specs</b>(req, res)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005826_source')" id="l_M005826_source">show</a>
+                        
+                    </p>
+                    <div id="M005826_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/server.rb, line 494</span>
+494:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">latest_specs</span>(<span class="ruby-identifier">req</span>, <span class="ruby-identifier">res</span>)
+495:     <span class="ruby-ivar">@source_index</span>.<span class="ruby-identifier">refresh!</span>
+496: 
+497:     <span class="ruby-identifier">res</span>[<span class="ruby-value str">'content-type'</span>] = <span class="ruby-value str">'application/x-gzip'</span>
+498: 
+499:     <span class="ruby-identifier">add_date</span> <span class="ruby-identifier">res</span>
+500: 
+501:     <span class="ruby-identifier">specs</span> = <span class="ruby-ivar">@source_index</span>.<span class="ruby-identifier">latest_specs</span>.<span class="ruby-identifier">sort</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">spec</span><span class="ruby-operator">|</span>
+502:       <span class="ruby-identifier">platform</span> = <span class="ruby-identifier">spec</span>.<span class="ruby-identifier">original_platform</span>
+503:       <span class="ruby-identifier">platform</span> = <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">Platform</span><span class="ruby-operator">::</span><span class="ruby-constant">RUBY</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">platform</span>.<span class="ruby-identifier">nil?</span>
+504:       [<span class="ruby-identifier">spec</span>.<span class="ruby-identifier">name</span>, <span class="ruby-identifier">spec</span>.<span class="ruby-identifier">version</span>, <span class="ruby-identifier">platform</span>]
+505:     <span class="ruby-keyword kw">end</span>
+506: 
+507:     <span class="ruby-identifier">specs</span> = <span class="ruby-constant">Marshal</span>.<span class="ruby-identifier">dump</span> <span class="ruby-identifier">specs</span>
+508: 
+509:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">req</span>.<span class="ruby-identifier">path</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/\.gz$/</span> <span class="ruby-keyword kw">then</span>
+510:       <span class="ruby-identifier">specs</span> = <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">gzip</span> <span class="ruby-identifier">specs</span>
+511:       <span class="ruby-identifier">res</span>[<span class="ruby-value str">'content-type'</span>] = <span class="ruby-value str">'application/x-gzip'</span>
+512:     <span class="ruby-keyword kw">else</span>
+513:       <span class="ruby-identifier">res</span>[<span class="ruby-value str">'content-type'</span>] = <span class="ruby-value str">'application/octet-stream'</span>
+514:     <span class="ruby-keyword kw">end</span>
+515: 
+516:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">req</span>.<span class="ruby-identifier">request_method</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'HEAD'</span> <span class="ruby-keyword kw">then</span>
+517:       <span class="ruby-identifier">res</span>[<span class="ruby-value str">'content-length'</span>] = <span class="ruby-identifier">specs</span>.<span class="ruby-identifier">length</span>
+518:     <span class="ruby-keyword kw">else</span>
+519:       <span class="ruby-identifier">res</span>.<span class="ruby-identifier">body</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">specs</span>
+520:     <span class="ruby-keyword kw">end</span>
+521:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005827">
+                    
+                    <a name="M005827"></a><b>listen</b>(addresses = @addresses)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Creates server sockets based on the addresses option. If no addresses were
+given a server socket for all interfaces is created.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005827_source')" id="l_M005827_source">show</a>
+                        
+                    </p>
+                    <div id="M005827_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/server.rb, line 527</span>
+527:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">listen</span> <span class="ruby-identifier">addresses</span> = <span class="ruby-ivar">@addresses</span>
+528:     <span class="ruby-identifier">addresses</span> = [<span class="ruby-keyword kw">nil</span>] <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">addresses</span>
+529: 
+530:     <span class="ruby-identifier">listeners</span> = <span class="ruby-value">0</span>
+531: 
+532:     <span class="ruby-identifier">addresses</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">address</span><span class="ruby-operator">|</span>
+533:       <span class="ruby-keyword kw">begin</span>
+534:         <span class="ruby-ivar">@server</span>.<span class="ruby-identifier">listen</span> <span class="ruby-identifier">address</span>, <span class="ruby-ivar">@port</span>
+535:         <span class="ruby-ivar">@server</span>.<span class="ruby-identifier">listeners</span>[<span class="ruby-identifier">listeners</span><span class="ruby-operator">..</span><span class="ruby-value">-1</span>].<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">listener</span><span class="ruby-operator">|</span>
+536:           <span class="ruby-identifier">host</span>, <span class="ruby-identifier">port</span> = <span class="ruby-identifier">listener</span>.<span class="ruby-identifier">addr</span>.<span class="ruby-identifier">values_at</span> <span class="ruby-value">2</span>, <span class="ruby-value">1</span>
+537:           <span class="ruby-identifier">host</span> = <span class="ruby-node">&quot;[#{host}]&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">host</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/:/</span> <span class="ruby-comment cmt"># we don't reverse lookup</span>
+538:           <span class="ruby-identifier">say</span> <span class="ruby-node">&quot;Server started at http://#{host}:#{port}&quot;</span>
+539:         <span class="ruby-keyword kw">end</span>
+540: 
+541:         <span class="ruby-identifier">listeners</span> = <span class="ruby-ivar">@server</span>.<span class="ruby-identifier">listeners</span>.<span class="ruby-identifier">length</span>
+542:       <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">SystemCallError</span>
+543:         <span class="ruby-keyword kw">next</span>
+544:       <span class="ruby-keyword kw">end</span>
+545:     <span class="ruby-keyword kw">end</span>
+546: 
+547:     <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@server</span>.<span class="ruby-identifier">listeners</span>.<span class="ruby-identifier">empty?</span> <span class="ruby-keyword kw">then</span>
+548:       <span class="ruby-identifier">say</span> <span class="ruby-value str">&quot;Unable to start a server.&quot;</span>
+549:       <span class="ruby-identifier">say</span> <span class="ruby-value str">&quot;Check for running servers or your --bind and --port arguments&quot;</span>
+550:       <span class="ruby-identifier">terminate_interaction</span> <span class="ruby-value">1</span>
+551:     <span class="ruby-keyword kw">end</span>
+552:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005828">
+                    
+                    <a name="M005828"></a><b>quick</b>(req, res)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005828_source')" id="l_M005828_source">show</a>
+                        
+                    </p>
+                    <div id="M005828_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/server.rb, line 554</span>
+554:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">quick</span>(<span class="ruby-identifier">req</span>, <span class="ruby-identifier">res</span>)
+555:     <span class="ruby-ivar">@source_index</span>.<span class="ruby-identifier">refresh!</span>
+556: 
+557:     <span class="ruby-identifier">res</span>[<span class="ruby-value str">'content-type'</span>] = <span class="ruby-value str">'text/plain'</span>
+558:     <span class="ruby-identifier">add_date</span> <span class="ruby-identifier">res</span>
+559: 
+560:     <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">req</span>.<span class="ruby-identifier">request_uri</span>.<span class="ruby-identifier">path</span>
+561:     <span class="ruby-keyword kw">when</span> <span class="ruby-value str">'/quick/index'</span> <span class="ruby-keyword kw">then</span>
+562:       <span class="ruby-identifier">res</span>.<span class="ruby-identifier">body</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-ivar">@source_index</span>.<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">name</span>,<span class="ruby-operator">|</span> <span class="ruby-identifier">name</span> }.<span class="ruby-identifier">sort</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;\n&quot;</span>)
+563:     <span class="ruby-keyword kw">when</span> <span class="ruby-value str">'/quick/index.rz'</span> <span class="ruby-keyword kw">then</span>
+564:       <span class="ruby-identifier">index</span> = <span class="ruby-ivar">@source_index</span>.<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">name</span>,<span class="ruby-operator">|</span> <span class="ruby-identifier">name</span> }.<span class="ruby-identifier">sort</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;\n&quot;</span>)
+565:       <span class="ruby-identifier">res</span>[<span class="ruby-value str">'content-type'</span>] = <span class="ruby-value str">'application/x-deflate'</span>
+566:       <span class="ruby-identifier">res</span>.<span class="ruby-identifier">body</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">deflate</span>(<span class="ruby-identifier">index</span>)
+567:     <span class="ruby-keyword kw">when</span> <span class="ruby-value str">'/quick/latest_index'</span> <span class="ruby-keyword kw">then</span>
+568:       <span class="ruby-identifier">index</span> = <span class="ruby-ivar">@source_index</span>.<span class="ruby-identifier">latest_specs</span>.<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">spec</span><span class="ruby-operator">|</span> <span class="ruby-identifier">spec</span>.<span class="ruby-identifier">full_name</span> }
+569:       <span class="ruby-identifier">res</span>.<span class="ruby-identifier">body</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">index</span>.<span class="ruby-identifier">sort</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;\n&quot;</span>)
+570:     <span class="ruby-keyword kw">when</span> <span class="ruby-value str">'/quick/latest_index.rz'</span> <span class="ruby-keyword kw">then</span>
+571:       <span class="ruby-identifier">index</span> = <span class="ruby-ivar">@source_index</span>.<span class="ruby-identifier">latest_specs</span>.<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">spec</span><span class="ruby-operator">|</span> <span class="ruby-identifier">spec</span>.<span class="ruby-identifier">full_name</span> }
+572:       <span class="ruby-identifier">res</span>[<span class="ruby-value str">'content-type'</span>] = <span class="ruby-value str">'application/x-deflate'</span>
+573:       <span class="ruby-identifier">res</span>.<span class="ruby-identifier">body</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">deflate</span>(<span class="ruby-identifier">index</span>.<span class="ruby-identifier">sort</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;\n&quot;</span>))
+574:     <span class="ruby-keyword kw">when</span> <span class="ruby-node">%r|^/quick/(Marshal.#{Regexp.escape Gem.marshal_version}/)?(.*?)-([0-9.]+)(-.*?)?\.gemspec\.rz$|</span> <span class="ruby-keyword kw">then</span>
+575:       <span class="ruby-identifier">dep</span> = <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">Dependency</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">$2</span>, <span class="ruby-identifier">$3</span>
+576:       <span class="ruby-identifier">specs</span> = <span class="ruby-ivar">@source_index</span>.<span class="ruby-identifier">search</span> <span class="ruby-identifier">dep</span>
+577:       <span class="ruby-identifier">marshal_format</span> = <span class="ruby-identifier">$1</span>
+578: 
+579:       <span class="ruby-identifier">selector</span> = [<span class="ruby-identifier">$2</span>, <span class="ruby-identifier">$3</span>, <span class="ruby-identifier">$4</span>].<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">s</span><span class="ruby-operator">|</span> <span class="ruby-identifier">s</span>.<span class="ruby-identifier">inspect</span> }.<span class="ruby-identifier">join</span> <span class="ruby-value str">' '</span>
+580: 
+581:       <span class="ruby-identifier">platform</span> = <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">$4</span> <span class="ruby-keyword kw">then</span>
+582:                    <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">Platform</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">$4</span>.<span class="ruby-identifier">sub</span>(<span class="ruby-regexp re">/^-/</span>, <span class="ruby-value str">''</span>)
+583:                  <span class="ruby-keyword kw">else</span>
+584:                    <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">Platform</span><span class="ruby-operator">::</span><span class="ruby-constant">RUBY</span>
+585:                  <span class="ruby-keyword kw">end</span>
+586: 
+587:       <span class="ruby-identifier">specs</span> = <span class="ruby-identifier">specs</span>.<span class="ruby-identifier">select</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">s</span><span class="ruby-operator">|</span> <span class="ruby-identifier">s</span>.<span class="ruby-identifier">platform</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">platform</span> }
+588: 
+589:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">specs</span>.<span class="ruby-identifier">empty?</span> <span class="ruby-keyword kw">then</span>
+590:         <span class="ruby-identifier">res</span>.<span class="ruby-identifier">status</span> = <span class="ruby-value">404</span>
+591:         <span class="ruby-identifier">res</span>.<span class="ruby-identifier">body</span> = <span class="ruby-node">&quot;No gems found matching #{selector}&quot;</span>
+592:       <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">specs</span>.<span class="ruby-identifier">length</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span> <span class="ruby-keyword kw">then</span>
+593:         <span class="ruby-identifier">res</span>.<span class="ruby-identifier">status</span> = <span class="ruby-value">500</span>
+594:         <span class="ruby-identifier">res</span>.<span class="ruby-identifier">body</span> = <span class="ruby-node">&quot;Multiple gems found matching #{selector}&quot;</span>
+595:       <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">marshal_format</span> <span class="ruby-keyword kw">then</span>
+596:         <span class="ruby-identifier">res</span>[<span class="ruby-value str">'content-type'</span>] = <span class="ruby-value str">'application/x-deflate'</span>
+597:         <span class="ruby-identifier">res</span>.<span class="ruby-identifier">body</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">deflate</span>(<span class="ruby-constant">Marshal</span>.<span class="ruby-identifier">dump</span>(<span class="ruby-identifier">specs</span>.<span class="ruby-identifier">first</span>))
+598:       <span class="ruby-keyword kw">else</span> <span class="ruby-comment cmt"># deprecated YAML format</span>
+599:         <span class="ruby-identifier">res</span>[<span class="ruby-value str">'content-type'</span>] = <span class="ruby-value str">'application/x-deflate'</span>
+600:         <span class="ruby-identifier">res</span>.<span class="ruby-identifier">body</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">deflate</span>(<span class="ruby-identifier">specs</span>.<span class="ruby-identifier">first</span>.<span class="ruby-identifier">to_yaml</span>)
+601:       <span class="ruby-keyword kw">end</span>
+602:     <span class="ruby-keyword kw">else</span>
+603:       <span class="ruby-identifier">raise</span> <span class="ruby-constant">WEBrick</span><span class="ruby-operator">::</span><span class="ruby-constant">HTTPStatus</span><span class="ruby-operator">::</span><span class="ruby-constant">NotFound</span>, <span class="ruby-node">&quot;`#{req.path}' not found.&quot;</span>
+604:     <span class="ruby-keyword kw">end</span>
+605:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005830">
+                    
+                    <a name="M005830"></a><b>rdoc</b>(req, res)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Can be used for quick navigation to the rdoc documentation. You can then
+define a search shortcut for your browser. E.g. in Firefox connect
+&#8216;shortcut:rdoc&#8217; to <a
+href="http://localhost:8808/rdoc?q=%s">localhost:8808/rdoc?q=%s</a>
+template. Then you can directly open the ActionPack documentation by typing
+&#8216;rdoc actionp&#8217;. If there are multiple hits for the search term,
+they are presented as a list with links.
+</p>
+<p>
+Search algorithm aims for an intuitive search:
+</p>
+<ol>
+<li>first try to find the gems and documentation folders which name starts with
+the search term
+
+</li>
+<li>search for entries, that <b>contain</b> the search term
+
+</li>
+<li>show all the gems
+
+</li>
+</ol>
+<p>
+If there is only one search hit, user is immediately redirected to the
+documentation for the particular gem, otherwise a list with results is
+shown.
+</p>
+<h3>Additional trick - install documentation for ruby core</h3>
+<p>
+Note: please adjust paths accordingly use for example &#8216;locate
+yaml.rb&#8217; and &#8216;gem environment&#8217; to identify directories,
+that are specific for your local installation
+</p>
+<ol>
+<li>install ruby sources
+
+<pre>
+  cd /usr/src
+  sudo apt-get source ruby
+</pre>
+</li>
+<li>generate documentation
+
+<pre>
+  rdoc -o /usr/lib/ruby/gems/1.8/doc/core/rdoc    #        /usr/lib/ruby/1.8 ruby1.8-1.8.7.72
+</pre>
+</li>
+</ol>
+<p>
+By typing &#8216;rdoc core&#8217; you can now access the core documentation
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005830_source')" id="l_M005830_source">show</a>
+                        
+                    </p>
+                    <div id="M005830_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/server.rb, line 721</span>
+721:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">rdoc</span>(<span class="ruby-identifier">req</span>, <span class="ruby-identifier">res</span>)
+722:     <span class="ruby-identifier">query</span> = <span class="ruby-identifier">req</span>.<span class="ruby-identifier">query</span>[<span class="ruby-value str">'q'</span>]
+723:     <span class="ruby-identifier">show_rdoc_for_pattern</span>(<span class="ruby-node">&quot;#{query}*&quot;</span>, <span class="ruby-identifier">res</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-keyword kw">return</span>
+724:     <span class="ruby-identifier">show_rdoc_for_pattern</span>(<span class="ruby-node">&quot;*#{query}*&quot;</span>, <span class="ruby-identifier">res</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-keyword kw">return</span>
+725: 
+726:     <span class="ruby-identifier">template</span> = <span class="ruby-constant">ERB</span>.<span class="ruby-identifier">new</span> <span class="ruby-constant">RDOC_NO_DOCUMENTATION</span>
+727: 
+728:     <span class="ruby-identifier">res</span>[<span class="ruby-value str">'content-type'</span>] = <span class="ruby-value str">'text/html'</span>
+729:     <span class="ruby-identifier">res</span>.<span class="ruby-identifier">body</span> = <span class="ruby-identifier">template</span>.<span class="ruby-identifier">result</span> <span class="ruby-identifier">binding</span>
+730:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005829">
+                    
+                    <a name="M005829"></a><b>root</b>(req, res)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005829_source')" id="l_M005829_source">show</a>
+                        
+                    </p>
+                    <div id="M005829_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/server.rb, line 607</span>
+607:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">root</span>(<span class="ruby-identifier">req</span>, <span class="ruby-identifier">res</span>)
+608:     <span class="ruby-ivar">@source_index</span>.<span class="ruby-identifier">refresh!</span>
+609:     <span class="ruby-identifier">add_date</span> <span class="ruby-identifier">res</span>
+610: 
+611:     <span class="ruby-identifier">raise</span> <span class="ruby-constant">WEBrick</span><span class="ruby-operator">::</span><span class="ruby-constant">HTTPStatus</span><span class="ruby-operator">::</span><span class="ruby-constant">NotFound</span>, <span class="ruby-node">&quot;`#{req.path}' not found.&quot;</span> <span class="ruby-keyword kw">unless</span>
+612:       <span class="ruby-identifier">req</span>.<span class="ruby-identifier">path</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'/'</span>
+613: 
+614:     <span class="ruby-identifier">specs</span> = []
+615:     <span class="ruby-identifier">total_file_count</span> = <span class="ruby-value">0</span>
+616: 
+617:     <span class="ruby-ivar">@source_index</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">path</span>, <span class="ruby-identifier">spec</span><span class="ruby-operator">|</span>
+618:       <span class="ruby-identifier">total_file_count</span> <span class="ruby-operator">+=</span> <span class="ruby-identifier">spec</span>.<span class="ruby-identifier">files</span>.<span class="ruby-identifier">size</span>
+619:       <span class="ruby-identifier">deps</span> = <span class="ruby-identifier">spec</span>.<span class="ruby-identifier">dependencies</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">dep</span><span class="ruby-operator">|</span>
+620:         { <span class="ruby-value str">&quot;name&quot;</span>    =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">dep</span>.<span class="ruby-identifier">name</span>,
+621:           <span class="ruby-value str">&quot;type&quot;</span>    =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">dep</span>.<span class="ruby-identifier">type</span>,
+622:           <span class="ruby-value str">&quot;version&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">dep</span>.<span class="ruby-identifier">requirement</span>.<span class="ruby-identifier">to_s</span>, }
+623:       <span class="ruby-keyword kw">end</span>
+624: 
+625:       <span class="ruby-identifier">deps</span> = <span class="ruby-identifier">deps</span>.<span class="ruby-identifier">sort_by</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">dep</span><span class="ruby-operator">|</span> [<span class="ruby-identifier">dep</span>[<span class="ruby-value str">&quot;name&quot;</span>].<span class="ruby-identifier">downcase</span>, <span class="ruby-identifier">dep</span>[<span class="ruby-value str">&quot;version&quot;</span>]] }
+626:       <span class="ruby-identifier">deps</span>.<span class="ruby-identifier">last</span>[<span class="ruby-value str">&quot;is_last&quot;</span>] = <span class="ruby-keyword kw">true</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">deps</span>.<span class="ruby-identifier">empty?</span>
+627: 
+628:       <span class="ruby-comment cmt"># executables</span>
+629:       <span class="ruby-identifier">executables</span> = <span class="ruby-identifier">spec</span>.<span class="ruby-identifier">executables</span>.<span class="ruby-identifier">sort</span>.<span class="ruby-identifier">collect</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">exec</span><span class="ruby-operator">|</span> {<span class="ruby-value str">&quot;executable&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">exec</span>} }
+630:       <span class="ruby-identifier">executables</span> = <span class="ruby-keyword kw">nil</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">executables</span>.<span class="ruby-identifier">empty?</span>
+631:       <span class="ruby-identifier">executables</span>.<span class="ruby-identifier">last</span>[<span class="ruby-value str">&quot;is_last&quot;</span>] = <span class="ruby-keyword kw">true</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">executables</span>
+632: 
+633:       <span class="ruby-identifier">specs</span> <span class="ruby-operator">&lt;&lt;</span> {
+634:         <span class="ruby-value str">&quot;authors&quot;</span>             =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">spec</span>.<span class="ruby-identifier">authors</span>.<span class="ruby-identifier">sort</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;, &quot;</span>),
+635:         <span class="ruby-value str">&quot;date&quot;</span>                =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">spec</span>.<span class="ruby-identifier">date</span>.<span class="ruby-identifier">to_s</span>,
+636:         <span class="ruby-value str">&quot;dependencies&quot;</span>        =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">deps</span>,
+637:         <span class="ruby-value str">&quot;doc_path&quot;</span>            =<span class="ruby-operator">&gt;</span> <span class="ruby-node">&quot;/doc_root/#{spec.full_name}/rdoc/index.html&quot;</span>,
+638:         <span class="ruby-value str">&quot;executables&quot;</span>         =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">executables</span>,
+639:         <span class="ruby-value str">&quot;only_one_executable&quot;</span> =<span class="ruby-operator">&gt;</span> (<span class="ruby-identifier">executables</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">executables</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-value">1</span>),
+640:         <span class="ruby-value str">&quot;full_name&quot;</span>           =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">spec</span>.<span class="ruby-identifier">full_name</span>,
+641:         <span class="ruby-value str">&quot;has_deps&quot;</span>            =<span class="ruby-operator">&gt;</span> <span class="ruby-operator">!</span><span class="ruby-identifier">deps</span>.<span class="ruby-identifier">empty?</span>,
+642:         <span class="ruby-value str">&quot;homepage&quot;</span>            =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">spec</span>.<span class="ruby-identifier">homepage</span>,
+643:         <span class="ruby-value str">&quot;name&quot;</span>                =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">spec</span>.<span class="ruby-identifier">name</span>,
+644:         <span class="ruby-value str">&quot;rdoc_installed&quot;</span>      =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">DocManager</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">spec</span>).<span class="ruby-identifier">rdoc_installed?</span>,
+645:         <span class="ruby-value str">&quot;summary&quot;</span>             =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">spec</span>.<span class="ruby-identifier">summary</span>,
+646:         <span class="ruby-value str">&quot;version&quot;</span>             =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">spec</span>.<span class="ruby-identifier">version</span>.<span class="ruby-identifier">to_s</span>,
+647:       }
+648:     <span class="ruby-keyword kw">end</span>
+649: 
+650:     <span class="ruby-identifier">specs</span> <span class="ruby-operator">&lt;&lt;</span> {
+651:       <span class="ruby-value str">&quot;authors&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">&quot;Chad Fowler, Rich Kilmer, Jim Weirich, Eric Hodel and others&quot;</span>,
+652:       <span class="ruby-value str">&quot;dependencies&quot;</span> =<span class="ruby-operator">&gt;</span> [],
+653:       <span class="ruby-value str">&quot;doc_path&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-node">&quot;/doc_root/rubygems-#{Gem::VERSION}/rdoc/index.html&quot;</span>,
+654:       <span class="ruby-value str">&quot;executables&quot;</span> =<span class="ruby-operator">&gt;</span> [{<span class="ruby-value str">&quot;executable&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'gem'</span>, <span class="ruby-value str">&quot;is_last&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">true</span>}],
+655:       <span class="ruby-value str">&quot;only_one_executable&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">true</span>,
+656:       <span class="ruby-value str">&quot;full_name&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-node">&quot;rubygems-#{Gem::VERSION}&quot;</span>,
+657:       <span class="ruby-value str">&quot;has_deps&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>,
+658:       <span class="ruby-value str">&quot;homepage&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">&quot;http://docs.rubygems.org/&quot;</span>,
+659:       <span class="ruby-value str">&quot;name&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'rubygems'</span>,
+660:       <span class="ruby-value str">&quot;rdoc_installed&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">true</span>,
+661:       <span class="ruby-value str">&quot;summary&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">&quot;RubyGems itself&quot;</span>,
+662:       <span class="ruby-value str">&quot;version&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">VERSION</span>,
+663:     }
+664: 
+665:     <span class="ruby-identifier">specs</span> = <span class="ruby-identifier">specs</span>.<span class="ruby-identifier">sort_by</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">spec</span><span class="ruby-operator">|</span> [<span class="ruby-identifier">spec</span>[<span class="ruby-value str">&quot;name&quot;</span>].<span class="ruby-identifier">downcase</span>, <span class="ruby-identifier">spec</span>[<span class="ruby-value str">&quot;version&quot;</span>]] }
+666:     <span class="ruby-identifier">specs</span>.<span class="ruby-identifier">last</span>[<span class="ruby-value str">&quot;is_last&quot;</span>] = <span class="ruby-keyword kw">true</span>
+667: 
+668:     <span class="ruby-comment cmt"># tag all specs with first_name_entry</span>
+669:     <span class="ruby-identifier">last_spec</span> = <span class="ruby-keyword kw">nil</span>
+670:     <span class="ruby-identifier">specs</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">spec</span><span class="ruby-operator">|</span>
+671:       <span class="ruby-identifier">is_first</span> = <span class="ruby-identifier">last_spec</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-operator">||</span> (<span class="ruby-identifier">last_spec</span>[<span class="ruby-value str">&quot;name&quot;</span>].<span class="ruby-identifier">downcase</span> <span class="ruby-operator">!=</span> <span class="ruby-identifier">spec</span>[<span class="ruby-value str">&quot;name&quot;</span>].<span class="ruby-identifier">downcase</span>)
+672:       <span class="ruby-identifier">spec</span>[<span class="ruby-value str">&quot;first_name_entry&quot;</span>] = <span class="ruby-identifier">is_first</span>
+673:       <span class="ruby-identifier">last_spec</span> = <span class="ruby-identifier">spec</span>
+674:     <span class="ruby-keyword kw">end</span>
+675: 
+676:     <span class="ruby-comment cmt"># create page from template</span>
+677:     <span class="ruby-identifier">template</span> = <span class="ruby-constant">ERB</span>.<span class="ruby-identifier">new</span>(<span class="ruby-constant">DOC_TEMPLATE</span>)
+678:     <span class="ruby-identifier">res</span>[<span class="ruby-value str">'content-type'</span>] = <span class="ruby-value str">'text/html'</span>
+679: 
+680:     <span class="ruby-identifier">values</span> = { <span class="ruby-value str">&quot;gem_count&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">specs</span>.<span class="ruby-identifier">size</span>.<span class="ruby-identifier">to_s</span>, <span class="ruby-value str">&quot;specs&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">specs</span>,
+681:                <span class="ruby-value str">&quot;total_file_count&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">total_file_count</span>.<span class="ruby-identifier">to_s</span> }
+682: 
+683:     <span class="ruby-identifier">result</span> = <span class="ruby-identifier">template</span>.<span class="ruby-identifier">result</span> <span class="ruby-identifier">binding</span>
+684:     <span class="ruby-identifier">res</span>.<span class="ruby-identifier">body</span> = <span class="ruby-identifier">result</span>
+685:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005832">
+                    
+                    <a name="M005832"></a><b>run</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005832_source')" id="l_M005832_source">show</a>
+                        
+                    </p>
+                    <div id="M005832_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/server.rb, line 771</span>
+771:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">run</span>
+772:     <span class="ruby-identifier">listen</span>
+773: 
+774:     <span class="ruby-constant">WEBrick</span><span class="ruby-operator">::</span><span class="ruby-constant">Daemon</span>.<span class="ruby-identifier">start</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@daemon</span>
+775: 
+776:     <span class="ruby-ivar">@server</span>.<span class="ruby-identifier">mount_proc</span> <span class="ruby-value str">&quot;/yaml&quot;</span>, <span class="ruby-identifier">method</span>(<span class="ruby-identifier">:yaml</span>)
+777:     <span class="ruby-ivar">@server</span>.<span class="ruby-identifier">mount_proc</span> <span class="ruby-value str">&quot;/yaml.Z&quot;</span>, <span class="ruby-identifier">method</span>(<span class="ruby-identifier">:yaml</span>)
+778: 
+779:     <span class="ruby-ivar">@server</span>.<span class="ruby-identifier">mount_proc</span> <span class="ruby-node">&quot;/Marshal.#{Gem.marshal_version}&quot;</span>, <span class="ruby-identifier">method</span>(<span class="ruby-identifier">:Marshal</span>)
+780:     <span class="ruby-ivar">@server</span>.<span class="ruby-identifier">mount_proc</span> <span class="ruby-node">&quot;/Marshal.#{Gem.marshal_version}.Z&quot;</span>, <span class="ruby-identifier">method</span>(<span class="ruby-identifier">:Marshal</span>)
+781: 
+782:     <span class="ruby-ivar">@server</span>.<span class="ruby-identifier">mount_proc</span> <span class="ruby-node">&quot;/specs.#{Gem.marshal_version}&quot;</span>, <span class="ruby-identifier">method</span>(<span class="ruby-identifier">:specs</span>)
+783:     <span class="ruby-ivar">@server</span>.<span class="ruby-identifier">mount_proc</span> <span class="ruby-node">&quot;/specs.#{Gem.marshal_version}.gz&quot;</span>, <span class="ruby-identifier">method</span>(<span class="ruby-identifier">:specs</span>)
+784: 
+785:     <span class="ruby-ivar">@server</span>.<span class="ruby-identifier">mount_proc</span> <span class="ruby-node">&quot;/latest_specs.#{Gem.marshal_version}&quot;</span>,
+786:                        <span class="ruby-identifier">method</span>(<span class="ruby-identifier">:latest_specs</span>)
+787:     <span class="ruby-ivar">@server</span>.<span class="ruby-identifier">mount_proc</span> <span class="ruby-node">&quot;/latest_specs.#{Gem.marshal_version}.gz&quot;</span>,
+788:                        <span class="ruby-identifier">method</span>(<span class="ruby-identifier">:latest_specs</span>)
+789: 
+790:     <span class="ruby-ivar">@server</span>.<span class="ruby-identifier">mount_proc</span> <span class="ruby-value str">&quot;/quick/&quot;</span>, <span class="ruby-identifier">method</span>(<span class="ruby-identifier">:quick</span>)
+791: 
+792:     <span class="ruby-ivar">@server</span>.<span class="ruby-identifier">mount_proc</span>(<span class="ruby-value str">&quot;/gem-server-rdoc-style.css&quot;</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">req</span>, <span class="ruby-identifier">res</span><span class="ruby-operator">|</span>
+793:       <span class="ruby-identifier">res</span>[<span class="ruby-value str">'content-type'</span>] = <span class="ruby-value str">'text/css'</span>
+794:       <span class="ruby-identifier">add_date</span> <span class="ruby-identifier">res</span>
+795:       <span class="ruby-identifier">res</span>.<span class="ruby-identifier">body</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-constant">RDOC_CSS</span>
+796:     <span class="ruby-keyword kw">end</span>
+797: 
+798:     <span class="ruby-ivar">@server</span>.<span class="ruby-identifier">mount_proc</span> <span class="ruby-value str">&quot;/&quot;</span>, <span class="ruby-identifier">method</span>(<span class="ruby-identifier">:root</span>)
+799: 
+800:     <span class="ruby-ivar">@server</span>.<span class="ruby-identifier">mount_proc</span> <span class="ruby-value str">&quot;/rdoc&quot;</span>, <span class="ruby-identifier">method</span>(<span class="ruby-identifier">:rdoc</span>)
+801: 
+802:     <span class="ruby-identifier">paths</span> = { <span class="ruby-value str">&quot;/gems&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">&quot;/cache/&quot;</span>, <span class="ruby-value str">&quot;/doc_root&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">&quot;/doc/&quot;</span> }
+803:     <span class="ruby-identifier">paths</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">mount_point</span>, <span class="ruby-identifier">mount_dir</span><span class="ruby-operator">|</span>
+804:       <span class="ruby-ivar">@server</span>.<span class="ruby-identifier">mount</span>(<span class="ruby-identifier">mount_point</span>, <span class="ruby-constant">WEBrick</span><span class="ruby-operator">::</span><span class="ruby-constant">HTTPServlet</span><span class="ruby-operator">::</span><span class="ruby-constant">FileHandler</span>,
+805:                     <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-ivar">@gem_dirs</span>.<span class="ruby-identifier">first</span>, <span class="ruby-identifier">mount_dir</span>), <span class="ruby-keyword kw">true</span>)
+806:     <span class="ruby-keyword kw">end</span>
+807: 
+808:     <span class="ruby-identifier">trap</span>(<span class="ruby-value str">&quot;INT&quot;</span>) { <span class="ruby-ivar">@server</span>.<span class="ruby-identifier">shutdown</span>; <span class="ruby-identifier">exit!</span> }
+809:     <span class="ruby-identifier">trap</span>(<span class="ruby-value str">&quot;TERM&quot;</span>) { <span class="ruby-ivar">@server</span>.<span class="ruby-identifier">shutdown</span>; <span class="ruby-identifier">exit!</span> }
+810: 
+811:     <span class="ruby-ivar">@server</span>.<span class="ruby-identifier">start</span>
+812:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005831">
+                    
+                    <a name="M005831"></a><b>show_rdoc_for_pattern</b>(pattern, res)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns true and prepares http response, if rdoc for the requested gem name
+pattern was found.
+</p>
+<p>
+The search is based on the file system content, not on the gems metadata.
+This allows additional documentation folders like &#8216;core&#8217; for
+the ruby core documentation - just put it underneath the main doc folder.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005831_source')" id="l_M005831_source">show</a>
+                        
+                    </p>
+                    <div id="M005831_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/server.rb, line 740</span>
+740:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">show_rdoc_for_pattern</span>(<span class="ruby-identifier">pattern</span>, <span class="ruby-identifier">res</span>)
+741:     <span class="ruby-identifier">found_gems</span> = <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">glob</span>(<span class="ruby-node">&quot;{#{@gem_dirs.join ','}}/doc/#{pattern}&quot;</span>).<span class="ruby-identifier">select</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">path</span><span class="ruby-operator">|</span>
+742:       <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-identifier">path</span>, <span class="ruby-value str">'rdoc/index.html'</span>)
+743:     }
+744:     <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">found_gems</span>.<span class="ruby-identifier">length</span>
+745:     <span class="ruby-keyword kw">when</span> <span class="ruby-value">0</span>
+746:       <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">false</span>
+747:     <span class="ruby-keyword kw">when</span> <span class="ruby-value">1</span>
+748:       <span class="ruby-identifier">new_path</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">basename</span>(<span class="ruby-identifier">found_gems</span>[<span class="ruby-value">0</span>])
+749:       <span class="ruby-identifier">res</span>.<span class="ruby-identifier">status</span> = <span class="ruby-value">302</span>
+750:       <span class="ruby-identifier">res</span>[<span class="ruby-value str">'Location'</span>] = <span class="ruby-node">&quot;/doc_root/#{new_path}/rdoc/index.html&quot;</span>
+751:       <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">true</span>
+752:     <span class="ruby-keyword kw">else</span>
+753:       <span class="ruby-identifier">doc_items</span> = []
+754:       <span class="ruby-identifier">found_gems</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">file_name</span><span class="ruby-operator">|</span>
+755:         <span class="ruby-identifier">base_name</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">basename</span>(<span class="ruby-identifier">file_name</span>)
+756:         <span class="ruby-identifier">doc_items</span> <span class="ruby-operator">&lt;&lt;</span> {
+757:           <span class="ruby-identifier">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">base_name</span>,
+758:           <span class="ruby-identifier">:url</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-node">&quot;/doc_root/#{base_name}/rdoc/index.html&quot;</span>,
+759:           <span class="ruby-identifier">:summary</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">''</span>
+760:         }
+761:       <span class="ruby-keyword kw">end</span>
+762: 
+763:       <span class="ruby-identifier">template</span> = <span class="ruby-constant">ERB</span>.<span class="ruby-identifier">new</span>(<span class="ruby-constant">RDOC_SEARCH_TEMPLATE</span>)
+764:       <span class="ruby-identifier">res</span>[<span class="ruby-value str">'content-type'</span>] = <span class="ruby-value str">'text/html'</span>
+765:       <span class="ruby-identifier">result</span> = <span class="ruby-identifier">template</span>.<span class="ruby-identifier">result</span> <span class="ruby-identifier">binding</span>
+766:       <span class="ruby-identifier">res</span>.<span class="ruby-identifier">body</span> = <span class="ruby-identifier">result</span>
+767:       <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">true</span>
+768:     <span class="ruby-keyword kw">end</span>
+769:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005833">
+                    
+                    <a name="M005833"></a><b>specs</b>(req, res)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005833_source')" id="l_M005833_source">show</a>
+                        
+                    </p>
+                    <div id="M005833_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/server.rb, line 814</span>
+814:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">specs</span>(<span class="ruby-identifier">req</span>, <span class="ruby-identifier">res</span>)
+815:     <span class="ruby-ivar">@source_index</span>.<span class="ruby-identifier">refresh!</span>
+816: 
+817:     <span class="ruby-identifier">add_date</span> <span class="ruby-identifier">res</span>
+818: 
+819:     <span class="ruby-identifier">specs</span> = <span class="ruby-ivar">@source_index</span>.<span class="ruby-identifier">sort</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">_</span>, <span class="ruby-identifier">spec</span><span class="ruby-operator">|</span>
+820:       <span class="ruby-identifier">platform</span> = <span class="ruby-identifier">spec</span>.<span class="ruby-identifier">original_platform</span>
+821:       <span class="ruby-identifier">platform</span> = <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">Platform</span><span class="ruby-operator">::</span><span class="ruby-constant">RUBY</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">platform</span>.<span class="ruby-identifier">nil?</span>
+822:       [<span class="ruby-identifier">spec</span>.<span class="ruby-identifier">name</span>, <span class="ruby-identifier">spec</span>.<span class="ruby-identifier">version</span>, <span class="ruby-identifier">platform</span>]
+823:     <span class="ruby-keyword kw">end</span>
+824: 
+825:     <span class="ruby-identifier">specs</span> = <span class="ruby-constant">Marshal</span>.<span class="ruby-identifier">dump</span> <span class="ruby-identifier">specs</span>
+826: 
+827:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">req</span>.<span class="ruby-identifier">path</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/\.gz$/</span> <span class="ruby-keyword kw">then</span>
+828:       <span class="ruby-identifier">specs</span> = <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">gzip</span> <span class="ruby-identifier">specs</span>
+829:       <span class="ruby-identifier">res</span>[<span class="ruby-value str">'content-type'</span>] = <span class="ruby-value str">'application/x-gzip'</span>
+830:     <span class="ruby-keyword kw">else</span>
+831:       <span class="ruby-identifier">res</span>[<span class="ruby-value str">'content-type'</span>] = <span class="ruby-value str">'application/octet-stream'</span>
+832:     <span class="ruby-keyword kw">end</span>
+833: 
+834:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">req</span>.<span class="ruby-identifier">request_method</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'HEAD'</span> <span class="ruby-keyword kw">then</span>
+835:       <span class="ruby-identifier">res</span>[<span class="ruby-value str">'content-length'</span>] = <span class="ruby-identifier">specs</span>.<span class="ruby-identifier">length</span>
+836:     <span class="ruby-keyword kw">else</span>
+837:       <span class="ruby-identifier">res</span>.<span class="ruby-identifier">body</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">specs</span>
+838:     <span class="ruby-keyword kw">end</span>
+839:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M005834">
+                    
+                    <a name="M005834"></a><b>yaml</b>(req, res)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M005834_source')" id="l_M005834_source">show</a>
+                        
+                    </p>
+                    <div id="M005834_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/rubygems/server.rb, line 841</span>
+841:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">yaml</span>(<span class="ruby-identifier">req</span>, <span class="ruby-identifier">res</span>)
+842:     <span class="ruby-ivar">@source_index</span>.<span class="ruby-identifier">refresh!</span>
+843: 
+844:     <span class="ruby-identifier">add_date</span> <span class="ruby-identifier">res</span>
+845: 
+846:     <span class="ruby-identifier">index</span> = <span class="ruby-ivar">@source_index</span>.<span class="ruby-identifier">to_yaml</span>
+847: 
+848:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">req</span>.<span class="ruby-identifier">path</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/Z$/</span> <span class="ruby-keyword kw">then</span>
+849:       <span class="ruby-identifier">res</span>[<span class="ruby-value str">'content-type'</span>] = <span class="ruby-value str">'application/x-deflate'</span>
+850:       <span class="ruby-identifier">index</span> = <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">deflate</span> <span class="ruby-identifier">index</span>
+851:     <span class="ruby-keyword kw">else</span>
+852:       <span class="ruby-identifier">res</span>[<span class="ruby-value str">'content-type'</span>] = <span class="ruby-value str">'text/plain'</span>
+853:     <span class="ruby-keyword kw">end</span>
+854: 
+855:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">req</span>.<span class="ruby-identifier">request_method</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'HEAD'</span> <span class="ruby-keyword kw">then</span>
+856:       <span class="ruby-identifier">res</span>[<span class="ruby-value str">'content-length'</span>] = <span class="ruby-identifier">index</span>.<span class="ruby-identifier">length</span>
+857:       <span class="ruby-keyword kw">return</span>
+858:     <span class="ruby-keyword kw">end</span>
+859: 
+860:     <span class="ruby-identifier">res</span>.<span class="ruby-identifier">body</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">index</span>
+861:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

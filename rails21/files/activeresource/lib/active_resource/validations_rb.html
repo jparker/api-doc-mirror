@@ -1,0 +1,307 @@
+  <div id="fileHeader">
+    <h1>validations.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activeresource/lib/active_resource/validations.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>module ActiveResource
+  class ResourceInvalid &lt; ClientError  #:nodoc:
+  end
+
+  # Active Resource validation is reported to and from this object, which is used by Base#save
+  # to determine whether the object in a valid state to be saved. See usage example in Validations.  
+  class Errors
+    include Enumerable
+    attr_reader :errors
+
+    delegate :empty?, :to =&gt; :errors
+    
+    def initialize(base) # :nodoc:
+      @base, @errors = base, {}
+    end
+
+    # Add an error to the base Active Resource object rather than an attribute.
+    #
+    # ==== Examples
+    #   my_folder = Folder.find(1)
+    #   my_folder.errors.add_to_base(&quot;You can't edit an existing folder&quot;)
+    #   my_folder.errors.on_base
+    #   # =&gt; &quot;You can't edit an existing folder&quot;
+    #
+    #   my_folder.errors.add_to_base(&quot;This folder has been tagged as frozen&quot;)
+    #   my_folder.valid?
+    #   # =&gt; false
+    #   my_folder.errors.on_base
+    #   # =&gt; [&quot;You can't edit an existing folder&quot;, &quot;This folder has been tagged as frozen&quot;]
+    #
+    def add_to_base(msg)
+      add(:base, msg)
+    end
+
+    # Adds an error to an Active Resource object's attribute (named for the +attribute+ parameter)
+    # with the error message in +msg+.
+    #
+    # ==== Examples
+    #   my_resource = Node.find(1)
+    #   my_resource.errors.add('name', 'can not be &quot;base&quot;') if my_resource.name == 'base'
+    #   my_resource.errors.on('name')
+    #   # =&gt; 'can not be &quot;base&quot;!'
+    #
+    #   my_resource.errors.add('desc', 'can not be blank') if my_resource.desc == ''
+    #   my_resource.valid?
+    #   # =&gt; false
+    #   my_resource.errors.on('desc')
+    #   # =&gt; 'can not be blank!'
+    #
+    def add(attribute, msg)
+      @errors[attribute.to_s] = [] if @errors[attribute.to_s].nil?
+      @errors[attribute.to_s] &lt;&lt; msg
+    end
+
+    # Returns true if the specified +attribute+ has errors associated with it.
+    #
+    # ==== Examples
+    #   my_resource = Disk.find(1)
+    #   my_resource.errors.add('location', 'must be Main') unless my_resource.location == 'Main'
+    #   my_resource.errors.on('location')
+    #   # =&gt; 'must be Main!'
+    #
+    #   my_resource.errors.invalid?('location')
+    #   # =&gt; true
+    #   my_resource.errors.invalid?('name')
+    #   # =&gt; false
+    def invalid?(attribute)
+      !@errors[attribute.to_s].nil?
+    end
+
+    # A method to return the errors associated with +attribute+, which returns nil, if no errors are 
+    # associated with the specified +attribute+, the error message if one error is associated with the specified +attribute+,
+    # or an array of error messages if more than one error is associated with the specified +attribute+.
+    #
+    # ==== Examples
+    #   my_person = Person.new(params[:person])
+    #   my_person.errors.on('login')
+    #   # =&gt; nil
+    #
+    #   my_person.errors.add('login', 'can not be empty') if my_person.login == ''
+    #   my_person.errors.on('login')
+    #   # =&gt; 'can not be empty'
+    #
+    #   my_person.errors.add('login', 'can not be longer than 10 characters') if my_person.login.length &gt; 10
+    #   my_person.errors.on('login')
+    #   # =&gt; ['can not be empty', 'can not be longer than 10 characters']
+    def on(attribute)
+      errors = @errors[attribute.to_s]
+      return nil if errors.nil?
+      errors.size == 1 ? errors.first : errors
+    end
+    
+    alias :[] :on
+
+    # A method to return errors assigned to +base+ object through add_to_base, which returns nil, if no errors are 
+    # associated with the specified +attribute+, the error message if one error is associated with the specified +attribute+,
+    # or an array of error messages if more than one error is associated with the specified +attribute+.
+    #
+    # ==== Examples
+    #   my_account = Account.find(1)
+    #   my_account.errors.on_base
+    #   # =&gt; nil
+    #
+    #   my_account.errors.add_to_base(&quot;This account is frozen&quot;)
+    #   my_account.errors.on_base
+    #   # =&gt; &quot;This account is frozen&quot;
+    #
+    #   my_account.errors.add_to_base(&quot;This account has been closed&quot;)
+    #   my_account.errors.on_base
+    #   # =&gt; [&quot;This account is frozen&quot;, &quot;This account has been closed&quot;]
+    #
+    def on_base
+      on(:base)
+    end
+
+    # Yields each attribute and associated message per error added.
+    #
+    # ==== Examples
+    #   my_person = Person.new(params[:person])
+    #
+    #   my_person.errors.add('login', 'can not be empty') if my_person.login == ''
+    #   my_person.errors.add('password', 'can not be empty') if my_person.password == ''
+    #   messages = ''
+    #   my_person.errors.each {|attr, msg| messages += attr.humanize + &quot; &quot; + msg + &quot;&lt;br /&gt;&quot;}
+    #   messages
+    #   # =&gt; &quot;Login can not be empty&lt;br /&gt;Password can not be empty&lt;br /&gt;&quot;
+    #
+    def each
+      @errors.each_key { |attr| @errors[attr].each { |msg| yield attr, msg } }
+    end
+
+    # Yields each full error message added. So Person.errors.add(&quot;first_name&quot;, &quot;can't be empty&quot;) will be returned
+    # through iteration as &quot;First name can't be empty&quot;.
+    #
+    # ==== Examples
+    #   my_person = Person.new(params[:person])
+    #
+    #   my_person.errors.add('login', 'can not be empty') if my_person.login == ''
+    #   my_person.errors.add('password', 'can not be empty') if my_person.password == ''
+    #   messages = ''
+    #   my_person.errors.each_full {|msg| messages += msg + &quot;&lt;br/&gt;&quot;}
+    #   messages
+    #   # =&gt; &quot;Login can not be empty&lt;br /&gt;Password can not be empty&lt;br /&gt;&quot;
+    #
+    def each_full
+      full_messages.each { |msg| yield msg }
+    end
+
+    # Returns all the full error messages in an array.
+    #
+    # ==== Examples
+    #   my_person = Person.new(params[:person])
+    #
+    #   my_person.errors.add('login', 'can not be empty') if my_person.login == ''
+    #   my_person.errors.add('password', 'can not be empty') if my_person.password == ''
+    #   messages = ''
+    #   my_person.errors.full_messages.each {|msg| messages += msg + &quot;&lt;br/&gt;&quot;}
+    #   messages
+    #   # =&gt; &quot;Login can not be empty&lt;br /&gt;Password can not be empty&lt;br /&gt;&quot;
+    #
+    def full_messages
+      full_messages = []
+
+      @errors.each_key do |attr|
+        @errors[attr].each do |msg|
+          next if msg.nil?
+
+          if attr == &quot;base&quot;
+            full_messages &lt;&lt; msg
+          else
+            full_messages &lt;&lt; [attr.humanize, msg].join(' ')
+          end
+        end
+      end
+      full_messages
+    end
+
+    def clear
+      @errors = {}
+    end
+
+    # Returns the total number of errors added. Two errors added to the same attribute will be counted as such
+    # with this as well.
+    #
+    # ==== Examples
+    #   my_person = Person.new(params[:person])
+    #   my_person.errors.size
+    #   # =&gt; 0
+    #
+    #   my_person.errors.add('login', 'can not be empty') if my_person.login == ''
+    #   my_person.errors.add('password', 'can not be empty') if my_person.password == ''
+    #   my_person.error.size
+    #   # =&gt; 2
+    #
+    def size
+      @errors.values.inject(0) { |error_count, attribute| error_count + attribute.size }
+    end
+
+    alias_method :count, :size
+    alias_method :length, :size
+    
+    # Grabs errors from the XML response.
+    def from_xml(xml)
+      clear
+      humanized_attributes = @base.attributes.keys.inject({}) { |h, attr_name| h.update(attr_name.humanize =&gt; attr_name) }
+      messages = Hash.from_xml(xml)['errors']['error'] rescue []
+      messages.each do |message|
+        attr_message = humanized_attributes.keys.detect do |attr_name|
+          if message[0, attr_name.size + 1] == &quot;#{attr_name} &quot;
+            add humanized_attributes[attr_name], message[(attr_name.size + 1)..-1]
+          end
+        end
+        
+        add_to_base message if attr_message.nil?
+      end
+    end
+  end
+  
+  # Module to allow validation of Active Resource objects, which creates an Errors instance for every resource.
+  # Methods are implemented by overriding Base#validate or its variants   Each of these methods can inspect 
+  # the state of the object, which usually means  ensuring that a number of attributes have a certain value 
+  # (such as not empty, within a given range, matching a certain regular expression and so on).
+  #
+  # ==== Example
+  #
+  #   class Person &lt; ActiveResource::Base
+  #      self.site = &quot;http://www.localhost.com:3000/&quot;
+  #      protected
+  #        def validate
+  #          errors.add_on_empty %w( first_name last_name )
+  #          errors.add(&quot;phone_number&quot;, &quot;has invalid format&quot;) unless phone_number =~ /[0-9]*/
+  #        end
+  #
+  #        def validate_on_create # is only run the first time a new object is saved
+  #          unless valid_member?(self)
+  #            errors.add(&quot;membership_discount&quot;, &quot;has expired&quot;)
+  #          end
+  #        end
+  #
+  #        def validate_on_update
+  #          errors.add_to_base(&quot;No changes have occurred&quot;) if unchanged_attributes?
+  #        end
+  #   end
+  #   
+  #   person = Person.new(&quot;first_name&quot; =&gt; &quot;Jim&quot;, &quot;phone_number&quot; =&gt; &quot;I will not tell you.&quot;)
+  #   person.save                         # =&gt; false (and doesn't do the save)
+  #   person.errors.empty?                # =&gt; false
+  #   person.errors.count                 # =&gt; 2
+  #   person.errors.on &quot;last_name&quot;        # =&gt; &quot;can't be empty&quot;
+  #   person.attributes = { &quot;last_name&quot; =&gt; &quot;Halpert&quot;, &quot;phone_number&quot; =&gt; &quot;555-5555&quot; }
+  #   person.save                         # =&gt; true (and person is now saved to the remote service)
+  #
+  module Validations
+    def self.included(base) # :nodoc:
+      base.class_eval do
+        alias_method_chain :save, :validation
+      end
+    end
+
+    # Validate a resource and save (POST) it to the remote web service.
+    def save_with_validation
+      save_without_validation
+      true
+    rescue ResourceInvalid =&gt; error
+      errors.from_xml(error.response.body)
+      false
+    end
+
+    # Checks for errors on an object (i.e., is resource.errors empty?).
+    # 
+    # ==== Examples
+    #   my_person = Person.create(params[:person])
+    #   my_person.valid?
+    #   # =&gt; true
+    #
+    #   my_person.errors.add('login', 'can not be empty') if my_person.login == ''
+    #   my_person.valid?
+    #   # =&gt; false
+    def valid?
+      errors.empty?
+    end
+
+    # Returns the Errors object that holds all information about attribute error messages.
+    def errors
+      @errors ||= Errors.new(self)
+    end
+  end
+end
+</pre>
+    </div>

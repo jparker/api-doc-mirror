@@ -1,0 +1,474 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>OpenSSL::HMAC</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen" />
+    <script src="../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            OpenSSL::HMAC 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="../Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../files/ext/openssl/ossl_c.html">ext/openssl/ossl.c</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+let rdoc know about mOSSL
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>#</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006441"><<</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>D</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006434">digest</a>,</li>
+                
+                <li><a href="#M006439">digest</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>H</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006440">hexdigest</a>,</li>
+                
+                <li><a href="#M006435">hexdigest</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>I</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006442">inspect</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006436">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>R</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006437">reset</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>T</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006443">to_s</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>U</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006438">update</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M006434">
+                    
+                    <a name="M006434"></a><b>HMAC.digest(digest, key, data) &rarr; aString
+</b>
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006434_source')" id="l_M006434_source">show</a>
+                        
+                    </p>
+                    <div id="M006434_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_hmac_s_digest(VALUE klass, VALUE digest, VALUE key, VALUE data)
+{
+    char *buf;
+    int buf_len;
+        
+    StringValue(key);
+    StringValue(data);
+    buf = HMAC(GetDigestPtr(digest), RSTRING_PTR(key), RSTRING_LEN(key),
+               RSTRING_PTR(data), RSTRING_LEN(data), NULL, &amp;buf_len);
+
+    return rb_str_new(buf, buf_len);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006435">
+                    
+                    <a name="M006435"></a><b>HMAC.digest(digest, key, data) &rarr; aString
+</b>
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006435_source')" id="l_M006435_source">show</a>
+                        
+                    </p>
+                    <div id="M006435_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_hmac_s_hexdigest(VALUE klass, VALUE digest, VALUE key, VALUE data)
+{
+    char *buf, *hexbuf;
+    int buf_len;
+    VALUE hexdigest;
+
+    StringValue(key);
+    StringValue(data);
+        
+    buf = HMAC(GetDigestPtr(digest), RSTRING_PTR(key), RSTRING_LEN(key),
+               RSTRING_PTR(data), RSTRING_LEN(data), NULL, &amp;buf_len);
+    if (string2hex(buf, buf_len, &amp;hexbuf, NULL) != 2 * buf_len) {
+        ossl_raise(eHMACError, &quot;Cannot convert buf to hexbuf&quot;);
+    }
+    hexdigest = ossl_buf2str(hexbuf, 2 * buf_len);
+
+    return hexdigest;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006436">
+                    
+                    <a name="M006436"></a><b>HMAC.new(key, digest) &rarr; hmac
+</b>
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006436_source')" id="l_M006436_source">show</a>
+                        
+                    </p>
+                    <div id="M006436_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_hmac_initialize(VALUE self, VALUE key, VALUE digest)
+{
+    HMAC_CTX *ctx;
+
+    StringValue(key);
+    GetHMAC(self, ctx);
+    HMAC_Init_ex(ctx, RSTRING_PTR(key), RSTRING_LEN(key),
+                 GetDigestPtr(digest), NULL);
+
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M006441">
+                    
+                    <a name="M006441"></a><b>&lt;&lt;</b>(p1)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a href="HMAC.html#M006438">update</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006439">
+                    
+                    <a name="M006439"></a><b>hmac.digest &rarr; aString
+</b>
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006439_source')" id="l_M006439_source">show</a>
+                        
+                    </p>
+                    <div id="M006439_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_hmac_digest(VALUE self)
+{
+    HMAC_CTX *ctx;
+    char *buf;
+    int buf_len;
+    VALUE digest;
+        
+    GetHMAC(self, ctx);
+    hmac_final(ctx, &amp;buf, &amp;buf_len);
+    digest = ossl_buf2str(buf, buf_len);
+    
+    return digest;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006440">
+                    
+                    <a name="M006440"></a><b>hmac.hexdigest &rarr; aString
+</b>
+                    
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="HMAC.html#M006442">inspect</a>
+                    
+                    <a href="HMAC.html#M006443">to_s</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006440_source')" id="l_M006440_source">show</a>
+                        
+                    </p>
+                    <div id="M006440_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_hmac_hexdigest(VALUE self)
+{
+    HMAC_CTX *ctx;
+    char *buf, *hexbuf;
+    int buf_len;
+    VALUE hexdigest;
+        
+    GetHMAC(self, ctx);
+    hmac_final(ctx, &amp;buf, &amp;buf_len);
+    if (string2hex(buf, buf_len, &amp;hexbuf, NULL) != 2 * buf_len) {
+        OPENSSL_free(buf);
+        ossl_raise(eHMACError, &quot;Memory alloc error&quot;);
+    }
+    OPENSSL_free(buf);
+    hexdigest = ossl_buf2str(hexbuf, 2 * buf_len);
+
+    return hexdigest;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006442">
+                    
+                    <a name="M006442"></a><b>inspect</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a href="HMAC.html#M006435">hexdigest</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006437">
+                    
+                    <a name="M006437"></a><b>hmac.reset &rarr; self
+</b>
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006437_source')" id="l_M006437_source">show</a>
+                        
+                    </p>
+                    <div id="M006437_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_hmac_reset(VALUE self)
+{
+    HMAC_CTX *ctx;
+
+    GetHMAC(self, ctx);
+    HMAC_Init_ex(ctx, NULL, 0, NULL, NULL);
+
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006443">
+                    
+                    <a name="M006443"></a><b>to_s</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Alias for <a href="HMAC.html#M006435">hexdigest</a>
+</p>
+
+                </div>
+                
+                
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006438">
+                    
+                    <a name="M006438"></a><b>hmac.update(string) &rarr; self
+</b>
+                    
+                </div>
+                
+                
+                <div class="aka">
+                    This method is also aliased as
+                    
+                    <a href="HMAC.html#M006441">&lt;&lt;</a>
+                    
+                </div>
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006438_source')" id="l_M006438_source">show</a>
+                        
+                    </p>
+                    <div id="M006438_source" class="dyn-source">
+                        <pre>static VALUE
+ossl_hmac_update(VALUE self, VALUE data)
+{
+    HMAC_CTX *ctx;
+
+    StringValue(data);
+    GetHMAC(self, ctx);
+    HMAC_Update(ctx, RSTRING_PTR(data), RSTRING_LEN(data));
+
+    return self;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

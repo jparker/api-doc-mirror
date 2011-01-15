@@ -1,0 +1,78 @@
+  <div id="fileHeader">
+    <h1>misc.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activesupport/lib/active_support/core_ext/object/misc.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>class Object
+  unless respond_to?(:send!)
+    # Anticipating Ruby 1.9 neutering send
+    alias send! send
+  end
+
+  # A Ruby-ized realization of the K combinator, courtesy of Mikael Brockman.
+  #
+  #   def foo
+  #     returning values = [] do
+  #       values &lt;&lt; 'bar'
+  #       values &lt;&lt; 'baz'
+  #     end
+  #   end
+  #
+  #   foo # =&gt; ['bar', 'baz']
+  #
+  #   def foo
+  #     returning [] do |values|
+  #       values &lt;&lt; 'bar'
+  #       values &lt;&lt; 'baz'
+  #     end
+  #   end
+  #
+  #   foo # =&gt; ['bar', 'baz']
+  #
+  def returning(value)
+    yield(value)
+    value
+  end
+
+  # An elegant way to refactor out common options
+  # 
+  #   with_options :order =&gt; 'created_at', :class_name =&gt; 'Comment' do |post|
+  #     post.has_many :comments, :conditions =&gt; ['approved = ?', true], :dependent =&gt; :delete_all
+  #     post.has_many :unapproved_comments, :conditions =&gt; ['approved = ?', false]
+  #     post.has_many :all_comments
+  #   end
+  #
+  # Can also be used with an explicit receiver:
+  #
+  #   map.with_options :controller =&gt; &quot;people&quot; do |people|
+  #     people.connect &quot;/people&quot;,     :action =&gt; &quot;index&quot;
+  #     people.connect &quot;/people/:id&quot;, :action =&gt; &quot;show&quot;
+  #   end
+  #
+  def with_options(options)
+    yield ActiveSupport::OptionMerger.new(self, options)
+  end
+  
+  # A duck-type assistant method. For example, Active Support extends Date
+  # to define an acts_like_date? method, and extends Time to define
+  # acts_like_time?. As a result, we can do &quot;x.acts_like?(:time)&quot; and
+  # &quot;x.acts_like?(:date)&quot; to do duck-type-safe comparisons, since classes that
+  # we want to act like Time simply need to define an acts_like_time? method.
+  def acts_like?(duck)
+    respond_to? &quot;acts_like_#{duck}?&quot;
+  end
+end
+</pre>
+    </div>

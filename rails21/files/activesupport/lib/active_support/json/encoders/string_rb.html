@@ -1,0 +1,55 @@
+  <div id="fileHeader">
+    <h1>string.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activesupport/lib/active_support/json/encoders/string.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>module ActiveSupport
+  module JSON
+    module Encoding
+      mattr_accessor :escape_regex
+
+      ESCAPED_CHARS = {
+        &quot;\010&quot; =&gt;  '\b',
+        &quot;\f&quot;   =&gt;  '\f',
+        &quot;\n&quot;   =&gt;  '\n',
+        &quot;\r&quot;   =&gt;  '\r',
+        &quot;\t&quot;   =&gt;  '\t',
+        '&quot;'    =&gt;  '\&quot;',
+        '\\'   =&gt;  '\\\\',
+        '&gt;'    =&gt;  '\u003E',
+        '&lt;'    =&gt;  '\u003C',
+        '&amp;'    =&gt;  '\u0026'
+      }
+    end
+  end
+end
+
+ActiveSupport.escape_html_entities_in_json = true
+
+class String
+  def to_json(options = nil) #:nodoc:
+    json = '&quot;' + gsub(ActiveSupport::JSON::Encoding.escape_regex) { |s|
+      ActiveSupport::JSON::Encoding::ESCAPED_CHARS[s]
+    }
+    json.force_encoding('ascii-8bit') if respond_to?(:force_encoding)
+    json.gsub(/([\xC0-\xDF][\x80-\xBF]|
+             [\xE0-\xEF][\x80-\xBF]{2}|
+             [\xF0-\xF7][\x80-\xBF]{3})+/nx) { |s|
+      s.unpack(&quot;U*&quot;).pack(&quot;n*&quot;).unpack(&quot;H*&quot;)[0].gsub(/.{4}/, '\\\\u\&amp;')
+    } + '&quot;'
+  end
+end
+</pre>
+    </div>

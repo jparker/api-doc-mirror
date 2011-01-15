@@ -1,0 +1,148 @@
+  <div id="C00000518">
+<div class='banner'>
+  <span class="file-title-prefix">Module</span><br />Validations<br/>
+  In:
+<a href="#" onclick="jsHref('files/activeresource/lib/active_resource/validations_rb.html');">activeresource/lib/active_resource/validations.rb</a>
+
+</div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+      <div id="content">
+
+  <div class="description"><p>
+Module to allow validation of Active Resource objects, which creates an <a
+href="index.html?a=C00000519&name=Errors">Errors</a> instance for every
+resource. Methods are implemented by overriding Base#validate or its
+variants Each of these methods can inspect the state of the object, which
+usually means ensuring that a number of attributes have a certain value
+(such as not empty, within a given range, matching a certain regular
+expression and so on).
+</p>
+<h4>Example</h4>
+<pre>
+  class Person &lt; ActiveResource::Base
+     self.site = &quot;http://www.localhost.com:3000/&quot;
+     protected
+       def validate
+         errors.add_on_empty %w( first_name last_name )
+         errors.add(&quot;phone_number&quot;, &quot;has invalid format&quot;) unless phone_number =~ /[0-9]*/
+       end
+
+       def validate_on_create # is only run the first time a new object is saved
+         unless valid_member?(self)
+           errors.add(&quot;membership_discount&quot;, &quot;has expired&quot;)
+         end
+       end
+
+       def validate_on_update
+         errors.add_to_base(&quot;No changes have occurred&quot;) if unchanged_attributes?
+       end
+  end
+
+  person = Person.new(&quot;first_name&quot; =&gt; &quot;Jim&quot;, &quot;phone_number&quot; =&gt; &quot;I will not tell you.&quot;)
+  person.save                         # =&gt; false (and doesn't do the save)
+  person.errors.empty?                # =&gt; false
+  person.errors.count                 # =&gt; 2
+  person.errors.on &quot;last_name&quot;        # =&gt; &quot;can't be empty&quot;
+  person.attributes = { &quot;last_name&quot; =&gt; &quot;Halpert&quot;, &quot;phone_number&quot; =&gt; &quot;555-5555&quot; }
+  person.save                         # =&gt; true (and person is now saved to the remote service)
+</pre>
+</div>
+
+
+
+  <div class="sectiontitle">Methods</div>
+  <ul>
+  <li><a href="index.html?a=M001314&name=errors" >errors</a></li>
+  <li><a href="index.html?a=M001312&name=save_with_validation" >save_with_validation</a></li>
+  <li><a href="index.html?a=M001313&name=valid?" >valid?</a></li>
+  </ul>
+
+
+
+
+
+
+<div class="sectiontitle">Public Instance methods</div>
+<div id="M001314" class="method">
+  <div id="M001314_title" class="title">
+    <b>errors</b>()
+  </div>
+  <div class="description">
+  <p>
+Returns the <a href="index.html?a=C00000519&name=Errors">Errors</a> object
+that holds all information about attribute error messages.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001314_source')" id="l_M001314_source">show source</a> ]</p>
+  <div id="M001314_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activeresource/lib/active_resource/validations.rb, line 284</span>
+284:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">errors</span>
+285:       <span class="ruby-ivar">@errors</span> <span class="ruby-operator">||=</span> <span class="ruby-constant">Errors</span>.<span class="ruby-identifier">new</span>(<span class="ruby-keyword kw">self</span>)
+286:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M001312" class="method">
+  <div id="M001312_title" class="title">
+    <b>save_with_validation</b>()
+  </div>
+  <div class="description">
+  <p>
+Validate a resource and save (POST) it to the remote web service.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001312_source')" id="l_M001312_source">show source</a> ]</p>
+  <div id="M001312_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activeresource/lib/active_resource/validations.rb, line 261</span>
+261:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">save_with_validation</span>
+262:       <span class="ruby-identifier">save_without_validation</span>
+263:       <span class="ruby-keyword kw">true</span>
+264:     <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">ResourceInvalid</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">error</span>
+265:       <span class="ruby-identifier">errors</span>.<span class="ruby-identifier">from_xml</span>(<span class="ruby-identifier">error</span>.<span class="ruby-identifier">response</span>.<span class="ruby-identifier">body</span>)
+266:       <span class="ruby-keyword kw">false</span>
+267:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M001313" class="method">
+  <div id="M001313_title" class="title">
+    <b>valid?</b>()
+  </div>
+  <div class="description">
+  <p>
+Checks for errors on an object (i.e., is resource.errors empty?).
+</p>
+<h4>Examples</h4>
+<pre>
+  my_person = Person.create(params[:person])
+  my_person.valid?
+  # =&gt; true
+
+  my_person.errors.add('login', 'can not be empty') if my_person.login == ''
+  my_person.valid?
+  # =&gt; false
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M001313_source')" id="l_M001313_source">show source</a> ]</p>
+  <div id="M001313_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activeresource/lib/active_resource/validations.rb, line 279</span>
+279:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">valid?</span>
+280:       <span class="ruby-identifier">errors</span>.<span class="ruby-identifier">empty?</span>
+281:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+</div>
+
+  </div>

@@ -1,0 +1,642 @@
+  <div id="fileHeader">
+    <h1>selector_assertions.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionpack/lib/action_controller/assertions/selector_assertions.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:04 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>#--
+# Copyright (c) 2006 Assaf Arkin (http://labnotes.org)
+# Under MIT and/or CC By license.
+#++
+
+require 'rexml/document'
+require 'html/document'
+
+module ActionController
+  module Assertions
+    unless const_defined?(:NO_STRIP)
+      NO_STRIP = %w{pre script style textarea}
+    end
+
+    # Adds the +assert_select+ method for use in Rails functional
+    # test cases, which can be used to make assertions on the response HTML of a controller
+    # action. You can also call +assert_select+ within another +assert_select+ to
+    # make assertions on elements selected by the enclosing assertion.
+    #
+    # Use +css_select+ to select elements without making an assertions, either
+    # from the response HTML or elements selected by the enclosing assertion.
+    # 
+    # In addition to HTML responses, you can make the following assertions:
+    # * +assert_select_rjs+ - Assertions on HTML content of RJS update and
+    #     insertion operations.
+    # * +assert_select_encoded+ - Assertions on HTML encoded inside XML,
+    #     for example for dealing with feed item descriptions.
+    # * +assert_select_email+ - Assertions on the HTML body of an e-mail.
+    #
+    # Also see HTML::Selector to learn how to use selectors.
+    module SelectorAssertions
+      # :call-seq:
+      #   css_select(selector) =&gt; array
+      #   css_select(element, selector) =&gt; array
+      #
+      # Select and return all matching elements.
+      #
+      # If called with a single argument, uses that argument as a selector
+      # to match all elements of the current page. Returns an empty array
+      # if no match is found.
+      #
+      # If called with two arguments, uses the first argument as the base
+      # element and the second argument as the selector. Attempts to match the
+      # base element and any of its children. Returns an empty array if no
+      # match is found.
+      #
+      # The selector may be a CSS selector expression (String), an expression
+      # with substitution values (Array) or an HTML::Selector object.
+      #
+      # ==== Examples
+      #   # Selects all div tags
+      #   divs = css_select(&quot;div&quot;)
+      #
+      #   # Selects all paragraph tags and does something interesting
+      #   pars = css_select(&quot;p&quot;)
+      #   pars.each do |par|
+      #     # Do something fun with paragraphs here...
+      #   end
+      #
+      #   # Selects all list items in unordered lists
+      #   items = css_select(&quot;ul&gt;li&quot;) 
+      #      
+      #   # Selects all form tags and then all inputs inside the form
+      #   forms = css_select(&quot;form&quot;)
+      #   forms.each do |form|
+      #     inputs = css_select(form, &quot;input&quot;)
+      #     ...
+      #   end
+      #
+      def css_select(*args)
+        # See assert_select to understand what's going on here.
+        arg = args.shift
+
+        if arg.is_a?(HTML::Node)
+          root = arg
+          arg = args.shift
+        elsif arg == nil
+          raise ArgumentError, &quot;First argument is either selector or element to select, but nil found. Perhaps you called assert_select with an element that does not exist?&quot;
+        elsif @selected
+          matches = []
+
+          @selected.each do |selected|
+            subset = css_select(selected, HTML::Selector.new(arg.dup, args.dup))
+            subset.each do |match|
+              matches &lt;&lt; match unless matches.any? { |m| m.equal?(match) }
+            end
+          end
+
+          return matches
+        else
+          root = response_from_page_or_rjs
+        end
+
+        case arg
+          when String
+            selector = HTML::Selector.new(arg, args)
+          when Array
+            selector = HTML::Selector.new(*arg)
+          when HTML::Selector
+            selector = arg
+          else raise ArgumentError, &quot;Expecting a selector as the first argument&quot;
+        end
+
+        selector.select(root)
+      end
+
+      # :call-seq:
+      #   assert_select(selector, equality?, message?)
+      #   assert_select(element, selector, equality?, message?)
+      #
+      # An assertion that selects elements and makes one or more equality tests.
+      #
+      # If the first argument is an element, selects all matching elements
+      # starting from (and including) that element and all its children in
+      # depth-first order.
+      #
+      # If no element if specified, calling +assert_select+ will select from the
+      # response HTML. Calling #assert_select inside an +assert_select+ block will
+      # run the assertion for each element selected by the enclosing assertion.
+      #
+      # ==== Example
+      #   assert_select &quot;ol&gt;li&quot; do |elements|
+      #     elements.each do |element|
+      #       assert_select element, &quot;li&quot;
+      #     end
+      #   end
+      #
+      # Or for short:
+      #   assert_select &quot;ol&gt;li&quot; do
+      #     assert_select &quot;li&quot;
+      #   end
+      #
+      # The selector may be a CSS selector expression (String), an expression
+      # with substitution values, or an HTML::Selector object.
+      #
+      # === Equality Tests
+      #
+      # The equality test may be one of the following:
+      # * &lt;tt&gt;true&lt;/tt&gt; - Assertion is true if at least one element selected.
+      # * &lt;tt&gt;false&lt;/tt&gt; - Assertion is true if no element selected.
+      # * &lt;tt&gt;String/Regexp&lt;/tt&gt; - Assertion is true if the text value of at least
+      #   one element matches the string or regular expression.
+      # * &lt;tt&gt;Integer&lt;/tt&gt; - Assertion is true if exactly that number of
+      #   elements are selected.
+      # * &lt;tt&gt;Range&lt;/tt&gt; - Assertion is true if the number of selected
+      #   elements fit the range.
+      # If no equality test specified, the assertion is true if at least one
+      # element selected.
+      #
+      # To perform more than one equality tests, use a hash with the following keys:
+      # * &lt;tt&gt;:text&lt;/tt&gt; - Narrow the selection to elements that have this text
+      #   value (string or regexp).
+      # * &lt;tt&gt;:html&lt;/tt&gt; - Narrow the selection to elements that have this HTML
+      #   content (string or regexp).
+      # * &lt;tt&gt;:count&lt;/tt&gt; - Assertion is true if the number of selected elements
+      #   is equal to this value.
+      # * &lt;tt&gt;:minimum&lt;/tt&gt; - Assertion is true if the number of selected
+      #   elements is at least this value.
+      # * &lt;tt&gt;:maximum&lt;/tt&gt; - Assertion is true if the number of selected
+      #   elements is at most this value.
+      #
+      # If the method is called with a block, once all equality tests are
+      # evaluated the block is called with an array of all matched elements.
+      #
+      # ==== Examples
+      #
+      #   # At least one form element
+      #   assert_select &quot;form&quot;
+      #
+      #   # Form element includes four input fields
+      #   assert_select &quot;form input&quot;, 4
+      #
+      #   # Page title is &quot;Welcome&quot;
+      #   assert_select &quot;title&quot;, &quot;Welcome&quot;
+      #
+      #   # Page title is &quot;Welcome&quot; and there is only one title element
+      #   assert_select &quot;title&quot;, {:count=&gt;1, :text=&gt;&quot;Welcome&quot;},
+      #       &quot;Wrong title or more than one title element&quot;
+      #
+      #   # Page contains no forms
+      #   assert_select &quot;form&quot;, false, &quot;This page must contain no forms&quot;
+      #
+      #   # Test the content and style
+      #   assert_select &quot;body div.header ul.menu&quot;
+      #
+      #   # Use substitution values
+      #   assert_select &quot;ol&gt;li#?&quot;, /item-\d+/
+      #
+      #   # All input fields in the form have a name
+      #   assert_select &quot;form input&quot; do
+      #     assert_select &quot;[name=?]&quot;, /.+/  # Not empty
+      #   end
+      def assert_select(*args, &amp;block)
+        # Start with optional element followed by mandatory selector.
+        arg = args.shift
+
+        if arg.is_a?(HTML::Node)
+          # First argument is a node (tag or text, but also HTML root),
+          # so we know what we're selecting from.
+          root = arg
+          arg = args.shift
+        elsif arg == nil
+          # This usually happens when passing a node/element that
+          # happens to be nil.
+          raise ArgumentError, &quot;First argument is either selector or element to select, but nil found. Perhaps you called assert_select with an element that does not exist?&quot;
+        elsif @selected
+          root = HTML::Node.new(nil)
+          root.children.concat @selected
+        else
+          # Otherwise just operate on the response document.
+          root = response_from_page_or_rjs
+        end
+        
+        # First or second argument is the selector: string and we pass
+        # all remaining arguments. Array and we pass the argument. Also
+        # accepts selector itself.
+        case arg
+          when String
+            selector = HTML::Selector.new(arg, args)
+          when Array
+            selector = HTML::Selector.new(*arg)
+          when HTML::Selector
+            selector = arg
+          else raise ArgumentError, &quot;Expecting a selector as the first argument&quot;
+        end
+        
+        # Next argument is used for equality tests.
+        equals = {}
+        case arg = args.shift
+          when Hash
+            equals = arg
+          when String, Regexp
+            equals[:text] = arg
+          when Integer
+            equals[:count] = arg
+          when Range
+            equals[:minimum] = arg.begin
+            equals[:maximum] = arg.end
+          when FalseClass
+            equals[:count] = 0
+          when NilClass, TrueClass
+            equals[:minimum] = 1
+          else raise ArgumentError, &quot;I don't understand what you're trying to match&quot;
+        end
+
+        # By default we're looking for at least one match.
+        if equals[:count]
+          equals[:minimum] = equals[:maximum] = equals[:count]
+        else
+          equals[:minimum] = 1 unless equals[:minimum]
+        end
+
+        # Last argument is the message we use if the assertion fails.
+        message = args.shift
+        #- message = &quot;No match made with selector #{selector.inspect}&quot; unless message
+        if args.shift
+          raise ArgumentError, &quot;Not expecting that last argument, you either have too many arguments, or they're the wrong type&quot;
+        end
+
+        matches = selector.select(root)
+        # If text/html, narrow down to those elements that match it.
+        content_mismatch = nil
+        if match_with = equals[:text]
+          matches.delete_if do |match|
+            text = &quot;&quot;
+            text.force_encoding(match_with.encoding) if text.respond_to?(:force_encoding)
+            stack = match.children.reverse
+            while node = stack.pop
+              if node.tag?
+                stack.concat node.children.reverse
+              else
+                content = node.content
+                content.force_encoding(match_with.encoding) if content.respond_to?(:force_encoding)
+                text &lt;&lt; content
+              end
+            end
+            text.strip! unless NO_STRIP.include?(match.name)
+            unless match_with.is_a?(Regexp) ? (text =~ match_with) : (text == match_with.to_s)
+              content_mismatch ||= build_message(message, &quot;&lt;?&gt; expected but was\n&lt;?&gt;.&quot;, match_with, text)
+              true
+            end
+          end
+        elsif match_with = equals[:html]
+          matches.delete_if do |match|
+            html = match.children.map(&amp;:to_s).join
+            html.strip! unless NO_STRIP.include?(match.name)
+            unless match_with.is_a?(Regexp) ? (html =~ match_with) : (html == match_with.to_s)
+              content_mismatch ||= build_message(message, &quot;&lt;?&gt; expected but was\n&lt;?&gt;.&quot;, match_with, html)
+              true
+            end
+          end
+        end
+        # Expecting foo found bar element only if found zero, not if
+        # found one but expecting two.
+        message ||= content_mismatch if matches.empty?
+        # Test minimum/maximum occurrence.
+        min, max = equals[:minimum], equals[:maximum]
+        message = message || %(Expected #{count_description(min, max)} matching &quot;#{selector.to_s}&quot;, found #{matches.size}.)
+        assert matches.size &gt;= min, message if min
+        assert matches.size &lt;= max, message if max
+
+        # If a block is given call that block. Set @selected to allow
+        # nested assert_select, which can be nested several levels deep.
+        if block_given? &amp;&amp; !matches.empty?
+          begin
+            in_scope, @selected = @selected, matches
+            yield matches
+          ensure
+            @selected = in_scope
+          end
+        end
+
+        # Returns all matches elements.
+        matches
+      end
+      
+      def count_description(min, max) #:nodoc:
+        pluralize = lambda {|word, quantity| word &lt;&lt; (quantity == 1 ? '' : 's')}
+        
+        if min &amp;&amp; max &amp;&amp; (max != min)
+          &quot;between #{min} and #{max} elements&quot;
+        elsif min &amp;&amp; !(min == 1 &amp;&amp; max == 1)
+          &quot;at least #{min} #{pluralize['element', min]}&quot;
+        elsif max
+          &quot;at most #{max} #{pluralize['element', max]}&quot;
+        end
+      end
+      
+      # :call-seq:
+      #   assert_select_rjs(id?) { |elements| ... }
+      #   assert_select_rjs(statement, id?) { |elements| ... }
+      #   assert_select_rjs(:insert, position, id?) { |elements| ... }
+      #
+      # Selects content from the RJS response.
+      #
+      # === Narrowing down
+      #
+      # With no arguments, asserts that one or more elements are updated or
+      # inserted by RJS statements.
+      #
+      # Use the +id+ argument to narrow down the assertion to only statements
+      # that update or insert an element with that identifier.
+      #
+      # Use the first argument to narrow down assertions to only statements
+      # of that type. Possible values are &lt;tt&gt;:replace&lt;/tt&gt;, &lt;tt&gt;:replace_html&lt;/tt&gt;, 
+      # &lt;tt&gt;:show&lt;/tt&gt;, &lt;tt&gt;:hide&lt;/tt&gt;, &lt;tt&gt;:toggle&lt;/tt&gt;, &lt;tt&gt;:remove&lt;/tt&gt; and
+      # &lt;tt&gt;:insert_html&lt;/tt&gt;.
+      #
+      # Use the argument &lt;tt&gt;:insert&lt;/tt&gt; followed by an insertion position to narrow
+      # down the assertion to only statements that insert elements in that
+      # position. Possible values are &lt;tt&gt;:top&lt;/tt&gt;, &lt;tt&gt;:bottom&lt;/tt&gt;, &lt;tt&gt;:before&lt;/tt&gt;
+      # and &lt;tt&gt;:after&lt;/tt&gt;.
+      #
+      # Using the &lt;tt&gt;:remove&lt;/tt&gt; statement, you will be able to pass a block, but it will
+      # be ignored as there is no HTML passed for this statement.
+      #
+      # === Using blocks
+      #
+      # Without a block, +assert_select_rjs+ merely asserts that the response
+      # contains one or more RJS statements that replace or update content.
+      #
+      # With a block, +assert_select_rjs+ also selects all elements used in
+      # these statements and passes them to the block. Nested assertions are
+      # supported.
+      #
+      # Calling +assert_select_rjs+ with no arguments and using nested asserts
+      # asserts that the HTML content is returned by one or more RJS statements.
+      # Using +assert_select+ directly makes the same assertion on the content,
+      # but without distinguishing whether the content is returned in an HTML
+      # or JavaScript.
+      #
+      # ==== Examples
+      #
+      #   # Replacing the element foo.
+      #   # page.replace 'foo', ...
+      #   assert_select_rjs :replace, &quot;foo&quot;
+      #
+      #   # Replacing with the chained RJS proxy.
+      #   # page[:foo].replace ...
+      #   assert_select_rjs :chained_replace, 'foo'
+      #
+      #   # Inserting into the element bar, top position.
+      #   assert_select_rjs :insert, :top, &quot;bar&quot;
+      #
+      #   # Remove the element bar
+      #   assert_select_rjs :remove, &quot;bar&quot;
+      #
+      #   # Changing the element foo, with an image.
+      #   assert_select_rjs &quot;foo&quot; do
+      #     assert_select &quot;img[src=/images/logo.gif&quot;&quot;
+      #   end
+      #
+      #   # RJS inserts or updates a list with four items.
+      #   assert_select_rjs do
+      #     assert_select &quot;ol&gt;li&quot;, 4
+      #   end
+      #
+      #   # The same, but shorter.
+      #   assert_select &quot;ol&gt;li&quot;, 4
+      def assert_select_rjs(*args, &amp;block)
+        rjs_type = args.first.is_a?(Symbol) ? args.shift : nil
+        id       = args.first.is_a?(String) ? args.shift : nil
+
+        # If the first argument is a symbol, it's the type of RJS statement we're looking
+        # for (update, replace, insertion, etc). Otherwise, we're looking for just about
+        # any RJS statement.
+        if rjs_type
+          if rjs_type == :insert
+            position  = args.shift
+            insertion = &quot;insert_#{position}&quot;.to_sym
+            raise ArgumentError, &quot;Unknown RJS insertion type #{position}&quot; unless RJS_STATEMENTS[insertion]
+            statement = &quot;(#{RJS_STATEMENTS[insertion]})&quot;
+          else
+            raise ArgumentError, &quot;Unknown RJS statement type #{rjs_type}&quot; unless RJS_STATEMENTS[rjs_type]
+            statement = &quot;(#{RJS_STATEMENTS[rjs_type]})&quot;
+          end
+        else
+          statement = &quot;#{RJS_STATEMENTS[:any]}&quot;
+        end
+
+        # Next argument we're looking for is the element identifier. If missing, we pick
+        # any element, otherwise we replace it in the statement.
+        pattern = Regexp.new(
+          id ? statement.gsub(RJS_ANY_ID, &quot;\&quot;#{id}\&quot;&quot;) : statement
+        )
+
+        # Duplicate the body since the next step involves destroying it.
+        matches = nil
+        case rjs_type
+          when :remove, :show, :hide, :toggle
+            matches = @response.body.match(pattern)
+          else
+            @response.body.gsub(pattern) do |match|
+              html = unescape_rjs(match)
+              matches ||= []
+              matches.concat HTML::Document.new(html).root.children.select { |n| n.tag? }
+              &quot;&quot;
+            end
+        end
+
+        if matches
+          assert_block(&quot;&quot;) { true } # to count the assertion
+          if block_given? &amp;&amp; !([:remove, :show, :hide, :toggle].include? rjs_type)
+            begin
+              in_scope, @selected = @selected, matches
+              yield matches
+            ensure
+              @selected = in_scope
+            end
+          end
+          matches
+        else
+          # RJS statement not found.
+          flunk args.shift || &quot;No RJS statement that replaces or inserts HTML content.&quot;
+        end
+      end
+
+      # :call-seq:
+      #   assert_select_encoded(element?) { |elements| ... }
+      #
+      # Extracts the content of an element, treats it as encoded HTML and runs
+      # nested assertion on it.
+      #
+      # You typically call this method within another assertion to operate on
+      # all currently selected elements. You can also pass an element or array
+      # of elements.
+      #
+      # The content of each element is un-encoded, and wrapped in the root
+      # element +encoded+. It then calls the block with all un-encoded elements.
+      #
+      # ==== Examples
+      #   # Selects all bold tags from within the title of an ATOM feed's entries (perhaps to nab a section name prefix)
+      #   assert_select_feed :atom, 1.0 do
+      #     # Select each entry item and then the title item
+      #     assert_select &quot;entry&gt;title&quot; do
+      #       # Run assertions on the encoded title elements
+      #       assert_select_encoded do
+      #         assert_select &quot;b&quot;
+      #       end
+      #     end
+      #   end
+      #   
+      #
+      #   # Selects all paragraph tags from within the description of an RSS feed
+      #   assert_select_feed :rss, 2.0 do
+      #     # Select description element of each feed item.
+      #     assert_select &quot;channel&gt;item&gt;description&quot; do
+      #       # Run assertions on the encoded elements.
+      #       assert_select_encoded do
+      #         assert_select &quot;p&quot;
+      #       end
+      #     end
+      #   end
+      def assert_select_encoded(element = nil, &amp;block)
+        case element
+          when Array
+            elements = element
+          when HTML::Node
+            elements = [element]
+          when nil
+            unless elements = @selected
+              raise ArgumentError, &quot;First argument is optional, but must be called from a nested assert_select&quot;
+            end
+          else
+            raise ArgumentError, &quot;Argument is optional, and may be node or array of nodes&quot;
+        end
+
+        fix_content = lambda do |node|
+          # Gets around a bug in the Rails 1.1 HTML parser.
+          node.content.gsub(/&lt;!\[CDATA\[(.*)(\]\]&gt;)?/m) { CGI.escapeHTML($1) }
+        end
+
+        selected = elements.map do |element|
+          text = element.children.select{ |c| not c.tag? }.map{ |c| fix_content[c] }.join
+          root = HTML::Document.new(CGI.unescapeHTML(&quot;&lt;encoded&gt;#{text}&lt;/encoded&gt;&quot;)).root
+          css_select(root, &quot;encoded:root&quot;, &amp;block)[0]
+        end
+
+        begin
+          old_selected, @selected = @selected, selected
+          assert_select &quot;:root&quot;, &amp;block
+        ensure
+          @selected = old_selected
+        end
+      end
+
+      # :call-seq:
+      #   assert_select_email { }
+      #
+      # Extracts the body of an email and runs nested assertions on it.
+      #
+      # You must enable deliveries for this assertion to work, use:
+      #   ActionMailer::Base.perform_deliveries = true
+      #
+      # ==== Examples
+      #
+      #  assert_select_email do
+      #    assert_select &quot;h1&quot;, &quot;Email alert&quot;
+      #  end
+      #
+      #  assert_select_email do
+      #    items = assert_select &quot;ol&gt;li&quot;
+      #    items.each do
+      #       # Work with items here...
+      #    end
+      #  end
+      #
+      def assert_select_email(&amp;block)
+        deliveries = ActionMailer::Base.deliveries
+        assert !deliveries.empty?, &quot;No e-mail in delivery list&quot;
+
+        for delivery in deliveries
+          for part in delivery.parts
+            if part[&quot;Content-Type&quot;].to_s =~ /^text\/html\W/
+              root = HTML::Document.new(part.body).root
+              assert_select root, &quot;:root&quot;, &amp;block
+            end
+          end
+        end
+      end
+
+      protected
+        unless const_defined?(:RJS_STATEMENTS)
+          RJS_PATTERN_HTML  = &quot;\&quot;((\\\\\&quot;|[^\&quot;])*)\&quot;&quot;
+          RJS_ANY_ID        = &quot;\&quot;([^\&quot;])*\&quot;&quot;
+          RJS_STATEMENTS    = {
+            :chained_replace      =&gt; &quot;\\$\\(#{RJS_ANY_ID}\\)\\.replace\\(#{RJS_PATTERN_HTML}\\)&quot;,
+            :chained_replace_html =&gt; &quot;\\$\\(#{RJS_ANY_ID}\\)\\.update\\(#{RJS_PATTERN_HTML}\\)&quot;,
+            :replace_html         =&gt; &quot;Element\\.update\\(#{RJS_ANY_ID}, #{RJS_PATTERN_HTML}\\)&quot;,
+            :replace              =&gt; &quot;Element\\.replace\\(#{RJS_ANY_ID}, #{RJS_PATTERN_HTML}\\)&quot;
+          }
+          [:remove, :show, :hide, :toggle].each do |action|
+            RJS_STATEMENTS[action] = &quot;Element\\.#{action}\\(#{RJS_ANY_ID}\\)&quot;
+          end
+          RJS_INSERTIONS = [&quot;top&quot;, &quot;bottom&quot;, &quot;before&quot;, &quot;after&quot;]
+          RJS_INSERTIONS.each do |insertion|
+            RJS_STATEMENTS[&quot;insert_#{insertion}&quot;.to_sym] = &quot;Element.insert\\(#{RJS_ANY_ID}, \\{ #{insertion}: #{RJS_PATTERN_HTML} \\}\\)&quot;
+          end
+          RJS_STATEMENTS[:insert_html] = &quot;Element.insert\\(#{RJS_ANY_ID}, \\{ (#{RJS_INSERTIONS.join('|')}): #{RJS_PATTERN_HTML} \\}\\)&quot;
+          RJS_STATEMENTS[:any] = Regexp.new(&quot;(#{RJS_STATEMENTS.values.join('|')})&quot;)
+          RJS_PATTERN_UNICODE_ESCAPED_CHAR = /\\u([0-9a-zA-Z]{4})/
+        end
+
+        # +assert_select+ and +css_select+ call this to obtain the content in the HTML
+        # page, or from all the RJS statements, depending on the type of response.
+        def response_from_page_or_rjs()
+          content_type = @response.content_type
+
+          if content_type &amp;&amp; content_type =~ /text\/javascript/
+            body = @response.body.dup
+            root = HTML::Node.new(nil)
+
+            while true
+              next if body.sub!(RJS_STATEMENTS[:any]) do |match|
+                html = unescape_rjs(match)
+                matches = HTML::Document.new(html).root.children.select { |n| n.tag? }
+                root.children.concat matches
+                &quot;&quot;
+              end
+              break
+            end
+
+            root
+          else
+            html_document.root
+          end
+        end
+
+        # Unescapes a RJS string.
+        def unescape_rjs(rjs_string)
+          # RJS encodes double quotes and line breaks.
+          unescaped= rjs_string.gsub('\&quot;', '&quot;')
+          unescaped.gsub!(/\\\//, '/')
+          unescaped.gsub!('\n', &quot;\n&quot;)
+          unescaped.gsub!('\076', '&gt;')
+          unescaped.gsub!('\074', '&lt;')
+          # RJS encodes non-ascii characters.
+          unescaped.gsub!(RJS_PATTERN_UNICODE_ESCAPED_CHAR) {|u| [$1.hex].pack('U*')}
+          unescaped
+        end
+    end
+  end
+end
+</pre>
+    </div>

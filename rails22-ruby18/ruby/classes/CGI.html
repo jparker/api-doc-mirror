@@ -1,0 +1,2010 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>CGI</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            CGI 
+            
+                <span class="parent">&lt; 
+                    
+                    <a href="Object.html">Object</a>
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/lib/cgi/session/pstore_rb.html">lib/cgi/session/pstore.rb</a></li>
+            
+            <li><a href="../files/lib/cgi/session_rb.html">lib/cgi/session.rb</a></li>
+            
+            <li><a href="../files/lib/cgi_rb.html">lib/cgi.rb</a></li>
+            
+            <li><a href="../files/lib/cgi-lib_rb.html">lib/cgi-lib.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+<a href="CGI.html">CGI</a> class. See documentation for the file cgi.rb for
+an overview of the <a href="CGI.html">CGI</a> protocol.
+</p>
+<h2>Introduction</h2>
+<p>
+<a href="CGI.html">CGI</a> is a large class, providing several categories
+of methods, many of which are mixed in from other modules. Some of the
+documentation is in this class, some in the modules <a
+href="CGI/QueryExtension.html">CGI::QueryExtension</a> and <a
+href="CGI/HtmlExtension.html">CGI::HtmlExtension</a>. See <a
+href="CGI/Cookie.html">CGI::Cookie</a> for specific information on handling
+cookies, and cgi/session.rb (<a href="CGI/Session.html">CGI::Session</a>)
+for information on sessions.
+</p>
+<p>
+For queries, <a href="CGI.html">CGI</a> provides methods to get at
+environmental variables, parameters, cookies, and multipart request data.
+For responses, <a href="CGI.html">CGI</a> provides methods for writing
+output and generating HTML.
+</p>
+<p>
+Read on for more details. Examples are provided at the bottom.
+</p>
+<h2>Queries</h2>
+<p>
+The <a href="CGI.html">CGI</a> class dynamically mixes in parameter and
+cookie-parsing functionality, environmental variable access, and support
+for parsing multipart requests (including uploaded files) from the <a
+href="CGI/QueryExtension.html">CGI::QueryExtension</a> module.
+</p>
+<h3>Environmental Variables</h3>
+<p>
+The standard <a href="CGI.html">CGI</a> environmental variables are
+available as read-only attributes of a <a href="CGI.html">CGI</a> object.
+The following is a list of these variables:
+</p>
+<pre>
+  AUTH_TYPE               HTTP_HOST          REMOTE_IDENT
+  CONTENT_LENGTH          HTTP_NEGOTIATE     REMOTE_USER
+  CONTENT_TYPE            HTTP_PRAGMA        REQUEST_METHOD
+  GATEWAY_INTERFACE       HTTP_REFERER       SCRIPT_NAME
+  HTTP_ACCEPT             HTTP_USER_AGENT    SERVER_NAME
+  HTTP_ACCEPT_CHARSET     PATH_INFO          SERVER_PORT
+  HTTP_ACCEPT_ENCODING    PATH_TRANSLATED    SERVER_PROTOCOL
+  HTTP_ACCEPT_LANGUAGE    QUERY_STRING       SERVER_SOFTWARE
+  HTTP_CACHE_CONTROL      REMOTE_ADDR
+  HTTP_FROM               REMOTE_HOST
+</pre>
+<p>
+For each of these variables, there is a corresponding attribute with the
+same name, except all lower case and without a preceding HTTP_.
+<tt>content_length</tt> and <tt>server_port</tt> are integers; the rest are
+strings.
+</p>
+<h3>Parameters</h3>
+<p>
+The method params() returns a hash of all parameters in the request as
+name/value-list pairs, where the value-list is an <a
+href="Array.html">Array</a> of one or more values. The <a
+href="CGI.html">CGI</a> object itself also behaves as a hash of parameter
+names to values, but only returns a single value (as a <a
+href="String.html">String</a>) for each parameter name.
+</p>
+<p>
+For instance, suppose the request contains the parameter
+&#8220;favourite_colours&#8220; with the multiple values &#8220;blue&#8221;
+and &#8220;green&#8221;. The following behaviour would occur:
+</p>
+<pre>
+  cgi.params[&quot;favourite_colours&quot;]  # =&gt; [&quot;blue&quot;, &quot;green&quot;]
+  cgi[&quot;favourite_colours&quot;]         # =&gt; &quot;blue&quot;
+</pre>
+<p>
+If a parameter does not exist, the former method will return an empty
+array, the latter an empty string. The simplest way to test for existence
+of a parameter is by the has_key? method.
+</p>
+<h3>Cookies</h3>
+<p>
+HTTP Cookies are automatically parsed from the request. They are available
+from the cookies() accessor, which returns a hash from cookie name to <a
+href="CGI/Cookie.html">CGI::Cookie</a> object.
+</p>
+<h3>Multipart requests</h3>
+<p>
+If a request&#8217;s method is POST and its content type is
+multipart/form-data, then it may contain uploaded files. These are stored
+by the <a href="CGI/QueryExtension.html">QueryExtension</a> module in the
+parameters of the request. The parameter name is the name attribute of the
+file input field, as usual. However, the value is not a string, but an <a
+href="IO.html">IO</a> object, either an IOString for small files, or a <a
+href="Tempfile.html">Tempfile</a> for larger ones. This object also has the
+additional singleton methods:
+</p>
+<table>
+<tr><td valign="top">local_path():</td><td>the path of the uploaded file on the local filesystem
+
+</td></tr>
+<tr><td valign="top">original_filename():</td><td>the name of the file on the client computer
+
+</td></tr>
+<tr><td valign="top">content_type():</td><td>the content type of the file
+
+</td></tr>
+</table>
+<h2>Responses</h2>
+<p>
+The <a href="CGI.html">CGI</a> class provides methods for sending header
+and content output to the HTTP client, and mixes in methods for
+programmatic HTML generation from <a
+href="CGI/HtmlExtension.html">CGI::HtmlExtension</a> and CGI::TagMaker
+modules. The precise version of HTML to use for HTML generation is
+specified at object creation time.
+</p>
+<h3>Writing output</h3>
+<p>
+The simplest way to send output to the HTTP client is using the out()
+method. This takes the HTTP headers as a hash parameter, and the body
+content via a block. The headers can be generated as a string using the
+header() method. The output stream can be written directly to using the
+print() method.
+</p>
+<h3>Generating HTML</h3>
+<p>
+Each HTML element has a corresponding method for generating that element as
+a <a href="String.html">String</a>. The name of this method is the same as
+that of the element, all lowercase. The attributes of the element are
+passed in as a hash, and the body as a no-argument block that evaluates to
+a <a href="String.html">String</a>. The HTML generation module knows which
+elements are always empty, and silently drops any passed-in body. It also
+knows which elements require matching closing tags and which don&#8217;t.
+However, it does not know what attributes are legal for which elements.
+</p>
+<p>
+There are also some additional HTML generation methods mixed in from the <a
+href="CGI/HtmlExtension.html">CGI::HtmlExtension</a> module. These include
+individual methods for the different types of form inputs, and methods for
+elements that commonly take particular attributes where the attributes can
+be directly specified as arguments, rather than via a hash.
+</p>
+<h2>Examples of use</h2>
+<h3>Get form values</h3>
+<pre>
+  require &quot;cgi&quot;
+  cgi = CGI.new
+  value = cgi['field_name']   # &lt;== value string for 'field_name'
+    # if not 'field_name' included, then return &quot;&quot;.
+  fields = cgi.keys            # &lt;== array of field names
+
+  # returns true if form has 'field_name'
+  cgi.has_key?('field_name')
+  cgi.has_key?('field_name')
+  cgi.include?('field_name')
+</pre>
+<p>
+CAUTION! cgi[&#8216;field_name&#8217;] returned an <a
+href="Array.html">Array</a> with the old cgi.rb(included in ruby 1.6)
+</p>
+<h3>Get form values as hash</h3>
+<pre>
+  require &quot;cgi&quot;
+  cgi = CGI.new
+  params = cgi.params
+</pre>
+<p>
+cgi.params is a hash.
+</p>
+<pre>
+  cgi.params['new_field_name'] = [&quot;value&quot;]  # add new param
+  cgi.params['field_name'] = [&quot;new_value&quot;]  # change value
+  cgi.params.delete('field_name')           # delete param
+  cgi.params.clear                          # delete all params
+</pre>
+<h3>Save form values to file</h3>
+<pre>
+  require &quot;pstore&quot;
+  db = PStore.new(&quot;query.db&quot;)
+  db.transaction do
+    db[&quot;params&quot;] = cgi.params
+  end
+</pre>
+<h3>Restore form values from file</h3>
+<pre>
+  require &quot;pstore&quot;
+  db = PStore.new(&quot;query.db&quot;)
+  db.transaction do
+    cgi.params = db[&quot;params&quot;]
+  end
+</pre>
+<h3>Get multipart form values</h3>
+<pre>
+  require &quot;cgi&quot;
+  cgi = CGI.new
+  value = cgi['field_name']   # &lt;== value string for 'field_name'
+  value.read                  # &lt;== body of value
+  value.local_path            # &lt;== path to local file of value
+  value.original_filename     # &lt;== original filename of value
+  value.content_type          # &lt;== content_type of value
+</pre>
+<p>
+and value has <a href="StringIO.html">StringIO</a> or <a
+href="Tempfile.html">Tempfile</a> class methods.
+</p>
+<h3>Get cookie values</h3>
+<pre>
+  require &quot;cgi&quot;
+  cgi = CGI.new
+  values = cgi.cookies['name']  # &lt;== array of 'name'
+    # if not 'name' included, then return [].
+  names = cgi.cookies.keys      # &lt;== array of cookie names
+</pre>
+<p>
+and cgi.cookies is a hash.
+</p>
+<h3>Get cookie objects</h3>
+<pre>
+  require &quot;cgi&quot;
+  cgi = CGI.new
+  for name, cookie in cgi.cookies
+    cookie.expires = Time.now + 30
+  end
+  cgi.out(&quot;cookie&quot; =&gt; cgi.cookies) {&quot;string&quot;}
+
+  cgi.cookies # { &quot;name1&quot; =&gt; cookie1, &quot;name2&quot; =&gt; cookie2, ... }
+
+  require &quot;cgi&quot;
+  cgi = CGI.new
+  cgi.cookies['name'].expires = Time.now + 30
+  cgi.out(&quot;cookie&quot; =&gt; cgi.cookies['name']) {&quot;string&quot;}
+</pre>
+<h3>Print http header and html string to $DEFAULT_OUTPUT ($>)</h3>
+<pre>
+  require &quot;cgi&quot;
+  cgi = CGI.new(&quot;html3&quot;)  # add HTML generation methods
+  cgi.out() do
+    cgi.html() do
+      cgi.head{ cgi.title{&quot;TITLE&quot;} } +
+      cgi.body() do
+        cgi.form() do
+          cgi.textarea(&quot;get_text&quot;) +
+          cgi.br +
+          cgi.submit
+        end +
+        cgi.pre() do
+          CGI::escapeHTML(
+            &quot;params: &quot; + cgi.params.inspect + &quot;\n&quot; +
+            &quot;cookies: &quot; + cgi.cookies.inspect + &quot;\n&quot; +
+            ENV.collect() do |key, value|
+              key + &quot; --&gt; &quot; + value + &quot;\n&quot;
+            end.join(&quot;&quot;)
+          )
+        end
+      end
+    end
+  end
+
+  # add HTML generation methods
+  CGI.new(&quot;html3&quot;)    # html3.2
+  CGI.new(&quot;html4&quot;)    # html4.01 (Strict)
+  CGI.new(&quot;html4Tr&quot;)  # html4.01 Transitional
+  CGI.new(&quot;html4Fr&quot;)  # html4.01 Frameset
+</pre>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>C</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003680">cookie</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>E</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003545">env_table</a>,</li>
+                
+                <li><a href="#M003684">error</a>,</li>
+                
+                <li><a href="#M003548">escape</a>,</li>
+                
+                <li><a href="#M003674">escape</a>,</li>
+                
+                <li><a href="#M003552">escapeElement</a>,</li>
+                
+                <li><a href="#M003676">escapeHTML</a>,</li>
+                
+                <li><a href="#M003550">escapeHTML</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>H</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003555">header</a>,</li>
+                
+                <li><a href="#M003681">header</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>M</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003683">message</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003678">new</a>,</li>
+                
+                <li><a href="#M003598">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>O</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003556">out</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>P</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003562">parse</a>,</li>
+                
+                <li><a href="#M003575">pretty</a>,</li>
+                
+                <li><a href="#M003682">print</a>,</li>
+                
+                <li><a href="#M003557">print</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>R</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003677">read_from_cmdline</a>,</li>
+                
+                <li><a href="#M003554">rfc1123_date</a>,</li>
+                
+                <li><a href="#M003673">rfc1123_date</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003546">stdinput</a>,</li>
+                
+                <li><a href="#M003547">stdoutput</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>T</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003679">tag</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>U</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003549">unescape</a>,</li>
+                
+                <li><a href="#M003675">unescape</a>,</li>
+                
+                <li><a href="#M003553">unescapeElement</a>,</li>
+                
+                <li><a href="#M003551">unescapeHTML</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+    <div class="sectiontitle">Classes and Modules</div>
+    <ul>
+        
+        <li><span class="type">MODULE</span> <a href="CGI/Html3.html">CGI::Html3</a></li>
+        
+        <li><span class="type">MODULE</span> <a href="CGI/Html4.html">CGI::Html4</a></li>
+        
+        <li><span class="type">MODULE</span> <a href="CGI/Html4Fr.html">CGI::Html4Fr</a></li>
+        
+        <li><span class="type">MODULE</span> <a href="CGI/Html4Tr.html">CGI::Html4Tr</a></li>
+        
+        <li><span class="type">MODULE</span> <a href="CGI/HtmlExtension.html">CGI::HtmlExtension</a></li>
+        
+        <li><span class="type">MODULE</span> <a href="CGI/QueryExtension.html">CGI::QueryExtension</a></li>
+        
+        <li><span class="type">MODULE</span> <a href="CGI/TagMaker.html">CGI::TagMaker</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="CGI/Cookie.html">CGI::Cookie</a></li>
+        
+        <li><span class="type">CLASS</span> <a href="CGI/Session.html">CGI::Session</a></li>
+        
+    </ul>
+    
+
+    
+    <div class="sectiontitle">Constants</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class="attr-name">CR</td>
+            <td>=</td>
+            <td class="attr-value">&quot;\015&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">LF</td>
+            <td>=</td>
+            <td class="attr-value">&quot;\012&quot;</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">EOL</td>
+            <td>=</td>
+            <td class="attr-value">CR + LF</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">RFC822_DAYS</td>
+            <td>=</td>
+            <td class="attr-value">%w[ Sun Mon Tue Wed Thu Fri Sat ]</td>
+        </tr>
+        
+        
+        <tr valign='top'>
+            <td class="attr-name">RFC822_MONTHS</td>
+            <td>=</td>
+            <td class="attr-value">%w[ Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec ]</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+    <div class="sectiontitle">Attributes</div>
+    <table border='0' cellpadding='5'>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>inputs</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+        <tr valign='top'>
+            <td class='attr-rw'>
+                [R]
+            </td>
+            <td class='attr-name'>cookie</td>
+            <td class='attr-desc'></td>
+        </tr>
+        
+    </table>
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M003680">
+                    
+                    <a name="M003680"></a><b>cookie</b>(options)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+make raw cookie string
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003680_source')" id="l_M003680_source">show</a>
+                        
+                    </p>
+                    <div id="M003680_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi-lib.rb, line 211</span>
+211:   <span class="ruby-keyword kw">def</span> <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">cookie</span>(<span class="ruby-identifier">options</span>)
+212:     <span class="ruby-value str">&quot;Set-Cookie: &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">options</span>[<span class="ruby-value str">'name'</span>] <span class="ruby-operator">+</span> <span class="ruby-value str">'='</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">escape</span>(<span class="ruby-identifier">options</span>[<span class="ruby-value str">'value'</span>]) <span class="ruby-operator">+</span>
+213:     (<span class="ruby-identifier">options</span>[<span class="ruby-value str">'domain'</span>]  <span class="ruby-operator">?</span> <span class="ruby-value str">'; domain='</span>  <span class="ruby-operator">+</span> <span class="ruby-identifier">options</span>[<span class="ruby-value str">'domain'</span>] <span class="ruby-operator">:</span> <span class="ruby-value str">''</span>) <span class="ruby-operator">+</span>
+214:     (<span class="ruby-identifier">options</span>[<span class="ruby-value str">'path'</span>]    <span class="ruby-operator">?</span> <span class="ruby-value str">'; path='</span>    <span class="ruby-operator">+</span> <span class="ruby-identifier">options</span>[<span class="ruby-value str">'path'</span>]   <span class="ruby-operator">:</span> <span class="ruby-value str">''</span>) <span class="ruby-operator">+</span>
+215:     (<span class="ruby-identifier">options</span>[<span class="ruby-value str">'expires'</span>] <span class="ruby-operator">?</span> <span class="ruby-value str">'; expires='</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">rfc1123_date</span>(<span class="ruby-identifier">options</span>[<span class="ruby-value str">'expires'</span>]) <span class="ruby-operator">:</span> <span class="ruby-value str">''</span>) <span class="ruby-operator">+</span>
+216:     (<span class="ruby-identifier">options</span>[<span class="ruby-value str">'secure'</span>]  <span class="ruby-operator">?</span> <span class="ruby-value str">'; secure'</span> <span class="ruby-operator">:</span> <span class="ruby-value str">''</span>)
+217:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003684">
+                    
+                    <a name="M003684"></a><b>error</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+print error message to $> and exit
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003684_source')" id="l_M003684_source">show</a>
+                        
+                    </p>
+                    <div id="M003684_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi-lib.rb, line 264</span>
+264:   <span class="ruby-keyword kw">def</span> <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">error</span>
+265:     <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">message</span>({<span class="ruby-value str">'title'</span>=<span class="ruby-operator">&gt;</span><span class="ruby-value str">'ERROR'</span>, <span class="ruby-value str">'body'</span>=<span class="ruby-operator">&gt;</span>
+266:       <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">tag</span>(<span class="ruby-value str">&quot;PRE&quot;</span>){
+267:         <span class="ruby-value str">&quot;ERROR: &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">tag</span>(<span class="ruby-value str">&quot;STRONG&quot;</span>){ <span class="ruby-identifier">escapeHTML</span>(<span class="ruby-identifier">$!</span>.<span class="ruby-identifier">to_s</span>) } <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;\n&quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">escapeHTML</span>(<span class="ruby-identifier">$@</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;\n&quot;</span>))
+268:       }
+269:     })
+270:     <span class="ruby-identifier">exit</span>
+271:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003548">
+                    
+                    <a name="M003548"></a><b>escape</b>(string)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+URL-encode a string.
+</p>
+<pre>
+  url_encoded_string = CGI::escape(&quot;'Stop!' said Fred&quot;)
+     # =&gt; &quot;%27Stop%21%27+said+Fred&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003548_source')" id="l_M003548_source">show</a>
+                        
+                    </p>
+                    <div id="M003548_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi.rb, line 341</span>
+341:   <span class="ruby-keyword kw">def</span> <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">escape</span>(<span class="ruby-identifier">string</span>)
+342:     <span class="ruby-identifier">string</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/([^ a-zA-Z0-9_.-]+)/n</span>) <span class="ruby-keyword kw">do</span>
+343:       <span class="ruby-value str">'%'</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">$1</span>.<span class="ruby-identifier">unpack</span>(<span class="ruby-value str">'H2'</span> <span class="ruby-operator">*</span> <span class="ruby-identifier">$1</span>.<span class="ruby-identifier">size</span>).<span class="ruby-identifier">join</span>(<span class="ruby-value str">'%'</span>).<span class="ruby-identifier">upcase</span>
+344:     <span class="ruby-keyword kw">end</span>.<span class="ruby-identifier">tr</span>(<span class="ruby-value str">' '</span>, <span class="ruby-value str">'+'</span>)
+345:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003674">
+                    
+                    <a name="M003674"></a><b>escape</b>(str)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+escape url encode
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003674_source')" id="l_M003674_source">show</a>
+                        
+                    </p>
+                    <div id="M003674_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi-lib.rb, line 134</span>
+134:   <span class="ruby-keyword kw">def</span> <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">escape</span>(<span class="ruby-identifier">str</span>)
+135:     <span class="ruby-identifier">str</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/[^a-zA-Z0-9_\-.]/n</span>){ <span class="ruby-identifier">sprintf</span>(<span class="ruby-value str">&quot;%%%02X&quot;</span>, <span class="ruby-identifier">$&amp;</span>.<span class="ruby-identifier">unpack</span>(<span class="ruby-value str">&quot;C&quot;</span>)[<span class="ruby-value">0</span>]) }
+136:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003552">
+                    
+                    <a name="M003552"></a><b>escapeElement</b>(string, *elements)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Escape only the tags of certain HTML elements in <tt>string</tt>.
+</p>
+<p>
+Takes an element or elements or array of elements. Each element is
+specified by the name of the element, without angle brackets. This matches
+both the start and the end tag of that element. The attribute list of the
+open tag will also be escaped (for instance, the double-quotes surrounding
+attribute values).
+</p>
+<pre>
+  print CGI::escapeElement('&lt;BR&gt;&lt;A HREF=&quot;url&quot;&gt;&lt;/A&gt;', &quot;A&quot;, &quot;IMG&quot;)
+    # &quot;&lt;BR&gt;&amp;lt;A HREF=&amp;quot;url&amp;quot;&amp;gt;&amp;lt;/A&amp;gt&quot;
+
+  print CGI::escapeElement('&lt;BR&gt;&lt;A HREF=&quot;url&quot;&gt;&lt;/A&gt;', [&quot;A&quot;, &quot;IMG&quot;])
+    # &quot;&lt;BR&gt;&amp;lt;A HREF=&amp;quot;url&amp;quot;&amp;gt;&amp;lt;/A&amp;gt&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003552_source')" id="l_M003552_source">show</a>
+                        
+                    </p>
+                    <div id="M003552_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi.rb, line 417</span>
+417:   <span class="ruby-keyword kw">def</span> <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">escapeElement</span>(<span class="ruby-identifier">string</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">elements</span>)
+418:     <span class="ruby-identifier">elements</span> = <span class="ruby-identifier">elements</span>[<span class="ruby-value">0</span>] <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">elements</span>[<span class="ruby-value">0</span>].<span class="ruby-identifier">kind_of?</span>(<span class="ruby-constant">Array</span>)
+419:     <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">elements</span>.<span class="ruby-identifier">empty?</span>
+420:       <span class="ruby-identifier">string</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-node">/&lt;\/?(?:#{elements.join(&quot;|&quot;)})(?!\w)(?:.|\n)*?&gt;/n</span><span class="ruby-identifier">i</span>) <span class="ruby-keyword kw">do</span>
+421:         <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">escapeHTML</span>(<span class="ruby-identifier">$&amp;</span>)
+422:       <span class="ruby-keyword kw">end</span>
+423:     <span class="ruby-keyword kw">else</span>
+424:       <span class="ruby-identifier">string</span>
+425:     <span class="ruby-keyword kw">end</span>
+426:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003676">
+                    
+                    <a name="M003676"></a><b>escapeHTML</b>(str)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+escape HTML
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003676_source')" id="l_M003676_source">show</a>
+                        
+                    </p>
+                    <div id="M003676_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi-lib.rb, line 144</span>
+144:   <span class="ruby-keyword kw">def</span> <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">escapeHTML</span>(<span class="ruby-identifier">str</span>)
+145:     <span class="ruby-identifier">str</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/&amp;/</span>, <span class="ruby-value str">&quot;&amp;amp;&quot;</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/\&quot;/</span>, <span class="ruby-value str">&quot;&amp;quot;&quot;</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/&gt;/</span>, <span class="ruby-value str">&quot;&amp;gt;&quot;</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/&lt;/</span>, <span class="ruby-value str">&quot;&amp;lt;&quot;</span>)
+146:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003550">
+                    
+                    <a name="M003550"></a><b>escapeHTML</b>(string)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Escape special characters in HTML, namely &amp;"<>
+</p>
+<pre>
+  CGI::escapeHTML('Usage: foo &quot;bar&quot; &lt;baz&gt;')
+     # =&gt; &quot;Usage: foo &amp;quot;bar&amp;quot; &amp;lt;baz&amp;gt;&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003550_source')" id="l_M003550_source">show</a>
+                        
+                    </p>
+                    <div id="M003550_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi.rb, line 361</span>
+361:   <span class="ruby-keyword kw">def</span> <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">escapeHTML</span>(<span class="ruby-identifier">string</span>)
+362:     <span class="ruby-identifier">string</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/&amp;/n</span>, <span class="ruby-value str">'&amp;amp;'</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/\&quot;/n</span>, <span class="ruby-value str">'&amp;quot;'</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/&gt;/n</span>, <span class="ruby-value str">'&amp;gt;'</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/&lt;/n</span>, <span class="ruby-value str">'&amp;lt;'</span>)
+363:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003681">
+                    
+                    <a name="M003681"></a><b>header</b>(*options)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+make HTTP header string
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003681_source')" id="l_M003681_source">show</a>
+                        
+                    </p>
+                    <div id="M003681_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi-lib.rb, line 220</span>
+220:   <span class="ruby-keyword kw">def</span> <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">header</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">options</span>)
+221:     <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">defined?</span>(<span class="ruby-constant">MOD_RUBY</span>)
+222:       <span class="ruby-identifier">options</span>.<span class="ruby-identifier">each</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">option</span><span class="ruby-operator">|</span>
+223:         <span class="ruby-identifier">option</span>.<span class="ruby-identifier">sub</span>(<span class="ruby-regexp re">/(.*?): (.*)/</span>){
+224:           <span class="ruby-constant">Apache</span><span class="ruby-operator">::</span><span class="ruby-identifier">request</span>.<span class="ruby-identifier">headers_out</span>[<span class="ruby-identifier">$1</span>] = <span class="ruby-identifier">$2</span>
+225:         }
+226:       }
+227:       <span class="ruby-constant">Apache</span><span class="ruby-operator">::</span><span class="ruby-identifier">request</span>.<span class="ruby-identifier">send_http_header</span>
+228:       <span class="ruby-value str">''</span>
+229:     <span class="ruby-keyword kw">else</span>
+230:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-value str">&quot;nph&quot;</span>) <span class="ruby-keyword kw">or</span> (<span class="ruby-constant">ENV</span>[<span class="ruby-value str">'SERVER_SOFTWARE'</span>] <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/IIS/</span>)
+231:         [(<span class="ruby-constant">ENV</span>[<span class="ruby-value str">'SERVER_PROTOCOL'</span>] <span class="ruby-keyword kw">or</span> <span class="ruby-value str">&quot;HTTP/1.0&quot;</span>) <span class="ruby-operator">+</span> <span class="ruby-value str">&quot; 200 OK&quot;</span>,
+232:          <span class="ruby-value str">&quot;Date: &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">rfc1123_date</span>(<span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span>),
+233:          <span class="ruby-value str">&quot;Server: &quot;</span> <span class="ruby-operator">+</span> (<span class="ruby-constant">ENV</span>[<span class="ruby-value str">'SERVER_SOFTWARE'</span>] <span class="ruby-keyword kw">or</span> <span class="ruby-value str">&quot;&quot;</span>),
+234:          <span class="ruby-value str">&quot;Connection: close&quot;</span>] <span class="ruby-operator">+</span>
+235:         (<span class="ruby-identifier">options</span>.<span class="ruby-identifier">empty?</span> <span class="ruby-value">? </span>[<span class="ruby-value str">&quot;Content-Type: text/html&quot;</span>] <span class="ruby-operator">:</span> <span class="ruby-identifier">options</span>)
+236:       <span class="ruby-keyword kw">else</span>
+237:         <span class="ruby-identifier">options</span>.<span class="ruby-identifier">empty?</span> <span class="ruby-value">? </span>[<span class="ruby-value str">&quot;Content-Type: text/html&quot;</span>] <span class="ruby-operator">:</span> <span class="ruby-identifier">options</span>
+238:       <span class="ruby-keyword kw">end</span>.<span class="ruby-identifier">join</span>(<span class="ruby-constant">EOL</span>) <span class="ruby-operator">+</span> <span class="ruby-constant">EOL</span> <span class="ruby-operator">+</span> <span class="ruby-constant">EOL</span>
+239:     <span class="ruby-keyword kw">end</span>
+240:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003683">
+                    
+                    <a name="M003683"></a><b>message</b>(message, title = &quot;&quot;, header = [&quot;Content-Type: text/html&quot;])
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+print message to $>
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003683_source')" id="l_M003683_source">show</a>
+                        
+                    </p>
+                    <div id="M003683_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi-lib.rb, line 248</span>
+248:   <span class="ruby-keyword kw">def</span> <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">message</span>(<span class="ruby-identifier">message</span>, <span class="ruby-identifier">title</span> = <span class="ruby-value str">&quot;&quot;</span>, <span class="ruby-identifier">header</span> = [<span class="ruby-value str">&quot;Content-Type: text/html&quot;</span>])
+249:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">message</span>.<span class="ruby-identifier">kind_of?</span>(<span class="ruby-constant">Hash</span>)
+250:       <span class="ruby-identifier">title</span>   = <span class="ruby-identifier">message</span>[<span class="ruby-value str">'title'</span>]
+251:       <span class="ruby-identifier">header</span>  = <span class="ruby-identifier">message</span>[<span class="ruby-value str">'header'</span>]
+252:       <span class="ruby-identifier">message</span> = <span class="ruby-identifier">message</span>[<span class="ruby-value str">'body'</span>]
+253:     <span class="ruby-keyword kw">end</span>
+254:     <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">print</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">header</span>){
+255:       <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">tag</span>(<span class="ruby-value str">&quot;HTML&quot;</span>){
+256:         <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">tag</span>(<span class="ruby-value str">&quot;HEAD&quot;</span>){ <span class="ruby-constant">CGI</span>.<span class="ruby-identifier">tag</span>(<span class="ruby-value str">&quot;TITLE&quot;</span>){ <span class="ruby-identifier">title</span> } } <span class="ruby-operator">+</span>
+257:         <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">tag</span>(<span class="ruby-value str">&quot;BODY&quot;</span>){ <span class="ruby-identifier">message</span> }
+258:       }
+259:     }
+260:     <span class="ruby-keyword kw">true</span>
+261:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003598">
+                    
+                    <a name="M003598"></a><b>new</b>(type = &quot;query&quot;)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Creates a new <a href="CGI.html">CGI</a> instance.
+</p>
+<p>
+<tt>type</tt> specifies which version of HTML to load the HTML generation
+methods for. The following versions of HTML are supported:
+</p>
+<table>
+<tr><td valign="top">html3:</td><td>HTML 3.x
+
+</td></tr>
+<tr><td valign="top">html4:</td><td>HTML 4.0
+
+</td></tr>
+<tr><td valign="top">html4Tr:</td><td>HTML 4.0 Transitional
+
+</td></tr>
+<tr><td valign="top">html4Fr:</td><td>HTML 4.0 with Framesets
+
+</td></tr>
+</table>
+<p>
+If not specified, no HTML generation methods will be loaded.
+</p>
+<p>
+If the <a href="CGI.html">CGI</a> object is not created in a standard <a
+href="CGI.html">CGI</a> call environment (that is, it can&#8217;t locate
+REQUEST_METHOD in its environment), then it will run in
+&#8220;offline&#8221; mode. In this mode, it reads its parameters from the
+command line or (failing that) from standard input. Otherwise, cookies and
+other parameters are parsed automatically from the standard <a
+href="CGI.html">CGI</a> locations, which varies according to the
+REQUEST_METHOD.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003598_source')" id="l_M003598_source">show</a>
+                        
+                    </p>
+                    <div id="M003598_source" class="dyn-source">
+                        <pre>      <span class="ruby-comment cmt"># File lib/cgi.rb, line 2294</span>
+2294:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">type</span> = <span class="ruby-value str">&quot;query&quot;</span>)
+2295:     <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">defined?</span>(<span class="ruby-constant">MOD_RUBY</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-constant">ENV</span>.<span class="ruby-identifier">key?</span>(<span class="ruby-value str">&quot;GATEWAY_INTERFACE&quot;</span>)
+2296:       <span class="ruby-constant">Apache</span>.<span class="ruby-identifier">request</span>.<span class="ruby-identifier">setup_cgi_env</span>
+2297:     <span class="ruby-keyword kw">end</span>
+2298: 
+2299:     <span class="ruby-identifier">extend</span> <span class="ruby-constant">QueryExtension</span>
+2300:     <span class="ruby-ivar">@multipart</span> = <span class="ruby-keyword kw">false</span>
+2301:     <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">defined?</span>(<span class="ruby-constant">CGI_PARAMS</span>)
+2302:       <span class="ruby-identifier">warn</span> <span class="ruby-value str">&quot;do not use CGI_PARAMS and CGI_COOKIES&quot;</span>
+2303:       <span class="ruby-ivar">@params</span> = <span class="ruby-constant">CGI_PARAMS</span>.<span class="ruby-identifier">dup</span>
+2304:       <span class="ruby-ivar">@cookies</span> = <span class="ruby-constant">CGI_COOKIES</span>.<span class="ruby-identifier">dup</span>
+2305:     <span class="ruby-keyword kw">else</span>
+2306:       <span class="ruby-identifier">initialize_query</span>()  <span class="ruby-comment cmt"># set @params, @cookies</span>
+2307:     <span class="ruby-keyword kw">end</span>
+2308:     <span class="ruby-ivar">@output_cookies</span> = <span class="ruby-keyword kw">nil</span>
+2309:     <span class="ruby-ivar">@output_hidden</span> = <span class="ruby-keyword kw">nil</span>
+2310: 
+2311:     <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">type</span>
+2312:     <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;html3&quot;</span>
+2313:       <span class="ruby-identifier">extend</span> <span class="ruby-constant">Html3</span>
+2314:       <span class="ruby-identifier">element_init</span>()
+2315:       <span class="ruby-identifier">extend</span> <span class="ruby-constant">HtmlExtension</span>
+2316:     <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;html4&quot;</span>
+2317:       <span class="ruby-identifier">extend</span> <span class="ruby-constant">Html4</span>
+2318:       <span class="ruby-identifier">element_init</span>()
+2319:       <span class="ruby-identifier">extend</span> <span class="ruby-constant">HtmlExtension</span>
+2320:     <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;html4Tr&quot;</span>
+2321:       <span class="ruby-identifier">extend</span> <span class="ruby-constant">Html4Tr</span>
+2322:       <span class="ruby-identifier">element_init</span>()
+2323:       <span class="ruby-identifier">extend</span> <span class="ruby-constant">HtmlExtension</span>
+2324:     <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;html4Fr&quot;</span>
+2325:       <span class="ruby-identifier">extend</span> <span class="ruby-constant">Html4Tr</span>
+2326:       <span class="ruby-identifier">element_init</span>()
+2327:       <span class="ruby-identifier">extend</span> <span class="ruby-constant">Html4Fr</span>
+2328:       <span class="ruby-identifier">element_init</span>()
+2329:       <span class="ruby-identifier">extend</span> <span class="ruby-constant">HtmlExtension</span>
+2330:     <span class="ruby-keyword kw">end</span>
+2331:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003678">
+                    
+                    <a name="M003678"></a><b>new</b>(input = $stdin)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003678_source')" id="l_M003678_source">show</a>
+                        
+                    </p>
+                    <div id="M003678_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi-lib.rb, line 162</span>
+162:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">input</span> = <span class="ruby-identifier">$stdin</span>)
+163: 
+164:     <span class="ruby-ivar">@inputs</span> = {}
+165:     <span class="ruby-ivar">@cookie</span> = {}
+166: 
+167:     <span class="ruby-keyword kw">case</span> <span class="ruby-constant">ENV</span>[<span class="ruby-value str">'REQUEST_METHOD'</span>]
+168:     <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;GET&quot;</span>
+169:       <span class="ruby-constant">ENV</span>[<span class="ruby-value str">'QUERY_STRING'</span>] <span class="ruby-keyword kw">or</span> <span class="ruby-value str">&quot;&quot;</span>
+170:     <span class="ruby-keyword kw">when</span> <span class="ruby-value str">&quot;POST&quot;</span>
+171:       <span class="ruby-identifier">input</span>.<span class="ruby-identifier">read</span>(<span class="ruby-constant">Integer</span>(<span class="ruby-constant">ENV</span>[<span class="ruby-value str">'CONTENT_LENGTH'</span>])) <span class="ruby-keyword kw">or</span> <span class="ruby-value str">&quot;&quot;</span>
+172:     <span class="ruby-keyword kw">else</span>
+173:       <span class="ruby-identifier">read_from_cmdline</span>
+174:     <span class="ruby-keyword kw">end</span>.<span class="ruby-identifier">split</span>(<span class="ruby-regexp re">/[&amp;;]/</span>).<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">x</span><span class="ruby-operator">|</span>
+175:       <span class="ruby-identifier">key</span>, <span class="ruby-identifier">val</span> = <span class="ruby-identifier">x</span>.<span class="ruby-identifier">split</span>(<span class="ruby-regexp re">/=/</span>,<span class="ruby-value">2</span>).<span class="ruby-identifier">collect</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">x</span><span class="ruby-operator">|</span><span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">unescape</span>(<span class="ruby-identifier">x</span>)}
+176:       <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@inputs</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">key</span>)
+177:         <span class="ruby-ivar">@inputs</span>[<span class="ruby-identifier">key</span>] <span class="ruby-operator">+=</span> <span class="ruby-value str">&quot;\0&quot;</span> <span class="ruby-operator">+</span> (<span class="ruby-identifier">val</span> <span class="ruby-keyword kw">or</span> <span class="ruby-value str">&quot;&quot;</span>)
+178:       <span class="ruby-keyword kw">else</span>
+179:         <span class="ruby-ivar">@inputs</span>[<span class="ruby-identifier">key</span>] = (<span class="ruby-identifier">val</span> <span class="ruby-keyword kw">or</span> <span class="ruby-value str">&quot;&quot;</span>)
+180:       <span class="ruby-keyword kw">end</span>
+181:     <span class="ruby-keyword kw">end</span>
+182: 
+183:     <span class="ruby-keyword kw">super</span>(<span class="ruby-ivar">@inputs</span>)
+184: 
+185:     <span class="ruby-keyword kw">if</span> <span class="ruby-constant">ENV</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-value str">'HTTP_COOKIE'</span>) <span class="ruby-keyword kw">or</span> <span class="ruby-constant">ENV</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-value str">'COOKIE'</span>)
+186:       (<span class="ruby-constant">ENV</span>[<span class="ruby-value str">'HTTP_COOKIE'</span>] <span class="ruby-keyword kw">or</span> <span class="ruby-constant">ENV</span>[<span class="ruby-value str">'COOKIE'</span>]).<span class="ruby-identifier">split</span>(<span class="ruby-regexp re">/; /</span>).<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">x</span><span class="ruby-operator">|</span>
+187:         <span class="ruby-identifier">key</span>, <span class="ruby-identifier">val</span> = <span class="ruby-identifier">x</span>.<span class="ruby-identifier">split</span>(<span class="ruby-regexp re">/=/</span>,<span class="ruby-value">2</span>)
+188:         <span class="ruby-identifier">key</span> = <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">unescape</span>(<span class="ruby-identifier">key</span>)
+189:         <span class="ruby-identifier">val</span> = <span class="ruby-identifier">val</span>.<span class="ruby-identifier">split</span>(<span class="ruby-regexp re">/&amp;/</span>).<span class="ruby-identifier">collect</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">x</span><span class="ruby-operator">|</span><span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">unescape</span>(<span class="ruby-identifier">x</span>)}.<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;\0&quot;</span>)
+190:         <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@cookie</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">key</span>)
+191:           <span class="ruby-ivar">@cookie</span>[<span class="ruby-identifier">key</span>] <span class="ruby-operator">+=</span> <span class="ruby-value str">&quot;\0&quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">val</span>
+192:         <span class="ruby-keyword kw">else</span>
+193:           <span class="ruby-ivar">@cookie</span>[<span class="ruby-identifier">key</span>] = <span class="ruby-identifier">val</span>
+194:         <span class="ruby-keyword kw">end</span>
+195:       <span class="ruby-keyword kw">end</span>
+196:     <span class="ruby-keyword kw">end</span>
+197:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003562">
+                    
+                    <a name="M003562"></a><b>parse</b>(query)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Parse an HTTP query string into a hash of key=>value pairs.
+</p>
+<pre>
+  params = CGI::parse(&quot;query_string&quot;)
+    # {&quot;name1&quot; =&gt; [&quot;value1&quot;, &quot;value2&quot;, ...],
+    #  &quot;name2&quot; =&gt; [&quot;value1&quot;, &quot;value2&quot;, ...], ... }
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003562_source')" id="l_M003562_source">show</a>
+                        
+                    </p>
+                    <div id="M003562_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi.rb, line 900</span>
+900:   <span class="ruby-keyword kw">def</span> <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">parse</span>(<span class="ruby-identifier">query</span>)
+901:     <span class="ruby-identifier">params</span> = <span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span>([].<span class="ruby-identifier">freeze</span>)
+902: 
+903:     <span class="ruby-identifier">query</span>.<span class="ruby-identifier">split</span>(<span class="ruby-regexp re">/[&amp;;]/n</span>).<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">pairs</span><span class="ruby-operator">|</span>
+904:       <span class="ruby-identifier">key</span>, <span class="ruby-identifier">value</span> = <span class="ruby-identifier">pairs</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">'='</span>,<span class="ruby-value">2</span>).<span class="ruby-identifier">collect</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">v</span><span class="ruby-operator">|</span> <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">unescape</span>(<span class="ruby-identifier">v</span>) }
+905:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">params</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-identifier">key</span>)
+906:         <span class="ruby-identifier">params</span>[<span class="ruby-identifier">key</span>].<span class="ruby-identifier">push</span>(<span class="ruby-identifier">value</span>)
+907:       <span class="ruby-keyword kw">else</span>
+908:         <span class="ruby-identifier">params</span>[<span class="ruby-identifier">key</span>] = [<span class="ruby-identifier">value</span>]
+909:       <span class="ruby-keyword kw">end</span>
+910:     <span class="ruby-keyword kw">end</span>
+911: 
+912:     <span class="ruby-identifier">params</span>
+913:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003575">
+                    
+                    <a name="M003575"></a><b>pretty</b>(string, shift = &quot; &quot;)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Prettify (indent) an HTML string.
+</p>
+<p>
+<tt>string</tt> is the HTML string to indent. <tt>shift</tt> is the
+indentation unit to use; it defaults to two spaces.
+</p>
+<pre>
+  print CGI::pretty(&quot;&lt;HTML&gt;&lt;BODY&gt;&lt;/BODY&gt;&lt;/HTML&gt;&quot;)
+    # &lt;HTML&gt;
+    #   &lt;BODY&gt;
+    #   &lt;/BODY&gt;
+    # &lt;/HTML&gt;
+
+  print CGI::pretty(&quot;&lt;HTML&gt;&lt;BODY&gt;&lt;/BODY&gt;&lt;/HTML&gt;&quot;, &quot;\t&quot;)
+    # &lt;HTML&gt;
+    #         &lt;BODY&gt;
+    #         &lt;/BODY&gt;
+    # &lt;/HTML&gt;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003575_source')" id="l_M003575_source">show</a>
+                        
+                    </p>
+                    <div id="M003575_source" class="dyn-source">
+                        <pre>      <span class="ruby-comment cmt"># File lib/cgi.rb, line 1221</span>
+1221:   <span class="ruby-keyword kw">def</span> <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">pretty</span>(<span class="ruby-identifier">string</span>, <span class="ruby-identifier">shift</span> = <span class="ruby-value str">&quot;  &quot;</span>)
+1222:     <span class="ruby-identifier">lines</span> = <span class="ruby-identifier">string</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/(?!\A)&lt;(?:.|\n)*?&gt;/n</span>, <span class="ruby-value str">&quot;\n\\0&quot;</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/&lt;(?:.|\n)*?&gt;(?!\n)/n</span>, <span class="ruby-value str">&quot;\\0\n&quot;</span>)
+1223:     <span class="ruby-identifier">end_pos</span> = <span class="ruby-value">0</span>
+1224:     <span class="ruby-keyword kw">while</span> <span class="ruby-identifier">end_pos</span> = <span class="ruby-identifier">lines</span>.<span class="ruby-identifier">index</span>(<span class="ruby-regexp re">/^&lt;\/(\w+)/n</span>, <span class="ruby-identifier">end_pos</span>)
+1225:       <span class="ruby-identifier">element</span> = <span class="ruby-identifier">$1</span>.<span class="ruby-identifier">dup</span>
+1226:       <span class="ruby-identifier">start_pos</span> = <span class="ruby-identifier">lines</span>.<span class="ruby-identifier">rindex</span>(<span class="ruby-node">/^\s*&lt;#{element}/n</span><span class="ruby-identifier">i</span>, <span class="ruby-identifier">end_pos</span>)
+1227:       <span class="ruby-identifier">lines</span>[<span class="ruby-identifier">start_pos</span> <span class="ruby-operator">...</span> <span class="ruby-identifier">end_pos</span>] = <span class="ruby-value str">&quot;__&quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">lines</span>[<span class="ruby-identifier">start_pos</span> <span class="ruby-operator">...</span> <span class="ruby-identifier">end_pos</span>].<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/\n(?!\z)/n</span>, <span class="ruby-value str">&quot;\n&quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">shift</span>) <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;__&quot;</span>
+1228:     <span class="ruby-keyword kw">end</span>
+1229:     <span class="ruby-identifier">lines</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-node">/^((?:#{Regexp::quote(shift)})*)__(?=&lt;\/?\w)/n</span>, <span class="ruby-value str">'\1'</span>)
+1230:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003682">
+                    
+                    <a name="M003682"></a><b>print</b>(*options)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+print HTTP header and string to $>
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003682_source')" id="l_M003682_source">show</a>
+                        
+                    </p>
+                    <div id="M003682_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi-lib.rb, line 243</span>
+243:   <span class="ruby-keyword kw">def</span> <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">print</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">options</span>)
+244:     <span class="ruby-identifier">$&gt;</span>.<span class="ruby-identifier">print</span> <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">header</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">options</span>) <span class="ruby-operator">+</span> <span class="ruby-keyword kw">yield</span>.<span class="ruby-identifier">to_s</span>
+245:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003673">
+                    
+                    <a name="M003673"></a><b>rfc1123_date</b>(time)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+make rfc1123 date string
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003673_source')" id="l_M003673_source">show</a>
+                        
+                    </p>
+                    <div id="M003673_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi-lib.rb, line 126</span>
+126:   <span class="ruby-keyword kw">def</span> <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">rfc1123_date</span>(<span class="ruby-identifier">time</span>)
+127:     <span class="ruby-identifier">t</span> = <span class="ruby-identifier">time</span>.<span class="ruby-identifier">clone</span>.<span class="ruby-identifier">gmtime</span>
+128:     <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">format</span>(<span class="ruby-value str">&quot;%s, %.2d %s %d %.2d:%.2d:%.2d GMT&quot;</span>,
+129:                 <span class="ruby-constant">RFC822_DAYS</span>[<span class="ruby-identifier">t</span>.<span class="ruby-identifier">wday</span>], <span class="ruby-identifier">t</span>.<span class="ruby-identifier">day</span>, <span class="ruby-constant">RFC822_MONTHS</span>[<span class="ruby-identifier">t</span>.<span class="ruby-identifier">month</span><span class="ruby-operator">-</span><span class="ruby-value">1</span>], <span class="ruby-identifier">t</span>.<span class="ruby-identifier">year</span>,
+130:                 <span class="ruby-identifier">t</span>.<span class="ruby-identifier">hour</span>, <span class="ruby-identifier">t</span>.<span class="ruby-identifier">min</span>, <span class="ruby-identifier">t</span>.<span class="ruby-identifier">sec</span>)
+131:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003554">
+                    
+                    <a name="M003554"></a><b>rfc1123_date</b>(time)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Format a <tt>Time</tt> object as a <a href="String.html">String</a> using
+the format specified by RFC 1123.
+</p>
+<pre>
+  CGI::rfc1123_date(Time.now)
+    # Sat, 01 Jan 2000 00:00:00 GMT
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003554_source')" id="l_M003554_source">show</a>
+                        
+                    </p>
+                    <div id="M003554_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi.rb, line 454</span>
+454:   <span class="ruby-keyword kw">def</span> <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">rfc1123_date</span>(<span class="ruby-identifier">time</span>)
+455:     <span class="ruby-identifier">t</span> = <span class="ruby-identifier">time</span>.<span class="ruby-identifier">clone</span>.<span class="ruby-identifier">gmtime</span>
+456:     <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">format</span>(<span class="ruby-value str">&quot;%s, %.2d %s %.4d %.2d:%.2d:%.2d GMT&quot;</span>,
+457:                 <span class="ruby-constant">RFC822_DAYS</span>[<span class="ruby-identifier">t</span>.<span class="ruby-identifier">wday</span>], <span class="ruby-identifier">t</span>.<span class="ruby-identifier">day</span>, <span class="ruby-constant">RFC822_MONTHS</span>[<span class="ruby-identifier">t</span>.<span class="ruby-identifier">month</span><span class="ruby-operator">-</span><span class="ruby-value">1</span>], <span class="ruby-identifier">t</span>.<span class="ruby-identifier">year</span>,
+458:                 <span class="ruby-identifier">t</span>.<span class="ruby-identifier">hour</span>, <span class="ruby-identifier">t</span>.<span class="ruby-identifier">min</span>, <span class="ruby-identifier">t</span>.<span class="ruby-identifier">sec</span>)
+459:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003679">
+                    
+                    <a name="M003679"></a><b>tag</b>(element, attributes = {})
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+make HTML tag string
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003679_source')" id="l_M003679_source">show</a>
+                        
+                    </p>
+                    <div id="M003679_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi-lib.rb, line 203</span>
+203:   <span class="ruby-keyword kw">def</span> <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">tag</span>(<span class="ruby-identifier">element</span>, <span class="ruby-identifier">attributes</span> = {})
+204:     <span class="ruby-value str">&quot;&lt;&quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">escapeHTML</span>(<span class="ruby-identifier">element</span>) <span class="ruby-operator">+</span> <span class="ruby-identifier">attributes</span>.<span class="ruby-identifier">collect</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">name</span>, <span class="ruby-identifier">value</span><span class="ruby-operator">|</span>
+205:       <span class="ruby-value str">&quot; &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">escapeHTML</span>(<span class="ruby-identifier">name</span>) <span class="ruby-operator">+</span> <span class="ruby-value str">'=&quot;'</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">escapeHTML</span>(<span class="ruby-identifier">value</span>) <span class="ruby-operator">+</span> <span class="ruby-value str">'&quot;'</span>
+206:     }.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;&gt;&quot;</span> <span class="ruby-operator">+</span>
+207:     (<span class="ruby-identifier">iterator?</span> <span class="ruby-value">? </span><span class="ruby-keyword kw">yield</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;&lt;/&quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">escapeHTML</span>(<span class="ruby-identifier">element</span>) <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;&gt;&quot;</span> <span class="ruby-operator">:</span> <span class="ruby-value str">&quot;&quot;</span>)
+208:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003549">
+                    
+                    <a name="M003549"></a><b>unescape</b>(string)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+URL-decode a string.
+</p>
+<pre>
+  string = CGI::unescape(&quot;%27Stop%21%27+said+Fred&quot;)
+     # =&gt; &quot;'Stop!' said Fred&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003549_source')" id="l_M003549_source">show</a>
+                        
+                    </p>
+                    <div id="M003549_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi.rb, line 351</span>
+351:   <span class="ruby-keyword kw">def</span> <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">unescape</span>(<span class="ruby-identifier">string</span>)
+352:     <span class="ruby-identifier">string</span>.<span class="ruby-identifier">tr</span>(<span class="ruby-value str">'+'</span>, <span class="ruby-value str">' '</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/((?:%[0-9a-fA-F]{2})+)/n</span>) <span class="ruby-keyword kw">do</span>
+353:       [<span class="ruby-identifier">$1</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-value str">'%'</span>)].<span class="ruby-identifier">pack</span>(<span class="ruby-value str">'H*'</span>)
+354:     <span class="ruby-keyword kw">end</span>
+355:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003675">
+                    
+                    <a name="M003675"></a><b>unescape</b>(str)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+unescape url encoded
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003675_source')" id="l_M003675_source">show</a>
+                        
+                    </p>
+                    <div id="M003675_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi-lib.rb, line 139</span>
+139:   <span class="ruby-keyword kw">def</span> <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">unescape</span>(<span class="ruby-identifier">str</span>)
+140:     <span class="ruby-identifier">str</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/\+/</span>, <span class="ruby-value str">' '</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/%([0-9a-fA-F]{2})/</span>){ [<span class="ruby-identifier">$1</span>.<span class="ruby-identifier">hex</span>].<span class="ruby-identifier">pack</span>(<span class="ruby-value str">&quot;c&quot;</span>) }
+141:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003553">
+                    
+                    <a name="M003553"></a><b>unescapeElement</b>(string, *elements)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Undo escaping such as that done by CGI::escapeElement()
+</p>
+<pre>
+  print CGI::unescapeElement(
+          CGI::escapeHTML('&lt;BR&gt;&lt;A HREF=&quot;url&quot;&gt;&lt;/A&gt;'), &quot;A&quot;, &quot;IMG&quot;)
+    # &quot;&amp;lt;BR&amp;gt;&lt;A HREF=&quot;url&quot;&gt;&lt;/A&gt;&quot;
+
+  print CGI::unescapeElement(
+          CGI::escapeHTML('&lt;BR&gt;&lt;A HREF=&quot;url&quot;&gt;&lt;/A&gt;'), [&quot;A&quot;, &quot;IMG&quot;])
+    # &quot;&amp;lt;BR&amp;gt;&lt;A HREF=&quot;url&quot;&gt;&lt;/A&gt;&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003553_source')" id="l_M003553_source">show</a>
+                        
+                    </p>
+                    <div id="M003553_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi.rb, line 438</span>
+438:   <span class="ruby-keyword kw">def</span> <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">unescapeElement</span>(<span class="ruby-identifier">string</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">elements</span>)
+439:     <span class="ruby-identifier">elements</span> = <span class="ruby-identifier">elements</span>[<span class="ruby-value">0</span>] <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">elements</span>[<span class="ruby-value">0</span>].<span class="ruby-identifier">kind_of?</span>(<span class="ruby-constant">Array</span>)
+440:     <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">elements</span>.<span class="ruby-identifier">empty?</span>
+441:       <span class="ruby-identifier">string</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-node">/&amp;lt;\/?(?:#{elements.join(&quot;|&quot;)})(?!\w)(?:.|\n)*?&amp;gt;/n</span><span class="ruby-identifier">i</span>) <span class="ruby-keyword kw">do</span>
+442:         <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">unescapeHTML</span>(<span class="ruby-identifier">$&amp;</span>)
+443:       <span class="ruby-keyword kw">end</span>
+444:     <span class="ruby-keyword kw">else</span>
+445:       <span class="ruby-identifier">string</span>
+446:     <span class="ruby-keyword kw">end</span>
+447:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003551">
+                    
+                    <a name="M003551"></a><b>unescapeHTML</b>(string)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Unescape a string that has been HTML-escaped
+</p>
+<pre>
+  CGI::unescapeHTML(&quot;Usage: foo &amp;quot;bar&amp;quot; &amp;lt;baz&amp;gt;&quot;)
+     # =&gt; &quot;Usage: foo \&quot;bar\&quot; &lt;baz&gt;&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003551_source')" id="l_M003551_source">show</a>
+                        
+                    </p>
+                    <div id="M003551_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi.rb, line 369</span>
+369:   <span class="ruby-keyword kw">def</span> <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">unescapeHTML</span>(<span class="ruby-identifier">string</span>)
+370:     <span class="ruby-identifier">string</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/&amp;(amp|quot|gt|lt|\#[0-9]+|\#x[0-9A-Fa-f]+);/n</span>) <span class="ruby-keyword kw">do</span>
+371:       <span class="ruby-identifier">match</span> = <span class="ruby-identifier">$1</span>.<span class="ruby-identifier">dup</span>
+372:       <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">match</span>
+373:       <span class="ruby-keyword kw">when</span> <span class="ruby-value str">'amp'</span>                 <span class="ruby-keyword kw">then</span> <span class="ruby-value str">'&amp;'</span>
+374:       <span class="ruby-keyword kw">when</span> <span class="ruby-value str">'quot'</span>                <span class="ruby-keyword kw">then</span> <span class="ruby-value str">'&quot;'</span>
+375:       <span class="ruby-keyword kw">when</span> <span class="ruby-value str">'gt'</span>                  <span class="ruby-keyword kw">then</span> <span class="ruby-value str">'&gt;'</span>
+376:       <span class="ruby-keyword kw">when</span> <span class="ruby-value str">'lt'</span>                  <span class="ruby-keyword kw">then</span> <span class="ruby-value str">'&lt;'</span>
+377:       <span class="ruby-keyword kw">when</span> <span class="ruby-regexp re">/\A#0*(\d+)\z/n</span>       <span class="ruby-keyword kw">then</span>
+378:         <span class="ruby-keyword kw">if</span> <span class="ruby-constant">Integer</span>(<span class="ruby-identifier">$1</span>) <span class="ruby-operator">&lt;</span> <span class="ruby-value">256</span>
+379:           <span class="ruby-constant">Integer</span>(<span class="ruby-identifier">$1</span>).<span class="ruby-identifier">chr</span>
+380:         <span class="ruby-keyword kw">else</span>
+381:           <span class="ruby-keyword kw">if</span> <span class="ruby-constant">Integer</span>(<span class="ruby-identifier">$1</span>) <span class="ruby-operator">&lt;</span> <span class="ruby-value">65536</span> <span class="ruby-keyword kw">and</span> (<span class="ruby-identifier">$KCODE</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">==</span> <span class="ruby-value">?u</span> <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">$KCODE</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">==</span> <span class="ruby-value">?U</span>)
+382:             [<span class="ruby-constant">Integer</span>(<span class="ruby-identifier">$1</span>)].<span class="ruby-identifier">pack</span>(<span class="ruby-value str">&quot;U&quot;</span>)
+383:           <span class="ruby-keyword kw">else</span>
+384:             <span class="ruby-node">&quot;&amp;##{$1};&quot;</span>
+385:           <span class="ruby-keyword kw">end</span>
+386:         <span class="ruby-keyword kw">end</span>
+387:       <span class="ruby-keyword kw">when</span> <span class="ruby-regexp re">/\A#x([0-9a-f]+)\z/n</span><span class="ruby-identifier">i</span> <span class="ruby-keyword kw">then</span>
+388:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">$1</span>.<span class="ruby-identifier">hex</span> <span class="ruby-operator">&lt;</span> <span class="ruby-value">256</span>
+389:           <span class="ruby-identifier">$1</span>.<span class="ruby-identifier">hex</span>.<span class="ruby-identifier">chr</span>
+390:         <span class="ruby-keyword kw">else</span>
+391:           <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">$1</span>.<span class="ruby-identifier">hex</span> <span class="ruby-operator">&lt;</span> <span class="ruby-value">65536</span> <span class="ruby-keyword kw">and</span> (<span class="ruby-identifier">$KCODE</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">==</span> <span class="ruby-value">?u</span> <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">$KCODE</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">==</span> <span class="ruby-value">?U</span>)
+392:             [<span class="ruby-identifier">$1</span>.<span class="ruby-identifier">hex</span>].<span class="ruby-identifier">pack</span>(<span class="ruby-value str">&quot;U&quot;</span>)
+393:           <span class="ruby-keyword kw">else</span>
+394:             <span class="ruby-node">&quot;&amp;#x#{$1};&quot;</span>
+395:           <span class="ruby-keyword kw">end</span>
+396:         <span class="ruby-keyword kw">end</span>
+397:       <span class="ruby-keyword kw">else</span>
+398:         <span class="ruby-node">&quot;&amp;#{match};&quot;</span>
+399:       <span class="ruby-keyword kw">end</span>
+400:     <span class="ruby-keyword kw">end</span>
+401:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M003555">
+                    
+                    <a name="M003555"></a><b>header</b>(options = &quot;text/html&quot;)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Create an HTTP header block as a string.
+</p>
+<p>
+Includes the empty line that ends the header block.
+</p>
+<p>
+<tt>options</tt> can be a string specifying the Content-Type (defaults to
+text/html), or a hash of header key/value pairs. The following header keys
+are recognized:
+</p>
+<table>
+<tr><td valign="top">type:</td><td>the Content-Type header. Defaults to &#8220;text/html&#8220;
+
+</td></tr>
+<tr><td valign="top">charset:</td><td>the charset of the body, appended to the Content-Type header.
+
+</td></tr>
+<tr><td valign="top">nph:</td><td>a boolean value. If true, prepend protocol string and status code, and
+date; and sets default values for &#8220;server&#8221; and
+&#8220;connection&#8221; if not explicitly set.
+
+</td></tr>
+<tr><td valign="top">status:</td><td>the HTTP status code, returned as the Status header. See the list of
+available status codes below.
+
+</td></tr>
+<tr><td valign="top">server:</td><td>the server software, returned as the Server header.
+
+</td></tr>
+<tr><td valign="top">connection:</td><td>the connection type, returned as the Connection header (for instance,
+&#8220;close&#8221;.
+
+</td></tr>
+<tr><td valign="top">length:</td><td>the length of the content that will be sent, returned as the Content-Length
+header.
+
+</td></tr>
+<tr><td valign="top">language:</td><td>the language of the content, returned as the Content-Language header.
+
+</td></tr>
+<tr><td valign="top">expires:</td><td>the time on which the current content expires, as a <tt>Time</tt> object,
+returned as the Expires header.
+
+</td></tr>
+<tr><td valign="top">cookie:</td><td>a cookie or cookies, returned as one or more Set-<a
+href="CGI/Cookie.html">Cookie</a> headers. The value can be the literal
+string of the cookie; a <a href="CGI/Cookie.html">CGI::Cookie</a> object;
+an <a href="Array.html">Array</a> of literal cookie strings or <a
+href="CGI/Cookie.html">Cookie</a> objects; or a hash all of whose values
+are literal cookie strings or <a href="CGI/Cookie.html">Cookie</a> objects.
+These cookies are in addition to the cookies held in the @output_cookies
+field.
+
+</td></tr>
+</table>
+<p>
+Other header lines can also be set; they are appended as key: value.
+</p>
+<pre>
+  header
+    # Content-Type: text/html
+
+  header(&quot;text/plain&quot;)
+    # Content-Type: text/plain
+
+  header(&quot;nph&quot;        =&gt; true,
+         &quot;status&quot;     =&gt; &quot;OK&quot;,  # == &quot;200 OK&quot;
+           # &quot;status&quot;     =&gt; &quot;200 GOOD&quot;,
+         &quot;server&quot;     =&gt; ENV['SERVER_SOFTWARE'],
+         &quot;connection&quot; =&gt; &quot;close&quot;,
+         &quot;type&quot;       =&gt; &quot;text/html&quot;,
+         &quot;charset&quot;    =&gt; &quot;iso-2022-jp&quot;,
+           # Content-Type: text/html; charset=iso-2022-jp
+         &quot;length&quot;     =&gt; 103,
+         &quot;language&quot;   =&gt; &quot;ja&quot;,
+         &quot;expires&quot;    =&gt; Time.now + 30,
+         &quot;cookie&quot;     =&gt; [cookie1, cookie2],
+         &quot;my_header1&quot; =&gt; &quot;my_value&quot;
+         &quot;my_header2&quot; =&gt; &quot;my_value&quot;)
+</pre>
+<p>
+The status codes are:
+</p>
+<pre>
+  &quot;OK&quot;                  --&gt; &quot;200 OK&quot;
+  &quot;PARTIAL_CONTENT&quot;     --&gt; &quot;206 Partial Content&quot;
+  &quot;MULTIPLE_CHOICES&quot;    --&gt; &quot;300 Multiple Choices&quot;
+  &quot;MOVED&quot;               --&gt; &quot;301 Moved Permanently&quot;
+  &quot;REDIRECT&quot;            --&gt; &quot;302 Found&quot;
+  &quot;NOT_MODIFIED&quot;        --&gt; &quot;304 Not Modified&quot;
+  &quot;BAD_REQUEST&quot;         --&gt; &quot;400 Bad Request&quot;
+  &quot;AUTH_REQUIRED&quot;       --&gt; &quot;401 Authorization Required&quot;
+  &quot;FORBIDDEN&quot;           --&gt; &quot;403 Forbidden&quot;
+  &quot;NOT_FOUND&quot;           --&gt; &quot;404 Not Found&quot;
+  &quot;METHOD_NOT_ALLOWED&quot;  --&gt; &quot;405 Method Not Allowed&quot;
+  &quot;NOT_ACCEPTABLE&quot;      --&gt; &quot;406 Not Acceptable&quot;
+  &quot;LENGTH_REQUIRED&quot;     --&gt; &quot;411 Length Required&quot;
+  &quot;PRECONDITION_FAILED&quot; --&gt; &quot;412 Precondition Failed&quot;
+  &quot;SERVER_ERROR&quot;        --&gt; &quot;500 Internal Server Error&quot;
+  &quot;NOT_IMPLEMENTED&quot;     --&gt; &quot;501 Method Not Implemented&quot;
+  &quot;BAD_GATEWAY&quot;         --&gt; &quot;502 Bad Gateway&quot;
+  &quot;VARIANT_ALSO_VARIES&quot; --&gt; &quot;506 Variant Also Negotiates&quot;
+</pre>
+<p>
+This method does not perform charset conversion.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003555_source')" id="l_M003555_source">show</a>
+                        
+                    </p>
+                    <div id="M003555_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi.rb, line 539</span>
+539:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">header</span>(<span class="ruby-identifier">options</span> = <span class="ruby-value str">&quot;text/html&quot;</span>)
+540: 
+541:     <span class="ruby-identifier">buf</span> = <span class="ruby-value str">&quot;&quot;</span>
+542: 
+543:     <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">options</span>
+544:     <span class="ruby-keyword kw">when</span> <span class="ruby-constant">String</span>
+545:       <span class="ruby-identifier">options</span> = { <span class="ruby-value str">&quot;type&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">options</span> }
+546:     <span class="ruby-keyword kw">when</span> <span class="ruby-constant">Hash</span>
+547:       <span class="ruby-identifier">options</span> = <span class="ruby-identifier">options</span>.<span class="ruby-identifier">dup</span>
+548:     <span class="ruby-keyword kw">end</span>
+549: 
+550:     <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-value str">&quot;type&quot;</span>)
+551:       <span class="ruby-identifier">options</span>[<span class="ruby-value str">&quot;type&quot;</span>] = <span class="ruby-value str">&quot;text/html&quot;</span>
+552:     <span class="ruby-keyword kw">end</span>
+553: 
+554:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-value str">&quot;charset&quot;</span>)
+555:       <span class="ruby-identifier">options</span>[<span class="ruby-value str">&quot;type&quot;</span>] <span class="ruby-operator">+=</span> <span class="ruby-value str">&quot;; charset=&quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-value str">&quot;charset&quot;</span>)
+556:     <span class="ruby-keyword kw">end</span>
+557: 
+558:     <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-value str">&quot;nph&quot;</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">defined?</span>(<span class="ruby-constant">MOD_RUBY</span>)
+559:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-value str">&quot;nph&quot;</span>) <span class="ruby-keyword kw">or</span>
+560:         (<span class="ruby-regexp re">/IIS\/(\d+)/n</span>.<span class="ruby-identifier">match</span>(<span class="ruby-identifier">env_table</span>[<span class="ruby-value str">'SERVER_SOFTWARE'</span>]) <span class="ruby-keyword kw">and</span> <span class="ruby-identifier">$1</span>.<span class="ruby-identifier">to_i</span> <span class="ruby-operator">&lt;</span> <span class="ruby-value">5</span>)
+561:       <span class="ruby-identifier">buf</span> <span class="ruby-operator">+=</span> (<span class="ruby-identifier">env_table</span>[<span class="ruby-value str">&quot;SERVER_PROTOCOL&quot;</span>] <span class="ruby-keyword kw">or</span> <span class="ruby-value str">&quot;HTTP/1.0&quot;</span>)  <span class="ruby-operator">+</span> <span class="ruby-value str">&quot; &quot;</span> <span class="ruby-operator">+</span>
+562:              (<span class="ruby-constant">HTTP_STATUS</span>[<span class="ruby-identifier">options</span>[<span class="ruby-value str">&quot;status&quot;</span>]] <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">options</span>[<span class="ruby-value str">&quot;status&quot;</span>] <span class="ruby-keyword kw">or</span> <span class="ruby-value str">&quot;200 OK&quot;</span>) <span class="ruby-operator">+</span>
+563:              <span class="ruby-constant">EOL</span> <span class="ruby-operator">+</span>
+564:              <span class="ruby-value str">&quot;Date: &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">rfc1123_date</span>(<span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span>) <span class="ruby-operator">+</span> <span class="ruby-constant">EOL</span>
+565: 
+566:       <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-value str">&quot;server&quot;</span>)
+567:         <span class="ruby-identifier">options</span>[<span class="ruby-value str">&quot;server&quot;</span>] = (<span class="ruby-identifier">env_table</span>[<span class="ruby-value str">'SERVER_SOFTWARE'</span>] <span class="ruby-keyword kw">or</span> <span class="ruby-value str">&quot;&quot;</span>)
+568:       <span class="ruby-keyword kw">end</span>
+569: 
+570:       <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-value str">&quot;connection&quot;</span>)
+571:         <span class="ruby-identifier">options</span>[<span class="ruby-value str">&quot;connection&quot;</span>] = <span class="ruby-value str">&quot;close&quot;</span>
+572:       <span class="ruby-keyword kw">end</span>
+573: 
+574:       <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-value str">&quot;status&quot;</span>)
+575:     <span class="ruby-keyword kw">end</span>
+576: 
+577:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-value str">&quot;status&quot;</span>)
+578:       <span class="ruby-identifier">buf</span> <span class="ruby-operator">+=</span> <span class="ruby-value str">&quot;Status: &quot;</span> <span class="ruby-operator">+</span>
+579:              (<span class="ruby-constant">HTTP_STATUS</span>[<span class="ruby-identifier">options</span>[<span class="ruby-value str">&quot;status&quot;</span>]] <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">options</span>[<span class="ruby-value str">&quot;status&quot;</span>]) <span class="ruby-operator">+</span> <span class="ruby-constant">EOL</span>
+580:       <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-value str">&quot;status&quot;</span>)
+581:     <span class="ruby-keyword kw">end</span>
+582: 
+583:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-value str">&quot;server&quot;</span>)
+584:       <span class="ruby-identifier">buf</span> <span class="ruby-operator">+=</span> <span class="ruby-value str">&quot;Server: &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-value str">&quot;server&quot;</span>) <span class="ruby-operator">+</span> <span class="ruby-constant">EOL</span>
+585:     <span class="ruby-keyword kw">end</span>
+586: 
+587:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-value str">&quot;connection&quot;</span>)
+588:       <span class="ruby-identifier">buf</span> <span class="ruby-operator">+=</span> <span class="ruby-value str">&quot;Connection: &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-value str">&quot;connection&quot;</span>) <span class="ruby-operator">+</span> <span class="ruby-constant">EOL</span>
+589:     <span class="ruby-keyword kw">end</span>
+590: 
+591:     <span class="ruby-identifier">buf</span> <span class="ruby-operator">+=</span> <span class="ruby-value str">&quot;Content-Type: &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-value str">&quot;type&quot;</span>) <span class="ruby-operator">+</span> <span class="ruby-constant">EOL</span>
+592: 
+593:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-value str">&quot;length&quot;</span>)
+594:       <span class="ruby-identifier">buf</span> <span class="ruby-operator">+=</span> <span class="ruby-value str">&quot;Content-Length: &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-value str">&quot;length&quot;</span>).<span class="ruby-identifier">to_s</span> <span class="ruby-operator">+</span> <span class="ruby-constant">EOL</span>
+595:     <span class="ruby-keyword kw">end</span>
+596: 
+597:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-value str">&quot;language&quot;</span>)
+598:       <span class="ruby-identifier">buf</span> <span class="ruby-operator">+=</span> <span class="ruby-value str">&quot;Content-Language: &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-value str">&quot;language&quot;</span>) <span class="ruby-operator">+</span> <span class="ruby-constant">EOL</span>
+599:     <span class="ruby-keyword kw">end</span>
+600: 
+601:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-value str">&quot;expires&quot;</span>)
+602:       <span class="ruby-identifier">buf</span> <span class="ruby-operator">+=</span> <span class="ruby-value str">&quot;Expires: &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-constant">CGI</span><span class="ruby-operator">::</span><span class="ruby-identifier">rfc1123_date</span>( <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-value str">&quot;expires&quot;</span>) ) <span class="ruby-operator">+</span> <span class="ruby-constant">EOL</span>
+603:     <span class="ruby-keyword kw">end</span>
+604: 
+605:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-value str">&quot;cookie&quot;</span>)
+606:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-value str">&quot;cookie&quot;</span>].<span class="ruby-identifier">kind_of?</span>(<span class="ruby-constant">String</span>) <span class="ruby-keyword kw">or</span>
+607:            <span class="ruby-identifier">options</span>[<span class="ruby-value str">&quot;cookie&quot;</span>].<span class="ruby-identifier">kind_of?</span>(<span class="ruby-constant">Cookie</span>)
+608:         <span class="ruby-identifier">buf</span> <span class="ruby-operator">+=</span> <span class="ruby-value str">&quot;Set-Cookie: &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-value str">&quot;cookie&quot;</span>).<span class="ruby-identifier">to_s</span> <span class="ruby-operator">+</span> <span class="ruby-constant">EOL</span>
+609:       <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">options</span>[<span class="ruby-value str">&quot;cookie&quot;</span>].<span class="ruby-identifier">kind_of?</span>(<span class="ruby-constant">Array</span>)
+610:         <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-value str">&quot;cookie&quot;</span>).<span class="ruby-identifier">each</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">cookie</span><span class="ruby-operator">|</span>
+611:           <span class="ruby-identifier">buf</span> <span class="ruby-operator">+=</span> <span class="ruby-value str">&quot;Set-Cookie: &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">cookie</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">+</span> <span class="ruby-constant">EOL</span>
+612:         }
+613:       <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">options</span>[<span class="ruby-value str">&quot;cookie&quot;</span>].<span class="ruby-identifier">kind_of?</span>(<span class="ruby-constant">Hash</span>)
+614:         <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-value str">&quot;cookie&quot;</span>).<span class="ruby-identifier">each_value</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">cookie</span><span class="ruby-operator">|</span>
+615:           <span class="ruby-identifier">buf</span> <span class="ruby-operator">+=</span> <span class="ruby-value str">&quot;Set-Cookie: &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">cookie</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">+</span> <span class="ruby-constant">EOL</span>
+616:         }
+617:       <span class="ruby-keyword kw">end</span>
+618:     <span class="ruby-keyword kw">end</span>
+619:     <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@output_cookies</span>
+620:       <span class="ruby-keyword kw">for</span> <span class="ruby-identifier">cookie</span> <span class="ruby-keyword kw">in</span> <span class="ruby-ivar">@output_cookies</span>
+621:         <span class="ruby-identifier">buf</span> <span class="ruby-operator">+=</span> <span class="ruby-value str">&quot;Set-Cookie: &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">cookie</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">+</span> <span class="ruby-constant">EOL</span>
+622:       <span class="ruby-keyword kw">end</span>
+623:     <span class="ruby-keyword kw">end</span>
+624: 
+625:     <span class="ruby-identifier">options</span>.<span class="ruby-identifier">each</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">key</span>, <span class="ruby-identifier">value</span><span class="ruby-operator">|</span>
+626:       <span class="ruby-identifier">buf</span> <span class="ruby-operator">+=</span> <span class="ruby-identifier">key</span> <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;: &quot;</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">+</span> <span class="ruby-constant">EOL</span>
+627:     }
+628: 
+629:     <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">defined?</span>(<span class="ruby-constant">MOD_RUBY</span>)
+630:       <span class="ruby-identifier">table</span> = <span class="ruby-constant">Apache</span><span class="ruby-operator">::</span><span class="ruby-identifier">request</span>.<span class="ruby-identifier">headers_out</span>
+631:       <span class="ruby-identifier">buf</span>.<span class="ruby-identifier">scan</span>(<span class="ruby-node">/([^:]+): (.+)#{EOL}/n</span>){ <span class="ruby-operator">|</span><span class="ruby-identifier">name</span>, <span class="ruby-identifier">value</span><span class="ruby-operator">|</span>
+632:         <span class="ruby-identifier">warn</span> <span class="ruby-identifier">sprintf</span>(<span class="ruby-value str">&quot;name:%s value:%s\n&quot;</span>, <span class="ruby-identifier">name</span>, <span class="ruby-identifier">value</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">$DEBUG</span>
+633:         <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">name</span>
+634:         <span class="ruby-keyword kw">when</span> <span class="ruby-value str">'Set-Cookie'</span>
+635:           <span class="ruby-identifier">table</span>.<span class="ruby-identifier">add</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">value</span>)
+636:         <span class="ruby-keyword kw">when</span> <span class="ruby-regexp re">/^status$/n</span><span class="ruby-identifier">i</span>
+637:           <span class="ruby-constant">Apache</span><span class="ruby-operator">::</span><span class="ruby-identifier">request</span>.<span class="ruby-identifier">status_line</span> = <span class="ruby-identifier">value</span>
+638:           <span class="ruby-constant">Apache</span><span class="ruby-operator">::</span><span class="ruby-identifier">request</span>.<span class="ruby-identifier">status</span> = <span class="ruby-identifier">value</span>.<span class="ruby-identifier">to_i</span>
+639:         <span class="ruby-keyword kw">when</span> <span class="ruby-regexp re">/^content-type$/n</span><span class="ruby-identifier">i</span>
+640:           <span class="ruby-constant">Apache</span><span class="ruby-operator">::</span><span class="ruby-identifier">request</span>.<span class="ruby-identifier">content_type</span> = <span class="ruby-identifier">value</span>
+641:         <span class="ruby-keyword kw">when</span> <span class="ruby-regexp re">/^content-encoding$/n</span><span class="ruby-identifier">i</span>
+642:           <span class="ruby-constant">Apache</span><span class="ruby-operator">::</span><span class="ruby-identifier">request</span>.<span class="ruby-identifier">content_encoding</span> = <span class="ruby-identifier">value</span>
+643:         <span class="ruby-keyword kw">when</span> <span class="ruby-regexp re">/^location$/n</span><span class="ruby-identifier">i</span>
+644:           <span class="ruby-keyword kw">if</span> <span class="ruby-constant">Apache</span><span class="ruby-operator">::</span><span class="ruby-identifier">request</span>.<span class="ruby-identifier">status</span> <span class="ruby-operator">==</span> <span class="ruby-value">200</span>
+645:             <span class="ruby-constant">Apache</span><span class="ruby-operator">::</span><span class="ruby-identifier">request</span>.<span class="ruby-identifier">status</span> = <span class="ruby-value">302</span>
+646:           <span class="ruby-keyword kw">end</span>
+647:           <span class="ruby-constant">Apache</span><span class="ruby-operator">::</span><span class="ruby-identifier">request</span>.<span class="ruby-identifier">headers_out</span>[<span class="ruby-identifier">name</span>] = <span class="ruby-identifier">value</span>
+648:         <span class="ruby-keyword kw">else</span>
+649:           <span class="ruby-constant">Apache</span><span class="ruby-operator">::</span><span class="ruby-identifier">request</span>.<span class="ruby-identifier">headers_out</span>[<span class="ruby-identifier">name</span>] = <span class="ruby-identifier">value</span>
+650:         <span class="ruby-keyword kw">end</span>
+651:       }
+652:       <span class="ruby-constant">Apache</span><span class="ruby-operator">::</span><span class="ruby-identifier">request</span>.<span class="ruby-identifier">send_http_header</span>
+653:       <span class="ruby-value str">''</span>
+654:     <span class="ruby-keyword kw">else</span>
+655:       <span class="ruby-identifier">buf</span> <span class="ruby-operator">+</span> <span class="ruby-constant">EOL</span>
+656:     <span class="ruby-keyword kw">end</span>
+657: 
+658:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003556">
+                    
+                    <a name="M003556"></a><b>out</b>(options = &quot;text/html&quot;)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Print an HTTP header and body to $DEFAULT_OUTPUT ($>)
+</p>
+<p>
+The header is provided by <tt>options</tt>, as for header(). The body of
+the document is that returned by the passed- in block. This block takes no
+arguments. It is required.
+</p>
+<pre>
+  cgi = CGI.new
+  cgi.out{ &quot;string&quot; }
+    # Content-Type: text/html
+    # Content-Length: 6
+    #
+    # string
+
+  cgi.out(&quot;text/plain&quot;) { &quot;string&quot; }
+    # Content-Type: text/plain
+    # Content-Length: 6
+    #
+    # string
+
+  cgi.out(&quot;nph&quot;        =&gt; true,
+          &quot;status&quot;     =&gt; &quot;OK&quot;,  # == &quot;200 OK&quot;
+          &quot;server&quot;     =&gt; ENV['SERVER_SOFTWARE'],
+          &quot;connection&quot; =&gt; &quot;close&quot;,
+          &quot;type&quot;       =&gt; &quot;text/html&quot;,
+          &quot;charset&quot;    =&gt; &quot;iso-2022-jp&quot;,
+            # Content-Type: text/html; charset=iso-2022-jp
+          &quot;language&quot;   =&gt; &quot;ja&quot;,
+          &quot;expires&quot;    =&gt; Time.now + (3600 * 24 * 30),
+          &quot;cookie&quot;     =&gt; [cookie1, cookie2],
+          &quot;my_header1&quot; =&gt; &quot;my_value&quot;,
+          &quot;my_header2&quot; =&gt; &quot;my_value&quot;) { &quot;string&quot; }
+</pre>
+<p>
+Content-Length is automatically calculated from the size of the <a
+href="String.html">String</a> returned by the content block.
+</p>
+<p>
+If ENV[&#8216;REQUEST_METHOD&#8217;] == &#8220;HEAD&#8221;, then only the
+header is outputted (the content block is still required, but it is
+ignored).
+</p>
+<p>
+If the charset is &#8220;iso-2022-jp&#8221; or &#8220;euc-jp&#8221; or
+&#8220;shift_jis&#8220; then the content is converted to this charset, and
+the language is set to &#8220;ja&#8221;.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003556_source')" id="l_M003556_source">show</a>
+                        
+                    </p>
+                    <div id="M003556_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi.rb, line 703</span>
+703:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">out</span>(<span class="ruby-identifier">options</span> = <span class="ruby-value str">&quot;text/html&quot;</span>) <span class="ruby-comment cmt"># :yield:</span>
+704: 
+705:     <span class="ruby-identifier">options</span> = { <span class="ruby-value str">&quot;type&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">options</span> } <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">kind_of?</span>(<span class="ruby-constant">String</span>)
+706:     <span class="ruby-identifier">content</span> = <span class="ruby-keyword kw">yield</span>
+707: 
+708:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-value str">&quot;charset&quot;</span>)
+709:       <span class="ruby-identifier">require</span> <span class="ruby-value str">&quot;nkf&quot;</span>
+710:       <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">options</span>[<span class="ruby-value str">&quot;charset&quot;</span>]
+711:       <span class="ruby-keyword kw">when</span> <span class="ruby-regexp re">/iso-2022-jp/n</span><span class="ruby-identifier">i</span>
+712:         <span class="ruby-identifier">content</span> = <span class="ruby-constant">NKF</span><span class="ruby-operator">::</span><span class="ruby-identifier">nkf</span>(<span class="ruby-value str">'-m0 -x -j'</span>, <span class="ruby-identifier">content</span>)
+713:         <span class="ruby-identifier">options</span>[<span class="ruby-value str">&quot;language&quot;</span>] = <span class="ruby-value str">&quot;ja&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-value str">&quot;language&quot;</span>)
+714:       <span class="ruby-keyword kw">when</span> <span class="ruby-regexp re">/euc-jp/n</span><span class="ruby-identifier">i</span>
+715:         <span class="ruby-identifier">content</span> = <span class="ruby-constant">NKF</span><span class="ruby-operator">::</span><span class="ruby-identifier">nkf</span>(<span class="ruby-value str">'-m0 -x -e'</span>, <span class="ruby-identifier">content</span>)
+716:         <span class="ruby-identifier">options</span>[<span class="ruby-value str">&quot;language&quot;</span>] = <span class="ruby-value str">&quot;ja&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-value str">&quot;language&quot;</span>)
+717:       <span class="ruby-keyword kw">when</span> <span class="ruby-regexp re">/shift_jis/n</span><span class="ruby-identifier">i</span>
+718:         <span class="ruby-identifier">content</span> = <span class="ruby-constant">NKF</span><span class="ruby-operator">::</span><span class="ruby-identifier">nkf</span>(<span class="ruby-value str">'-m0 -x -s'</span>, <span class="ruby-identifier">content</span>)
+719:         <span class="ruby-identifier">options</span>[<span class="ruby-value str">&quot;language&quot;</span>] = <span class="ruby-value str">&quot;ja&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">options</span>.<span class="ruby-identifier">has_key?</span>(<span class="ruby-value str">&quot;language&quot;</span>)
+720:       <span class="ruby-keyword kw">end</span>
+721:     <span class="ruby-keyword kw">end</span>
+722: 
+723:     <span class="ruby-identifier">options</span>[<span class="ruby-value str">&quot;length&quot;</span>] = <span class="ruby-identifier">content</span>.<span class="ruby-identifier">length</span>.<span class="ruby-identifier">to_s</span>
+724:     <span class="ruby-identifier">output</span> = <span class="ruby-identifier">stdoutput</span>
+725:     <span class="ruby-identifier">output</span>.<span class="ruby-identifier">binmode</span> <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">defined?</span> <span class="ruby-identifier">output</span>.<span class="ruby-identifier">binmode</span>
+726:     <span class="ruby-identifier">output</span>.<span class="ruby-identifier">print</span> <span class="ruby-identifier">header</span>(<span class="ruby-identifier">options</span>)
+727:     <span class="ruby-identifier">output</span>.<span class="ruby-identifier">print</span> <span class="ruby-identifier">content</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-value str">&quot;HEAD&quot;</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">env_table</span>[<span class="ruby-value str">'REQUEST_METHOD'</span>]
+728:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003557">
+                    
+                    <a name="M003557"></a><b>print</b>(*options)
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Print an argument or list of arguments to the default output stream
+</p>
+<pre>
+  cgi = CGI.new
+  cgi.print    # default:  cgi.print == $DEFAULT_OUTPUT.print
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003557_source')" id="l_M003557_source">show</a>
+                        
+                    </p>
+                    <div id="M003557_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi.rb, line 735</span>
+735:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">print</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">options</span>)
+736:     <span class="ruby-identifier">stdoutput</span>.<span class="ruby-identifier">print</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">options</span>)
+737:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003677">
+                    
+                    <a name="M003677"></a><b>read_from_cmdline</b>()
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+offline mode. read name=value pairs on standard input.
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003677_source')" id="l_M003677_source">show</a>
+                        
+                    </p>
+                    <div id="M003677_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi-lib.rb, line 149</span>
+149:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">read_from_cmdline</span>
+150:     <span class="ruby-identifier">require</span> <span class="ruby-value str">&quot;shellwords.rb&quot;</span>
+151:     <span class="ruby-identifier">words</span> = <span class="ruby-constant">Shellwords</span>.<span class="ruby-identifier">shellwords</span>(
+152:               <span class="ruby-keyword kw">if</span> <span class="ruby-keyword kw">not</span> <span class="ruby-constant">ARGV</span>.<span class="ruby-identifier">empty?</span>
+153:                 <span class="ruby-constant">ARGV</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">' '</span>)
+154:               <span class="ruby-keyword kw">else</span>
+155:                 <span class="ruby-constant">STDERR</span>.<span class="ruby-identifier">print</span> <span class="ruby-value str">&quot;(offline mode: enter name=value pairs on standard input)\n&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-constant">STDIN</span>.<span class="ruby-identifier">tty?</span>
+156:                 <span class="ruby-identifier">readlines</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">' '</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/\n/</span>, <span class="ruby-value str">''</span>)
+157:               <span class="ruby-keyword kw">end</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/\\=/</span>, <span class="ruby-value str">'%3D'</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/\\&amp;/</span>, <span class="ruby-value str">'%26'</span>))
+158: 
+159:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">words</span>.<span class="ruby-identifier">find</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">x</span><span class="ruby-operator">|</span> <span class="ruby-identifier">x</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp re">/=/</span>} <span class="ruby-keyword kw">then</span> <span class="ruby-identifier">words</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">'&amp;'</span>) <span class="ruby-keyword kw">else</span> <span class="ruby-identifier">words</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">'+'</span>) <span class="ruby-keyword kw">end</span>
+160:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Private methods</div>
+            
+            <div class="method">
+                <div class="title" id="M003545">
+                    
+                    <a name="M003545"></a><b>env_table</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003545_source')" id="l_M003545_source">show</a>
+                        
+                    </p>
+                    <div id="M003545_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi.rb, line 324</span>
+324:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">env_table</span> 
+325:     <span class="ruby-constant">ENV</span>
+326:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003546">
+                    
+                    <a name="M003546"></a><b>stdinput</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003546_source')" id="l_M003546_source">show</a>
+                        
+                    </p>
+                    <div id="M003546_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi.rb, line 328</span>
+328:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">stdinput</span>
+329:     <span class="ruby-identifier">$stdin</span>
+330:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003547">
+                    
+                    <a name="M003547"></a><b>stdoutput</b>()
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003547_source')" id="l_M003547_source">show</a>
+                        
+                    </p>
+                    <div id="M003547_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/cgi.rb, line 332</span>
+332:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">stdoutput</span>
+333:     <span class="ruby-identifier">$DEFAULT_OUTPUT</span>
+334:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

@@ -1,0 +1,756 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>UNIXSocket</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" />
+    <script src="../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            UNIXSocket 
+            
+                <span class="parent">&lt; 
+                    
+                    rb_cBasicSocket
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../files/ext/socket/unixsocket_c.html">ext/socket/unixsocket.c</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+    <div class="description">
+        <p>
+Document-class: <a href="UNIXSocket.html">::UNIXSocket</a> < <a
+href="BasicSocket.html">BasicSocket</a>
+</p>
+<p>
+<a href="UNIXSocket.html">UNIXSocket</a> represents a UNIX domain stream
+client socket.
+</p>
+
+    </div>
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>A</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006762">addr</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006760">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>P</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006768">pair</a>,</li>
+                
+                <li><a href="#M006761">path</a>,</li>
+                
+                <li><a href="#M006763">peeraddr</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>R</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006766">recv_io</a>,</li>
+                
+                <li><a href="#M006764">recvfrom</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M006765">send_io</a>,</li>
+                
+                <li><a href="#M006767">socketpair</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M006760">
+                    
+                    <a name="M006760"></a><b>UNIXSocket.new(path) => unixsocket
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Creates a new UNIX client socket connected to <em>path</em>.
+</p>
+<pre>
+  s = UNIXSocket.new(&quot;/tmp/sock&quot;)
+  s.send &quot;hello&quot;, 0
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006760_source')" id="l_M006760_source">show</a>
+                        
+                    </p>
+                    <div id="M006760_source" class="dyn-source">
+                        <pre>static VALUE
+unix_init(VALUE sock, VALUE path)
+{
+    return rsock_init_unixsock(sock, path, 0);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006768">
+                    
+                    <a name="M006768"></a><b>UNIXSocket.pair([type [, protocol]])       => [unixsocket1, unixsocket2]
+UNIXSocket.socketpair([type [, protocol]]) => [unixsocket1, unixsocket2]
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Creates a pair of sockets connected each other.
+</p>
+<p>
+<em>socktype</em> should be a socket type such as: :STREAM, :DGRAM, :RAW,
+etc.
+</p>
+<p>
+<em>protocol</em> should be a protocol defined in the domain. 0 is default
+protocol for the domain.
+</p>
+<pre>
+  s1, s2 = UNIXSocket.pair
+  s1.send &quot;a&quot;, 0
+  s1.send &quot;b&quot;, 0
+  p s2.recv(10) #=&gt; &quot;ab&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006768_source')" id="l_M006768_source">show</a>
+                        
+                    </p>
+                    <div id="M006768_source" class="dyn-source">
+                        <pre>static VALUE
+unix_s_socketpair(int argc, VALUE *argv, VALUE klass)
+{
+    VALUE domain, type, protocol;
+    VALUE args[3];
+
+    domain = INT2FIX(PF_UNIX);
+    rb_scan_args(argc, argv, &quot;02&quot;, &amp;type, &amp;protocol);
+    if (argc == 0)
+        type = INT2FIX(SOCK_STREAM);
+    if (argc &lt;= 1)
+        protocol = INT2FIX(0);
+
+    args[0] = domain;
+    args[1] = type;
+    args[2] = protocol;
+
+    return rsock_sock_s_socketpair(3, args, klass);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006767">
+                    
+                    <a name="M006767"></a><b>UNIXSocket.pair([type [, protocol]])       => [unixsocket1, unixsocket2]
+UNIXSocket.socketpair([type [, protocol]]) => [unixsocket1, unixsocket2]
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Creates a pair of sockets connected each other.
+</p>
+<p>
+<em>socktype</em> should be a socket type such as: :STREAM, :DGRAM, :RAW,
+etc.
+</p>
+<p>
+<em>protocol</em> should be a protocol defined in the domain. 0 is default
+protocol for the domain.
+</p>
+<pre>
+  s1, s2 = UNIXSocket.pair
+  s1.send &quot;a&quot;, 0
+  s1.send &quot;b&quot;, 0
+  p s2.recv(10) #=&gt; &quot;ab&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006767_source')" id="l_M006767_source">show</a>
+                        
+                    </p>
+                    <div id="M006767_source" class="dyn-source">
+                        <pre>static VALUE
+unix_s_socketpair(int argc, VALUE *argv, VALUE klass)
+{
+    VALUE domain, type, protocol;
+    VALUE args[3];
+
+    domain = INT2FIX(PF_UNIX);
+    rb_scan_args(argc, argv, &quot;02&quot;, &amp;type, &amp;protocol);
+    if (argc == 0)
+        type = INT2FIX(SOCK_STREAM);
+    if (argc &lt;= 1)
+        protocol = INT2FIX(0);
+
+    args[0] = domain;
+    args[1] = type;
+    args[2] = protocol;
+
+    return rsock_sock_s_socketpair(3, args, klass);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M006762">
+                    
+                    <a name="M006762"></a><b>unixsocket.addr => [address_family, unix_path]
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the local address as an array which contains address_family and
+unix_path.
+</p>
+<p>
+Example
+</p>
+<pre>
+  serv = UNIXServer.new(&quot;/tmp/sock&quot;)
+  p serv.addr #=&gt; [&quot;AF_UNIX&quot;, &quot;/tmp/sock&quot;]
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006762_source')" id="l_M006762_source">show</a>
+                        
+                    </p>
+                    <div id="M006762_source" class="dyn-source">
+                        <pre>static VALUE
+unix_addr(VALUE sock)
+{
+    rb_io_t *fptr;
+    struct sockaddr_un addr;
+    socklen_t len = (socklen_t)sizeof addr;
+
+    GetOpenFile(sock, fptr);
+
+    if (getsockname(fptr-&gt;fd, (struct sockaddr*)&amp;addr, &amp;len) &lt; 0)
+        rb_sys_fail(&quot;getsockname(2)&quot;);
+    return rsock_unixaddr(&amp;addr, len);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006761">
+                    
+                    <a name="M006761"></a><b>unixsocket.path => path
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the path of the local address of unixsocket.
+</p>
+<pre>
+  s = UNIXServer.new(&quot;/tmp/sock&quot;)
+  p s.path #=&gt; &quot;/tmp/sock&quot;
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006761_source')" id="l_M006761_source">show</a>
+                        
+                    </p>
+                    <div id="M006761_source" class="dyn-source">
+                        <pre>static VALUE
+unix_path(VALUE sock)
+{
+    rb_io_t *fptr;
+
+    GetOpenFile(sock, fptr);
+    if (NIL_P(fptr-&gt;pathv)) {
+        struct sockaddr_un addr;
+        socklen_t len = (socklen_t)sizeof(addr);
+        if (getsockname(fptr-&gt;fd, (struct sockaddr*)&amp;addr, &amp;len) &lt; 0)
+            rb_sys_fail(0);
+        fptr-&gt;pathv = rb_obj_freeze(rb_str_new_cstr(rsock_unixpath(&amp;addr, len)));
+    }
+    return rb_str_dup(fptr-&gt;pathv);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006763">
+                    
+                    <a name="M006763"></a><b>unixsocket.peeraddr => [address_family, unix_path]
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Returns the remote address as an array which contains address_family and
+unix_path.
+</p>
+<p>
+Example
+</p>
+<pre>
+  serv = UNIXServer.new(&quot;/tmp/sock&quot;)
+  c = UNIXSocket.new(&quot;/tmp/sock&quot;)
+  p c.peeraddr #=&gt; [&quot;AF_UNIX&quot;, &quot;/tmp/sock&quot;]
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006763_source')" id="l_M006763_source">show</a>
+                        
+                    </p>
+                    <div id="M006763_source" class="dyn-source">
+                        <pre>static VALUE
+unix_peeraddr(VALUE sock)
+{
+    rb_io_t *fptr;
+    struct sockaddr_un addr;
+    socklen_t len = (socklen_t)sizeof addr;
+
+    GetOpenFile(sock, fptr);
+
+    if (getpeername(fptr-&gt;fd, (struct sockaddr*)&amp;addr, &amp;len) &lt; 0)
+        rb_sys_fail(&quot;getpeername(2)&quot;);
+    return rsock_unixaddr(&amp;addr, len);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006766">
+                    
+                    <a name="M006766"></a><b>unixsocket.recv_io([klass [, mode]]) => io
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+UNIXServer.open(&#8220;/tmp/sock&#8220;) {|serv|
+</p>
+<pre>
+  UNIXSocket.open(&quot;/tmp/sock&quot;) {|c|
+    s = serv.accept
+
+    c.send_io STDOUT
+    stdout = s.recv_io
+
+    p STDOUT.fileno #=&gt; 1
+    p stdout.fileno #=&gt; 7
+
+    stdout.puts &quot;hello&quot; # outputs &quot;hello\n&quot; to standard output.
+  }
+</pre>
+<p>
+}
+</p>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006766_source')" id="l_M006766_source">show</a>
+                        
+                    </p>
+                    <div id="M006766_source" class="dyn-source">
+                        <pre>static VALUE
+unix_recv_io(int argc, VALUE *argv, VALUE sock)
+{
+    VALUE klass, mode;
+    rb_io_t *fptr;
+    struct iomsg_arg arg;
+    struct iovec vec[2];
+    char buf[1];
+
+    int fd;
+#if FD_PASSING_BY_MSG_CONTROL
+    struct {
+        struct cmsghdr hdr;
+        char pad[8+sizeof(int)+8];
+    } cmsg;
+#endif
+
+    rb_scan_args(argc, argv, &quot;02&quot;, &amp;klass, &amp;mode);
+    if (argc == 0)
+        klass = rb_cIO;
+    if (argc &lt;= 1)
+        mode = Qnil;
+
+    GetOpenFile(sock, fptr);
+
+    arg.msg.msg_name = NULL;
+    arg.msg.msg_namelen = 0;
+
+    vec[0].iov_base = buf;
+    vec[0].iov_len = sizeof(buf);
+    arg.msg.msg_iov = vec;
+    arg.msg.msg_iovlen = 1;
+
+#if FD_PASSING_BY_MSG_CONTROL
+    arg.msg.msg_control = (caddr_t)&amp;cmsg;
+    arg.msg.msg_controllen = (socklen_t)CMSG_SPACE(sizeof(int));
+    arg.msg.msg_flags = 0;
+    cmsg.hdr.cmsg_len = (socklen_t)CMSG_LEN(sizeof(int));
+    cmsg.hdr.cmsg_level = SOL_SOCKET;
+    cmsg.hdr.cmsg_type = SCM_RIGHTS;
+    fd = -1;
+    memcpy(CMSG_DATA(&amp;cmsg.hdr), &amp;fd, sizeof(int));
+#else
+    arg.msg.msg_accrights = (caddr_t)&amp;fd;
+    arg.msg.msg_accrightslen = sizeof(fd);
+    fd = -1;
+#endif
+
+    arg.fd = fptr-&gt;fd;
+    rb_thread_wait_fd(arg.fd);
+    if ((int)BLOCKING_REGION(recvmsg_blocking, &amp;arg) == -1)
+        rb_sys_fail(&quot;recvmsg(2)&quot;);
+
+#if FD_PASSING_BY_MSG_CONTROL
+    if (arg.msg.msg_controllen &lt; sizeof(struct cmsghdr)) {
+        rb_raise(rb_eSocket,
+                 &quot;file descriptor was not passed (msg_controllen=%d smaller than sizeof(struct cmsghdr)=%d)&quot;,
+                 (int)arg.msg.msg_controllen, (int)sizeof(struct cmsghdr));
+    }
+    if (cmsg.hdr.cmsg_level != SOL_SOCKET) {
+        rb_raise(rb_eSocket,
+                 &quot;file descriptor was not passed (cmsg_level=%d, %d expected)&quot;,
+                 cmsg.hdr.cmsg_level, SOL_SOCKET);
+    }
+    if (cmsg.hdr.cmsg_type != SCM_RIGHTS) {
+        rb_raise(rb_eSocket,
+                 &quot;file descriptor was not passed (cmsg_type=%d, %d expected)&quot;,
+                 cmsg.hdr.cmsg_type, SCM_RIGHTS);
+    }
+    if (arg.msg.msg_controllen &lt; CMSG_LEN(sizeof(int))) {
+        rb_raise(rb_eSocket,
+                 &quot;file descriptor was not passed (msg_controllen=%d smaller than CMSG_LEN(sizeof(int))=%d)&quot;,
+                 (int)arg.msg.msg_controllen, (int)CMSG_LEN(sizeof(int)));
+    }
+    if (CMSG_SPACE(sizeof(int)) &lt; arg.msg.msg_controllen) {
+        rb_raise(rb_eSocket,
+                 &quot;file descriptor was not passed (msg_controllen=%d bigger than CMSG_SPACE(sizeof(int))=%d)&quot;,
+                 (int)arg.msg.msg_controllen, (int)CMSG_SPACE(sizeof(int)));
+    }
+    if (cmsg.hdr.cmsg_len != CMSG_LEN(sizeof(int))) {
+        rsock_discard_cmsg_resource(&amp;arg.msg);
+        rb_raise(rb_eSocket,
+                 &quot;file descriptor was not passed (cmsg_len=%d, %d expected)&quot;,
+                 (int)cmsg.hdr.cmsg_len, (int)CMSG_LEN(sizeof(int)));
+    }
+#else
+    if (arg.msg.msg_accrightslen != sizeof(fd)) {
+        rb_raise(rb_eSocket,
+                 &quot;file descriptor was not passed (accrightslen) : %d != %d&quot;,
+                 arg.msg.msg_accrightslen, (int)sizeof(fd));
+    }
+#endif
+
+#if FD_PASSING_BY_MSG_CONTROL
+    memcpy(&amp;fd, CMSG_DATA(&amp;cmsg.hdr), sizeof(int));
+#endif
+
+    if (klass == Qnil)
+        return INT2FIX(fd);
+    else {
+        ID for_fd;
+        int ff_argc;
+        VALUE ff_argv[2];
+        CONST_ID(for_fd, &quot;for_fd&quot;);
+        ff_argc = mode == Qnil ? 1 : 2;
+        ff_argv[0] = INT2FIX(fd);
+        ff_argv[1] = mode;
+        return rb_funcall2(klass, for_fd, ff_argc, ff_argv);
+    }
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006764">
+                    
+                    <a name="M006764"></a><b>unixsocket.recvfrom(maxlen [, flags]) => [mesg, unixaddress]
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Receives a message via <em>unixsocket</em>.
+</p>
+<p>
+<em>maxlen</em> is the maximum number of bytes to receive.
+</p>
+<p>
+<em>flags</em> should be a bitwise OR of Socket::MSG_* constants.
+</p>
+<pre>
+  s1 = Socket.new(:UNIX, :DGRAM, 0)
+  s1_ai = Addrinfo.unix(&quot;/tmp/sock1&quot;)
+  s1.bind(s1_ai)
+
+  s2 = Socket.new(:UNIX, :DGRAM, 0)
+  s2_ai = Addrinfo.unix(&quot;/tmp/sock2&quot;)
+  s2.bind(s2_ai)
+  s3 = UNIXSocket.for_fd(s2.fileno)
+
+  s1.send &quot;a&quot;, 0, s2_ai
+  p s3.recvfrom(10) #=&gt; [&quot;a&quot;, [&quot;AF_UNIX&quot;, &quot;/tmp/sock1&quot;]]
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006764_source')" id="l_M006764_source">show</a>
+                        
+                    </p>
+                    <div id="M006764_source" class="dyn-source">
+                        <pre>static VALUE
+unix_recvfrom(int argc, VALUE *argv, VALUE sock)
+{
+    return rsock_s_recvfrom(sock, argc, argv, RECV_UNIX);
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M006765">
+                    
+                    <a name="M006765"></a><b>unixsocket.send_io(io) => nil
+</b>
+                    
+                </div>
+                
+                <div class="description">
+                  <p>
+Sends <em>io</em> as file descriptor passing.
+</p>
+<pre>
+  s1, s2 = UNIXSocket.pair
+
+  s1.send_io STDOUT
+  stdout = s2.recv_io
+
+  p STDOUT.fileno #=&gt; 1
+  p stdout.fileno #=&gt; 6
+
+  stdout.puts &quot;hello&quot; # outputs &quot;hello\n&quot; to standard output.
+</pre>
+
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M006765_source')" id="l_M006765_source">show</a>
+                        
+                    </p>
+                    <div id="M006765_source" class="dyn-source">
+                        <pre>static VALUE
+unix_send_io(VALUE sock, VALUE val)
+{
+    int fd;
+    rb_io_t *fptr;
+    struct iomsg_arg arg;
+    struct iovec vec[1];
+    char buf[1];
+
+#if FD_PASSING_BY_MSG_CONTROL
+    struct {
+        struct cmsghdr hdr;
+        char pad[8+sizeof(int)+8];
+    } cmsg;
+#endif
+
+    if (rb_obj_is_kind_of(val, rb_cIO)) {
+        rb_io_t *valfptr;
+        GetOpenFile(val, valfptr);
+        fd = valfptr-&gt;fd;
+    }
+    else if (FIXNUM_P(val)) {
+        fd = FIX2INT(val);
+    }
+    else {
+        rb_raise(rb_eTypeError, &quot;neither IO nor file descriptor&quot;);
+    }
+
+    GetOpenFile(sock, fptr);
+
+    arg.msg.msg_name = NULL;
+    arg.msg.msg_namelen = 0;
+
+    /* Linux and Solaris doesn't work if msg_iov is NULL. */
+    buf[0] = '\0';
+    vec[0].iov_base = buf;
+    vec[0].iov_len = 1;
+    arg.msg.msg_iov = vec;
+    arg.msg.msg_iovlen = 1;
+
+#if FD_PASSING_BY_MSG_CONTROL
+    arg.msg.msg_control = (caddr_t)&amp;cmsg;
+    arg.msg.msg_controllen = (socklen_t)CMSG_LEN(sizeof(int));
+    arg.msg.msg_flags = 0;
+    MEMZERO((char*)&amp;cmsg, char, sizeof(cmsg));
+    cmsg.hdr.cmsg_len = (socklen_t)CMSG_LEN(sizeof(int));
+    cmsg.hdr.cmsg_level = SOL_SOCKET;
+    cmsg.hdr.cmsg_type = SCM_RIGHTS;
+    memcpy(CMSG_DATA(&amp;cmsg.hdr), &amp;fd, sizeof(int));
+#else
+    arg.msg.msg_accrights = (caddr_t)&amp;fd;
+    arg.msg.msg_accrightslen = sizeof(fd);
+#endif
+
+    arg.fd = fptr-&gt;fd;
+    rb_thread_fd_writable(arg.fd);
+    if ((int)BLOCKING_REGION(sendmsg_blocking, &amp;arg) == -1)
+        rb_sys_fail(&quot;sendmsg(2)&quot;);
+
+    return Qnil;
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

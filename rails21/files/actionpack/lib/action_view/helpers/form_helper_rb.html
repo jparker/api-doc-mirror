@@ -1,0 +1,786 @@
+  <div id="fileHeader">
+    <h1>form_helper.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionpack/lib/action_view/helpers/form_helper.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:04 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>require 'cgi'
+require 'action_view/helpers/date_helper'
+require 'action_view/helpers/tag_helper'
+require 'action_view/helpers/form_tag_helper'
+
+module ActionView
+  module Helpers
+    # Form helpers are designed to make working with models much easier compared to using just standard HTML
+    # elements by providing a set of methods for creating forms based on your models. This helper generates the HTML
+    # for forms, providing a method for each sort of input (e.g., text, password, select, and so on). When the form
+    # is submitted (i.e., when the user hits the submit button or &lt;tt&gt;form.submit&lt;/tt&gt; is called via JavaScript), the form inputs will be bundled into the &lt;tt&gt;params&lt;/tt&gt; object and passed back to the controller.
+    #
+    # There are two types of form helpers: those that specifically work with model attributes and those that don't.
+    # This helper deals with those that work with model attributes; to see an example of form helpers that don't work
+    # with model attributes, check the ActionView::Helpers::FormTagHelper documentation.
+    #
+    # The core method of this helper, form_for, gives you the ability to create a form for a model instance;
+    # for example, let's say that you have a model &lt;tt&gt;Person&lt;/tt&gt; and want to create a new instance of it:
+    #
+    #     # Note: a @person variable will have been created in the controller.
+    #     # For example: @person = Person.new
+    #     &lt;% form_for :person, @person, :url =&gt; { :action =&gt; &quot;create&quot; } do |f| %&gt;
+    #       &lt;%= f.text_field :first_name %&gt;
+    #       &lt;%= f.text_field :last_name %&gt;
+    #       &lt;%= submit_tag 'Create' %&gt;
+    #     &lt;% end %&gt;
+    #
+    # The HTML generated for this would be:
+    #
+    #     &lt;form action=&quot;/persons/create&quot; method=&quot;post&quot;&gt;
+    #       &lt;input id=&quot;person_first_name&quot; name=&quot;person[first_name]&quot; size=&quot;30&quot; type=&quot;text&quot; /&gt;
+    #       &lt;input id=&quot;person_last_name&quot; name=&quot;person[last_name]&quot; size=&quot;30&quot; type=&quot;text&quot; /&gt;
+    #       &lt;input name=&quot;commit&quot; type=&quot;submit&quot; value=&quot;Create&quot; /&gt;
+    #     &lt;/form&gt;
+    #
+    # If you are using a partial for your form fields, you can use this shortcut:
+    #
+    #     &lt;% form_for :person, @person, :url =&gt; { :action =&gt; &quot;create&quot; } do |f| %&gt;
+    #       &lt;%= render :partial =&gt; f %&gt;
+    #       &lt;%= submit_tag 'Create' %&gt;
+    #     &lt;% end %&gt;
+    #
+    # This example will render the &lt;tt&gt;people/_form&lt;/tt&gt; partial, setting a local variable called &lt;tt&gt;form&lt;/tt&gt; which references the yielded FormBuilder.
+    #
+    # The &lt;tt&gt;params&lt;/tt&gt; object created when this form is submitted would look like:
+    #
+    #     {&quot;action&quot;=&gt;&quot;create&quot;, &quot;controller&quot;=&gt;&quot;persons&quot;, &quot;person&quot;=&gt;{&quot;first_name&quot;=&gt;&quot;William&quot;, &quot;last_name&quot;=&gt;&quot;Smith&quot;}}
+    #
+    # The params hash has a nested &lt;tt&gt;person&lt;/tt&gt; value, which can therefore be accessed with &lt;tt&gt;params[:person]&lt;/tt&gt; in the controller.
+    # If were editing/updating an instance (e.g., &lt;tt&gt;Person.find(1)&lt;/tt&gt; rather than &lt;tt&gt;Person.new&lt;/tt&gt; in the controller), the objects
+    # attribute values are filled into the form (e.g., the &lt;tt&gt;person_first_name&lt;/tt&gt; field would have that person's first name in it).
+    #
+    # If the object name contains square brackets the id for the object will be inserted. For example:
+    #
+    #   &lt;%= text_field &quot;person[]&quot;, &quot;name&quot; %&gt;
+    #
+    # ...will generate the following ERb.
+    #
+    #   &lt;input type=&quot;text&quot; id=&quot;person_&lt;%= @person.id %&gt;_name&quot; name=&quot;person[&lt;%= @person.id %&gt;][name]&quot; value=&quot;&lt;%= @person.name %&gt;&quot; /&gt;
+    #
+    # If the helper is being used to generate a repetitive sequence of similar form elements, for example in a partial
+    # used by &lt;tt&gt;render_collection_of_partials&lt;/tt&gt;, the &lt;tt&gt;index&lt;/tt&gt; option may come in handy. Example:
+    #
+    #   &lt;%= text_field &quot;person&quot;, &quot;name&quot;, &quot;index&quot; =&gt; 1 %&gt;
+    #
+    # ...becomes...
+    #
+    #   &lt;input type=&quot;text&quot; id=&quot;person_1_name&quot; name=&quot;person[1][name]&quot; value=&quot;&lt;%= @person.name %&gt;&quot; /&gt;
+    #
+    # An &lt;tt&gt;index&lt;/tt&gt; option may also be passed to &lt;tt&gt;form_for&lt;/tt&gt; and &lt;tt&gt;fields_for&lt;/tt&gt;.  This automatically applies
+    # the &lt;tt&gt;index&lt;/tt&gt; to all the nested fields.
+    #
+    # There are also methods for helping to build form tags in link:classes/ActionView/Helpers/FormOptionsHelper.html,
+    # link:classes/ActionView/Helpers/DateHelper.html, and link:classes/ActionView/Helpers/ActiveRecordHelper.html
+    module FormHelper
+      # Creates a form and a scope around a specific model object that is used as
+      # a base for questioning about values for the fields.
+      #
+      # Rails provides succint resource-oriented form generation with +form_for+
+      # like this:
+      #
+      #   &lt;% form_for @offer do |f| %&gt;
+      #     &lt;%= f.label :version, 'Version' %&gt;:
+      #     &lt;%= f.text_field :version %&gt;&lt;br /&gt;
+      #     &lt;%= f.label :author, 'Author' %&gt;:
+      #     &lt;%= f.text_field :author %&gt;&lt;br /&gt;
+      #   &lt;% end %&gt;
+      #
+      # There, +form_for+ is able to generate the rest of RESTful form parameters
+      # based on introspection on the record, but to understand what it does we
+      # need to dig first into the alternative generic usage it is based upon.
+      #
+      # === Generic form_for
+      #
+      # The generic way to call +form_for+ yields a form builder around a model:
+      #
+      #   &lt;% form_for :person, :url =&gt; { :action =&gt; &quot;update&quot; } do |f| %&gt;
+      #     &lt;%= f.error_messages %&gt;
+      #     First name: &lt;%= f.text_field :first_name %&gt;&lt;br /&gt;
+      #     Last name : &lt;%= f.text_field :last_name %&gt;&lt;br /&gt;
+      #     Biography : &lt;%= f.text_area :biography %&gt;&lt;br /&gt;
+      #     Admin?    : &lt;%= f.check_box :admin %&gt;&lt;br /&gt;
+      #   &lt;% end %&gt;
+      #
+      # There, the first argument is a symbol or string with the name of the
+      # object the form is about, and also the name of the instance variable the
+      # object is stored in.
+      #
+      # The form builder acts as a regular form helper that somehow carries the
+      # model. Thus, the idea is that
+      #
+      #   &lt;%= f.text_field :first_name %&gt;
+      #
+      # gets expanded to
+      #
+      #   &lt;%= text_field :person, :first_name %&gt;
+      #
+      # If the instance variable is not &lt;tt&gt;@person&lt;/tt&gt; you can pass the actual
+      # record as the second argument:
+      #
+      #   &lt;% form_for :person, person, :url =&gt; { :action =&gt; &quot;update&quot; } do |f| %&gt;
+      #     ...
+      #   &lt;% end %&gt;
+      #
+      # In that case you can think
+      #
+      #   &lt;%= f.text_field :first_name %&gt;
+      #
+      # gets expanded to
+      #
+      #   &lt;%= text_field :person, :first_name, :object =&gt; person %&gt;
+      #
+      # You can even display error messages of the wrapped model this way:
+      #
+      #   &lt;%= f.error_messages %&gt;
+      #
+      # In any of its variants, the rightmost argument to +form_for+ is an
+      # optional hash of options:
+      #
+      # * &lt;tt&gt;:url&lt;/tt&gt; - The URL the form is submitted to. It takes the same fields
+      #   you pass to +url_for+ or +link_to+. In particular you may pass here a
+      #   named route directly as well. Defaults to the current action.
+      # * &lt;tt&gt;:html&lt;/tt&gt; - Optional HTML attributes for the form tag.
+      #
+      # Worth noting is that the +form_for+ tag is called in a ERb evaluation block,
+      # not an ERb output block. So that's &lt;tt&gt;&lt;% %&gt;&lt;/tt&gt;, not &lt;tt&gt;&lt;%= %&gt;&lt;/tt&gt;.
+      #
+      # Also note that +form_for+ doesn't create an exclusive scope. It's still
+      # possible to use both the stand-alone FormHelper methods and methods from
+      # FormTagHelper. For example:
+      #
+      #   &lt;% form_for :person, @person, :url =&gt; { :action =&gt; &quot;update&quot; } do |f| %&gt;
+      #     First name: &lt;%= f.text_field :first_name %&gt;
+      #     Last name : &lt;%= f.text_field :last_name %&gt;
+      #     Biography : &lt;%= text_area :person, :biography %&gt;
+      #     Admin?    : &lt;%= check_box_tag &quot;person[admin]&quot;, @person.company.admin? %&gt;
+      #   &lt;% end %&gt;
+      #
+      # This also works for the methods in FormOptionHelper and DateHelper that are
+      # designed to work with an object as base, like FormOptionHelper#collection_select
+      # and DateHelper#datetime_select.
+      #
+      # === Resource-oriented style
+      #
+      # As we said above, in addition to manually configuring the +form_for+ call,
+      # you can rely on automated resource identification, which will use the conventions
+      # and named routes of that approach. This is the preferred way to use +form_for+
+      # nowadays.
+      #
+      # For example, if &lt;tt&gt;@post&lt;/tt&gt; is an existing record you want to edit
+      #
+      #   &lt;% form_for @post do |f| %&gt;
+      #     ...
+      #   &lt;% end %&gt;
+      #
+      # is equivalent to something like:
+      #
+      #   &lt;% form_for :post, @post, :url =&gt; post_path(@post), :html =&gt; { :method =&gt; :put, :class =&gt; &quot;edit_post&quot;, :id =&gt; &quot;edit_post_45&quot; } do |f| %&gt;
+      #     ...
+      #   &lt;% end %&gt;
+      #
+      # And for new records
+      #
+      #   &lt;% form_for(Post.new) do |f| %&gt;
+      #     ...
+      #   &lt;% end %&gt;
+      #
+      # expands to
+      #
+      #   &lt;% form_for :post, Post.new, :url =&gt; posts_path, :html =&gt; { :class =&gt; &quot;new_post&quot;, :id =&gt; &quot;new_post&quot; } do |f| %&gt;
+      #     ...
+      #   &lt;% end %&gt;
+      #
+      # You can also overwrite the individual conventions, like this:
+      #
+      #   &lt;% form_for(@post, :url =&gt; super_post_path(@post)) do |f| %&gt;
+      #     ...
+      #   &lt;% end %&gt;
+      #
+      # And for namespaced routes, like +admin_post_url+:
+      #
+      #   &lt;% form_for([:admin, @post]) do |f| %&gt;
+      #    ...
+      #   &lt;% end %&gt;
+      #
+      # === Customized form builders
+      #
+      # You can also build forms using a customized FormBuilder class. Subclass FormBuilder and override or define some more helpers,
+      # then use your custom builder. For example, let's say you made a helper to automatically add labels to form inputs.
+      #
+      #   &lt;% form_for :person, @person, :url =&gt; { :action =&gt; &quot;update&quot; }, :builder =&gt; LabellingFormBuilder do |f| %&gt;
+      #     &lt;%= f.text_field :first_name %&gt;
+      #     &lt;%= f.text_field :last_name %&gt;
+      #     &lt;%= text_area :person, :biography %&gt;
+      #     &lt;%= check_box_tag &quot;person[admin]&quot;, @person.company.admin? %&gt;
+      #   &lt;% end %&gt;
+      #
+      # In this case, if you use this:
+      #
+      #   &lt;%= render :partial =&gt; f %&gt;
+      #
+      # The rendered template is &lt;tt&gt;people/_labelling_form&lt;/tt&gt; and the local variable referencing the form builder is called &lt;tt&gt;labelling_form&lt;/tt&gt;.
+      #
+      # In many cases you will want to wrap the above in another helper, so you could do something like the following:
+      #
+      #   def labelled_form_for(record_or_name_or_array, *args, &amp;proc)
+      #     options = args.extract_options!
+      #     form_for(record_or_name_or_array, *(args &lt;&lt; options.merge(:builder =&gt; LabellingFormBuilder)), &amp;proc)
+      #   end
+      #
+      # If you don't need to attach a form to a model instance, then check out FormTagHelper#form_tag.
+      def form_for(record_or_name_or_array, *args, &amp;proc)
+        raise ArgumentError, &quot;Missing block&quot; unless block_given?
+
+        options = args.extract_options!
+
+        case record_or_name_or_array
+        when String, Symbol
+          object_name = record_or_name_or_array
+        when Array
+          object = record_or_name_or_array.last
+          object_name = ActionController::RecordIdentifier.singular_class_name(object)
+          apply_form_for_options!(record_or_name_or_array, options)
+          args.unshift object
+        else
+          object = record_or_name_or_array
+          object_name = ActionController::RecordIdentifier.singular_class_name(object)
+          apply_form_for_options!([object], options)
+          args.unshift object
+        end
+
+        concat(form_tag(options.delete(:url) || {}, options.delete(:html) || {}), proc.binding)
+        fields_for(object_name, *(args &lt;&lt; options), &amp;proc)
+        concat('&lt;/form&gt;', proc.binding)
+      end
+
+      def apply_form_for_options!(object_or_array, options) #:nodoc:
+        object = object_or_array.is_a?(Array) ? object_or_array.last : object_or_array
+
+        html_options =
+          if object.respond_to?(:new_record?) &amp;&amp; object.new_record?
+            { :class  =&gt; dom_class(object, :new),  :id =&gt; dom_id(object), :method =&gt; :post }
+          else
+            { :class  =&gt; dom_class(object, :edit), :id =&gt; dom_id(object, :edit), :method =&gt; :put }
+          end
+
+        options[:html] ||= {}
+        options[:html].reverse_merge!(html_options)
+        options[:url] ||= polymorphic_path(object_or_array)
+      end
+
+      # Creates a scope around a specific model object like form_for, but doesn't create the form tags themselves. This makes
+      # fields_for suitable for specifying additional model objects in the same form:
+      #
+      # ==== Examples
+      #   &lt;% form_for @person, :url =&gt; { :action =&gt; &quot;update&quot; } do |person_form| %&gt;
+      #     First name: &lt;%= person_form.text_field :first_name %&gt;
+      #     Last name : &lt;%= person_form.text_field :last_name %&gt;
+      #
+      #     &lt;% fields_for @person.permission do |permission_fields| %&gt;
+      #       Admin?  : &lt;%= permission_fields.check_box :admin %&gt;
+      #     &lt;% end %&gt;
+      #   &lt;% end %&gt;
+      #
+      # ...or if you have an object that needs to be represented as a different parameter, like a Client that acts as a Person:
+      #
+      #   &lt;% fields_for :person, @client do |permission_fields| %&gt;
+      #     Admin?: &lt;%= permission_fields.check_box :admin %&gt;
+      #   &lt;% end %&gt;
+      #
+      # ...or if you don't have an object, just a name of the parameter
+      #
+      #   &lt;% fields_for :person do |permission_fields| %&gt;
+      #     Admin?: &lt;%= permission_fields.check_box :admin %&gt;
+      #   &lt;% end %&gt;
+      #
+      # Note: This also works for the methods in FormOptionHelper and DateHelper that are designed to work with an object as base,
+      # like FormOptionHelper#collection_select and DateHelper#datetime_select.
+      def fields_for(record_or_name_or_array, *args, &amp;block)
+        raise ArgumentError, &quot;Missing block&quot; unless block_given?
+        options = args.extract_options!
+
+        case record_or_name_or_array
+        when String, Symbol
+          object_name = record_or_name_or_array
+          object = args.first
+        when Array
+          object = record_or_name_or_array.last
+          object_name = ActionController::RecordIdentifier.singular_class_name(object)
+          apply_form_for_options!(record_or_name_or_array, options)
+        else
+          object = record_or_name_or_array
+          object_name = ActionController::RecordIdentifier.singular_class_name(object)
+        end
+
+        builder = options[:builder] || ActionView::Base.default_form_builder
+        yield builder.new(object_name, object, self, options, block)
+      end
+
+      # Returns a label tag tailored for labelling an input field for a specified attribute (identified by +method+) on an object
+      # assigned to the template (identified by +object+). The text of label will default to the attribute name unless you specify
+      # it explicitly. Additional options on the label tag can be passed as a hash with +options+. These options will be tagged
+      # onto the HTML as an HTML element attribute as in the example shown.
+      #
+      # ==== Examples
+      #   label(:post, :title)
+      #   # =&gt; &lt;label for=&quot;post_title&quot;&gt;Title&lt;/label&gt;
+      #
+      #   label(:post, :title, &quot;A short title&quot;)
+      #   # =&gt; &lt;label for=&quot;post_title&quot;&gt;A short title&lt;/label&gt;
+      #
+      #   label(:post, :title, &quot;A short title&quot;, :class =&gt; &quot;title_label&quot;)
+      #   # =&gt; &lt;label for=&quot;post_title&quot; class=&quot;title_label&quot;&gt;A short title&lt;/label&gt;
+      #
+      def label(object_name, method, text = nil, options = {})
+        InstanceTag.new(object_name, method, self, nil, options.delete(:object)).to_label_tag(text, options)
+      end
+
+      # Returns an input tag of the &quot;text&quot; type tailored for accessing a specified attribute (identified by +method+) on an object
+      # assigned to the template (identified by +object+). Additional options on the input tag can be passed as a
+      # hash with +options+. These options will be tagged onto the HTML as an HTML element attribute as in the example
+      # shown.
+      #
+      # ==== Examples
+      #   text_field(:post, :title, :size =&gt; 20)
+      #   # =&gt; &lt;input type=&quot;text&quot; id=&quot;post_title&quot; name=&quot;post[title]&quot; size=&quot;20&quot; value=&quot;#{@post.title}&quot; /&gt;
+      #
+      #   text_field(:post, :title, :class =&gt; &quot;create_input&quot;)
+      #   # =&gt; &lt;input type=&quot;text&quot; id=&quot;post_title&quot; name=&quot;post[title]&quot; value=&quot;#{@post.title}&quot; class=&quot;create_input&quot; /&gt;
+      #
+      #   text_field(:session, :user, :onchange =&gt; &quot;if $('session[user]').value == 'admin' { alert('Your login can not be admin!'); }&quot;)
+      #   # =&gt; &lt;input type=&quot;text&quot; id=&quot;session_user&quot; name=&quot;session[user]&quot; value=&quot;#{@session.user}&quot; onchange = &quot;if $('session[user]').value == 'admin' { alert('Your login can not be admin!'); }&quot;/&gt;
+      #
+      #   text_field(:snippet, :code, :size =&gt; 20, :class =&gt; 'code_input')
+      #   # =&gt; &lt;input type=&quot;text&quot; id=&quot;snippet_code&quot; name=&quot;snippet[code]&quot; size=&quot;20&quot; value=&quot;#{@snippet.code}&quot; class=&quot;code_input&quot; /&gt;
+      #
+      def text_field(object_name, method, options = {})
+        InstanceTag.new(object_name, method, self, nil, options.delete(:object)).to_input_field_tag(&quot;text&quot;, options)
+      end
+
+      # Returns an input tag of the &quot;password&quot; type tailored for accessing a specified attribute (identified by +method+) on an object
+      # assigned to the template (identified by +object+). Additional options on the input tag can be passed as a
+      # hash with +options+. These options will be tagged onto the HTML as an HTML element attribute as in the example
+      # shown.
+      #
+      # ==== Examples
+      #   password_field(:login, :pass, :size =&gt; 20)
+      #   # =&gt; &lt;input type=&quot;text&quot; id=&quot;login_pass&quot; name=&quot;login[pass]&quot; size=&quot;20&quot; value=&quot;#{@login.pass}&quot; /&gt;
+      #
+      #   password_field(:account, :secret, :class =&gt; &quot;form_input&quot;)
+      #   # =&gt; &lt;input type=&quot;text&quot; id=&quot;account_secret&quot; name=&quot;account[secret]&quot; value=&quot;#{@account.secret}&quot; class=&quot;form_input&quot; /&gt;
+      #
+      #   password_field(:user, :password, :onchange =&gt; &quot;if $('user[password]').length &gt; 30 { alert('Your password needs to be shorter!'); }&quot;)
+      #   # =&gt; &lt;input type=&quot;text&quot; id=&quot;user_password&quot; name=&quot;user[password]&quot; value=&quot;#{@user.password}&quot; onchange = &quot;if $('user[password]').length &gt; 30 { alert('Your password needs to be shorter!'); }&quot;/&gt;
+      #
+      #   password_field(:account, :pin, :size =&gt; 20, :class =&gt; 'form_input')
+      #   # =&gt; &lt;input type=&quot;text&quot; id=&quot;account_pin&quot; name=&quot;account[pin]&quot; size=&quot;20&quot; value=&quot;#{@account.pin}&quot; class=&quot;form_input&quot; /&gt;
+      #
+      def password_field(object_name, method, options = {})
+        InstanceTag.new(object_name, method, self, nil, options.delete(:object)).to_input_field_tag(&quot;password&quot;, options)
+      end
+
+      # Returns a hidden input tag tailored for accessing a specified attribute (identified by +method+) on an object
+      # assigned to the template (identified by +object+). Additional options on the input tag can be passed as a
+      # hash with +options+. These options will be tagged onto the HTML as an HTML element attribute as in the example
+      # shown.
+      #
+      # ==== Examples
+      #   hidden_field(:signup, :pass_confirm)
+      #   # =&gt; &lt;input type=&quot;hidden&quot; id=&quot;signup_pass_confirm&quot; name=&quot;signup[pass_confirm]&quot; value=&quot;#{@signup.pass_confirm}&quot; /&gt;
+      #
+      #   hidden_field(:post, :tag_list)
+      #   # =&gt; &lt;input type=&quot;hidden&quot; id=&quot;post_tag_list&quot; name=&quot;post[tag_list]&quot; value=&quot;#{@post.tag_list}&quot; /&gt;
+      #
+      #   hidden_field(:user, :token)
+      #   # =&gt; &lt;input type=&quot;hidden&quot; id=&quot;user_token&quot; name=&quot;user[token]&quot; value=&quot;#{@user.token}&quot; /&gt;
+      def hidden_field(object_name, method, options = {})
+        InstanceTag.new(object_name, method, self, nil, options.delete(:object)).to_input_field_tag(&quot;hidden&quot;, options)
+      end
+
+      # Returns an file upload input tag tailored for accessing a specified attribute (identified by +method+) on an object
+      # assigned to the template (identified by +object+). Additional options on the input tag can be passed as a
+      # hash with +options+. These options will be tagged onto the HTML as an HTML element attribute as in the example
+      # shown.
+      #
+      # ==== Examples
+      #   file_field(:user, :avatar)
+      #   # =&gt; &lt;input type=&quot;file&quot; id=&quot;user_avatar&quot; name=&quot;user[avatar]&quot; /&gt;
+      #
+      #   file_field(:post, :attached, :accept =&gt; 'text/html')
+      #   # =&gt; &lt;input type=&quot;file&quot; id=&quot;post_attached&quot; name=&quot;post[attached]&quot; /&gt;
+      #
+      #   file_field(:attachment, :file, :class =&gt; 'file_input')
+      #   # =&gt; &lt;input type=&quot;file&quot; id=&quot;attachment_file&quot; name=&quot;attachment[file]&quot; class=&quot;file_input&quot; /&gt;
+      #
+      def file_field(object_name, method, options = {})
+        InstanceTag.new(object_name, method, self, nil, options.delete(:object)).to_input_field_tag(&quot;file&quot;, options)
+      end
+
+      # Returns a textarea opening and closing tag set tailored for accessing a specified attribute (identified by +method+)
+      # on an object assigned to the template (identified by +object+). Additional options on the input tag can be passed as a
+      # hash with +options+.
+      #
+      # ==== Examples
+      #   text_area(:post, :body, :cols =&gt; 20, :rows =&gt; 40)
+      #   # =&gt; &lt;textarea cols=&quot;20&quot; rows=&quot;40&quot; id=&quot;post_body&quot; name=&quot;post[body]&quot;&gt;
+      #   #      #{@post.body}
+      #   #    &lt;/textarea&gt;
+      #
+      #   text_area(:comment, :text, :size =&gt; &quot;20x30&quot;)
+      #   # =&gt; &lt;textarea cols=&quot;20&quot; rows=&quot;30&quot; id=&quot;comment_text&quot; name=&quot;comment[text]&quot;&gt;
+      #   #      #{@comment.text}
+      #   #    &lt;/textarea&gt;
+      #
+      #   text_area(:application, :notes, :cols =&gt; 40, :rows =&gt; 15, :class =&gt; 'app_input')
+      #   # =&gt; &lt;textarea cols=&quot;40&quot; rows=&quot;15&quot; id=&quot;application_notes&quot; name=&quot;application[notes]&quot; class=&quot;app_input&quot;&gt;
+      #   #      #{@application.notes}
+      #   #    &lt;/textarea&gt;
+      #
+      #   text_area(:entry, :body, :size =&gt; &quot;20x20&quot;, :disabled =&gt; 'disabled')
+      #   # =&gt; &lt;textarea cols=&quot;20&quot; rows=&quot;20&quot; id=&quot;entry_body&quot; name=&quot;entry[body]&quot; disabled=&quot;disabled&quot;&gt;
+      #   #      #{@entry.body}
+      #   #    &lt;/textarea&gt;
+      def text_area(object_name, method, options = {})
+        InstanceTag.new(object_name, method, self, nil, options.delete(:object)).to_text_area_tag(options)
+      end
+
+      # Returns a checkbox tag tailored for accessing a specified attribute (identified by +method+) on an object
+      # assigned to the template (identified by +object+). It's intended that +method+ returns an integer and if that
+      # integer is above zero, then the checkbox is checked. Additional options on the input tag can be passed as a
+      # hash with +options+. The +checked_value+ defaults to 1 while the default +unchecked_value+
+      # is set to 0 which is convenient for boolean values. Since HTTP standards say that unchecked checkboxes don't post anything,
+      # we add a hidden value with the same name as the checkbox as a work around.
+      #
+      # ==== Examples
+      #   # Let's say that @post.validated? is 1:
+      #   check_box(&quot;post&quot;, &quot;validated&quot;)
+      #   # =&gt; &lt;input type=&quot;checkbox&quot; id=&quot;post_validated&quot; name=&quot;post[validated]&quot; value=&quot;1&quot; /&gt;
+      #   #    &lt;input name=&quot;post[validated]&quot; type=&quot;hidden&quot; value=&quot;0&quot; /&gt;
+      #
+      #   # Let's say that @puppy.gooddog is &quot;no&quot;:
+      #   check_box(&quot;puppy&quot;, &quot;gooddog&quot;, {}, &quot;yes&quot;, &quot;no&quot;)
+      #   # =&gt; &lt;input type=&quot;checkbox&quot; id=&quot;puppy_gooddog&quot; name=&quot;puppy[gooddog]&quot; value=&quot;yes&quot; /&gt;
+      #   #    &lt;input name=&quot;puppy[gooddog]&quot; type=&quot;hidden&quot; value=&quot;no&quot; /&gt;
+      #
+      #   check_box(&quot;eula&quot;, &quot;accepted&quot;, { :class =&gt; 'eula_check' }, &quot;yes&quot;, &quot;no&quot;)
+      #   # =&gt; &lt;input type=&quot;checkbox&quot; class=&quot;eula_check&quot; id=&quot;eula_accepted&quot; name=&quot;eula[accepted]&quot; value=&quot;yes&quot; /&gt;
+      #   #    &lt;input name=&quot;eula[accepted]&quot; type=&quot;hidden&quot; value=&quot;no&quot; /&gt;
+      #
+      def check_box(object_name, method, options = {}, checked_value = &quot;1&quot;, unchecked_value = &quot;0&quot;)
+        InstanceTag.new(object_name, method, self, nil, options.delete(:object)).to_check_box_tag(options, checked_value, unchecked_value)
+      end
+
+      # Returns a radio button tag for accessing a specified attribute (identified by +method+) on an object
+      # assigned to the template (identified by +object+). If the current value of +method+ is +tag_value+ the
+      # radio button will be checked. Additional options on the input tag can be passed as a
+      # hash with +options+.
+      #
+      # ==== Examples
+      #   # Let's say that @post.category returns &quot;rails&quot;:
+      #   radio_button(&quot;post&quot;, &quot;category&quot;, &quot;rails&quot;)
+      #   radio_button(&quot;post&quot;, &quot;category&quot;, &quot;java&quot;)
+      #   # =&gt; &lt;input type=&quot;radio&quot; id=&quot;post_category_rails&quot; name=&quot;post[category]&quot; value=&quot;rails&quot; checked=&quot;checked&quot; /&gt;
+      #   #    &lt;input type=&quot;radio&quot; id=&quot;post_category_java&quot; name=&quot;post[category]&quot; value=&quot;java&quot; /&gt;
+      #
+      #   radio_button(&quot;user&quot;, &quot;receive_newsletter&quot;, &quot;yes&quot;)
+      #   radio_button(&quot;user&quot;, &quot;receive_newsletter&quot;, &quot;no&quot;)
+      #   # =&gt; &lt;input type=&quot;radio&quot; id=&quot;user_receive_newsletter_yes&quot; name=&quot;user[receive_newsletter]&quot; value=&quot;yes&quot; /&gt;
+      #   #    &lt;input type=&quot;radio&quot; id=&quot;user_receive_newsletter_no&quot; name=&quot;user[receive_newsletter]&quot; value=&quot;no&quot; checked=&quot;checked&quot; /&gt;
+      def radio_button(object_name, method, tag_value, options = {})
+        InstanceTag.new(object_name, method, self, nil, options.delete(:object)).to_radio_button_tag(tag_value, options)
+      end
+    end
+
+    class InstanceTag #:nodoc:
+      include Helpers::TagHelper, Helpers::FormTagHelper
+
+      attr_reader :method_name, :object_name
+
+      DEFAULT_FIELD_OPTIONS     = { &quot;size&quot; =&gt; 30 }.freeze unless const_defined?(:DEFAULT_FIELD_OPTIONS)
+      DEFAULT_RADIO_OPTIONS     = { }.freeze unless const_defined?(:DEFAULT_RADIO_OPTIONS)
+      DEFAULT_TEXT_AREA_OPTIONS = { &quot;cols&quot; =&gt; 40, &quot;rows&quot; =&gt; 20 }.freeze unless const_defined?(:DEFAULT_TEXT_AREA_OPTIONS)
+
+      def initialize(object_name, method_name, template_object, local_binding = nil, object = nil)
+        @object_name, @method_name = object_name.to_s.dup, method_name.to_s.dup
+        @template_object, @local_binding = template_object, local_binding
+        @object = object
+        if @object_name.sub!(/\[\]$/,&quot;&quot;)
+          if object ||= @template_object.instance_variable_get(&quot;@#{Regexp.last_match.pre_match}&quot;) and object.respond_to?(:to_param)
+            @auto_index = object.to_param
+          else
+            raise ArgumentError, &quot;object[] naming but object param and @object var don't exist or don't respond to to_param: #{object.inspect}&quot;
+          end
+        end
+      end
+
+      def to_label_tag(text = nil, options = {})
+        options = options.stringify_keys
+        name_and_id = options.dup
+        add_default_name_and_id(name_and_id)
+        options.delete(&quot;index&quot;)
+        options[&quot;for&quot;] ||= name_and_id[&quot;id&quot;]
+        content = (text.blank? ? nil : text.to_s) || method_name.humanize
+        label_tag(name_and_id[&quot;id&quot;], content, options)
+      end
+
+      def to_input_field_tag(field_type, options = {})
+        options = options.stringify_keys
+        options[&quot;size&quot;] = options[&quot;maxlength&quot;] || DEFAULT_FIELD_OPTIONS[&quot;size&quot;] unless options.key?(&quot;size&quot;)
+        options = DEFAULT_FIELD_OPTIONS.merge(options)
+        if field_type == &quot;hidden&quot;
+          options.delete(&quot;size&quot;)
+        end
+        options[&quot;type&quot;] = field_type
+        options[&quot;value&quot;] ||= value_before_type_cast(object) unless field_type == &quot;file&quot;
+        options[&quot;value&quot;] &amp;&amp;= html_escape(options[&quot;value&quot;])
+        add_default_name_and_id(options)
+        tag(&quot;input&quot;, options)
+      end
+
+      def to_radio_button_tag(tag_value, options = {})
+        options = DEFAULT_RADIO_OPTIONS.merge(options.stringify_keys)
+        options[&quot;type&quot;]     = &quot;radio&quot;
+        options[&quot;value&quot;]    = tag_value
+        if options.has_key?(&quot;checked&quot;)
+          cv = options.delete &quot;checked&quot;
+          checked = cv == true || cv == &quot;checked&quot;
+        else
+          checked = self.class.radio_button_checked?(value(object), tag_value)
+        end
+        options[&quot;checked&quot;]  = &quot;checked&quot; if checked
+        pretty_tag_value    = tag_value.to_s.gsub(/\s/, &quot;_&quot;).gsub(/\W/, &quot;&quot;).downcase
+        options[&quot;id&quot;]     ||= defined?(@auto_index) ?
+          &quot;#{tag_id_with_index(@auto_index)}_#{pretty_tag_value}&quot; :
+          &quot;#{tag_id}_#{pretty_tag_value}&quot;
+        add_default_name_and_id(options)
+        tag(&quot;input&quot;, options)
+      end
+
+      def to_text_area_tag(options = {})
+        options = DEFAULT_TEXT_AREA_OPTIONS.merge(options.stringify_keys)
+        add_default_name_and_id(options)
+
+        if size = options.delete(&quot;size&quot;)
+          options[&quot;cols&quot;], options[&quot;rows&quot;] = size.split(&quot;x&quot;) if size.respond_to?(:split)
+        end
+
+        content_tag(&quot;textarea&quot;, html_escape(options.delete('value') || value_before_type_cast(object)), options)
+      end
+
+      def to_check_box_tag(options = {}, checked_value = &quot;1&quot;, unchecked_value = &quot;0&quot;)
+        options = options.stringify_keys
+        options[&quot;type&quot;]     = &quot;checkbox&quot;
+        options[&quot;value&quot;]    = checked_value
+        if options.has_key?(&quot;checked&quot;)
+          cv = options.delete &quot;checked&quot;
+          checked = cv == true || cv == &quot;checked&quot;
+        else
+          checked = self.class.check_box_checked?(value(object), checked_value)
+        end
+        options[&quot;checked&quot;] = &quot;checked&quot; if checked
+        add_default_name_and_id(options)
+        tag(&quot;input&quot;, options) &lt;&lt; tag(&quot;input&quot;, &quot;name&quot; =&gt; options[&quot;name&quot;], &quot;type&quot; =&gt; &quot;hidden&quot;, &quot;value&quot; =&gt; options['disabled'] &amp;&amp; checked ? checked_value : unchecked_value)
+      end
+
+      def to_boolean_select_tag(options = {})
+        options = options.stringify_keys
+        add_default_name_and_id(options)
+        value = value(object)
+        tag_text = &quot;&lt;select&quot;
+        tag_text &lt;&lt; tag_options(options)
+        tag_text &lt;&lt; &quot;&gt;&lt;option value=\&quot;false\&quot;&quot;
+        tag_text &lt;&lt; &quot; selected&quot; if value == false
+        tag_text &lt;&lt; &quot;&gt;False&lt;/option&gt;&lt;option value=\&quot;true\&quot;&quot;
+        tag_text &lt;&lt; &quot; selected&quot; if value
+        tag_text &lt;&lt; &quot;&gt;True&lt;/option&gt;&lt;/select&gt;&quot;
+      end
+
+      def to_content_tag(tag_name, options = {})
+        content_tag(tag_name, value(object), options)
+      end
+
+      def object
+        @object || @template_object.instance_variable_get(&quot;@#{@object_name}&quot;)
+      rescue NameError
+        # As @object_name may contain the nested syntax (item[subobject]) we
+        # need to fallback to nil.
+        nil
+      end
+
+      def value(object)
+        self.class.value(object, @method_name)
+      end
+
+      def value_before_type_cast(object)
+        self.class.value_before_type_cast(object, @method_name)
+      end
+
+      class &lt;&lt; self
+        def value(object, method_name)
+          object.send method_name unless object.nil?
+        end
+
+        def value_before_type_cast(object, method_name)
+          unless object.nil?
+            object.respond_to?(method_name + &quot;_before_type_cast&quot;) ?
+            object.send(method_name + &quot;_before_type_cast&quot;) :
+            object.send(method_name)
+          end
+        end
+
+        def check_box_checked?(value, checked_value)
+          case value
+          when TrueClass, FalseClass
+            value
+          when NilClass
+            false
+          when Integer
+            value != 0
+          when String
+            value == checked_value
+          when Array
+            value.include?(checked_value)
+          else
+            value.to_i != 0
+          end
+        end
+
+        def radio_button_checked?(value, checked_value)
+          value.to_s == checked_value.to_s
+        end
+      end
+
+      private
+        def add_default_name_and_id(options)
+          if options.has_key?(&quot;index&quot;)
+            options[&quot;name&quot;] ||= tag_name_with_index(options[&quot;index&quot;])
+            options[&quot;id&quot;]   ||= tag_id_with_index(options[&quot;index&quot;])
+            options.delete(&quot;index&quot;)
+          elsif defined?(@auto_index)
+            options[&quot;name&quot;] ||= tag_name_with_index(@auto_index)
+            options[&quot;id&quot;]   ||= tag_id_with_index(@auto_index)
+          else
+            options[&quot;name&quot;] ||= tag_name + (options.has_key?('multiple') ? '[]' : '')
+            options[&quot;id&quot;]   ||= tag_id
+          end
+        end
+
+        def tag_name
+          &quot;#{@object_name}[#{sanitized_method_name}]&quot;
+        end
+
+        def tag_name_with_index(index)
+          &quot;#{@object_name}[#{index}][#{sanitized_method_name}]&quot;
+        end
+
+        def tag_id
+          &quot;#{sanitized_object_name}_#{sanitized_method_name}&quot;
+        end
+
+        def tag_id_with_index(index)
+          &quot;#{sanitized_object_name}_#{index}_#{sanitized_method_name}&quot;
+        end
+
+        def sanitized_object_name
+          @sanitized_object_name ||= @object_name.gsub(/[^-a-zA-Z0-9:.]/, &quot;_&quot;).sub(/_$/, &quot;&quot;)
+        end
+
+        def sanitized_method_name
+          @sanitized_method_name ||= @method_name.sub(/\?$/,&quot;&quot;)
+        end
+    end
+
+    class FormBuilder #:nodoc:
+      # The methods which wrap a form helper call.
+      class_inheritable_accessor :field_helpers
+      self.field_helpers = (FormHelper.instance_methods - ['form_for'])
+
+      attr_accessor :object_name, :object, :options
+
+      def initialize(object_name, object, template, options, proc)
+        @object_name, @object, @template, @options, @proc = object_name, object, template, options, proc
+        @default_options = @options ? @options.slice(:index) : {}
+      end
+
+      (field_helpers - %w(label check_box radio_button fields_for)).each do |selector|
+        src = &lt;&lt;-end_src
+          def #{selector}(method, options = {})
+            @template.send(#{selector.inspect}, @object_name, method, objectify_options(options))
+          end
+        end_src
+        class_eval src, __FILE__, __LINE__
+      end
+
+      def fields_for(record_or_name_or_array, *args, &amp;block)
+        case record_or_name_or_array
+        when String, Symbol
+          name = &quot;#{object_name}[#{record_or_name_or_array}]&quot;
+        when Array
+          object = record_or_name_or_array.last
+          name = &quot;#{object_name}[#{ActionController::RecordIdentifier.singular_class_name(object)}]&quot;
+          args.unshift(object)
+        else
+          object = record_or_name_or_array
+          name = &quot;#{object_name}[#{ActionController::RecordIdentifier.singular_class_name(object)}]&quot;
+          args.unshift(object)
+        end
+
+        @template.fields_for(name, *args, &amp;block)
+      end
+
+      def label(method, text = nil, options = {})
+        @template.label(@object_name, method, text, objectify_options(options))
+      end
+
+      def check_box(method, options = {}, checked_value = &quot;1&quot;, unchecked_value = &quot;0&quot;)
+        @template.check_box(@object_name, method, objectify_options(options), checked_value, unchecked_value)
+      end
+
+      def radio_button(method, tag_value, options = {})
+        @template.radio_button(@object_name, method, tag_value, objectify_options(options))
+      end
+
+      def error_message_on(method, prepend_text = &quot;&quot;, append_text = &quot;&quot;, css_class = &quot;formError&quot;)
+        @template.error_message_on(@object, method, prepend_text, append_text, css_class)
+      end
+
+      def error_messages(options = {})
+        @template.error_messages_for(@object_name, objectify_options(options))
+      end
+
+      def submit(value = &quot;Save changes&quot;, options = {})
+        @template.submit_tag(value, options.reverse_merge(:id =&gt; &quot;#{object_name}_submit&quot;))
+      end
+
+      private
+        def objectify_options(options)
+          @default_options.merge(options.merge(:object =&gt; @object))
+        end
+    end
+  end
+
+  class Base
+    cattr_accessor :default_form_builder
+    self.default_form_builder = ::ActionView::Helpers::FormBuilder
+  end
+end
+</pre>
+    </div>

@@ -1,0 +1,217 @@
+  <div id="C00000706">
+<div class='banner'>
+  <span class="file-title-prefix">Module</span><br />TagHelper<br/>
+  In:
+<a href="#" onclick="jsHref('files/actionpack/lib/action_view/helpers/tag_helper_rb.html');">actionpack/lib/action_view/helpers/tag_helper.rb</a>
+
+</div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+      <div id="content">
+
+  <div class="description"><p>
+Provides methods to generate HTML tags programmatically when you
+can&#8217;t use a <a
+href="index.html?a=C00000558&name=Builder">Builder</a>. By default, they
+output XHTML compliant tags.
+</p>
+</div>
+
+
+
+  <div class="sectiontitle">Methods</div>
+  <ul>
+  <li><a href="index.html?a=M002014&name=cdata_section" >cdata_section</a></li>
+  <li><a href="index.html?a=M002013&name=content_tag" >content_tag</a></li>
+  <li><a href="index.html?a=M002015&name=escape_once" >escape_once</a></li>
+  <li><a href="index.html?a=M002012&name=tag" >tag</a></li>
+  </ul>
+
+<div class="sectiontitle">Included Modules</div>
+<ul>
+  <li><a href="#" onclick="jsHref('classes/ERB/Util.html');">ERB::Util</a></li>
+</ul>
+
+
+
+  <div class="sectiontitle">Constants</div>
+  <table border='0' cellpadding='5'>
+  <tr valign='top'>
+    <td class="attr-name">BOOLEAN_ATTRIBUTES</td>
+    <td>=</td>
+    <td class="attr-value">%w(disabled readonly multiple).to_set</td>
+  </tr>
+  </table>
+
+
+<div class="sectiontitle">Public Instance methods</div>
+<div id="M002014" class="method">
+  <div id="M002014_title" class="title">
+    <b>cdata_section</b>(content)
+  </div>
+  <div class="description">
+  <p>
+Returns a CDATA section with the given <tt>content</tt>. CDATA sections are
+used to escape blocks of text containing characters which would otherwise
+be recognized as markup. CDATA sections begin with the string
+<tt>&lt;![CDATA[</tt> and end with (and may not contain) the string
+<tt>]]&gt;</tt>.
+</p>
+<h4>Examples</h4>
+<pre>
+  cdata_section(&quot;&lt;hello world&gt;&quot;)
+  # =&gt; &lt;![CDATA[&lt;hello world&gt;]]&gt;
+
+  cdata_section(File.read(&quot;hello_world.txt&quot;))
+  # =&gt; &lt;![CDATA[&lt;hello from a text file]]&gt;
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M002014_source')" id="l_M002014_source">show source</a> ]</p>
+  <div id="M002014_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File actionpack/lib/action_view/helpers/tag_helper.rb, line 91</span>
+91:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">cdata_section</span>(<span class="ruby-identifier">content</span>)
+92:         <span class="ruby-node">&quot;&lt;![CDATA[#{content}]]&gt;&quot;</span>
+93:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M002013" class="method">
+  <div id="M002013_title" class="title">
+    <b>content_tag</b>(name, content_or_options_with_block = nil, options = nil, escape = true, &amp;block)
+  </div>
+  <div class="description">
+  <p>
+Returns an HTML block tag of type <tt>name</tt> surrounding the
+<tt>content</tt>. Add HTML attributes by passing an attributes hash to
+<tt>options</tt>. Instead of passing the content as an argument, you can
+also use a block in which case, you pass your <tt>options</tt> as the
+second parameter. Set escape to false to disable attribute value escaping.
+</p>
+<h4>Options</h4>
+<p>
+The <tt>options</tt> hash is used with attributes with no value like
+(<tt>disabled</tt> and <tt>readonly</tt>), which you can give a value of
+true in the <tt>options</tt> hash. You can use symbols or strings for the
+attribute names.
+</p>
+<h4>Examples</h4>
+<pre>
+  content_tag(:p, &quot;Hello world!&quot;)
+   # =&gt; &lt;p&gt;Hello world!&lt;/p&gt;
+  content_tag(:div, content_tag(:p, &quot;Hello world!&quot;), :class =&gt; &quot;strong&quot;)
+   # =&gt; &lt;div class=&quot;strong&quot;&gt;&lt;p&gt;Hello world!&lt;/p&gt;&lt;/div&gt;
+  content_tag(&quot;select&quot;, options, :multiple =&gt; true)
+   # =&gt; &lt;select multiple=&quot;multiple&quot;&gt;...options...&lt;/select&gt;
+
+  &lt;% content_tag :div, :class =&gt; &quot;strong&quot; do -%&gt;
+    Hello world!
+  &lt;% end -%&gt;
+   # =&gt; &lt;div class=&quot;strong&quot;&gt;&lt;p&gt;Hello world!&lt;/p&gt;&lt;/div&gt;
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M002013_source')" id="l_M002013_source">show source</a> ]</p>
+  <div id="M002013_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File actionpack/lib/action_view/helpers/tag_helper.rb, line 68</span>
+68:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">content_tag</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">content_or_options_with_block</span> = <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">options</span> = <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">escape</span> = <span class="ruby-keyword kw">true</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+69:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">block_given?</span>
+70:           <span class="ruby-identifier">options</span> = <span class="ruby-identifier">content_or_options_with_block</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">content_or_options_with_block</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>)
+71:           <span class="ruby-identifier">content</span> = <span class="ruby-identifier">capture</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
+72:           <span class="ruby-identifier">content_tag</span> = <span class="ruby-identifier">content_tag_string</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">content</span>, <span class="ruby-identifier">options</span>, <span class="ruby-identifier">escape</span>)
+73:           <span class="ruby-identifier">block_is_within_action_view?</span>(<span class="ruby-identifier">block</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">concat</span>(<span class="ruby-identifier">content_tag</span>, <span class="ruby-identifier">block</span>.<span class="ruby-identifier">binding</span>) <span class="ruby-operator">:</span> <span class="ruby-identifier">content_tag</span>
+74:         <span class="ruby-keyword kw">else</span>
+75:           <span class="ruby-identifier">content</span> = <span class="ruby-identifier">content_or_options_with_block</span>
+76:           <span class="ruby-identifier">content_tag_string</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">content</span>, <span class="ruby-identifier">options</span>, <span class="ruby-identifier">escape</span>)
+77:         <span class="ruby-keyword kw">end</span>
+78:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M002015" class="method">
+  <div id="M002015_title" class="title">
+    <b>escape_once</b>(html)
+  </div>
+  <div class="description">
+  <p>
+Returns an escaped version of <tt>html</tt> without affecting existing
+escaped entities.
+</p>
+<h4>Examples</h4>
+<pre>
+  escape_once(&quot;1 &gt; 2 &amp;amp; 3&quot;)
+  # =&gt; &quot;1 &amp;lt; 2 &amp;amp; 3&quot;
+
+  escape_once(&quot;&amp;lt;&amp;lt; Accept &amp; Checkout&quot;)
+  # =&gt; &quot;&amp;lt;&amp;lt; Accept &amp;amp; Checkout&quot;
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M002015_source')" id="l_M002015_source">show source</a> ]</p>
+  <div id="M002015_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File actionpack/lib/action_view/helpers/tag_helper.rb, line 103</span>
+103:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">escape_once</span>(<span class="ruby-identifier">html</span>)
+104:         <span class="ruby-identifier">html</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/[\&quot;&gt;&lt;]|&amp;(?!([a-zA-Z]+|(#\d+));)/</span>) { <span class="ruby-operator">|</span><span class="ruby-identifier">special</span><span class="ruby-operator">|</span> <span class="ruby-constant">ERB</span><span class="ruby-operator">::</span><span class="ruby-constant">Util</span><span class="ruby-operator">::</span><span class="ruby-constant">HTML_ESCAPE</span>[<span class="ruby-identifier">special</span>] }
+105:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M002012" class="method">
+  <div id="M002012_title" class="title">
+    <b>tag</b>(name, options = nil, open = false, escape = true)
+  </div>
+  <div class="description">
+  <p>
+Returns an empty HTML tag of type <tt>name</tt> which by default is XHTML
+compliant. Set <tt>open</tt> to true to create an open tag compatible with
+HTML 4.0 and below. Add HTML attributes by passing an attributes hash to
+<tt>options</tt>. Set <tt>escape</tt> to false to disable attribute value
+escaping.
+</p>
+<h4>Options</h4>
+<p>
+The <tt>options</tt> hash is used with attributes with no value like
+(<tt>disabled</tt> and <tt>readonly</tt>), which you can give a value of
+true in the <tt>options</tt> hash. You can use symbols or strings for the
+attribute names.
+</p>
+<h4>Examples</h4>
+<pre>
+  tag(&quot;br&quot;)
+  # =&gt; &lt;br /&gt;
+
+  tag(&quot;br&quot;, nil, true)
+  # =&gt; &lt;br&gt;
+
+  tag(&quot;input&quot;, { :type =&gt; 'text', :disabled =&gt; true })
+  # =&gt; &lt;input type=&quot;text&quot; disabled=&quot;disabled&quot; /&gt;
+
+  tag(&quot;img&quot;, { :src =&gt; &quot;open &amp; shut.png&quot; })
+  # =&gt; &lt;img src=&quot;open &amp;amp; shut.png&quot; /&gt;
+
+  tag(&quot;img&quot;, { :src =&gt; &quot;open &amp;amp; shut.png&quot; }, false, false)
+  # =&gt; &lt;img src=&quot;open &amp;amp; shut.png&quot; /&gt;
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M002012_source')" id="l_M002012_source">show source</a> ]</p>
+  <div id="M002012_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File actionpack/lib/action_view/helpers/tag_helper.rb, line 41</span>
+41:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">tag</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">options</span> = <span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">open</span> = <span class="ruby-keyword kw">false</span>, <span class="ruby-identifier">escape</span> = <span class="ruby-keyword kw">true</span>)
+42:         <span class="ruby-node">&quot;&lt;#{name}#{tag_options(options, escape) if options}#{open ? &quot;&gt;&quot; : &quot; /&gt;&quot;}&quot;</span>
+43:       <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+</div>
+
+  </div>

@@ -1,0 +1,391 @@
+  <div id="C00000036">
+<div class='banner'>
+  <span class="file-title-prefix">Class</span><br />HashWithIndifferentAccess<br/>
+  In:
+<a href="#" onclick="jsHref('files/activesupport/lib/active_support/core_ext/hash/indifferent_access_rb.html');">activesupport/lib/active_support/core_ext/hash/indifferent_access.rb</a>
+
+Parent:&nbsp;
+Hash
+</div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+      <div id="content">
+
+  <div class="description"><p>
+This class has dubious semantics and we only have it so that people can
+write params[:key] instead of params[&#8216;key&#8217;] and they get the
+same value for both keys.
+</p>
+</div>
+
+
+
+  <div class="sectiontitle">Methods</div>
+  <ul>
+  <li><a href="index.html?a=M000115&name=[]=" >[]=</a></li>
+  <li><a href="index.html?a=M000127&name=convert_key" >convert_key</a></li>
+  <li><a href="index.html?a=M000128&name=convert_value" >convert_value</a></li>
+  <li><a href="index.html?a=M000114&name=default" >default</a></li>
+  <li><a href="index.html?a=M000122&name=delete" >delete</a></li>
+  <li><a href="index.html?a=M000120&name=dup" >dup</a></li>
+  <li><a href="index.html?a=M000118&name=fetch" >fetch</a></li>
+  <li><a href="index.html?a=M000117&name=key?" >key?</a></li>
+  <li><a href="index.html?a=M000121&name=merge" >merge</a></li>
+  <li><a href="index.html?a=M000113&name=new" >new</a></li>
+  <li><a href="index.html?a=M000123&name=stringify_keys!" >stringify_keys!</a></li>
+  <li><a href="index.html?a=M000124&name=symbolize_keys!" >symbolize_keys!</a></li>
+  <li><a href="index.html?a=M000126&name=to_hash" >to_hash</a></li>
+  <li><a href="index.html?a=M000125&name=to_options!" >to_options!</a></li>
+  <li><a href="index.html?a=M000116&name=update" >update</a></li>
+  <li><a href="index.html?a=M000119&name=values_at" >values_at</a></li>
+  </ul>
+
+
+
+
+
+
+<div class="sectiontitle">Public Class methods</div>
+<div id="M000113" class="method">
+  <div id="M000113_title" class="title">
+    <b>new</b>(constructor = {})
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000113_source')" id="l_M000113_source">show source</a> ]</p>
+  <div id="M000113_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activesupport/lib/active_support/core_ext/hash/indifferent_access.rb, line 6</span>
+ 6:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">constructor</span> = {})
+ 7:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">constructor</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>)
+ 8:       <span class="ruby-keyword kw">super</span>()
+ 9:       <span class="ruby-identifier">update</span>(<span class="ruby-identifier">constructor</span>)
+10:     <span class="ruby-keyword kw">else</span>
+11:       <span class="ruby-keyword kw">super</span>(<span class="ruby-identifier">constructor</span>)
+12:     <span class="ruby-keyword kw">end</span>
+13:   <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div class="sectiontitle">Public Instance methods</div>
+<div id="M000115" class="method">
+  <div id="M000115_title" class="title">
+    <b>[]=</b>(key, value)
+  </div>
+  <div class="description">
+  <p>
+Assigns a new value to the hash:
+</p>
+<pre>
+  hash = HashWithIndifferentAccess.new
+  hash[:key] = &quot;value&quot;
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000115_source')" id="l_M000115_source">show source</a> ]</p>
+  <div id="M000115_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activesupport/lib/active_support/core_ext/hash/indifferent_access.rb, line 31</span>
+31:   <span class="ruby-keyword kw">def</span> <span class="ruby-operator">[]=</span>(<span class="ruby-identifier">key</span>, <span class="ruby-identifier">value</span>)
+32:     <span class="ruby-identifier">regular_writer</span>(<span class="ruby-identifier">convert_key</span>(<span class="ruby-identifier">key</span>), <span class="ruby-identifier">convert_value</span>(<span class="ruby-identifier">value</span>))
+33:   <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000127" class="method">
+  <div id="M000127_title" class="title">
+    <b>convert_key</b>(key)
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000127_source')" id="l_M000127_source">show source</a> ]</p>
+  <div id="M000127_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activesupport/lib/active_support/core_ext/hash/indifferent_access.rb, line 109</span>
+109:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">convert_key</span>(<span class="ruby-identifier">key</span>)
+110:       <span class="ruby-identifier">key</span>.<span class="ruby-identifier">kind_of?</span>(<span class="ruby-constant">Symbol</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">key</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">key</span>
+111:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000128" class="method">
+  <div id="M000128_title" class="title">
+    <b>convert_value</b>(value)
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000128_source')" id="l_M000128_source">show source</a> ]</p>
+  <div id="M000128_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activesupport/lib/active_support/core_ext/hash/indifferent_access.rb, line 113</span>
+113:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">convert_value</span>(<span class="ruby-identifier">value</span>)
+114:       <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">value</span>
+115:       <span class="ruby-keyword kw">when</span> <span class="ruby-constant">Hash</span>
+116:         <span class="ruby-identifier">value</span>.<span class="ruby-identifier">with_indifferent_access</span>
+117:       <span class="ruby-keyword kw">when</span> <span class="ruby-constant">Array</span>
+118:         <span class="ruby-identifier">value</span>.<span class="ruby-identifier">collect</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">e</span><span class="ruby-operator">|</span> <span class="ruby-identifier">e</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">e</span>.<span class="ruby-identifier">with_indifferent_access</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">e</span> }
+119:       <span class="ruby-keyword kw">else</span>
+120:         <span class="ruby-identifier">value</span>
+121:       <span class="ruby-keyword kw">end</span>
+122:     <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000114" class="method">
+  <div id="M000114_title" class="title">
+    <b>default</b>(key = nil)
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000114_source')" id="l_M000114_source">show source</a> ]</p>
+  <div id="M000114_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activesupport/lib/active_support/core_ext/hash/indifferent_access.rb, line 15</span>
+15:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">default</span>(<span class="ruby-identifier">key</span> = <span class="ruby-keyword kw">nil</span>)
+16:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">key</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Symbol</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">include?</span>(<span class="ruby-identifier">key</span> = <span class="ruby-identifier">key</span>.<span class="ruby-identifier">to_s</span>)
+17:       <span class="ruby-keyword kw">self</span>[<span class="ruby-identifier">key</span>]
+18:     <span class="ruby-keyword kw">else</span>
+19:       <span class="ruby-keyword kw">super</span>
+20:     <span class="ruby-keyword kw">end</span>
+21:   <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000122" class="method">
+  <div id="M000122_title" class="title">
+    <b>delete</b>(key)
+  </div>
+  <div class="description">
+  <p>
+Removes a specified key from the hash.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000122_source')" id="l_M000122_source">show source</a> ]</p>
+  <div id="M000122_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activesupport/lib/active_support/core_ext/hash/indifferent_access.rb, line 95</span>
+95:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">delete</span>(<span class="ruby-identifier">key</span>)
+96:     <span class="ruby-keyword kw">super</span>(<span class="ruby-identifier">convert_key</span>(<span class="ruby-identifier">key</span>))
+97:   <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000120" class="method">
+  <div id="M000120_title" class="title">
+    <b>dup</b>()
+  </div>
+  <div class="description">
+  <p>
+Returns an exact copy of the hash.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000120_source')" id="l_M000120_source">show source</a> ]</p>
+  <div id="M000120_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activesupport/lib/active_support/core_ext/hash/indifferent_access.rb, line 84</span>
+84:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">dup</span>
+85:     <span class="ruby-constant">HashWithIndifferentAccess</span>.<span class="ruby-identifier">new</span>(<span class="ruby-keyword kw">self</span>)
+86:   <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000118" class="method">
+  <div id="M000118_title" class="title">
+    <b>fetch</b>(key, *extras)
+  </div>
+  <div class="description">
+  <p>
+Fetches the value for the specified key, same as doing hash[key]
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000118_source')" id="l_M000118_source">show source</a> ]</p>
+  <div id="M000118_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activesupport/lib/active_support/core_ext/hash/indifferent_access.rb, line 68</span>
+68:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">fetch</span>(<span class="ruby-identifier">key</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">extras</span>)
+69:     <span class="ruby-keyword kw">super</span>(<span class="ruby-identifier">convert_key</span>(<span class="ruby-identifier">key</span>), <span class="ruby-operator">*</span><span class="ruby-identifier">extras</span>)
+70:   <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000117" class="method">
+  <div id="M000117_title" class="title">
+    <b>key?</b>(key)
+  </div>
+  <div class="description">
+  <p>
+Checks the hash for a key matching the argument passed in:
+</p>
+<pre>
+  hash = HashWithIndifferentAccess.new
+  hash[&quot;key&quot;] = &quot;value&quot;
+  hash.key? :key  # =&gt; true
+  hash.key? &quot;key&quot; # =&gt; true
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000117_source')" id="l_M000117_source">show source</a> ]</p>
+  <div id="M000117_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activesupport/lib/active_support/core_ext/hash/indifferent_access.rb, line 59</span>
+59:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">key?</span>(<span class="ruby-identifier">key</span>)
+60:     <span class="ruby-keyword kw">super</span>(<span class="ruby-identifier">convert_key</span>(<span class="ruby-identifier">key</span>))
+61:   <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000121" class="method">
+  <div id="M000121_title" class="title">
+    <b>merge</b>(hash)
+  </div>
+  <div class="description">
+  <p>
+Merges the instantized and the specified hashes together, giving precedence
+to the values from the second hash Does not overwrite the existing hash.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000121_source')" id="l_M000121_source">show source</a> ]</p>
+  <div id="M000121_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activesupport/lib/active_support/core_ext/hash/indifferent_access.rb, line 90</span>
+90:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">merge</span>(<span class="ruby-identifier">hash</span>)
+91:     <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">dup</span>.<span class="ruby-identifier">update</span>(<span class="ruby-identifier">hash</span>)
+92:   <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000123" class="method">
+  <div id="M000123_title" class="title">
+    <b>stringify_keys!</b>()
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000123_source')" id="l_M000123_source">show source</a> ]</p>
+  <div id="M000123_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activesupport/lib/active_support/core_ext/hash/indifferent_access.rb, line 99</span>
+99:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">stringify_keys!</span>; <span class="ruby-keyword kw">self</span> <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000124" class="method">
+  <div id="M000124_title" class="title">
+    <b>symbolize_keys!</b>()
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000124_source')" id="l_M000124_source">show source</a> ]</p>
+  <div id="M000124_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activesupport/lib/active_support/core_ext/hash/indifferent_access.rb, line 100</span>
+100:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">symbolize_keys!</span>; <span class="ruby-keyword kw">self</span> <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000126" class="method">
+  <div id="M000126_title" class="title">
+    <b>to_hash</b>()
+  </div>
+  <div class="description">
+  <p>
+Convert to a Hash with String keys.
+</p>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000126_source')" id="l_M000126_source">show source</a> ]</p>
+  <div id="M000126_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activesupport/lib/active_support/core_ext/hash/indifferent_access.rb, line 104</span>
+104:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">to_hash</span>
+105:     <span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">default</span>).<span class="ruby-identifier">merge</span>(<span class="ruby-keyword kw">self</span>)
+106:   <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000125" class="method">
+  <div id="M000125_title" class="title">
+    <b>to_options!</b>()
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000125_source')" id="l_M000125_source">show source</a> ]</p>
+  <div id="M000125_source" class="dyn-source">
+<pre>
+     <span class="ruby-comment cmt"># File activesupport/lib/active_support/core_ext/hash/indifferent_access.rb, line 101</span>
+101:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">to_options!</span>; <span class="ruby-keyword kw">self</span> <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000116" class="method">
+  <div id="M000116_title" class="title">
+    <b>update</b>(other_hash)
+  </div>
+  <div class="description">
+  <p>
+Updates the instantized hash with values from the second:
+</p>
+<pre>
+  hash_1 = HashWithIndifferentAccess.new
+  hash_1[:key] = &quot;value&quot;
+
+  hash_2 = HashWithIndifferentAccess.new
+  hash_2[:key] = &quot;New Value!&quot;
+
+  hash_1.update(hash_2) # =&gt; {&quot;key&quot;=&gt;&quot;New Value!&quot;}
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000116_source')" id="l_M000116_source">show source</a> ]</p>
+  <div id="M000116_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activesupport/lib/active_support/core_ext/hash/indifferent_access.rb, line 45</span>
+45:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">update</span>(<span class="ruby-identifier">other_hash</span>)
+46:     <span class="ruby-identifier">other_hash</span>.<span class="ruby-identifier">each_pair</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">key</span>, <span class="ruby-identifier">value</span><span class="ruby-operator">|</span> <span class="ruby-identifier">regular_writer</span>(<span class="ruby-identifier">convert_key</span>(<span class="ruby-identifier">key</span>), <span class="ruby-identifier">convert_value</span>(<span class="ruby-identifier">value</span>)) }
+47:     <span class="ruby-keyword kw">self</span>
+48:   <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+<div id="M000119" class="method">
+  <div id="M000119_title" class="title">
+    <b>values_at</b>(*indices)
+  </div>
+  <div class="description">
+  <p>
+Returns an array of the values at the specified indices:
+</p>
+<pre>
+  hash = HashWithIndifferentAccess.new
+  hash[:a] = &quot;x&quot;
+  hash[:b] = &quot;y&quot;
+  hash.values_at(&quot;a&quot;, &quot;b&quot;) # =&gt; [&quot;x&quot;, &quot;y&quot;]
+</pre>
+  </div>
+<div class="sourcecode">
+  <p class="source-link">[ <a href="javascript:toggleSource('M000119_source')" id="l_M000119_source">show source</a> ]</p>
+  <div id="M000119_source" class="dyn-source">
+<pre>
+    <span class="ruby-comment cmt"># File activesupport/lib/active_support/core_ext/hash/indifferent_access.rb, line 79</span>
+79:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">values_at</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">indices</span>)
+80:     <span class="ruby-identifier">indices</span>.<span class="ruby-identifier">collect</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">key</span><span class="ruby-operator">|</span> <span class="ruby-keyword kw">self</span>[<span class="ruby-identifier">convert_key</span>(<span class="ruby-identifier">key</span>)]}
+81:   <span class="ruby-keyword kw">end</span>
+</pre>
+  </div>
+</div>
+</div>
+</div>
+
+  </div>

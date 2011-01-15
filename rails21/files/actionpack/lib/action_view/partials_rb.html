@@ -1,0 +1,177 @@
+  <div id="fileHeader">
+    <h1>partials.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>actionpack/lib/action_view/partials.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:04 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>module ActionView
+  # There's also a convenience method for rendering sub templates within the current controller that depends on a single object
+  # (we call this kind of sub templates for partials). It relies on the fact that partials should follow the naming convention of being
+  # prefixed with an underscore -- as to separate them from regular templates that could be rendered on their own.
+  #
+  # In a template for Advertiser#account:
+  #
+  #  &lt;%= render :partial =&gt; &quot;account&quot; %&gt;
+  #
+  # This would render &quot;advertiser/_account.erb&quot; and pass the instance variable @account in as a local variable +account+ to
+  # the template for display.
+  #
+  # In another template for Advertiser#buy, we could have:
+  #
+  #   &lt;%= render :partial =&gt; &quot;account&quot;, :locals =&gt; { :account =&gt; @buyer } %&gt;
+  #
+  #   &lt;% for ad in @advertisements %&gt;
+  #     &lt;%= render :partial =&gt; &quot;ad&quot;, :locals =&gt; { :ad =&gt; ad } %&gt;
+  #   &lt;% end %&gt;
+  #
+  # This would first render &quot;advertiser/_account.erb&quot; with @buyer passed in as the local variable +account+, then render
+  # &quot;advertiser/_ad.erb&quot; and pass the local variable +ad+ to the template for display.
+  #
+  # == Rendering a collection of partials
+  #
+  # The example of partial use describes a familiar pattern where a template needs to iterate over an array and render a sub
+  # template for each of the elements. This pattern has been implemented as a single method that accepts an array and renders
+  # a partial by the same name as the elements contained within. So the three-lined example in &quot;Using partials&quot; can be rewritten
+  # with a single line:
+  #
+  #   &lt;%= render :partial =&gt; &quot;ad&quot;, :collection =&gt; @advertisements %&gt;
+  #
+  # This will render &quot;advertiser/_ad.erb&quot; and pass the local variable +ad+ to the template for display. An iteration counter
+  # will automatically be made available to the template with a name of the form +partial_name_counter+. In the case of the
+  # example above, the template would be fed +ad_counter+.
+  #
+  # NOTE: Due to backwards compatibility concerns, the collection can't be one of hashes. Normally you'd also just keep domain objects,
+  # like Active Records, in there.
+  #
+  # == Rendering shared partials
+  #
+  # Two controllers can share a set of partials and render them like this:
+  #
+  #   &lt;%= render :partial =&gt; &quot;advertisement/ad&quot;, :locals =&gt; { :ad =&gt; @advertisement } %&gt;
+  #
+  # This will render the partial &quot;advertisement/_ad.erb&quot; regardless of which controller this is being called from.
+  #
+  # == Rendering partials with layouts
+  #
+  # Partials can have their own layouts applied to them. These layouts are different than the ones that are specified globally
+  # for the entire action, but they work in a similar fashion. Imagine a list with two types of users:
+  #
+  #   &lt;%# app/views/users/index.html.erb &amp;&gt;
+  #   Here's the administrator:
+  #   &lt;%= render :partial =&gt; &quot;user&quot;, :layout =&gt; &quot;administrator&quot;, :locals =&gt; { :user =&gt; administrator } %&gt;
+  #
+  #   Here's the editor:
+  #   &lt;%= render :partial =&gt; &quot;user&quot;, :layout =&gt; &quot;editor&quot;, :locals =&gt; { :user =&gt; editor } %&gt;
+  #
+  #   &lt;%# app/views/users/_user.html.erb &amp;&gt;
+  #   Name: &lt;%= user.name %&gt;
+  #
+  #   &lt;%# app/views/users/_administrator.html.erb &amp;&gt;
+  #   &lt;div id=&quot;administrator&quot;&gt;
+  #     Budget: $&lt;%= user.budget %&gt;
+  #     &lt;%= yield %&gt;
+  #   &lt;/div&gt;
+  #
+  #   &lt;%# app/views/users/_editor.html.erb &amp;&gt;
+  #   &lt;div id=&quot;editor&quot;&gt;
+  #     Deadline: $&lt;%= user.deadline %&gt;
+  #     &lt;%= yield %&gt;
+  #   &lt;/div&gt;
+  #
+  # ...this will return:
+  #
+  #   Here's the administrator:
+  #   &lt;div id=&quot;administrator&quot;&gt;
+  #     Budget: $&lt;%= user.budget %&gt;
+  #     Name: &lt;%= user.name %&gt;
+  #   &lt;/div&gt;
+  #
+  #   Here's the editor:
+  #   &lt;div id=&quot;editor&quot;&gt;
+  #     Deadline: $&lt;%= user.deadline %&gt;
+  #     Name: &lt;%= user.name %&gt;
+  #   &lt;/div&gt;
+  #
+  # You can also apply a layout to a block within any template:
+  #
+  #   &lt;%# app/views/users/_chief.html.erb &amp;&gt;
+  #   &lt;% render(:layout =&gt; &quot;administrator&quot;, :locals =&gt; { :user =&gt; chief }) do %&gt;
+  #     Title: &lt;%= chief.title %&gt;
+  #   &lt;% end %&gt;
+  #
+  # ...this will return:
+  #
+  #   &lt;div id=&quot;administrator&quot;&gt;
+  #     Budget: $&lt;%= user.budget %&gt;
+  #     Title: &lt;%= chief.name %&gt;
+  #   &lt;/div&gt;
+  #
+  # As you can see, the &lt;tt&gt;:locals&lt;/tt&gt; hash is shared between both the partial and its layout.
+  module Partials
+    private
+      def render_partial(partial_path, object_assigns = nil, local_assigns = {}) #:nodoc:
+        case partial_path
+        when String, Symbol, NilClass
+          # Render the template
+          ActionView::PartialTemplate.new(self, partial_path, object_assigns, local_assigns).render_template
+        when ActionView::Helpers::FormBuilder
+          builder_partial_path = partial_path.class.to_s.demodulize.underscore.sub(/_builder$/, '')
+          render_partial(builder_partial_path, object_assigns, (local_assigns || {}).merge(builder_partial_path.to_sym =&gt; partial_path))
+        when Array, ActiveRecord::Associations::AssociationCollection, ActiveRecord::NamedScope::Scope
+          if partial_path.any?
+            collection = partial_path
+            render_partial_collection(nil, collection, nil, local_assigns)
+          else
+            &quot;&quot;
+          end
+        else
+          render_partial(ActionController::RecordIdentifier.partial_path(partial_path, controller.class.controller_path), partial_path, local_assigns)
+        end
+      end
+
+      def render_partial_collection(partial_path, collection, partial_spacer_template = nil, local_assigns = {}) #:nodoc:
+        return &quot; &quot; if collection.empty?
+
+        local_assigns = local_assigns ? local_assigns.clone : {}
+        spacer = partial_spacer_template ? render(:partial =&gt; partial_spacer_template) : ''
+
+        if partial_path.nil?
+          render_partial_collection_with_unknown_partial_path(collection, local_assigns)
+        else
+          render_partial_collection_with_known_partial_path(collection, partial_path, local_assigns)
+        end.join(spacer)
+      end
+
+      def render_partial_collection_with_known_partial_path(collection, partial_path, local_assigns)
+        template = ActionView::PartialTemplate.new(self, partial_path, nil, local_assigns)
+        collection.map do |element|
+          template.render_member(element)
+        end
+      end
+
+      def render_partial_collection_with_unknown_partial_path(collection, local_assigns)
+        templates = Hash.new
+        i = 0
+        collection.map do |element|
+          partial_path = ActionController::RecordIdentifier.partial_path(element, controller.class.controller_path)
+          template = templates[partial_path] ||= ActionView::PartialTemplate.new(self, partial_path, nil, local_assigns)
+          template.counter = i
+          i += 1
+          template.render_member(element)
+        end
+      end
+  end
+end
+</pre>
+    </div>

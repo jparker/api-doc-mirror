@@ -1,0 +1,197 @@
+  <div id="fileHeader">
+    <h1>conversions.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activesupport/lib/active_support/core_ext/array/conversions.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>require 'builder'
+
+module ActiveSupport #:nodoc:
+  module CoreExtensions #:nodoc:
+    module Array #:nodoc:
+      module Conversions
+        # Converts the array to a comma-separated sentence where the last element is joined by the connector word. Options:
+        # * &lt;tt&gt;:connector&lt;/tt&gt; - The word used to join the last element in arrays with two or more elements (default: &quot;and&quot;)
+        # * &lt;tt&gt;:skip_last_comma&lt;/tt&gt; - Set to true to return &quot;a, b and c&quot; instead of &quot;a, b, and c&quot;.
+        def to_sentence(options = {})
+          options.assert_valid_keys(:connector, :skip_last_comma)
+          options.reverse_merge! :connector =&gt; 'and', :skip_last_comma =&gt; false
+          options[:connector] = &quot;#{options[:connector]} &quot; unless options[:connector].nil? || options[:connector].strip == ''
+
+          case length
+            when 0
+              &quot;&quot;
+            when 1
+              self[0].to_s
+            when 2
+              &quot;#{self[0]} #{options[:connector]}#{self[1]}&quot;
+            else
+              &quot;#{self[0...-1].join(', ')}#{options[:skip_last_comma] ? '' : ','} #{options[:connector]}#{self[-1]}&quot;
+          end
+        end
+
+        # Calls &lt;tt&gt;to_param&lt;/tt&gt; on all its elements and joins the result with
+        # slashes. This is used by &lt;tt&gt;url_for&lt;/tt&gt; in Action Pack. 
+        def to_param
+          map(&amp;:to_param).join '/'
+        end
+
+        # Converts an array into a string suitable for use as a URL query string,
+        # using the given +key+ as the param name.
+        #
+        #   ['Rails', 'coding'].to_query('hobbies') # =&gt; &quot;hobbies%5B%5D=Rails&amp;hobbies%5B%5D=coding&quot;
+        def to_query(key)
+          collect { |value| value.to_query(&quot;#{key}[]&quot;) } * '&amp;'
+        end
+
+        def self.included(base) #:nodoc:
+          base.class_eval do
+            alias_method :to_default_s, :to_s
+            alias_method :to_s, :to_formatted_s
+          end
+        end
+
+        # Converts a collection of elements into a formatted string by calling
+        # &lt;tt&gt;to_s&lt;/tt&gt; on all elements and joining them:
+        #
+        #   Blog.find(:all).to_formatted_s # =&gt; &quot;First PostSecond PostThird Post&quot;
+        #
+        # Adding in the &lt;tt&gt;:db&lt;/tt&gt; argument as the format yields a prettier
+        # output:
+        #
+        #   Blog.find(:all).to_formatted_s(:db) # =&gt; &quot;First Post,Second Post,Third Post&quot;
+        def to_formatted_s(format = :default)
+          case format
+            when :db
+              if respond_to?(:empty?) &amp;&amp; self.empty?
+                &quot;null&quot;
+              else
+                collect { |element| element.id }.join(&quot;,&quot;)
+              end
+            else
+              to_default_s
+          end
+        end
+
+        # Returns a string that represents this array in XML by sending +to_xml+
+        # to each element. Active Record collections delegate their representation
+        # in XML to this method.
+        #
+        # All elements are expected to respond to +to_xml+, if any of them does
+        # not an exception is raised.
+        #
+        # The root node reflects the class name of the first element in plural
+        # if all elements belong to the same type and that's not Hash:
+        #
+        #   customer.projects.to_xml
+        #
+        #   &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+        #   &lt;projects type=&quot;array&quot;&gt;
+        #     &lt;project&gt;
+        #       &lt;amount type=&quot;decimal&quot;&gt;20000.0&lt;/amount&gt;
+        #       &lt;customer-id type=&quot;integer&quot;&gt;1567&lt;/customer-id&gt;
+        #       &lt;deal-date type=&quot;date&quot;&gt;2008-04-09&lt;/deal-date&gt;
+        #       ...
+        #     &lt;/project&gt;
+        #     &lt;project&gt;
+        #       &lt;amount type=&quot;decimal&quot;&gt;57230.0&lt;/amount&gt;
+        #       &lt;customer-id type=&quot;integer&quot;&gt;1567&lt;/customer-id&gt;
+        #       &lt;deal-date type=&quot;date&quot;&gt;2008-04-15&lt;/deal-date&gt;
+        #       ...
+        #     &lt;/project&gt;
+        #   &lt;/projects&gt;
+        #
+        # Otherwise the root element is &quot;records&quot;:
+        #
+        #   [{:foo =&gt; 1, :bar =&gt; 2}, {:baz =&gt; 3}].to_xml
+        #
+        #   &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+        #   &lt;records type=&quot;array&quot;&gt;
+        #     &lt;record&gt;
+        #       &lt;bar type=&quot;integer&quot;&gt;2&lt;/bar&gt;
+        #       &lt;foo type=&quot;integer&quot;&gt;1&lt;/foo&gt;
+        #     &lt;/record&gt;
+        #     &lt;record&gt;
+        #       &lt;baz type=&quot;integer&quot;&gt;3&lt;/baz&gt;
+        #     &lt;/record&gt;
+        #   &lt;/records&gt;
+        #
+        # If the collection is empty the root element is &quot;nil-classes&quot; by default:
+        #
+        #   [].to_xml
+        #
+        #   &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+        #   &lt;nil-classes type=&quot;array&quot;/&gt;
+        #
+        # To ensure a meaningful root element use the &lt;tt&gt;:root&lt;/tt&gt; option:
+        #
+        #   customer_with_no_projects.projects.to_xml(:root =&gt; &quot;projects&quot;)
+        #
+        #   &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+        #   &lt;projects type=&quot;array&quot;/&gt;
+        #
+        # By default root children have as node name the one of the root
+        # singularized. You can change it with the &lt;tt&gt;:children&lt;/tt&gt; option.
+        #
+        # The +options+ hash is passed downwards:
+        #
+        #   Message.all.to_xml(:skip_types =&gt; true)
+        #
+        #   &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+        #   &lt;messages&gt;
+        #     &lt;message&gt;
+        #       &lt;created-at&gt;2008-03-07T09:58:18+01:00&lt;/created-at&gt;
+        #       &lt;id&gt;1&lt;/id&gt;
+        #       &lt;name&gt;1&lt;/name&gt;
+        #       &lt;updated-at&gt;2008-03-07T09:58:18+01:00&lt;/updated-at&gt;
+        #       &lt;user-id&gt;1&lt;/user-id&gt;
+        #     &lt;/message&gt;
+        #   &lt;/messages&gt;
+        #
+        def to_xml(options = {})
+          raise &quot;Not all elements respond to to_xml&quot; unless all? { |e| e.respond_to? :to_xml }
+
+          options[:root]     ||= all? { |e| e.is_a?(first.class) &amp;&amp; first.class.to_s != &quot;Hash&quot; } ? first.class.to_s.underscore.pluralize : &quot;records&quot;
+          options[:children] ||= options[:root].singularize
+          options[:indent]   ||= 2
+          options[:builder]  ||= Builder::XmlMarkup.new(:indent =&gt; options[:indent])
+
+          root     = options.delete(:root).to_s
+          children = options.delete(:children)
+
+          if !options.has_key?(:dasherize) || options[:dasherize]
+            root = root.dasherize
+          end
+
+          options[:builder].instruct! unless options.delete(:skip_instruct)
+
+          opts = options.merge({ :root =&gt; children })
+
+          xml = options[:builder]
+          if empty?
+            xml.tag!(root, options[:skip_types] ? {} : {:type =&gt; &quot;array&quot;})
+          else
+            xml.tag!(root, options[:skip_types] ? {} : {:type =&gt; &quot;array&quot;}) {
+              yield xml if block_given?
+              each { |e| e.to_xml(opts.merge!({ :skip_instruct =&gt; true })) }
+            }
+          end
+        end
+
+      end
+    end
+  end
+end
+</pre>
+    </div>

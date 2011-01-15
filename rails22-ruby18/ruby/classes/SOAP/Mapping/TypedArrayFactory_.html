@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>SOAP::Mapping::TypedArrayFactory_</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="../../../css/reset.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../../../css/main.css" type="text/css" media="screen" />
+    <script src="../../../js/jquery-1.3.2.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/jquery-effect.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../../js/main.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>     
+    <div class="banner">
+        <h1>
+            <span class="type">Class</span> 
+            SOAP::Mapping::TypedArrayFactory_ 
+            
+                <span class="parent">&lt; 
+                    
+                    Factory
+                    
+                </span>
+            
+        </h1>
+        <ul class="files">
+            
+            <li><a href="../../../files/lib/soap/mapping/factory_rb.html">lib/soap/mapping/factory.rb</a></li>
+            
+        </ul>
+    </div>
+    <div id="bodyContent">
+        <div id="content">
+    
+
+    
+
+    
+    
+
+    
+    
+    <div class="sectiontitle">Methods</div>
+    <dl class="methods">
+    
+        <dt>N</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003799">new</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>O</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003800">obj2soap</a></li>
+                
+            </ul>
+        </dd>
+    
+        <dt>S</dt>
+        <dd>
+            <ul>
+                
+                <li><a href="#M003801">soap2obj</a></li>
+                
+            </ul>
+        </dd>
+    
+    </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+            <div class="sectiontitle">Class Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M003799">
+                    
+                    <a name="M003799"></a><b>new</b>(allow_original_mapping = false)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003799_source')" id="l_M003799_source">show</a>
+                        
+                    </p>
+                    <div id="M003799_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/soap/mapping/factory.rb, line 242</span>
+242:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">allow_original_mapping</span> = <span class="ruby-keyword kw">false</span>)
+243:     <span class="ruby-keyword kw">super</span>()
+244:     <span class="ruby-ivar">@allow_original_mapping</span> = <span class="ruby-identifier">allow_original_mapping</span>
+245:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="sectiontitle">Instance Public methods</div>
+            
+            <div class="method">
+                <div class="title" id="M003800">
+                    
+                    <a name="M003800"></a><b>obj2soap</b>(soap_class, obj, info, map)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003800_source')" id="l_M003800_source">show</a>
+                        
+                    </p>
+                    <div id="M003800_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/soap/mapping/factory.rb, line 247</span>
+247:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">obj2soap</span>(<span class="ruby-identifier">soap_class</span>, <span class="ruby-identifier">obj</span>, <span class="ruby-identifier">info</span>, <span class="ruby-identifier">map</span>)
+248:     <span class="ruby-keyword kw">if</span> <span class="ruby-operator">!</span><span class="ruby-ivar">@allow_original_mapping</span> <span class="ruby-keyword kw">and</span> <span class="ruby-operator">!</span><span class="ruby-identifier">obj</span>.<span class="ruby-identifier">instance_variables</span>.<span class="ruby-identifier">empty?</span>
+249:       <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">nil</span>
+250:     <span class="ruby-keyword kw">end</span>
+251:     <span class="ruby-identifier">arytype</span> = <span class="ruby-identifier">info</span>[<span class="ruby-identifier">:type</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">info</span>[<span class="ruby-value">0</span>]
+252:     <span class="ruby-identifier">soap_obj</span> = <span class="ruby-constant">SOAPArray</span>.<span class="ruby-identifier">new</span>(<span class="ruby-constant">ValueArrayName</span>, <span class="ruby-value">1</span>, <span class="ruby-identifier">arytype</span>)
+253:     <span class="ruby-identifier">mark_marshalled_obj</span>(<span class="ruby-identifier">obj</span>, <span class="ruby-identifier">soap_obj</span>)
+254:     <span class="ruby-identifier">obj</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">var</span><span class="ruby-operator">|</span>
+255:       <span class="ruby-identifier">soap_obj</span>.<span class="ruby-identifier">add</span>(<span class="ruby-constant">Mapping</span>.<span class="ruby-identifier">_obj2soap</span>(<span class="ruby-identifier">var</span>, <span class="ruby-identifier">map</span>))
+256:     <span class="ruby-keyword kw">end</span>
+257:     <span class="ruby-identifier">soap_obj</span>
+258:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="method">
+                <div class="title" id="M003801">
+                    
+                    <a name="M003801"></a><b>soap2obj</b>(obj_class, node, info, map)
+                    
+                </div>
+                
+                
+                
+                
+                <div class="sourcecode">
+                    <p class="source-link">
+                        Source: <a href="javascript:toggleSource('M003801_source')" id="l_M003801_source">show</a>
+                        
+                    </p>
+                    <div id="M003801_source" class="dyn-source">
+                        <pre>     <span class="ruby-comment cmt"># File lib/soap/mapping/factory.rb, line 260</span>
+260:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">soap2obj</span>(<span class="ruby-identifier">obj_class</span>, <span class="ruby-identifier">node</span>, <span class="ruby-identifier">info</span>, <span class="ruby-identifier">map</span>)
+261:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">node</span>.<span class="ruby-identifier">rank</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">1</span>
+262:       <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">false</span>
+263:     <span class="ruby-keyword kw">end</span>
+264:     <span class="ruby-identifier">arytype</span> = <span class="ruby-identifier">info</span>[<span class="ruby-identifier">:type</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">info</span>[<span class="ruby-value">0</span>]
+265:     <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">node</span>.<span class="ruby-identifier">arytype</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">arytype</span>
+266:       <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">false</span>
+267:     <span class="ruby-keyword kw">end</span>
+268:     <span class="ruby-identifier">obj</span> = <span class="ruby-constant">Mapping</span>.<span class="ruby-identifier">create_empty_object</span>(<span class="ruby-identifier">obj_class</span>)
+269:     <span class="ruby-identifier">mark_unmarshalled_obj</span>(<span class="ruby-identifier">node</span>, <span class="ruby-identifier">obj</span>)
+270:     <span class="ruby-identifier">node</span>.<span class="ruby-identifier">soap2array</span>(<span class="ruby-identifier">obj</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">elem</span><span class="ruby-operator">|</span>
+271:       <span class="ruby-identifier">elem</span> <span class="ruby-value">? </span><span class="ruby-constant">Mapping</span>.<span class="ruby-identifier">_soap2obj</span>(<span class="ruby-identifier">elem</span>, <span class="ruby-identifier">map</span>) <span class="ruby-operator">:</span> <span class="ruby-keyword kw">nil</span>
+272:     <span class="ruby-keyword kw">end</span>
+273:     <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">true</span>, <span class="ruby-identifier">obj</span>
+274:   <span class="ruby-keyword kw">end</span></pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+</div>
+    </div>
+  </body>
+</html>    

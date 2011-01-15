@@ -1,0 +1,88 @@
+  <div id="fileHeader">
+    <h1>enumerable.rb</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>activesupport/lib/active_support/core_ext/enumerable.rb</td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Oct 23 19:39:06 -0500 2008</td>
+    </tr>
+    </table>
+  </div>
+ <!-- banner header -->
+
+  <div id="bodyContent" >
+    <h2>Source Code</h2>
+    <pre>module Enumerable
+  # Ruby 1.8.7 introduces group_by, but the result isn't ordered. Override it.
+  remove_method(:group_by) if [].respond_to?(:group_by) &amp;&amp; RUBY_VERSION &lt; '1.9'
+
+  # Collect an enumerable into sets, grouped by the result of a block. Useful,
+  # for example, for grouping records by date.
+  #
+  # Example:
+  #
+  #   latest_transcripts.group_by(&amp;:day).each do |day, transcripts| 
+  #     p &quot;#{day} -&gt; #{transcripts.map(&amp;:class).join(', ')}&quot;
+  #   end
+  #   &quot;2006-03-01 -&gt; Transcript&quot;
+  #   &quot;2006-02-28 -&gt; Transcript&quot;
+  #   &quot;2006-02-27 -&gt; Transcript, Transcript&quot;
+  #   &quot;2006-02-26 -&gt; Transcript, Transcript&quot;
+  #   &quot;2006-02-25 -&gt; Transcript&quot;
+  #   &quot;2006-02-24 -&gt; Transcript, Transcript&quot;
+  #   &quot;2006-02-23 -&gt; Transcript&quot;
+  def group_by
+    inject ActiveSupport::OrderedHash.new do |grouped, element|
+      (grouped[yield(element)] ||= []) &lt;&lt; element
+      grouped
+    end
+  end unless [].respond_to?(:group_by)
+
+  # Calculates a sum from the elements. Examples:
+  #
+  #  payments.sum { |p| p.price * p.tax_rate }
+  #  payments.sum(&amp;:price)
+  #
+  # The latter is a shortcut for:
+  #
+  #  payments.inject { |sum, p| sum + p.price }
+  #
+  # It can also calculate the sum without the use of a block.
+  #
+  #  [5, 15, 10].sum # =&gt; 30
+  #  [&quot;foo&quot;, &quot;bar&quot;].sum # =&gt; &quot;foobar&quot;
+  #  [[1, 2], [3, 1, 5]].sum =&gt; [1, 2, 3, 1, 5]
+  #
+  # The default sum of an empty list is zero. You can override this default:
+  #
+  #  [].sum(Payment.new(0)) { |i| i.amount } # =&gt; Payment.new(0)
+  #
+  def sum(identity = 0, &amp;block)
+    return identity unless size &gt; 0
+
+    if block_given?
+      map(&amp;block).sum
+    else
+      inject { |sum, element| sum + element }
+    end
+  end
+
+  # Convert an enumerable to a hash. Examples:
+  # 
+  #   people.index_by(&amp;:login)
+  #     =&gt; { &quot;nextangle&quot; =&gt; &lt;Person ...&gt;, &quot;chade-&quot; =&gt; &lt;Person ...&gt;, ...}
+  #   people.index_by { |person| &quot;#{person.first_name} #{person.last_name}&quot; }
+  #     =&gt; { &quot;Chade- Fowlersburg-e&quot; =&gt; &lt;Person ...&gt;, &quot;David Heinemeier Hansson&quot; =&gt; &lt;Person ...&gt;, ...}
+  # 
+  def index_by
+    inject({}) do |accum, elem|
+      accum[yield(elem)] = elem
+      accum
+    end
+  end
+end
+</pre>
+    </div>
